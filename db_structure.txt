@@ -1,0 +1,79 @@
+Structure of table cast:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('name', 'varchar(255)', 'YES', '', None, '')
+('role', 'text', 'YES', '', None, '')
+('popularity', 'decimal(7,3)', 'YES', '', None, '')
+('tmdb_id', 'varchar(50)', 'YES', '', None, '')
+
+Structure of table certificates:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('country', 'varchar(100)', 'YES', '', None, '')
+('rating', 'varchar(20)', 'YES', '', None, '')
+('additional_info', 'text', 'YES', '', None, '')
+
+Structure of table countries:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('country', 'varchar(100)', 'YES', '', None, '')
+
+Structure of table crew:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('name', 'varchar(255)', 'YES', '', None, '')
+('job', 'varchar(255)', 'YES', '', None, '')
+('tmdb_id', 'varchar(50)', 'YES', '', None, '')
+
+Structure of table genres:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('genre', 'varchar(100)', 'YES', '', None, '')
+
+Structure of table movies:
+('format_filmId', 'int', 'NO', 'PRI', None, '')
+('title', 'varchar(255)', 'YES', '', None, '')
+('imdb_id', 'varchar(50)', 'YES', '', None, '')
+('original_title', 'varchar(255)', 'YES', '', None, '')
+('release_date', 'year', 'YES', '', None, '')
+('runtime', 'int', 'YES', '', None, '')
+('aspect_ratio', 'text', 'YES', '', None, '')
+('color_info', 'text', 'YES', '', None, '')
+('sound_mix', 'text', 'YES', '', None, '')
+('overview', 'text', 'YES', '', None, '')
+('poster_images', 'int', 'YES', '', None, '')
+('person_images', 'int', 'YES', '', None, '')
+('backdrop_images', 'int', 'YES', '', None, '')
+('wiki_critics', 'text', 'YES', '', None, '')
+('wiki_awards', 'text', 'YES', '', None, '')
+('wiki_background', 'text', 'YES', '', None, '')
+('wiki_url', 'text', 'YES', '', None, '')
+('format_titel', 'varchar(255)', 'YES', '', None, '')
+('format_orig_titel', 'varchar(255)', 'YES', '', None, '')
+('format_fsk', 'int', 'YES', '', None, '')
+('format_standort', 'varchar(255)', 'YES', '', None, '')
+('format_vhs', 'int', 'YES', '', None, '')
+('format_dvd', 'int', 'YES', '', None, '')
+('format_blu', 'int', 'YES', '', None, '')
+('format_blu3', 'int', 'YES', '', None, '')
+('format_minmedium', 'int', 'YES', '', None, '')
+('format_ausleihen', 'decimal(14,6)', 'YES', '', None, '')
+('format_alpha', 'varchar(255)', 'YES', '', None, '')
+('format_aufindex', 'int', 'YES', '', None, '')
+('folder_name', 'varchar(255)', 'YES', '', None, '')
+('imdb_rating', 'varchar(10)', 'YES', '', None, '')
+('imdb_votes', 'varchar(100)', 'YES', '', None, '')
+('tmdb_id', 'varchar(20)', 'YES', '', None, '')
+('tmdb_rating', 'varchar(20)', 'YES', '', None, '')
+('tmdb_votes', 'varchar(100)', 'YES', '', None, '')
+('original_air_date', 'varchar(255)', 'YES', '', None, '')
+
+Structure of table production_companies:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('company_name', 'varchar(255)', 'YES', '', None, '')
+
+Structure of table spoken_languages:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('language', 'varchar(100)', 'YES', '', None, '')

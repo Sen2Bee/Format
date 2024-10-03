@@ -1,0 +1,286 @@
+/* General Movie Card Container */
+.movie-card {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border-radius: 10px;
+    margin: 20px auto;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 1100px;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Background Image for Movie Card */
+.poster-background {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+/* Dark Overlay for Mobile Background Image */
+.movie-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Lighter semi-transparent dark overlay */
+    z-index: 0;
+    display: none; /* Only visible on mobile */
+    transition: background 0.3s ease;
+}
+
+.movie-card:active::before,
+.movie-card:hover::before {
+    background: rgba(0, 0, 0, 0.2); /* Show more of the image on hover/tap */
+}
+
+/* Content Wrapper for Poster and Metadata */
+.movie-content-wrapper {
+    display: grid;
+    grid-template-columns: 250px 1fr; /* Poster and content */
+    grid-template-areas: 
+        "poster metadata"
+        "overview overview"; /* Overview spans below */
+    gap: 20px;
+    background: rgba(30, 30, 30, 0.85);
+    z-index: 1;
+}
+
+.image-container {
+    grid-area: poster;
+    position: relative;
+    align-self: start;
+    transition: transform 0.3s ease;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.movie-card:hover .image-container img {
+    transform: scale(1.05); /* Zoom-in effect on hover */
+}
+
+.info-section {
+    grid-area: metadata;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    z-index: 2;
+}
+
+/* Main Title Styling */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-section h2 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Metadata Section */
+.metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.metadata p {
+    margin: 5px 0;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Label Styles */
+.metadata p strong {
+    font-size: 1.1em; /* Default size */
+    font-weight: bold; /* Default bold */
+    transition: font-size 0.3s ease, font-weight 0.3s ease;
+}
+
+.metadata p span {
+    font-weight: bold; /* Default bold content */
+    transition: font-size 0.3s ease, font-weight 0.3s ease;
+}
+
+.inline-meta {
+    font-size: 1.1em;
+    color: #ddd;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.standort {
+    color: #ddd;
+    margin-top: 10px;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Overview Section */
+.overview-section {
+    grid-area: overview;
+    padding: 15px;
+    background-color: rgba(37, 43, 54, 0.8);
+    border-radius: 8px;
+    color: #dddddd;
+    line-height: 1.4;
+    z-index: 2;
+    transition: font-weight 0.3s ease;
+}
+
+.overview-section p {
+    margin: 0;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.overview-section a {
+    color: #ffcc00;
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.overview-section a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Styles for Tablet */
+@media (max-width: 1024px) {
+    .movie-card {
+        width: 95%;
+    }
+
+    .movie-content-wrapper {
+        grid-template-columns: 180px 1fr;
+        grid-template-areas: 
+            "poster metadata"
+            "overview overview";
+        gap: 15px;
+    }
+
+    .info-section {
+        padding: 15px;
+    }
+
+    .inline-meta,
+    .standort {
+        font-size: 0.95em;
+    }
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
+    .movie-card {
+        width: 100%;
+        margin: 10px auto;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+    }
+
+    .movie-card::before {
+        display: block;
+    }
+
+    .movie-content-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "metadata"
+            "overview";
+        gap: 10px;
+        background: none;
+    }
+
+    .image-container {
+        display: none;
+    }
+
+    .info-section,
+    .overview-section {
+        background: rgba(0, 0, 0, 0.4);
+        margin: 10px;
+        border-radius: 8px;
+    }
+
+    .metadata p, .overview-section p {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    /* Text Adjustments for Mobile */
+    .metadata p strong {
+        font-size: 1.3em; /* Larger size for labels on mobile */
+        font-weight: bold; /* Default bold on mobile */
+    }
+
+    .metadata p span {
+        font-weight: bold; /* Content bold on mobile */
+    }
+
+    .movie-card:hover .metadata p strong,
+    .movie-card:hover .metadata p span {
+        font-size: 1.1em; /* Shrink label size on hover */
+        font-weight: normal; /* Regular weight on hover */
+    }
+
+    .overview-section {
+        font-weight: bold; /* Default font weight on mobile */
+    }
+
+    /* Thinner font on hover/touch */
+    .movie-card:hover .overview-section {
+        font-weight: normal;
+    }
+}
+
+/* Styles for Very Small Screens */
+@media (max-width: 480px) {
+    .movie-card {
+        width: 100%;
+        margin: 15px auto;
+    }
+
+    .movie-content-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+            "metadata"
+            "overview";
+        gap: 10px;
+    }
+
+    .metadata p {
+        text-align: center;
+    }
+
+    .overview-section {
+        width: 95%;
+        padding: 5px;
+    }
+
+    .action .btn {
+        width: 90%;
+    }
+}
+.missing-poster {
+    border: 2px dashed red;  /* Optional border to highlight missing posters */
+    opacity: 0.6;  /* Dim the card slightly */
+}

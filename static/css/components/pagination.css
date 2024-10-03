@@ -1,0 +1,71 @@
+/* pagination.css */
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.pagination nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination nav ul li {
+    margin: 0 3px; /* Reduce spacing */
+}
+
+.pagination nav ul li a,
+.pagination nav ul li span {
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    min-width: 32px; /* Make the buttons more uniform */
+    text-align: center;
+}
+
+.pagination nav ul li a:hover {
+    background-color: #555; /* Darker hover effect */
+}
+
+.pagination nav ul li.active span {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+}
+
+.pagination nav ul li.disabled span {
+    background-color: #e0e0e0;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+/* Optional: Style for Ellipsis */
+.pagination nav ul li.ellipsis span {
+    background: none;
+    color: #666;
+    cursor: default;
+}
+
+/* Disabled button styling */
+.pagination ul li.disabled a {
+    color: #aaa; /* Greyed out color */
+    pointer-events: none; /* Prevent clicking */
+    cursor: not-allowed;
+    background-color: #444; /* Background to indicate disabled state */
+    border: 1px solid #333; /* Adjust border color */
+}
+
+.pagination ul li.disabled {
+    cursor: default;
+}
+

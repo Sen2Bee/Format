@@ -1,0 +1,20 @@
+/* Import Base Styles */
+@import url('./base/reset.css');
+@import url('./base/variables.css');
+@import url('./base/typography.css');
+
+/* Import Layout Styles */
+@import url('./layout/navbar.css');
+@import url('./layout/footer.css');
+@import url('./layout/hero.css');
+
+/* Import Component Styles */
+@import url('./components/filter.css');
+@import url('./components/cards.css'); /* Import cards.css early */
+@import url('./components/buttons.css');
+@import url('./components/forms.css');
+@import url('./components/pagination.css');
+
+
+/* Import Page-Specific Styles */
+@import url('./pages/catalog.css');

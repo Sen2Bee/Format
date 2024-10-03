@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Catalog - FORMAT Filmkunst-Verleih</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
+                <a class="sub-logo"><span>Katalog</span></a>
+            </div>
+            <!-- Toggle button for the mobile menu -->
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <!-- Main navigation menu -->
+            <ul class="nav-links">
+                <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
+            </ul>
+        </nav>
+        <!-- Additional mobile link placement -->
+        <div class="mobile-footer-link">
+            <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Filter Section in HTML -->
+        <section class="catalog-search">
+            <form id="filter-form">
+                <div class="dropdown-section">
+                    <!-- Year Filter Dropdown -->
+                    <div class="filter-group">
+                        <label for="year-dropdown">Year</label>
+                        <select id="year-dropdown" class="filter-dropdown" multiple>
+                            <option value="1913">1913 (1)</option>
+                            <option value="1915">1915 (4)</option>
+                            <option value="1916">1916 (1)</option>
+                            <option value="1919">1919 (6)</option>
+                        </select>
+                        <button type="button" id="clear-year" class="clear-btn" disabled>Clear Year</button>
+                    </div>
+                    
+                    <!-- Genre Filter Dropdown -->
+                    <div class="filter-group">
+                        <label for="genre-dropdown">Genre</label>
+                        <select id="genre-dropdown" class="filter-dropdown" multiple>
+                            <option value="Action">Action (2126)</option>
+                            <option value="Adventure">Adventure (1911)</option>
+                            <option value="Animation">Animation (634)</option>
+                        </select>
+                        <button type="button" id="clear-genre" class="clear-btn" disabled>Clear Genre</button>
+                    </div>
+
+                    <!-- Country Filter Dropdown -->
+                    <div class="filter-group">
+                        <label for="country-dropdown">Country</label>
+                        <select id="country-dropdown" class="filter-dropdown" multiple>
+                            <option value="Afghanistan">Afghanistan (2)</option>
+                            <option value="Albania">Albania (8)</option>
+                            <option value="Algeria">Algeria (8)</option>
+                            <option value="Argentina">Argentina (126)</option>
+                        </select>
+                        <button type="button" id="clear-country" class="clear-btn" disabled>Clear Country</button>
+                    </div>
+                </div>
+                <!-- Global Clear All Button -->
+                <button type="button" id="clear-all" class="global-clear-btn" disabled>Clear All Selections</button>
+            </form>
+        </section>
+
+        <!-- Top Pagination Section -->
+        <section class="pagination bottom-pagination">
+            <nav>
+                <ul>
+                    <!-- Pagination will be populated dynamically here -->
+                </ul>
+            </nav>
+        </section>        
+
+        <!-- Movie Listings Section -->
+        <section class="movie-listings">
+            {% for movie in movies %}
+            <div class="movie-card poster-background" 
+                 style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
+                <div class="transparency-layer"></div>
+                <div class="movie-content-wrapper">
+                    <div class="image-container">
+                        <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                             alt="{{ movie['main_title'] }}" 
+                             onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.jpg') }}';">
+                    </div>
+
+                    <div class="info-section">
+                        <div class="header-section">
+                            <h2>{{ movie['main_title'] }}</h2>
+                        </div>
+
+                        <div class="metadata">
+                            <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
+                            <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
+                            <p><strong>Regie:</strong> {{ movie['director'] }}</p>
+                            <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
+                            {% if movie['format_standort'] %}
+                            <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="overview-section">
+                        {% if movie['overview']|length > 150 %}
+                        <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
+                        {% else %}
+                        <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <!-- Bottom Pagination Section -->
+        <section class="pagination bottom-pagination">
+            <nav>
+                <ul>
+                    <!-- Pagination will be populated dynamically here -->
+                </ul>
+            </nav>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/filter.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

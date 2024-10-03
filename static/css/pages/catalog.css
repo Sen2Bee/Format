@@ -1,0 +1,76 @@
+/* Catalog Search Section */
+.catalog-search {
+    padding: 40px 20px;
+    background-color: #1e1e1e; /* Adjust background to match dark theme */
+    text-align: center;
+}
+
+.catalog-search form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.catalog-search input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #333; /* Darker border for consistency */
+    border-radius: 4px;
+    background-color: #333; /* Match the dark theme */
+    color: #fff; /* White text color */
+}
+
+.catalog-search .filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.catalog-search select {
+    padding: 10px;
+    border: 1px solid #333; /* Darker border for dropdowns */
+    border-radius: 4px;
+    background-color: #333; /* Darker dropdown background */
+    color: #fff; /* White text */
+}
+
+/* Movie Listings Section */
+.movie-listings {
+    display: flex;
+    flex-direction: column; /* Use flex-direction column for aligned layout */
+    align-items: center;    /* Center the cards within the container */
+    gap: 20px;
+    padding: 40px 20px;
+    background-color: #252b36; /* Dark background for the movie listing */
+}
+
+/* Adjustments for Notebook Resolution */
+@media (max-width: 1440px) {
+    .movie-listings {
+        gap: 25px; /* Adjust gap slightly for larger screens */
+    }
+}
+
+/* Single Column Layout for Tablet */
+@media (max-width: 1024px) {
+    .movie-listings {
+        gap: 20px; /* Smaller gap for tablet display */
+        padding: 20px 40px;
+    }
+}
+
+/* Full Column Layout for Mobile */
+@media (max-width: 768px) {
+    .movie-listings {
+        gap: 15px; /* Reduced gap for mobile */
+        flex-direction: column; /* Stack cards vertically for mobile */
+        padding: 20px;
+    }
+
+    .movie-card {
+        width: 90%; /* Make the movie cards narrower on mobile */
+    }
+}

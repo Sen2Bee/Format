@@ -1,0 +1,26 @@
+/* forms.css */
+
+/* Form Styles */
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+label span {
+    color: #e74c3c; /* Red for required fields */
+}
+
+.contact-form .form-group {
+    margin-bottom: 15px;
+}

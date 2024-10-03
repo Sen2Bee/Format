@@ -1,0 +1,17 @@
+/* typography.css */
+
+@font-face {
+    font-family: 'Spacia Heavy';
+    src: url('../../assets/fonts/Spacia Heavy.ttf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Typography Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+}
+

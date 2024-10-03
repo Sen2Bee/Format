@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>FORMAT Filmkunst-Verleih - Home</title>
+    <!-- Responsive Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
+                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
+            </div>
+            <div class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" role="button" tabindex="0">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
+                <!-- Additional menu links can be placed here -->
+            </ul>
+        </nav>
+        <!-- Separate link for mobile users -->
+        <div class="mobile-footer-link">
+            <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
+        </div>
+    </header>
+    
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-image">
+                <img src="images/backdrop_1.jpg" alt="Hero Image">
+            </div>
+            <div class="hero-overlay">
+                <h1 id="dynamic-tagline">Für eine Handvoll Dollar kannst du von den Möglichkeiten profitieren.</h1>
+            <!-- Place the button outside of the hero-overlay div -->
+                <a href="{{ url_for('catalog') }}" class="btn btn-primary">Katalog</a>
+            </div>
+
+        </section>
+        
+
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}" type="module"></script>
+</body>
+</html>

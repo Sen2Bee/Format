@@ -1,0 +1,183 @@
+/* General Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(44, 44, 44, 1);  /* Default background color */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 60px;  /* Increased default height for visibility */
+    padding: 0 20px;
+    z-index: 1000;
+    transition: height 0.3s ease, top 0.3s ease;  /* Smooth transitions */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Shrunk State */
+.navbar.shrunk {
+    height: 40px;  /* Smaller height when shrunk */
+}
+
+/* Hidden State */
+.navbar.hidden {
+    top: -60px;  /* Move navbar off-screen to hide */
+}
+
+/* Navbar Toggle Button for Mobile */
+.menu-toggle {
+    display: none;  /* Hide by default */
+    cursor: pointer;
+}
+
+.menu-toggle i {
+    color: #ffffff;
+    font-size: 1.5em;
+}
+
+/* Main Logo Styling */
+.logo {
+    display: flex;
+    align-items: baseline;
+}
+
+/* Logo Text */
+.logo span {
+    font-size: 2.5rem;  /* Adjust main logo size for better readability */
+    color: #fff;
+    font-family: 'Spacia Heavy', serif;
+    text-transform: lowercase;
+    margin-right: 5px;
+    transition: font-size 0.3s ease;  /* Smooth logo size transition */
+}
+
+.sub-logo span {
+    font-size: 1.5rem;  /* Adjust sub-logo size */
+    color: var(--accent-color);
+    text-transform: lowercase;
+    padding-top: 2px;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li {
+    margin-left: 20px;
+}
+
+/* Navigation Link Styling */
+.nav-links li a {
+    text-decoration: none;
+    color: #f7f7f7;
+    font-size: 1rem;
+    font-family: 'Open Sans', sans-serif;
+    transition: color 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: var(--accent-color);  /* Hover color change */
+}
+
+/* Active Link */
+.nav-links li a.active {
+    color: var(--accent-color);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    /* Show the toggle button on smaller screens */
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;  /* Hide links by default */
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        top: 50px;  /* Position below the navbar */
+        right: 0;
+        width: 100%;
+        background-color: rgba(44, 44, 44, 1);
+        z-index: 999;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-links li {
+        margin: 10px 0;
+    }
+
+    /* Toggle the display of the navigation menu */
+    .nav-links.show {
+        display: flex;
+    }
+
+    /* Reduce the size of the main and sub-logos */
+    .logo span {
+        font-size: 2rem;  /* Smaller size for mobile */
+    }
+
+    .sub-logo span {
+        font-size: 1.4rem;
+    }
+}
+
+/* Shrinking & Hiding Behavior for Mobile */
+@media (max-width: 768px) {
+    .navbar {
+        height: 50px;  /* Default height for smaller screens */
+    }
+
+    .navbar.shrunk {
+        height: 35px;  /* Smaller height when shrunk */
+    }
+
+    .navbar.hidden {
+        top: -50px;  /* Move navbar off-screen */
+    }
+}
+
+/* Responsive Styles for Very Small Screens */
+@media (max-width: 480px) {
+    .logo span {
+        font-size: 1.6rem;  /* Smaller size for very small screens */
+    }
+
+    .sub-logo span {
+        font-size: 1.2rem;  /* Adjust sub-logo size */
+    }
+
+    .nav-links li a {
+        font-size: 1.2rem;  /* Larger link font size for better readability */
+    }
+}
+
+/* Animation for Navbar Visibility */
+.navbar {
+    will-change: transform;  /* Optimize for smooth animations */
+}
+
+.navbar.show {
+    transform: translateY(0);  /* Slide-in animation */
+}
+
+.navbar.hide {
+    transform: translateY(-100%);  /* Slide-out animation */
+}
+
+/* Animation for Menu Toggle Button */
+.menu-toggle {
+    transition: transform 0.3s ease-in-out;  /* Smooth rotation animation */
+}
+
+.menu-toggle.active {
+    transform: rotate(90deg);  /* Rotate when active */
+}

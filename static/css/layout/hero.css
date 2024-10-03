@@ -1,0 +1,109 @@
+/* Hero Section */
+.hero {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 60px); /* Full height minus the navbar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #fff;
+}
+
+.hero-image img {
+    width: 100%;
+    height: calc(100vh - 60px); /* Full height minus the navbar */
+    object-fit: cover; /* Cover the entire hero area */
+    object-position: center top;
+    filter: brightness(50%); /* Darken the image for text readability */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Hero Overlay Styling */
+.hero-overlay {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    /* padding: 15px 30px; */
+    background-color: rgba(61, 61, 59, 0); /* Semi-transparent overlay */
+    color: #ffd700; /* Gold text color for contrast */
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 20px; /* Add some space between the overlay and the button */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Styling for fade-in and fade-out animations */
+.fade-in {
+    animation: fadeIn var(--transition-duration) ease-in-out;
+}
+
+.fade-out {
+    animation: fadeOut var(--transition-duration) ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Tagline Container at the Bottom of the Hero */
+#tagline-container {
+    position: absolute;
+    bottom: 0;  /* Stick to the bottom of the hero */
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);  /* Semi-transparent dark background */
+    padding: 15px 0; /* Vertical padding */
+    z-index: 1; /* Place the tagline container below the hero-overlay */
+}
+
+/* Text Styling for the Tagline */
+#dynamic-tagline {
+    font-family: 'Cinzel', serif; /* Cinematic font */
+    font-size: 1.6em;  /* Adjust the font size */
+    color: #fff;  /* Gold color for the text */
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Text shadow for better readability */
+    padding: 0 20px; /* Horizontal padding */
+    margin: 0;
+}
+
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    #dynamic-tagline {
+        font-size: 1.6em;
+    }
+
+    .hero-overlay {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+
+    .btn-primary {
+        font-size: 1em;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #dynamic-tagline {
+        font-size: 1.2em;
+        padding: 0 10px;
+    }
+
+    .btn-primary {
+        font-size: 0.9em;
+        padding: 8px 16px;
+    }
+}
