@@ -31,21 +31,49 @@ function initializeCustomDropdowns() {
 }
 
 // Function to populate dropdowns with checkbox options dynamically
-function populateDropdownOptions(dropdownList, options) {
-    console.log("Populating dropdown options for:", dropdownList.id);
-    dropdownList.innerHTML = "";  // Clear any existing options
-    if (!options || options.length === 0) {
-        console.warn("No options provided for dropdown:", dropdownList.id);
-        return; // Exit if no options are provided
-    }
 
-    options.forEach(option => {
+function populateDropdown(dropdownListId, options, selectedValues = []) {
+    const dropdownList = document.getElementById(dropdownListId);
+    dropdownList.innerHTML = "";  // Clear any existing options
+
+    // **Separate Decades and Years**
+    const decades = [];
+    const years = [];
+
+    // Iterate through options and separate into decades and years
+    Object.entries(options).forEach(([key, count]) => {
+        if (key.includes("...")) {
+            decades.push({ label: key, count: count });
+        } else {
+            years.push({ label: key, count: count });
+        }
+    });
+
+    console.log("Decades:", decades);
+    console.log("Years:", years);
+
+    // **Sort Decades in Ascending Order (e.g., 1910...1919, 1920...1929)**
+    decades.sort((a, b) => parseInt(a.label.split("...")[0]) - parseInt(b.label.split("...")[0]));
+
+    // **Sort Years in Descending Order (e.g., 2023, 2022, 2021)**
+    years.sort((a, b) => parseInt(b.label) - parseInt(a.label));
+
+    // **Combine Decades First and Years Below**
+    const sortedOptions = [...decades, ...years];
+
+    console.log("Sorted Options for Dropdown:", sortedOptions);
+
+    // **Render Sorted Options to the Dropdown**
+    sortedOptions.forEach(option => {
+        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
         const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" value="${option}"> ${option}`;
+        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
         dropdownList.appendChild(label);
     });
-    console.log("Dropdown populated successfully:", dropdownList.id);
+
+    console.log(`Dropdown ${dropdownListId} Updated with Correct Order.`);
 }
+
 
 // Function to attach listeners to dropdown header, checkboxes, and clear button
 function attachDropdownListeners(header, dropdownList, clearButton) {

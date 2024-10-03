@@ -203,7 +203,6 @@ def catalog():
     # Execute the base query to get the filtered movie data
     cursor.execute(base_query, params)
     movies = cursor.fetchall()
-    print(f"Movies fetched: {len(movies)}")
 
     # Remove pagination parameters for the count query
     count_params = params[:-2]
@@ -246,11 +245,6 @@ def filter_movies():
         page = int(request.args.get('page', 1))  # Retrieve the current page
         per_page = 10
         offset = (page - 1) * per_page
-
-        print(f"selected_years: {selected_years} (Type: {type(selected_years)})")
-        print(f"selected_genres: {selected_genres} (Type: {type(selected_genres)})")
-        print(f"selected_countries: {selected_countries} (Type: {type(selected_countries)})")
-        print(f"search_query: '{search_query}'")  # **Debug: Print search query**
 
         # Connect to the database
         connection = connect_to_db()
@@ -365,8 +359,9 @@ def filter_movies():
         year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres)
         country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres)
 
-        # **Apply Sorting to Place Grouped Decades at the Top**
+        # **Apply Sorting to Place Grouped Decades at the Top   **
         year_counts = sort_years_with_decades(year_counts)
+        # print("on filter movies", year_counts)
 
         # **Close the Cursor and Connection**
         cursor.close()
@@ -453,7 +448,7 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
         result[key] = row['count']
 
     # Debugging: Print the resulting dictionary
-    print(f"Counts for {field}: {result}")
+    # print(f"Counts for {field}: {result}")
     return result
 
 @app.route('/count_movies', methods=['GET'])
@@ -547,18 +542,39 @@ def count_movies():
 
 def sort_years_with_decades(year_counts):
     """Sorts year counts so that grouped decades appear at the top of the list."""
-    # Separate decades and years
-    decades = {key: value for key, value in year_counts.items() if "..." in key}
-    years = {key: value for key, value in year_counts.items() if "..." not in key}
+    # Group years into decades
+    decade_counts = {}
+    for year, count in year_counts.items():
+        try:
+            # Convert year to an integer (handle exceptions for unexpected values)
+            year_int = int(year)
+            # Determine the start year of the decade (e.g., 1990 for 1992)
+            decade_start = (year_int // 10) * 10
+            # Format as '1990...1999'
+            decade_key = f"{decade_start}...{decade_start + 9}"
+            if decade_key in decade_counts:
+                decade_counts[decade_key] += count
+            else:
+                decade_counts[decade_key] = count
+        except ValueError:
+            # If `year` is not a valid integer, skip it
+            print(f"Skipping invalid year value: {year}")
 
-    # Create sorted lists for both groups
-    sorted_decades = sorted(decades.items(), key=lambda x: int(x[0].split("...")[0]))
-    sorted_years = sorted(years.items(), key=lambda x: int(x[0]))
+    # Separate decades and individual years for sorting
+    sorted_decades = sorted(decade_counts.items(), key=lambda x: int(x[0].split("...")[0]))
+    sorted_years = sorted(
+        [(year, count) for year, count in year_counts.items() if year not in decade_counts],
+        key=lambda x: int(x[0]), reverse=True
+    )
 
-    # Combine: Decades first, followed by Years
+    # Combine: Decades first, followed by individual Years in descending order
     sorted_combined = sorted_decades + sorted_years
 
-    return dict(sorted_combined)
+    # Convert back to dictionary format
+    sorted_combined_dict = dict(sorted_combined)
+    # print(f"Final Sorted Year Counts: {sorted_combined_dict}")
+
+    return sorted_combined_dict
 
 if __name__ == '__main__':
     app.run(debug=True)

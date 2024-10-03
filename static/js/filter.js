@@ -102,19 +102,7 @@ function getCheckedValues(dropdownListId) {
 /**
  * Function to populate a dropdown with new options based on server data
  */
-function populateDropdown(dropdownListId, optionsData, selectedValues) {
-    console.log(`Populating dropdown: ${dropdownListId} with data:`, optionsData); // Log the data to verify population
-    const dropdownList = document.getElementById(dropdownListId);
 
-    dropdownList.innerHTML = "";  // Clear existing options
-    for (const [value, count] of Object.entries(optionsData)) {
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" value="${value}" ${selectedValues.includes(value) ? 'checked' : ''}> ${value} (${count})`;
-        dropdownList.appendChild(label);
-    }
-
-    console.log(`Dropdown ${dropdownListId} populated successfully.`);
-}
 
 /**
  * Update the movie listings dynamically based on the filter results
@@ -192,7 +180,7 @@ function updatePagination(currentPage, totalPages) {
     });
 
     attachPaginationEventListeners();
-}a
+}
 
 /**
  * Function to attach click event listeners for pagination buttons
