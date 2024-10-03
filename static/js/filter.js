@@ -3,130 +3,72 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeFilterDropdowns();  // Initialize dropdowns on page load
 });
 
-// Variables to manage the dropdown update state
-let isDropdownUpdating = false;
-
-// Cache dropdown, button, and search elements
-const yearDropdown = document.getElementById('year-dropdown');
-const genreDropdown = document.getElementById('genre-dropdown');
-const countryDropdown = document.getElementById('country-dropdown');
-// const clearYearBtn = document.getElementById('clear-year');
-// const clearGenreBtn = document.getElementById('clear-genre');
-// const clearCountryBtn = document.getElementById('clear-country');
-const clearAllBtn = document.getElementById('clear-all');
+// Cache elements and buttons
 const searchBox = document.getElementById('search-box');
 const clearSearchBtn = document.getElementById('clear-search');
+const clearAllBtn = document.getElementById('clear-all');
+const movieContainer = document.querySelector('.movie-listings');
+const topPaginationContainer = document.querySelector('.top-pagination nav ul');
+const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
 
-
-
-// Debounce timer for search input to limit the frequency of filter updates
 let debounceTimer;
 
 /**
- * Function to initialize dropdowns, search box, and attach event listeners
+ * Function to initialize dropdowns and attach event listeners
  */
 function initializeFilterDropdowns() {
-    // Check if essential elements are present
-    if (!yearDropdown || !genreDropdown || !countryDropdown || !searchBox) {
-        console.warn("Filter elements not found!");
-        return;  // Exit if elements are missing
-    }
+    // Handle filter updates triggered by custom dropdowns
+    document.addEventListener('dropdownChange', () => {
+        console.log("Filter.js: Detected dropdown change event");
+        updateFilters(); // Trigger filter update on dropdown change
+    });
 
-    // Attach event listeners to dropdowns
-    yearDropdown.addEventListener('change', () => handleDropdownChange(yearDropdown, clearYearBtn));
-    genreDropdown.addEventListener('change', () => handleDropdownChange(genreDropdown, clearGenreBtn));
-    countryDropdown.addEventListener('change', () => handleDropdownChange(countryDropdown, clearCountryBtn));
-
-    // **Attach event listener to the search box with debouncing**
+    // Search box input event with debouncing
     searchBox.addEventListener('input', () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             updateFilters(); // Trigger filter update after user stops typing for 300ms
-        }, 300); // Debounce delay of 300ms
+        }, 300);
     });
 
-    // Attach event listeners to the clear buttons
-    // clearYearBtn.addEventListener('click', () => clearDropdown(yearDropdown, clearYearBtn));
-    // clearGenreBtn.addEventListener('click', () => clearDropdown(genreDropdown, clearGenreBtn));
-    // clearCountryBtn.addEventListener('click', () => clearDropdown(countryDropdown, clearCountryBtn));
-    clearAllBtn.addEventListener('click', clearAllDropdowns);
-
-    // Initialize with the first update
-    updateFilters();
-}
-
-/**
- * Function to handle dropdown changes and update button states
- * @param {HTMLElement} dropdown - The dropdown element that changed
- * @param {HTMLElement} clearButton - The corresponding clear button
- */
-function handleDropdownChange(dropdown, clearButton) {
-    updateButtonState(dropdown, clearButton);
-    updateFilters();  // Trigger filter update
-}
-
-/**
- * Function to clear a specific dropdown selection and update filters
- * @param {HTMLElement} dropdown - The dropdown to clear
- * @param {HTMLElement} clearButton - The corresponding clear button
- */
-function clearDropdown(dropdown, clearButton) {
-    dropdown.selectedIndex = -1;  // Deselect all options
-    updateButtonState(dropdown, clearButton);
-    updateFilters();
-}
-
-/**
- * Function to clear all dropdown selections and the search box
- */
-function clearAllDropdowns() {
-    [yearDropdown, genreDropdown, countryDropdown].forEach((dropdown, index) => {
-        dropdown.selectedIndex = -1;  // Clear all selections
-        updateButtonState(dropdown, [clearYearBtn, clearGenreBtn, clearCountryBtn][index]);  // Disable respective buttons
+    // Clear search box and trigger update
+    clearSearchBtn.addEventListener('click', () => {
+        searchBox.value = '';
+        clearSearchBtn.classList.remove('visible');
+        updateFilters();
     });
 
-    // **Clear the search box and update its state**
-    searchBox.value = '';
+    // Clear all dropdown selections and search box
+    clearAllBtn.addEventListener('click', clearAllFilters);
 
-    updateGlobalClearButton();
+    // Initial filter update
     updateFilters();
 }
 
 /**
- * Function to update the state of a clear button based on dropdown selection
- * @param {HTMLElement} dropdown - The dropdown element
- * @param {HTMLElement} clearButton - The corresponding clear button
+ * Clear all dropdowns and search box
  */
-function updateButtonState(dropdown, clearButton) {
-    clearButton.disabled = dropdown.selectedOptions.length === 0;
-    updateGlobalClearButton();
-}
-
-/**
- * Function to update the state of the global "Clear All" button
- */
-function updateGlobalClearButton() {
-    // The "Clear All" button is enabled if any clear button is enabled or if there's a search query
-    const anyClearEnabled = [clearYearBtn, clearGenreBtn, clearCountryBtn].some(button => !button.disabled);
-    const hasSearchQuery = searchBox.value.trim() !== '';
-    clearAllBtn.disabled = !(anyClearEnabled || hasSearchQuery);
+function clearAllFilters() {
+    const checkboxes = document.querySelectorAll('.dropdown-list input[type="checkbox"]');
+    checkboxes.forEach(checkbox => (checkbox.checked = false));  // Uncheck all boxes
+    searchBox.value = '';  // Clear search box
+    updateFilters();  // Trigger a full update
 }
 
 /**
  * Function to update dropdown values and movie listings based on current selections and search query
- * @param {number} page - The current page number for pagination
  */
 function updateFilters(page = 1) {
-    const selectedYears = Array.from(yearDropdown.selectedOptions).map(option => option.value);
-    const selectedGenres = Array.from(genreDropdown.selectedOptions).map(option => option.value);
-    const selectedCountries = Array.from(countryDropdown.selectedOptions).map(option => option.value);
-    const searchQuery = searchBox.value.trim(); // Get the current search query
+    const selectedYears = getCheckedValues('year-dropdown-list');
+    const selectedGenres = getCheckedValues('genre-dropdown-list');
+    const selectedCountries = getCheckedValues('country-dropdown-list');
+    const searchQuery = searchBox.value.trim();
 
     const params = new URLSearchParams();
     if (selectedYears.length) params.append('years', selectedYears.join(','));
     if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
     if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
-    if (searchQuery) params.append('search', searchQuery); // Append search query
+    if (searchQuery) params.append('search', searchQuery);
     params.append('page', page);
 
     console.log("Fetching updated filter data with params:", params.toString());
@@ -134,119 +76,62 @@ function updateFilters(page = 1) {
     fetch(`/filter_movies?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            isDropdownUpdating = true;  // Start dropdown update
+            console.log("API Response Data:", data); // Log the fetched data for verification
+            const { years, genres, countries, movies, current_page, total_pages } = data;
 
-            const yearsData = data.years || {};  // Fallback to empty object
-            const genresData = data.genres || {};
-            const countriesData = data.countries || {};
-            const totalMovies = data.total_movies || 0; // Assuming backend returns 'total_movies'
+            // Populate each dropdown with data
+            console.log("Populating Dropdowns: Years, Genres, and Countries");
+            populateDropdown('year-dropdown-list', years, selectedYears);
+            populateDropdown('genre-dropdown-list', genres, selectedGenres);
+            populateDropdown('country-dropdown-list', countries, selectedCountries);
 
-            console.log("Dropdown Data:", { yearsData, genresData, countriesData });
-
-            renderYearDropdown(yearsData, selectedYears);  // Update the year dropdown and preserve selection
-            populateDropdown(genreDropdown, genresData);
-            populateDropdown(countryDropdown, countriesData);
-
-            updateMovieListings(data.movies);
-            updatePagination(data.current_page, data.total_pages);
-
-            isDropdownUpdating = false;  // End dropdown update
+            updateMovieListings(movies);
+            updatePagination(current_page, total_pages);
         })
-        .catch(error => {
-            console.error('Error fetching filter data:', error);
-            isDropdownUpdating = false;  // Reset the flag on error
-        });
+        .catch(error => console.error('Error fetching filter data:', error));
+}
+
+/**
+ * Helper to get checked values from a specific dropdown list
+ */
+function getCheckedValues(dropdownListId) {
+    const checkboxes = document.querySelectorAll(`#${dropdownListId} input[type="checkbox"]:checked`);
+    return Array.from(checkboxes).map(cb => cb.value);
 }
 
 /**
  * Function to populate a dropdown with new options based on server data
- * @param {HTMLElement} dropdown - The dropdown element to populate
- * @param {Object} optionsData - An object containing option values and their counts
  */
-function populateDropdown(dropdown, optionsData) {
-    const currentSelection = Array.from(dropdown.selectedOptions).map(opt => opt.value);
+function populateDropdown(dropdownListId, optionsData, selectedValues) {
+    console.log(`Populating dropdown: ${dropdownListId} with data:`, optionsData); // Log the data to verify population
+    const dropdownList = document.getElementById(dropdownListId);
 
-    dropdown.innerHTML = "";  // Clear existing options
+    dropdownList.innerHTML = "";  // Clear existing options
     for (const [value, count] of Object.entries(optionsData)) {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = `${value} (${count})`;
-        dropdown.appendChild(option);
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${value}" ${selectedValues.includes(value) ? 'checked' : ''}> ${value} (${count})`;
+        dropdownList.appendChild(label);
     }
 
-    // Restore previously selected options
-    currentSelection.forEach(value => {
-        const option = Array.from(dropdown.options).find(opt => opt.value === value);
-        if (option) option.selected = true;
-    });
+    console.log(`Dropdown ${dropdownListId} populated successfully.`);
 }
 
 /**
- * Function to render the year dropdown with both individual years and decades
- * @param {Object} yearsData - An object containing years/decades and their counts
- * @param {Array} selectedYears - An array of currently selected years
- */
-function renderYearDropdown(yearsData, selectedYears = []) {
-    const decades = [];
-    const years = [];
-
-    // Separate decades and individual years
-    for (const [year, count] of Object.entries(yearsData)) {
-        if (year.includes("...")) {
-            decades.push({ label: year, count: count });
-        } else {
-            years.push({ label: year, count: count });
-        }
-    }
-
-    // Sort decades and years
-    const combinedEntries = [
-        ...decades.sort((a, b) => {
-            const aStart = parseInt(a.label.split("...")[0]);
-            const bStart = parseInt(b.label.split("...")[0]);
-            return aStart - bStart;
-        }),
-        ...years.sort((a, b) => parseInt(a.label) - parseInt(b.label))
-    ];
-
-    yearDropdown.innerHTML = "";  // Clear current dropdown
-    combinedEntries.forEach(entry => {
-        const option = document.createElement("option");
-        option.value = entry.label;
-        option.text = `${entry.label} (${entry.count})`;
-        yearDropdown.appendChild(option);
-    });
-
-    // Restore previous selection
-    selectedYears.forEach(value => {
-        const option = Array.from(yearDropdown.options).find(opt => opt.value === value);
-        if (option) option.selected = true;
-    });
-}
-
-/**
- * Function to update the movie listings dynamically based on filter results
- * @param {Array} movies - An array of movie objects fetched from the server
+ * Update the movie listings dynamically based on the filter results
  */
 function updateMovieListings(movies) {
-    const movieContainer = document.querySelector('.movie-listings');
+    console.log("Updating Movie Listings");
     movieContainer.innerHTML = "";  // Clear existing listings
 
     if (movies.length > 0) {
         movies.forEach(movie => {
-            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg`;
-            const defaultImagePath = '/static/images/default_movie.png';
-
             const movieCard = document.createElement('div');
             movieCard.className = 'movie-card poster-background';
-            movieCard.style.backgroundImage = `url('${imagePath}')`;
+            movieCard.style.backgroundImage = `url('/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg')`;
 
             movieCard.innerHTML = `
                 <div class="transparency-layer"></div>
                 <div class="movie-content-wrapper">
-                    <div class="image-container">
-                        <img src="${imagePath}" alt="${movie.main_title}" onerror="this.src='${defaultImagePath}';">
-                    </div>
                     <div class="info-section">
                         <h2>${movie.main_title}</h2>
                         <p><strong>Original: ${movie.original_title}</strong> (${movie.release_date})</p>
@@ -255,9 +140,7 @@ function updateMovieListings(movies) {
                         <p><strong>Schauspieler:</strong> ${movie.actors}</p>
                     </div>
                     <div class="overview-section">
-                        ${movie.overview.length > 150 
-                            ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` 
-                            : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
+                        ${movie.overview.length > 150 ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
                     </div>
                 </div>
             `;
@@ -269,14 +152,9 @@ function updateMovieListings(movies) {
 }
 
 /**
- * Function to handle pagination updates for both top and bottom paginations
- * @param {number} currentPage - The current active page number
- * @param {number} totalPages - The total number of available pages
+ * Function to update pagination based on the current and total pages
  */
 function updatePagination(currentPage, totalPages) {
-    const topPaginationContainer = document.querySelector('.top-pagination nav ul');
-    const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
-
     [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
         if (!paginationContainer) return;
 
@@ -314,7 +192,7 @@ function updatePagination(currentPage, totalPages) {
     });
 
     attachPaginationEventListeners();
-}
+}a
 
 /**
  * Function to attach click event listeners for pagination buttons
@@ -332,47 +210,3 @@ function attachPaginationEventListeners() {
         });
     });
 }
-
-// **New Function:** Update the selection count display based on the current search and filters
-function updateLiveMovieCount() {
-    const selectedYears = Array.from(yearDropdown.selectedOptions).map(option => option.value);
-    const selectedGenres = Array.from(genreDropdown.selectedOptions).map(option => option.value);
-    const selectedCountries = Array.from(countryDropdown.selectedOptions).map(option => option.value);
-    const searchQuery = searchBox.value.trim(); // Get the current search query
-
-    const params = new URLSearchParams();
-    if (selectedYears.length) params.append('years', selectedYears.join(','));
-    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
-    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
-    if (searchQuery) params.append('search', searchQuery); // Append search query
-
-    // Make a request to the new `count_movies` endpoint
-    fetch(`/count_movies?${params.toString()}`)
-        .then(response => response.json())
-        .then(data => {
-            const totalMovies = data.total_movies || 0;
-        })
-        .catch(error => {
-            console.error('Error fetching movie count:', error);
-        });
-}
-
-
-
-// Show the clear button when there is text in the search box
-searchBox.addEventListener('input', () => {
-    clearSearchBtn.classList.toggle('visible', searchBox.value.length > 0);
-    updateLiveMovieCount();  // Update movie count on input change
-});
-
-// Handle click event to clear the search box
-clearSearchBtn.addEventListener('click', () => {
-    searchBox.value = '';
-    clearSearchBtn.classList.remove('visible');
-    updateLiveMovieCount();  // Update count immediately after clearing
-});
-
-
-
-
-

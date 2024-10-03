@@ -14,31 +14,28 @@
                 <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
                 <a class="sub-logo"><span>Katalog</span></a>
             </div>
-            <!-- Toggle button for the mobile menu -->
             <div class="menu-toggle">
                 <i class="fas fa-bars"></i>
             </div>
-            <!-- Main navigation menu -->
             <ul class="nav-links">
                 <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
             </ul>
         </nav>
-        <!-- Additional mobile link placement -->
         <div class="mobile-footer-link">
             <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
         </div>
     </header>
 
     <main>
-        <!-- Filter Section in HTML -->
+        <!-- Filter Section -->
         <section class="catalog-search">
             <form id="filter-form">
-                <!-- New Search Container -->
                 <div class="search-container">
                     <input id="search-box" type="text" placeholder="Search...">
                     <span id="clear-search" class="clear-icon">&times;</span>
                 </div>
                 
+                <!-- Custom Dropdowns for Filters -->
                 <div class="custom-dropdown">
                     <div id="year-dropdown-header" class="dropdown-header">
                         <span class="dropdown-title">Select Years</span>
@@ -48,56 +45,38 @@
                         </div>
                     </div>
                     <div id="year-dropdown-list" class="dropdown-list">
-                        <!-- Dynamically populated options will go here -->
+                        <!-- Dynamically populated year options will go here -->
+                    </div>
+                </div>
+
+                <div class="custom-dropdown">
+                    <div id="genre-dropdown-header" class="dropdown-header">
+                        <span class="dropdown-title">Select Genres</span>
+                        <div class="header-controls">
+                            <span class="selected-count">0 selected</span>
+                            <span id="clear-genre-custom" class="clear-icon">&times;</span>
+                        </div>
+                    </div>
+                    <div id="genre-dropdown-list" class="dropdown-list">
+                        <!-- Dynamically populated genre options will go here -->
+                    </div>
+                </div>
+
+                <div class="custom-dropdown">
+                    <div id="country-dropdown-header" class="dropdown-header">
+                        <span class="dropdown-title">Select Countries</span>
+                        <div class="header-controls">
+                            <span class="selected-count">0 selected</span>
+                            <span id="clear-country-custom" class="clear-icon">&times;</span>
+                        </div>
+                    </div>
+                    <div id="country-dropdown-list" class="dropdown-list">
+                        <!-- Dynamically populated country options will go here -->
                     </div>
                 </div>
                 
-                
-
-                <div class="dropdown-section">
-                    <!-- Year Filter Dropdown -->
-                    <div class="filter-group">
-                        <label for="year-dropdown">Year</label>
-                        <div class="dropdown-container">
-                            <select id="year-dropdown" class="filter-dropdown" multiple>
-                                <option value="1913">1913 (1)</option>
-                                <option value="1915">1915 (4)</option>
-                                <option value="1916">1916 (1)</option>
-                                <option value="1919">1919 (6)</option>
-                            </select>
-                            <span id="clear-year-dd" class="clear-icon">&times;</span>
-                        </div>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="genre-dropdown">Genre</label>
-                        <div class="dropdown-container">
-                            <select id="genre-dropdown" class="filter-dropdown" multiple>
-                                <option value="Action">Action (2126)</option>
-                                <option value="Adventure">Adventure (1911)</option>
-                                <option value="Animation">Animation (634)</option>
-                            </select>
-                            <span id="clear-genre-dd" class="clear-icon">&times;</span>
-                        </div>
-                    </div>
-                    
-                    <div class="filter-group">
-                        <label for="country-dropdown">Country</label>
-                        <div class="dropdown-container">
-                            <select id="country-dropdown" class="filter-dropdown" multiple>
-                                <option value="Afghanistan">Afghanistan (2)</option>
-                                <option value="Albania">Albania (8)</option>
-                                <option value="Algeria">Algeria (8)</option>
-                                <option value="Argentina">Argentina (126)</option>
-                            </select>
-                            <span id="clear-country-dd" class="clear-icon">&times;</span>
-                        </div>
-                    </div>
-                    
-                    <button type="button" id="clear-all" class="global-clear-btn" disabled>Clear All Selections</button>
-                </div>
-                <!-- Global Clear All Button -->
-
+                <!-- Clear All Button -->
+                <button type="button" id="clear-all" class="global-clear-btn" disabled>Clear All Selections</button>
             </form>
         </section>
 
@@ -108,47 +87,50 @@
                     <!-- Pagination will be populated dynamically here -->
                 </ul>
             </nav>
-        </section>        
+        </section>
 
         <!-- Movie Listings Section -->
         <section class="movie-listings">
-            {% for movie in movies %}
-            <div class="movie-card poster-background" 
-                 style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
-                <div class="transparency-layer"></div>
-                <div class="movie-content-wrapper">
-                    <div class="image-container">
-                        <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
-                             alt="{{ movie['main_title'] }}" 
-                             onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.jpg') }}';">
-                    </div>
-
-                    <div class="info-section">
-                        <div class="header-section">
-                            <h2>{{ movie['main_title'] }}</h2>
+            {% if movies %}
+                {% for movie in movies %}
+                <div class="movie-card poster-background" style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
+                    <div class="transparency-layer"></div>
+                    <div class="movie-content-wrapper">
+                        <div class="image-container">
+                            <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                                 alt="{{ movie['main_title'] }}" 
+                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.jpg') }}';">
                         </div>
 
-                        <div class="metadata">
-                            <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
-                            <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
-                            <p><strong>Regie:</strong> {{ movie['director'] }}</p>
-                            <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
-                            {% if movie['format_standort'] %}
-                            <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                        <div class="info-section">
+                            <div class="header-section">
+                                <h2>{{ movie['main_title'] }}</h2>
+                            </div>
+
+                            <div class="metadata">
+                                <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
+                                <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
+                                <p><strong>Regie:</strong> {{ movie['director'] }}</p>
+                                <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
+                                {% if movie['format_standort'] %}
+                                <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="overview-section">
+                            {% if movie['overview']|length > 150 %}
+                            <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
+                            {% else %}
+                            <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
                             {% endif %}
                         </div>
                     </div>
-
-                    <div class="overview-section">
-                        {% if movie['overview']|length > 150 %}
-                        <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                        {% else %}
-                        <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                        {% endif %}
-                    </div>
                 </div>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p class="no-movies-message">No movies match the selected filters.</p>
+            {% endif %}
         </section>
 
         <!-- Bottom Pagination Section -->
@@ -169,10 +151,8 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/custom_controls/custom_dropdown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/filter.js') }}"></script> 
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
 </body>
 </html>
