@@ -14,15 +14,11 @@ document.addEventListener('DOMContentLoaded', function () {
     adjustMetadataWidth();
     window.addEventListener('resize', adjustMetadataWidth);
 
-    // Attach scroll event listener to handle navbar scroll
-    window.addEventListener('scroll', handleNavbarScroll);
-
     // Call the function on initial load and window resize
     updateMovieCardBackground();
     window.addEventListener('resize', updateMovieCardBackground);
 
 });
-
 
 
 // Wrapper function to check the presence of hero section before initializing

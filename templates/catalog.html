@@ -33,49 +33,76 @@
         <!-- Filter Section in HTML -->
         <section class="catalog-search">
             <form id="filter-form">
+                <!-- New Search Container -->
+                <div class="search-container">
+                    <input id="search-box" type="text" placeholder="Search...">
+                    <span id="clear-search" class="clear-icon">&times;</span>
+                </div>
+                
+                <div class="custom-dropdown">
+                    <div id="year-dropdown-header" class="dropdown-header">
+                        <span class="dropdown-title">Select Years</span>
+                        <div class="header-controls">
+                            <span class="selected-count">0 selected</span>
+                            <span id="clear-year-custom" class="clear-icon">&times;</span>
+                        </div>
+                    </div>
+                    <div id="year-dropdown-list" class="dropdown-list">
+                        <!-- Dynamically populated options will go here -->
+                    </div>
+                </div>
+                
+                
+
                 <div class="dropdown-section">
                     <!-- Year Filter Dropdown -->
                     <div class="filter-group">
                         <label for="year-dropdown">Year</label>
-                        <select id="year-dropdown" class="filter-dropdown" multiple>
-                            <option value="1913">1913 (1)</option>
-                            <option value="1915">1915 (4)</option>
-                            <option value="1916">1916 (1)</option>
-                            <option value="1919">1919 (6)</option>
-                        </select>
-                        <button type="button" id="clear-year" class="clear-btn" disabled>Clear Year</button>
+                        <div class="dropdown-container">
+                            <select id="year-dropdown" class="filter-dropdown" multiple>
+                                <option value="1913">1913 (1)</option>
+                                <option value="1915">1915 (4)</option>
+                                <option value="1916">1916 (1)</option>
+                                <option value="1919">1919 (6)</option>
+                            </select>
+                            <span id="clear-year-dd" class="clear-icon">&times;</span>
+                        </div>
                     </div>
                     
-                    <!-- Genre Filter Dropdown -->
                     <div class="filter-group">
                         <label for="genre-dropdown">Genre</label>
-                        <select id="genre-dropdown" class="filter-dropdown" multiple>
-                            <option value="Action">Action (2126)</option>
-                            <option value="Adventure">Adventure (1911)</option>
-                            <option value="Animation">Animation (634)</option>
-                        </select>
-                        <button type="button" id="clear-genre" class="clear-btn" disabled>Clear Genre</button>
+                        <div class="dropdown-container">
+                            <select id="genre-dropdown" class="filter-dropdown" multiple>
+                                <option value="Action">Action (2126)</option>
+                                <option value="Adventure">Adventure (1911)</option>
+                                <option value="Animation">Animation (634)</option>
+                            </select>
+                            <span id="clear-genre-dd" class="clear-icon">&times;</span>
+                        </div>
                     </div>
-
-                    <!-- Country Filter Dropdown -->
+                    
                     <div class="filter-group">
                         <label for="country-dropdown">Country</label>
-                        <select id="country-dropdown" class="filter-dropdown" multiple>
-                            <option value="Afghanistan">Afghanistan (2)</option>
-                            <option value="Albania">Albania (8)</option>
-                            <option value="Algeria">Algeria (8)</option>
-                            <option value="Argentina">Argentina (126)</option>
-                        </select>
-                        <button type="button" id="clear-country" class="clear-btn" disabled>Clear Country</button>
+                        <div class="dropdown-container">
+                            <select id="country-dropdown" class="filter-dropdown" multiple>
+                                <option value="Afghanistan">Afghanistan (2)</option>
+                                <option value="Albania">Albania (8)</option>
+                                <option value="Algeria">Algeria (8)</option>
+                                <option value="Argentina">Argentina (126)</option>
+                            </select>
+                            <span id="clear-country-dd" class="clear-icon">&times;</span>
+                        </div>
                     </div>
+                    
+                    <button type="button" id="clear-all" class="global-clear-btn" disabled>Clear All Selections</button>
                 </div>
                 <!-- Global Clear All Button -->
-                <button type="button" id="clear-all" class="global-clear-btn" disabled>Clear All Selections</button>
+
             </form>
         </section>
 
         <!-- Top Pagination Section -->
-        <section class="pagination bottom-pagination">
+        <section class="pagination top-pagination">
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
@@ -142,8 +169,10 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/custom_controls/custom_dropdown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/filter.js') }}"></script> 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
 </body>
 </html>

@@ -9,6 +9,7 @@
 @import url('./layout/hero.css');
 
 /* Import Component Styles */
+@import url('../assets/custom_controls/custom_dropdown.css');
 @import url('./components/filter.css');
 @import url('./components/cards.css'); /* Import cards.css early */
 @import url('./components/buttons.css');

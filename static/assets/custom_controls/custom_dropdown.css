@@ -1,0 +1,126 @@
+/* Custom Multi-Select Dropdown Styles */
+.custom-dropdown {
+    position: relative;
+    width: 300px;
+    margin: 10px 0;
+}
+
+/* Dropdown Header Styles */
+.dropdown-header {
+    background: #333;
+    color: #ffffff;
+    padding: 14px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-title {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+/* Header Controls Container */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Spacing between elements */
+}
+
+/* Selected Count Styling */
+.selected-count {
+    background: var(--accent-color);
+    color: #1c1c1c;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    display: flex; /* Changed to flex for better alignment */
+    align-items: center; /* Center text vertically */
+    position: relative;
+    padding-right: 30px; /* Space for the clear icon */
+}
+
+.clear-icon {
+    font-size: 1.4em;
+    color: #000000; /* Darker color for better contrast */
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.clear-icon.visible {
+    visibility:hidden;   /* Make it visible */
+}
+
+/* Dropdown List Styles */
+.dropdown-list {
+    display: none;
+    background: #2c2c2c;
+    color: #e0e0e0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+/* Updated Styles for Dropdown Option Labels */
+.dropdown-list label {
+    display: flex;  /* Use flex to control label alignment */
+    align-items: center;  /* Vertically center items */
+    padding: 12px 18px;
+    font-size: 1.05em;
+    color: #f1f1f1;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Checkbox and Label Alignment */
+.dropdown-list input[type="checkbox"] {
+    margin-right: 12px;  /* Space between checkbox and label */
+    transform: scale(1.2); /* Larger checkboxes */
+}
+
+.dropdown-list label:hover {
+    background: #444;
+    color: #ffffff;
+}
+
+/* Scrollbar Customization */
+.dropdown-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.dropdown-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background: #333;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .custom-dropdown {
+        width: 100%;
+    }
+    .dropdown-header {
+        padding: 12px 14px;
+    }
+    .dropdown-list label {
+        font-size: 1em;
+    }
+}
