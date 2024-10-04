@@ -1,24 +1,119 @@
+/* Container for the entire filter section */
+.catalog-search {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Spacing between elements */
+    padding: 10px 0; /* Adjusted padding for vertical alignment */
+}
+
+/* Unified Container for Search Box and Dropdowns */
+.search-dropdown-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Spacing between the search box and dropdowns */
+    padding: 10px 20px;   /* Internal padding for container */
+    border-radius: 8px;   /* Rounded corners for visual grouping */
+}
+
+.search-container {
+    position: relative; /* Allows absolute positioning of child elements */
+    display: flex;
+    align-items: center; /* Vertically center elements */
+}
+
+#search-box {
+    width: 300px; /* Make sure the width matches */
+    height: 40px; /* Same height as the dropdowns */
+    padding: 0 40px 0 18px; /* Add padding to the right for the clear icon */
+    font-size: 1.05em;
+    background: #333; /* Background color to match the dropdowns */
+    color: #e0e0e0;   /* Light text */
+    border: 2px solid #333; /* Border style */
+    border-radius: 5px; /* Rounded corners */
+    transition: border 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+#search-box:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: var(--accent-color); /* Match accent color on focus */
+}
+
+
+#search-box::placeholder {
+    color: #aaa; /* Placeholder text color */
+}
+
+#search-box:focus {
+    outline: none;
+    border-color: var(--accent-color); /* Match accent color on focus */
+}
+
+/* Clear Icon for Search Box (Reusing the Clear Icon Style) */
+#clear-search {
+    position: absolute;
+    right: 25px; /* Position it inside the search box */
+    top: 50%;    /* Center it vertically */
+    transform: translateY(-50%); /* Align it properly */
+    width: 24px; /* Consistent size with other icons */
+    height: 24px;
+    font-size: 1.2em; /* Size the icon text properly */
+    line-height: 24px; /* Ensure the icon is vertically centered */
+    border-radius: 50%; /* Make it circular */
+    background: rgba(68, 68, 68, 0.6); /* Semi-transparent background */
+    color: rgba(255, 255, 255, 0.6); /* Semi-transparent text */
+    cursor: pointer;    /* Show pointer cursor */
+    visibility: hidden; /* Hidden by default */
+    z-index: 2;         /* Ensure it appears above the search box */
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+/* Modify hover state for more emphasis */
+#clear-search:hover {
+    background: rgba(68, 68, 68, 0.9); /* More opaque on hover */
+    color: rgba(255, 255, 255, 1); /* Full opacity text on hover */
+}
+
+/* Optional: Active state for click effect */
+#clear-search:active {
+    background: rgba(68, 68, 68, 1); /* Fully opaque on click */
+    color: rgba(255, 255, 255, 0.8); /* Slightly less bright text */
+}
+
+
+
+/* Unified Height for Dropdowns and Search */
+.search-container, .custom-dropdown {
+    height: 40px; /* Unified height for all elements */
+}
+
 /* Custom Multi-Select Dropdown Styles */
 .custom-dropdown {
     position: relative;
     width: 300px;
-    margin: 10px 0;
+    margin: 0; /* Remove extra margin */
 }
 
 /* Dropdown Header Styles */
 .dropdown-header {
     background: #333;
     color: #ffffff;
-    padding: 14px 18px;
+    padding: 10px 18px;
     border-radius: 5px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 40px; /* Match search box height */
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
+.dropdown-header:hover {
+    background: #444; /* Subtle hover effect */
+}
+
+/* Dropdown Title Styling */
 .dropdown-title {
-    font-size: 1.1em;
+    font-size: 1.05em;
     font-weight: 600;
 }
 
@@ -31,47 +126,42 @@
 
 /* Selected Count Styling */
 .selected-count {
-
-    color: var(--accent-color);
-    padding: 6px 2px;
-    border-radius: 10px; /* Rounded pill shape */
+    color:var(--link-color);
+    padding: 4px 8px;
+    border-radius: 8px; /* Rounded pill shape */
     font-size: 0.85em;
     display: flex; /* Flex for better alignment */
     align-items: center; /* Center text vertically */
-    position: relative;
-    margin-right: 15px; /* Space for visual separation */
-
 }
 
 /* Clear Icon Styling */
 .clear-icon {
-    width: 32px;  /* Equal width and height for perfect circle */
-    height: 32px;
-    font-size: 1.7em; /* Smaller size for elegance */
+    width: 24px;  /* Consistent size with search clear icon */
+    height: 24px;
+    font-size: 1.2em; /* Smaller size for elegance */
     color: #fff; /* White icon for better contrast */
-    background: #333; /* Slightly darker gray on hover */
+    background: rgba(68, 68, 68, 0.6); /* Semi-transparent background */
     border-radius: 50%; /* Circular shape */
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background 0.2s ease-in-out, color 0.2s ease-in-out; /* Smooth hover effect */
-    margin-left: 10px; /* Separate from label */
+    visibility: hidden; /* Hidden by default */
 }
 
 .clear-icon:hover {
-    background: #666; /* Neutral gray background */
-    color: #ddd; /* Light text on hover */
+    background: var(--accent-color); /* Lighten the button on hover */
+    color: #555;
 }
 
 .clear-icon:active {
-    background: #444; /* Even darker gray when active */
-    color: #ccc; /* Softer text when active */
+    background: var(--secondary-text-color); /* Darken on active click */
+    color: #eee;
 }
 
-.clear-icon{
-    visibility: hidden;
-}
+
+
 /* Dropdown List Styles */
 .dropdown-list {
     display: none;

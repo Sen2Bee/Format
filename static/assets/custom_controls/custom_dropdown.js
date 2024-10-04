@@ -1,7 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Custom Dropdowns: DOM fully loaded");
     initializeCustomDropdowns(); // Initialize custom dropdowns when DOM is loaded
+    initializeSearchBox();
 });
+
+// Function to initialize the search box clear button and its behavior
+function initializeSearchBox() {
+    const searchBox = document.getElementById('search-box');
+    const clearSearchButton = document.getElementById('clear-search');
+
+    if (!searchBox || !clearSearchButton) {
+        console.error("Search box or clear button not found.");
+        return;
+    }
+
+    console.log("Initializing search box listeners...");
+    
+    // Show/hide the clear button based on input value
+    searchBox.addEventListener('input', () => {
+        if (searchBox.value.length > 0) {
+            clearSearchButton.style.visibility = 'visible';  // Show the clear button
+        } else {
+            clearSearchButton.style.visibility = 'hidden';   // Hide the clear button
+        }
+    });
+
+    // Clear the search box when the clear button is clicked
+    clearSearchButton.addEventListener('click', () => {
+        searchBox.value = '';
+        clearSearchButton.style.visibility = 'hidden';
+        console.log("Search box cleared.");
+        // Optionally trigger any search box reset logic here
+    });
+
+    console.log("Search box listeners attached successfully.");
+}
 
 // Function to initialize the custom dropdowns
 function initializeCustomDropdowns() {
@@ -173,4 +206,23 @@ function triggerDropdownChangeEvent() {
     // Call the function to update the movie list and pagination
     updateMovieListAndPagination();
 }
+
+const searchBox = document.getElementById('search-box');
+const clearSearchButton = document.getElementById('clear-search');
+
+// Show/hide the clear button based on input value
+searchBox.addEventListener('input', () => {
+    if (searchBox.value.length > 0) {
+        clearSearchButton.style.visibility = 'visible';  // Show the clear button
+    } else {
+        clearSearchButton.style.visibility = 'hidden';   // Hide the clear button
+    }
+});
+
+// Clear the search box when the clear button is clicked
+clearSearchButton.addEventListener('click', () => {
+    searchBox.value = '';
+    clearSearchButton.style.visibility = 'hidden';
+    // Optionally trigger any search box reset logic here
+});
 

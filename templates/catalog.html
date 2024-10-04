@@ -28,56 +28,58 @@
 
     <main>
         <!-- Filter Section -->
+        <!-- Unified Container for Search and Dropdowns -->
         <section class="catalog-search">
-            <form id="filter-form">
-                <div class="search-container">
-                    <input id="search-box" type="text" placeholder="Search...">
-                    <span id="clear-search" class="clear-icon">&times;</span>
-                </div>
-                
-                <!-- Custom Dropdowns for Filters -->
-                <div class="custom-dropdown">
-                    <div id="year-dropdown-list-header" class="dropdown-header">
-                        <span class="dropdown-title">Years</span>
-                        <div class="header-controls">
-                            <span class="selected-count">0 selected</span>
-                            <span id="clear-year-custom" class="clear-icon">&times;</span>
-                        </div>
+            <div class="search-dropdown-container"> <!-- Unified Container -->
+                <form id="filter-form">
+                    <!-- Search Box Container -->
+                    <div class="search-container">
+                        <input id="search-box" type="text" placeholder="Search...">
+                        <span id="clear-search" class="clear-icon">&times;</span>
                     </div>
-                    <div id="year-dropdown-list" class="dropdown-list">
-                        <!-- Dynamically populated year options will go here -->
-                    </div>
-                </div>
+                    
 
-                <div class="custom-dropdown">
-                    <div id="genre-dropdown-list-header" class="dropdown-header">
-                        <span class="dropdown-title">Genres</span>
-                        <div class="header-controls">
-                            <span class="selected-count">0 selected</span>
-                            <span id="clear-genre-custom" class="clear-icon">&times;</span>
+                    <!-- Custom Dropdowns for Filters -->
+                    <div class="custom-dropdown">
+                        <div id="year-dropdown-list-header" class="dropdown-header">
+                            <span class="dropdown-title">Years</span>
+                            <div class="header-controls">
+                                <span class="selected-count">0 selected</span>
+                                <span id="clear-year-custom" class="clear-icon">&times;</span>
+                            </div>
+                        </div>
+                        <div id="year-dropdown-list" class="dropdown-list">
+                            <!-- Dynamically populated year options will go here -->
                         </div>
                     </div>
-                    <div id="genre-dropdown-list" class="dropdown-list">
-                        <!-- Dynamically populated genre options will go here -->
-                    </div>
-                </div>
 
-                <div class="custom-dropdown">
-                    <div id="country-dropdown-list-header" class="dropdown-header">
-                        <span class="dropdown-title">Countries</span>
-                        <div class="header-controls">
-                            <span class="selected-count">0 selected</span>
-                            <span id="clear-country-custom" class="clear-icon">&times;</span>
+                    <div class="custom-dropdown">
+                        <div id="genre-dropdown-list-header" class="dropdown-header">
+                            <span class="dropdown-title">Genres</span>
+                            <div class="header-controls">
+                                <span class="selected-count">0 selected</span>
+                                <span id="clear-genre-custom" class="clear-icon">&times;</span>
+                            </div>
+                        </div>
+                        <div id="genre-dropdown-list" class="dropdown-list">
+                            <!-- Dynamically populated genre options will go here -->
                         </div>
                     </div>
-                    <div id="country-dropdown-list" class="dropdown-list">
-                        <!-- Dynamically populated country options will go here -->
+
+                    <div class="custom-dropdown">
+                        <div id="country-dropdown-list-header" class="dropdown-header">
+                            <span class="dropdown-title">Countries</span>
+                            <div class="header-controls">
+                                <span class="selected-count">0 selected</span>
+                                <span id="clear-country-custom" class="clear-icon">&times;</span>
+                            </div>
+                        </div>
+                        <div id="country-dropdown-list" class="dropdown-list">
+                            <!-- Dynamically populated country options will go here -->
+                        </div>
                     </div>
-                </div>
-                
-                <!-- Clear All Button -->
-                <button type="button" id="clear-all" class="global-clear-btn" disabled>Clear All Selections</button>
-            </form>
+                </form>
+            </div>
         </section>
 
         <!-- Top Pagination Section -->

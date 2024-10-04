@@ -4,9 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Cache elements and buttons
-const searchBox = document.getElementById('search-box');
 const clearSearchBtn = document.getElementById('clear-search');
-const clearAllBtn = document.getElementById('clear-all');
 const movieContainer = document.querySelector('.movie-listings');
 const topPaginationContainer = document.querySelector('.top-pagination nav ul');
 const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
@@ -38,21 +36,9 @@ function initializeFilterDropdowns() {
         updateFilters();
     });
 
-    // Clear all dropdown selections and search box
-    clearAllBtn.addEventListener('click', clearAllFilters);
 
     // Initial filter update
     updateFilters();
-}
-
-/**
- * Clear all dropdowns and search box
- */
-function clearAllFilters() {
-    const checkboxes = document.querySelectorAll('.dropdown-list input[type="checkbox"]');
-    checkboxes.forEach(checkbox => (checkbox.checked = false));  // Uncheck all boxes
-    searchBox.value = '';  // Clear search box
-    updateFilters();  // Trigger a full update
 }
 
 /**
@@ -98,10 +84,6 @@ function getCheckedValues(dropdownListId) {
     const checkboxes = document.querySelectorAll(`#${dropdownListId} input[type="checkbox"]:checked`);
     return Array.from(checkboxes).map(cb => cb.value);
 }
-
-/**
- * Function to populate a dropdown with new options based on server data
- */
 
 
 /**
