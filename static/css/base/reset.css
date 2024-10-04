@@ -1,45 +1,34 @@
-/* reset.css */
-
-/* Reset default margin and padding */
-* {
+/* Refined Reset */
+*, *::before, *::after {
     margin: 0;
     padding: 0;
+    box-sizing: inherit; /* Use inherit to control from a higher element */
+}
+
+/* Apply box-sizing globally */
+html {
     box-sizing: border-box;
 }
 
-/* Remove default list styles */
-ul, ol {
-    list-style: none;
-}
-
-/* Remove default link styles */
+/* Normalize link styles but allow color */
 a {
     text-decoration: none;
-    color: inherit;
+    color: inherit; /* Allow for custom link colors */
 }
 
-/* Remove default image styles */
+/* Images should not exceed their container */
 img {
     max-width: 100%;
-    display: block;
+    height: auto; /* Maintain aspect ratio */
 }
 
-/* Remove default button styles */
-button {
-    border: none;
-    background: none;
-    cursor: pointer;
+/* Lists should not have default styles */
+ul, ol {
+    list-style: none;
+    margin-left: 0;
 }
 
-/* Remove default heading and paragraph margins */
-h1, h2, h3, h4, h5, h6, p {
-    margin: 0;
-}
-
-/* Reset unwanted overflow properties */
+/* Prevent overflow issues */
 html, body {
-    margin: 0;
-    /* Removed height: 100%; and overflow: hidden; */
+    overflow-x: hidden; /* Restrict horizontal overflow */
 }
-
-/* Additional resets can be added here */

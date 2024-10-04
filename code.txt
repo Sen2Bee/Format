@@ -1,19 +1,13 @@
+=== Code Summary Generated at 2024-10-04 18:51:08 ===
+
 === Project Folder Structure ===
 
 Format/
-    app.py
-    code.txt
-    db_setup.py
-    db_structure.txt
-    query_db_structure.py
-    test.py
-    test2.py
-    vars.py
-    write_poject_code.py
-    db/
-        rename_field.py
     static/
         assets/
+            custom_controls/
+                custom_dropdown.css
+                custom_dropdown.js
             fonts/
                 Spacia Heavy.ttf
         css/
@@ -25,7 +19,6 @@ Format/
             components/
                 buttons.css
                 cards.css
-                filter.css
                 forms.css
                 pagination.css
             layout/
@@ -52,1209 +45,293 @@ Format/
             team1.jpg
             team2.jpg
         js/
+            filter - Kopie.js
             filter.js
+            navbar.js
             scripts.js
     templates/
         catalog.html
         index.html
-    __pycache__/
-        app.cpython-311.pyc
-        test2.cpython-311.pyc
-        vars.cpython-311.pyc
 
 === File Contents ===
 
-
---- File: app.py ---
-
-from flask import Flask, render_template, request, send_from_directory, jsonify
-import mysql.connector
-from vars import db_name, db_passwd, db_user
-import math
-import os
-import redis
-
-os.environ['FLASK_ENV'] = 'development'
-
-app = Flask(__name__)
-
-# Database configuration
-db_config = {
-    'host': 'localhost',
-    'user': db_user,
-    'password': db_passwd,
-    'database': db_name
+--- File: static\assets\custom_controls\custom_dropdown.css ---
+/* Ensure the body and parent elements are using full width */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
-MOVIE_IMAGES_BASE_DIR = "e:/Format_FV/_Movies/_Movies_Fertig"
-
-def connect_to_db():
-    try:
-        connection = mysql.connector.connect(**db_config)
-        print("Successfully connected to the database.")
-        return connection
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        return None
-
-@app.route('/movie_images/<path:filename>')
-def movie_images(filename):
-    # print(f"Serving image for: {filename}")
-    return send_from_directory(MOVIE_IMAGES_BASE_DIR, filename)
-
-@app.route('/')
-def index():
-    print("Rendering the index page.")
-    return render_template('index.html')
-
-#region SQL
-@app.route('/movie/<int:movie_id>')
-def movie_details(movie_id):
-    print(f"Fetching details for movie ID: {movie_id}")
-    connection = connect_to_db()
-    if not connection:
-        return "Database connection failed", 500
-
-    try:
-        cursor = connection.cursor(dictionary=True)
-        
-        # Construct the query to fetch detailed movie information
-        query = """
-            SELECT 
-                m.movie_id, 
-                m.title, 
-                m.original_title, 
-                m.release_date, 
-                m.runtime, 
-                m.imdb_id, 
-                m.imdb_rating, 
-                m.format_fsk, 
-                m.folder_name, 
-                m.overview, 
-                m.format_standort,
-                GROUP_CONCAT(DISTINCT c.country ORDER BY c.country SEPARATOR ', ') AS countries,
-                GROUP_CONCAT(DISTINCT g.genre ORDER BY g.genre SEPARATOR ', ') AS genres,
-                (SELECT name 
-                 FROM crew 
-                 WHERE movie_id = m.movie_id AND job = 'Director' 
-                 LIMIT 1) AS director,
-                GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') AS actors,
-                TRIM(BOTH ', ' FROM CONCAT_WS(', ',
-                    CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
-                    CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
-                    CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
-                    CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
-                )) AS formats
-            FROM 
-                movies m
-                LEFT JOIN genres g ON m.movie_id = g.movie_id
-                LEFT JOIN countries c ON m.movie_id = c.movie_id
-                LEFT JOIN cast ON m.movie_id = cast.movie_id
-            WHERE 
-                m.movie_id = %s
-            GROUP BY 
-                m.movie_id
-        """
-        
-        # Debugging: Print the query and the movie_id parameter
-        print(f"Executing movie details query: {query} with movie_id: {movie_id}")
-        
-        # Execute the query with the provided movie ID
-        cursor.execute(query, (movie_id,))
-        movie = cursor.fetchone()
-
-        # Debugging: Print the fetched movie details
-        print(f"Movie details fetched: {movie}")
-
-        # Close the cursor and connection
-        cursor.close()
-        connection.close()
-
-        # Render the movie details page if the movie is found
-        if movie:
-            return render_template('movie_details.html', movie=movie)
-        else:
-            # Return a 404 error if the movie is not found
-            return "Movie not found", 404
-
-    except Exception as e:
-        # Print and return error information for troubleshooting
-        print(f"An error occurred while fetching movie details: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/catalog')
-def catalog():
-    search_query = request.args.get('search', '')
-    genre_filter = request.args.get('genre', '')
-    year_filter = request.args.get('year', '')
-    page = int(request.args.get('page', 1))
-    per_page = 10
-    offset = (page - 1) * per_page
-
-    print(f"Catalog search - search_query: '{search_query}', genre_filter: '{genre_filter}', year_filter: '{year_filter}', page: {page}")
-
-    # Establish database connection
-    connection = connect_to_db()
-    if not connection:
-        return "Database connection failed", 500
-
-    cursor = connection.cursor(dictionary=True)
-
-    # Construct the base query to retrieve movies with the applied filters
-    base_query = """
-        SELECT 
-            m.movie_id, 
-            COALESCE(m.format_titel, m.title) AS main_title,  
-            m.original_title, 
-            m.release_date, 
-            m.runtime, 
-            m.imdb_id, 
-            m.imdb_rating, 
-            m.format_fsk, 
-            m.folder_name, 
-            m.overview, 
-            m.format_standort,  
-            GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
-            GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
-            (SELECT name FROM crew WHERE crew.movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
-            (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') 
-                FROM cast WHERE cast.movie_id = m.movie_id LIMIT 3) AS actors,
-            TRIM(BOTH ', ' FROM CONCAT_WS(', ',
-                CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
-                CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
-            )) AS formats
-        FROM 
-            movies m
-            LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.movie_id
-        WHERE 1=1
-    """
-    
-    # Construct the count query to get the total count of movies
-    count_query = """
-        SELECT COUNT(DISTINCT m.movie_id) as total 
-        FROM movies m 
-        LEFT JOIN genres g ON m.movie_id = g.movie_id
-        LEFT JOIN countries c ON m.movie_id = c.movie_id
-        WHERE 1=1
-    """
-
-    params = []
-
-    # Apply search condition
-    if search_query:
-        base_query += " AND (m.title LIKE %s OR m.original_title LIKE %s)"
-        count_query += " AND (m.title LIKE %s OR m.original_title LIKE %s)"
-        search_pattern = f"%{search_query}%"
-        params.extend([search_pattern, search_pattern])
-
-    # Apply genre filter
-    if genre_filter:
-        base_query += " AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre = %s)"
-        count_query += " AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre = %s)"
-        params.append(genre_filter)
-
-    # Apply year filter
-    if year_filter:
-        base_query += " AND m.release_date = %s"
-        count_query += " AND m.release_date = %s"
-        params.append(year_filter)
-
-    # Finalize the base query with pagination
-    base_query += " GROUP BY m.movie_id ORDER BY m.release_date DESC LIMIT %s OFFSET %s"
-    params.extend([per_page, offset])
-
-    # Debug: Print query and parameters
-    print(f"Executing catalog query: {base_query} with params: {params}")
-
-    # Execute the base query to get the filtered movie data
-    cursor.execute(base_query, params)
-    movies = cursor.fetchall()
-    print(f"Movies fetched: {len(movies)}")
-
-    # Remove pagination parameters for the count query
-    count_params = params[:-2]
-    print(f"Executing count query: {count_query} with params: {count_params}")
-
-    # Execute the count query to get the total count of filtered movies
-    cursor.execute(count_query, count_params)
-    total_movies = cursor.fetchone()['total']
-    total_pages = math.ceil(total_movies / per_page)
-
-    # Define pagination range for the current page
-    pagination_range = list(range(max(1, page - 2), min(total_pages + 1, page + 3)))
-
-    # Close cursor and database connection
-    cursor.close()
-    connection.close()
-
-    # Debug: Output total movies and pages
-    print(f"Total movies: {total_movies}, Total pages: {total_pages}, Current page: {page}")
-
-    # Render the catalog template with the movies and pagination data
-    return render_template('catalog.html', 
-                           movies=movies, 
-                           page=page, 
-                           total_pages=total_pages, 
-                           search_query=search_query, 
-                           pagination_range=pagination_range)
-
-# Redis cache setup
-redis_cache = redis.StrictRedis(host='localhost', port=6379, db=0)
-
-@app.route('/filter_movies', methods=['GET'])
-def filter_movies():
-    try:
-        # Retrieve filter values from request arguments
-        selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
-        selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
-        selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
-        page = int(request.args.get('page', 1))  # Retrieve the current page
-        per_page = 10
-        offset = (page - 1) * per_page
-
-        # Connect to the database
-        connection = connect_to_db()
-        if not connection:
-            return "Database connection failed", 500
-
-        cursor = connection.cursor(dictionary=True)
-
-        # Determine if the year filters are for single years or decades
-        years_conditions = []
-        for year in selected_years:
-            if "..." in year:  # Handle decade format
-                start_year = int(year.split("...")[0])
-                end_year = start_year + 9
-                years_conditions.append(f"m.release_date BETWEEN {start_year} AND {end_year}")
-            else:
-                years_conditions.append(f"m.release_date = {year}")
-
-        # Construct the base query
-        base_query = """
-            SELECT 
-                m.movie_id, 
-                COALESCE(m.format_titel, m.title) AS main_title,  
-                m.original_title, 
-                m.release_date, 
-                m.runtime, 
-                m.imdb_id, 
-                m.imdb_rating, 
-                m.format_fsk, 
-                m.folder_name, 
-                m.overview, 
-                m.format_standort,  
-                GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
-                GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
-                (SELECT name FROM crew WHERE movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
-                (SELECT GROUP_CONCAT(DISTINCT c.name ORDER BY c.popularity DESC SEPARATOR ', ') 
-                FROM cast c WHERE c.movie_id = m.movie_id LIMIT 3) AS actors,
-                TRIM(BOTH ', ' FROM CONCAT_WS(', ',
-                CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
-                CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
-                )) AS formats
-            FROM 
-                movies m
-                LEFT JOIN genres g ON m.movie_id = g.movie_id
-                LEFT JOIN countries c ON m.movie_id = c.movie_id
-            WHERE 1=1
-        """
-        count_query = """
-            SELECT COUNT(DISTINCT movie_id) as total 
-            FROM movies m 
-            LEFT JOIN genres g ON m.movie_id = g.movie_id 
-            LEFT JOIN countries c ON m.movie_id = c.movie_id 
-            WHERE 1=1
-        """
-        
-        # Apply year conditions if available
-        if years_conditions:
-            base_query += f" AND ({' OR '.join(years_conditions)})"
-            count_query += f" AND ({' OR '.join(years_conditions)})"
-
-        # Apply filters
-        if selected_genres:
-            base_query += f" AND movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))"
-            count_query += f" AND movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))"
-
-        if selected_countries:
-            base_query += f" AND movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))"
-            count_query += f" AND movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))"
-        
-        # Append the parameters to the query
-        params = selected_genres + selected_countries + [per_page, offset]
-
-        # Finalize the base query with pagination
-        base_query += " GROUP BY m.movie_id LIMIT %s OFFSET %s"
-
-        # Execute the base query to get the filtered movie data
-        cursor.execute(base_query, params)
-        filtered_movies = cursor.fetchall()
-
-        # Execute the count query to get the total count of filtered movies
-        cursor.execute(count_query, params[:-2])  # Remove pagination params
-        total_movies = cursor.fetchone()['total']
-        total_pages = math.ceil(total_movies / per_page)
-
-        # Retrieve counts for dropdown filters
-        genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres)
-        year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres)
-        country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres)
-
-        # Apply sorting to place grouped decades at the top
-        year_counts = sort_years_with_decades(year_counts)
-
-        # Close the cursor and connection
-        cursor.close()
-        connection.close()
-
-        # Return updated JSON response with new grouped counts
-        return jsonify({
-            'movies': filtered_movies,
-            'years': year_counts if year_counts else {},  # Make sure `years` is included, even if empty
-            'genres': genre_counts,
-            'countries': country_counts,
-            'current_page': page,
-            'total_pages': total_pages
-        })
-
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        return jsonify({'error': str(e)}), 500
-
-def get_counts(cursor, field, selected_years, selected_countries, selected_genres):
-    table, field_name, join_clause = None, None, None
-
-    # Determine table, field name, and join clause based on the field type
-    if field == "genre":
-        table, field_name, join_clause = "genres", "genre", "JOIN movies m ON genres.movie_id = m.movie_id"
-    elif field == "release_date":
-        table, field_name = "movies", "release_date"
-    elif field == "country":
-        table, field_name, join_clause = "countries", "country", "JOIN movies m ON countries.movie_id = m.movie_id"
-    else:
-        raise ValueError(f"Unsupported field: {field}")
-
-    # Construct the base query
-    if table == "movies":
-        query = f"SELECT {field_name}, COUNT(DISTINCT movie_id) as count FROM {table}"
-    else:
-        query = f"SELECT {field_name}, COUNT(DISTINCT {table}.movie_id) as count FROM {table} {join_clause if join_clause else ''}"
-
-    # Prepare WHERE clauses based on the filters
-    where_clauses, params = [], []
-
-    if selected_years and field != "release_date":
-        where_clauses.append("m.release_date IN (" + ",".join(["%s"] * len(selected_years)) + ")")
-        params.extend(selected_years)
-
-    if selected_countries and field != "country":
-        where_clauses.append("m.movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))")
-        params.extend(selected_countries)
-
-    if selected_genres and field != "genre":
-        where_clauses.append("m.movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))")
-        params.extend(selected_genres)
-
-    # Add the WHERE clauses to the query if they exist
-    if where_clauses:
-        query += " WHERE " + " AND ".join(where_clauses)
-
-    # Add GROUP BY clause
-    query += f" GROUP BY {field_name}"
-
-    # Debug print the query and parameters
-    print(f"Executing query: {query} with params: {params}")
-
-    # Execute the query and fetch the results
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-
-    # Handle decade grouping if the field is `release_date`
-    if field == "release_date":
-        year_counts = {}
-        decades = {}
-
-        # Convert each year to string and calculate decades
-        for row in results:
-            year = str(row[field_name])  # Ensure the year is a string
-            count = row['count']
-
-            # Group by individual years
-            year_counts[year] = count
-
-            # Calculate the decade and add the counts
-            if year.isdigit():  # Only group by decade if the year is a valid number
-                decade = f"{int(year) // 10 * 10}..."
-                if decade in decades:
-                    decades[decade] += count
-                else:
-                    decades[decade] = count
-
-        # Combine decades (sorted) and years (sorted) with decades appearing on top
-        sorted_decades = sorted(decades.items(), key=lambda x: int(x[0].replace("...", "")))
-        sorted_years = sorted(year_counts.items(), key=lambda x: int(x[0]))
-
-        # Convert the lists back to a dictionary for better handling
-        counts = {decade: count for decade, count in sorted_decades}
-        counts.update({year: count for year, count in sorted_years})
-        return counts
-
-    # For other fields (genre or country), return the counts as a dictionary
-    return {row[field_name]: row['count'] for row in results}
-
-#endregion SQL
-
-def sort_years_with_decades(year_counts):
-    """Sorts year counts so that grouped decades appear at the top of the list."""
-    # Separate decades and years
-    decades = {key: value for key, value in year_counts.items() if "..." in key}
-    years = {key: value for key, value in year_counts.items() if "..." not in key}
-
-    # Create sorted lists for both groups
-    sorted_decades = sorted(decades.items(), key=lambda x: int(x[0].split("...")[0]))
-    sorted_years = sorted(years.items(), key=lambda x: int(x[0]))
-
-    # Combine: Decades first, followed by Years
-    sorted_combined = sorted_decades + sorted_years
-
-    return dict(sorted_combined)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
---- File: db_setup.py ---
-
-# db_setup.py
-
-import mysql.connector
-from mysql.connector import Error
-import os
-
-# Database configuration using environment variables
-db_config = {
-    'host': 'localhost',
-    'user': os.environ.get('DB_USER', 'your_default_user'),
-    'password': os.environ.get('DB_PASSWORD', 'your_default_password'),
-    'database': os.environ.get('DB_NAME', 'your_default_database')
+/* Section holding the test container */
+.catalog-search {
+    width: 100%; /* Force the section to full width */
+    margin: 0;
+    padding: 0;
 }
 
-def connect_to_db():
-    try:
-        connection = mysql.connector.connect(**db_config)
-        return connection
-    except Error as err:
-        print(f"Error: {err}")
-        return None
-
-def drop_and_create_tables(cursor):
-    cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")  # Disable foreign key checks
-
-    # Retrieve all table names from the database
-    cursor.execute("SHOW TABLES;")
-    tables = cursor.fetchall()
-    for table in tables:
-        table_name = table[0]
-        cursor.execute(f"DROP TABLE IF EXISTS `{table_name}`;")
-        print(f"Dropped table {table_name}")
-
-    # Now recreate the tables
-    # Create movies table with format_filmId as the primary key
-    cursor.execute("""
-        CREATE TABLE movies (
-            format_filmId INT PRIMARY KEY,
-            title VARCHAR(255),
-            imdb_id VARCHAR(50),
-            original_title VARCHAR(255),
-            release_date YEAR,
-            runtime INT,
-            aspect_ratio TEXT,
-            color_info TEXT,
-            sound_mix TEXT,
-            overview TEXT,
-            poster_images INT,
-            person_images INT,
-            backdrop_images INT,
-            wiki_critics TEXT,
-            wiki_awards TEXT,
-            wiki_background TEXT,
-            wiki_url TEXT,
-            format_titel VARCHAR(255),
-            format_orig_titel VARCHAR(255),
-            format_fsk INT,
-            format_standort VARCHAR(255),
-            format_vhs INT,
-            format_dvd INT,
-            format_blu INT,
-            format_blu3 INT,
-            format_minmedium INT,
-            format_ausleihen DECIMAL(14, 6),
-            format_alpha VARCHAR(255),
-            format_aufindex INT,
-            folder_name VARCHAR(255)
-        ) ENGINE=InnoDB;
-    """)
-
-    # Create related tables referencing format_filmId
-    cursor.execute("""
-        CREATE TABLE genres (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            movie_id INT NOT NULL,
-            genre VARCHAR(100),
-            FOREIGN KEY (movie_id) REFERENCES movies(format_filmId) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE production_companies (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            movie_id INT NOT NULL,
-            company_name VARCHAR(255),
-            FOREIGN KEY (movie_id) REFERENCES movies(format_filmId) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE countries (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            movie_id INT NOT NULL,
-            country VARCHAR(100),
-            FOREIGN KEY (movie_id) REFERENCES movies(format_filmId) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE spoken_languages (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            movie_id INT NOT NULL,
-            language VARCHAR(100),
-            FOREIGN KEY (movie_id) REFERENCES movies(format_filmId) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE cast (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            movie_id INT NOT NULL,
-            name VARCHAR(255),
-            role TEXT,
-            popularity DECIMAL(7, 3),
-            tmdb_id VARCHAR(50),
-            FOREIGN KEY (movie_id) REFERENCES movies(format_filmId) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE crew (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            movie_id INT NOT NULL,
-            name VARCHAR(255),
-            job VARCHAR(255),
-            tmdb_id VARCHAR(50),
-            FOREIGN KEY (movie_id) REFERENCES movies(format_filmId) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("""
-        CREATE TABLE certificates (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            movie_id INT NOT NULL,
-            country VARCHAR(100),
-            rating VARCHAR(20),
-            additional_info TEXT,
-            FOREIGN KEY (movie_id) REFERENCES movies(format_filmId) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-    """)
-
-    cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")  # Enable foreign key checks
-
-if __name__ == "__main__":
-    connection = connect_to_db()
-    if connection:
-        cursor = connection.cursor()
-        try:
-            drop_and_create_tables(cursor)
-            connection.commit()
-            print("Database setup completed.")
-        except Error as e:
-            print(f"Error during database setup: {e}")
-        finally:
-            cursor.close()
-            connection.close()
-    else:
-        print("Failed to connect to the database.")
-
-
-
---- File: query_db_structure.py ---
-
-import mysql.connector
-
-# Database credentials
-db_user = "tom"
-db_passwd = "user"
-db_name = "formatdb"
-
-# Function to connect to the database
-def connect_to_db():
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user=db_user,
-            passwd=db_passwd,
-            database=db_name
-        )
-        if connection.is_connected():
-            print("Connected to the database")
-            return connection
-    except mysql.connector.Error as e:
-        print(f"Error: {e}")
-        return None
-
-# Function to retrieve all table structures
-def get_table_structures(connection):
-    cursor = connection.cursor()
-    try:
-        # Get all tables in the database
-        cursor.execute("SHOW TABLES")
-        tables = cursor.fetchall()
-
-        # Loop through each table and describe its structure
-        for (table_name,) in tables:
-            print(f"\nStructure of table `{table_name}`:")
-            cursor.execute(f"DESCRIBE {table_name}")
-            structure = cursor.fetchall()
-
-            # Print table structure
-            for column in structure:
-                print(column)
-    except mysql.connector.Error as e:
-        print(f"Error: {e}")
-    finally:
-        cursor.close()
-
-# Main function to connect and retrieve table structures
-if __name__ == "__main__":
-    connection = connect_to_db()
-    if connection:
-        get_table_structures(connection)
-        connection.close()
-
-
-
---- File: test.py ---
-
-import unittest
-from flask import Flask, request
-from unittest.mock import patch, MagicMock
-
-# Assume filter_movies is defined in the same file or is imported
-app = Flask(__name__)
-
-# Mock the database connection function
-def mock_connect_to_db():
-    mock_conn = MagicMock()
-    mock_cursor = mock_conn.cursor()
-    
-    # Mock data setup: movie, genre, country tables.
-    movie_data = [
-        {
-            'format_filmId': 1, 'format_titel': 'Movie One', 'title': 'Movie One',
-            'original_title': 'Movie One Original', 'release_date': 1988, 'runtime': 120,
-            'imdb_id': 'tt1234567', 'imdb_rating': '8.1', 'format_fsk': 16, 'folder_name': 'Movie_One_Folder',
-            'overview': 'This is an overview of Movie One.', 'format_standort': 'Location A'
-        }
-    ]
-    
-    genre_data = [{'genre': 'Action', 'count': 1}]
-    year_data = [{'release_date': 1988, 'count': 1}]
-    country_data = [{'country': 'USA', 'count': 1}]
-
-    # Configure the mock cursor to return data
-    mock_cursor.execute.side_effect = [
-        movie_data,  # For the main movie query
-        [{'total': 1}],  # For the count query
-        genre_data,  # For genre counts
-        year_data,  # For year counts
-        country_data  # For country counts
-    ]
-    
-    return mock_conn
-
-# Create a test case for the filter_movies function
-class FilterMoviesTestCase(unittest.TestCase):
-    @patch('your_module.connect_to_db', side_effect=mock_connect_to_db)
-    def test_filter_movies_action_genre(self, mock_db):
-        # Test with a simulated request context
-        with app.test_request_context('/filter_movies?genres=Action&page=1'):
-            # Call the filter_movies function directly
-            response = filter_movies()
-            
-            # Parse the response JSON
-            response_data = response.get_json()
-            
-            # Validate response structure
-            self.assertIn('movies', response_data)
-            self.assertIn('years', response_data)
-            self.assertIn('genres', response_data)
-            self.assertIn('countries', response_data)
-
-            # Check specific data in the response
-            self.assertEqual(len(response_data['movies']), 1)
-            self.assertEqual(response_data['genres']['Action'], 1)
-            self.assertEqual(response_data['years']['1988'], 1)
-            self.assertEqual(response_data['countries']['USA'], 1)
-            
-            print("Test output: ", response_data)
-
-if __name__ == '__main__':
-    unittest.main()
-
-
-
---- File: test2.py ---
-
-import unittest
-from flask import Flask, jsonify
-from unittest.mock import patch, MagicMock
-from app import app
-from flask import Flask, render_template, request, send_from_directory, jsonify
-import mysql.connector
-from vars import db_name, db_passwd, db_user
-import math
-
-# Database configuration
-db_config = {
-    'host': 'localhost',
-    'user': db_user,
-    'password': db_passwd,
-    'database': db_name
+/* Test Container Styling */
+.test-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #3a3a3a;
+    color: #ffffff;
+    padding: 20px 0;
+    margin: 0; /* Remove extra margin */
 }
 
-def connect_to_db():
-    try:
-        connection = mysql.connector.connect(**db_config)
-        print("Successfully connected to the database.")
-        return connection
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        return None
-
-def sort_years_with_decades(year_counts):
-    """Sorts year counts so that grouped decades appear at the top of the list."""
-    # Separate decades and years
-    decades = {key: value for key, value in year_counts.items() if "..." in key}
-    years = {key: value for key, value in year_counts.items() if "..." not in key}
-
-    # Create sorted lists for both groups
-    sorted_decades = sorted(decades.items(), key=lambda x: int(x[0].split("...")[0]))
-    sorted_years = sorted(years.items(), key=lambda x: int(x[0]))
-
-    # Combine: Decades first, followed by Years
-    sorted_combined = sorted_decades + sorted_years
-
-    return dict(sorted_combined)
-
-def get_counts(cursor, field, selected_years, selected_countries, selected_genres):
-    table, field_name, join_clause = None, None, None
-
-    # Determine table, field name, and join clause based on the field type
-    if field == "genre":
-        table, field_name, join_clause = "genres", "genre", "JOIN movies m ON genres.movie_id = m.movie_id"
-    elif field == "release_date":
-        table, field_name = "movies", "release_date"
-    elif field == "country":
-        table, field_name, join_clause = "countries", "country", "JOIN movies m ON countries.movie_id = m.movie_id"
-    else:
-        raise ValueError(f"Unsupported field: {field}")
-
-    # Construct the base query
-    if table == "movies":
-        query = f"SELECT {field_name}, COUNT(DISTINCT movie_id) as count FROM {table}"
-    else:
-        query = f"SELECT {field_name}, COUNT(DISTINCT {table}.movie_id) as count FROM {table} {join_clause if join_clause else ''}"
-
-    # Prepare WHERE clauses based on the filters
-    where_clauses, params = [], []
-
-    if selected_years and field != "release_date":
-        where_clauses.append(f"{table}.movie_id IN (SELECT movie_id FROM movies WHERE release_date IN (" + ",".join(["%s"] * len(selected_years)) + "))")
-        params.extend(selected_years)
-
-    if selected_countries and field != "country":
-        where_clauses.append(f"{table}.movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))")
-        params.extend(selected_countries)
-
-    if selected_genres and field != "genre":
-        where_clauses.append(f"{table}.movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))")
-        params.extend(selected_genres)
-
-    # Add the WHERE clauses to the query if they exist
-    if where_clauses:
-        query += " WHERE " + " AND ".join(where_clauses)
-
-    # Add GROUP BY clause
-    query += f" GROUP BY {field_name}"
-
-    # Debug print the query and parameters
-    print(f"Executing query: {query} with params: {params}")
-
-    # Execute the query and fetch the results
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-
-    # Handle decade grouping if the field is `release_date`
-    if field == "release_date":
-        year_counts = {}
-        decades = {}
-
-        # Convert each year to string and calculate decades
-        for row in results:
-            year = str(row[field_name])  # Ensure the year is a string
-            count = row['count']
-
-            # Group by individual years
-            year_counts[year] = count
-
-            # Calculate the decade and add the counts
-            if year.isdigit():  # Only group by decade if the year is a valid number
-                decade = f"{int(year) // 10 * 10}..."
-                if decade in decades:
-                    decades[decade] += count
-                else:
-                    decades[decade] = count
-
-        # Combine decades (sorted) and years (sorted) with decades appearing on top
-        sorted_decades = sorted(decades.items(), key=lambda x: int(x[0].replace("...", "")))
-        sorted_years = sorted(year_counts.items(), key=lambda x: int(x[0]))
-
-        # Convert the lists back to a dictionary for better handling
-        counts = {decade: count for decade, count in sorted_decades}
-        counts.update({year: count for year, count in sorted_years})
-        return counts
-
-    # For other fields (genre or country), return the counts as a dictionary
-    return {row[field_name]: row['count'] for row in results}
-
-def filter_movies():
-    try:
-        # Retrieve filter values from request arguments
-        selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
-        selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
-        selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
-        page = int(request.args.get('page', 1))  # Retrieve the current page
-        per_page = 10
-        offset = (page - 1) * per_page
-
-        # Connect to the database
-        connection = connect_to_db()
-        if not connection:
-            return "Database connection failed", 500
-
-        cursor = connection.cursor(dictionary=True)
-
-        # Determine if the year filters are for single years or decades
-        years_conditions = []
-        for year in selected_years:
-            if "..." in year:  # Handle decade format
-                start_year = int(year.split("...")[0])
-                end_year = start_year + 9
-                years_conditions.append(f"m.release_date BETWEEN {start_year} AND {end_year}")
-            else:
-                years_conditions.append(f"m.release_date = {year}")
-
-        # Construct the base query
-        base_query = """
-            SELECT 
-                m.movie_id, 
-                COALESCE(m.format_titel, m.title) AS main_title,  
-                m.original_title, 
-                m.release_date, 
-                m.runtime, 
-                m.imdb_id, 
-                m.imdb_rating, 
-                m.format_fsk, 
-                m.folder_name, 
-                m.overview, 
-                m.format_standort,  
-                GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
-                GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
-                (SELECT name FROM crew WHERE movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
-                (SELECT GROUP_CONCAT(DISTINCT c.name ORDER BY c.popularity DESC SEPARATOR ', ') 
-                FROM cast c WHERE c.movie_id = m.movie_id LIMIT 3) AS actors,
-                TRIM(BOTH ', ' FROM CONCAT_WS(', ',
-                CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
-                CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
-                )) AS formats
-            FROM 
-                movies m
-                LEFT JOIN genres g ON m.movie_id = g.movie_id
-                LEFT JOIN countries c ON m.movie_id = c.movie_id
-            WHERE 1=1
-        """
-        count_query = """
-            SELECT COUNT(DISTINCT movie_id) as total 
-            FROM movies m 
-            LEFT JOIN genres g ON m.movie_id = g.movie_id 
-            LEFT JOIN countries c ON m.movie_id = c.movie_id 
-            WHERE 1=1
-        """
-        
-        # Apply year conditions if available
-        if years_conditions:
-            base_query += f" AND ({' OR '.join(years_conditions)})"
-            count_query += f" AND ({' OR '.join(years_conditions)})"
-
-        # Apply filters
-        if selected_genres:
-            base_query += f" AND movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))"
-            count_query += f" AND movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))"
-
-        if selected_countries:
-            base_query += f" AND movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))"
-            count_query += f" AND movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))"
-        
-        # Append the parameters to the query
-        params = selected_genres + selected_countries + [per_page, offset]
-
-        # Finalize the base query with pagination
-        base_query += " GROUP BY m.movie_id LIMIT %s OFFSET %s"
-
-        # Execute the base query to get the filtered movie data
-        cursor.execute(base_query, params)
-        filtered_movies = cursor.fetchall()
-
-        # Execute the count query to get the total count of filtered movies
-        cursor.execute(count_query, params[:-2])  # Remove pagination params
-        total_movies = cursor.fetchone()['total']
-        total_pages = math.ceil(total_movies / per_page)
-
-        # Retrieve counts for dropdown filters
-        genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres)
-        year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres)
-        country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres)
-
-        # Apply sorting to place grouped decades at the top
-        year_counts = sort_years_with_decades(year_counts)
-
-        # Close the cursor and connection
-        cursor.close()
-        connection.close()
-
-        # Return updated JSON response with new grouped counts
-        return jsonify({
-            'movies': filtered_movies,
-            'years': year_counts if year_counts else {},  # Make sure `years` is included, even if empty
-            'genres': genre_counts,
-            'countries': country_counts,
-            'current_page': page,
-            'total_pages': total_pages
-        })
-
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        return jsonify({'error': str(e)}), 500
-
-
-#/////////////////////////////////////////////////////////////////////////////////////////
-class FilterMoviesTestCase(unittest.TestCase):
-    def setUp(self):
-        self.app = app.test_client()
-        self.app.testing = True
-
-    @patch('app.connect_to_db')
-    def test_filter_movies_action_genre(self, mock_connect_to_db):
-        # Mock database connection and cursor
-        mock_connection = MagicMock()
-        mock_cursor = MagicMock()
-
-        # Set up the mock to return a mock connection and cursor
-        mock_connect_to_db.return_value = mock_connection
-        mock_connection.cursor.return_value = mock_cursor
-
-        # Mock data for each query executed in the function
-        mock_cursor.fetchall.side_effect = [
-            [{'genre': 'Action', 'count': 15}],  # Mock for genre counts
-            [{'release_date': 1985, 'count': 5}],  # Mock for year counts
-            [{'country': 'USA', 'count': 7}],  # Mock for country counts
-            [{'movie_id': 1, 'main_title': 'Movie 1', 'original_title': 'Movie Original 1',
-              'release_date': 1985, 'runtime': 120, 'imdb_id': 'tt1234567',
-              'imdb_rating': '7.8', 'format_fsk': 12, 'folder_name': 'Movie 1',
-              'overview': 'Test overview', 'format_standort': 'Location 1',
-              'countries': 'USA', 'genres': 'Action', 'director': 'Director 1',
-              'actors': 'Actor 1, Actor 2', 'formats': 'DVD'}
-            ]
-        ]
-
-        # Mock the count query to return the total number of movies
-        mock_cursor.fetchone.return_value = {'total': 1}
-
-        # Call the filter_movies function with a request context for genre 'Action'
-        with app.test_request_context('/filter_movies?genres=Action'):
-            response = filter_movies()
-
-        # Extract the actual response and status code
-        response_data = response.get_json() if hasattr(response, 'get_json') else response[0]
-        status_code = response.status_code if hasattr(response, 'status_code') else response[1]
-
-        # Check the status code
-        self.assertEqual(status_code, 200)
-
-        # Check if response is a JSON object and contains expected keys
-        self.assertIn('movies', response_data)
-        self.assertIn('years', response_data)
-        self.assertIn('genres', response_data)
-        self.assertIn('countries', response_data)
-
-        # Check if the genres data is correct
-        self.assertEqual(response_data['genres'], {'Action': 15})
-
-        # Check the movie data for the first movie in the response
-        movie = response_data['movies'][0]
-        self.assertEqual(movie['main_title'], 'Movie 1')
-        self.assertEqual(movie['imdb_rating'], '7.8')
-        self.assertEqual(movie['genres'], 'Action')
-        self.assertEqual(movie['countries'], 'USA')
-
-        print("Test case passed successfully with genres:", response_data['genres'])
-
-
-# Ensure the test script runs correctly
-if __name__ == '__main__':
-    unittest.main()
-
-
-
---- File: vars.py ---
-
-db_user="tom"  # Your MySQL username
-db_passwd="user"  # Your MySQL password
-db_name ="formatdb"  # Your MySQL database name
-
-
---- File: write_poject_code.py ---
-
-import os
-
-# Define the path to the root folder (current folder as default)
-root_path = os.getcwd()
-
-# Output file to store all content
-output_file = os.path.join(root_path, 'code.txt')
-
-# Define text-based file extensions to include
-text_extensions = { 
-    '.py', 
-    '.html', 
-    '.css', 
-    '.js'}#, '.md', '.json', '.csv', '.txt',
-
-# Define directories to exclude
-excluded_dirs = {'venv'}
-
-# Function to create folder structure and add content from files
-def create_code_summary(root_path, output_file):
-    with open(output_file, 'w', encoding='utf-8') as output:
-        # Step 1: Write folder structure as a header
-        output.write("=== Project Folder Structure ===\n\n")
-        for root, dirs, files in os.walk(root_path):
-            # Skip excluded directories
-            dirs[:] = [d for d in dirs if d not in excluded_dirs]
-            
-            level = root.replace(root_path, "").count(os.sep)
-            indent = ' ' * 4 * level
-            output.write(f"{indent}{os.path.basename(root)}/\n")
-            sub_indent = ' ' * 4 * (level + 1)
-            for filename in files:
-                output.write(f"{sub_indent}{filename}\n")
-
-        # Step 2: Append file contents with headers
-        output.write("\n=== File Contents ===\n\n")
-        for root, dirs, files in os.walk(root_path):
-            # Skip excluded directories
-            dirs[:] = [d for d in dirs if d not in excluded_dirs]
-
-            for filename in files:
-                # Get the full file path
-                file_path = os.path.join(root, filename)
-                # Get the file extension
-                _, extension = os.path.splitext(filename)
-                # Check if the file has a text-based extension
-                if extension in text_extensions:
-                    # Write file header to the output
-                    relative_path = os.path.relpath(file_path, root_path)
-                    output.write(f"\n--- File: {relative_path} ---\n\n")
-
-                    # Read the content of the file and write it to the output file
-                    try:
-                        with open(file_path, 'r', encoding='utf-8') as file_content:
-                            content = file_content.read()
-                            output.write(content + "\n\n")
-                    except Exception as e:
-                        output.write(f"Error reading {relative_path}: {e}\n\n")
-
-    print(f"Project summary written to {output_file}")
-
-# Run the script
-create_code_summary(root_path, output_file)
-
-
-
---- File: db\rename_field.py ---
-
-import mysql.connector
-
-db_config = {
-    'host': 'localhost',
-    'user': 'tom',          # Replace with your database username
-    'password': 'user',     # Replace with your database password
-    'database': 'formatdb'  # Replace with your database name
+/* Make the content within the test container full width */
+.test-content {
+    width: 100%;
+    max-width: 100%; /* Ensure no max-width restriction */
+    text-align: center;
+    padding: 15px;
+    border: 1px dashed #666;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.2em;
 }
 
-def rename_column():
-    try:
-        # Establish the database connection
-        connection = mysql.connector.connect(**db_config)
-
-        cursor = connection.cursor()
-
-        # SQL command to rename the column
-        alter_table_query = """
-        ALTER TABLE movies CHANGE format_filmId movie_id INT;
-        """
-
-        # Execute the command
-        cursor.execute(alter_table_query)
-        connection.commit()  # Commit the changes
-
-        print("Column name changed successfully from 'format_filmId' to 'movie_id'.")
-
-    except mysql.connector.Error as error:
-        print(f"Error: {error}")
-
-    finally:
-        # Close the cursor and connection
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-            print("MySQL connection is closed.")
-
-# Run the script
-if __name__ == "__main__":
-    rename_column()
+/* Additional reset styles */
+* {
+    box-sizing: border-box; /* Ensure elements are sized consistently */
+}
 
 
+/* Container for the entire filter section */
+.catalog-search {
+    display: flex;
+    justify-content: center; /* Center the search and dropdown container */
+    padding: 10px 0;
+    width: 100%;
+}
+
+.search-dropdown-container {
+    display: flex !important;
+    justify-content: space-between !important;
+    gap: 15px !important;
+    align-items: center !important;
+    width: 90% !important;
+    padding: 10px 0 !important;
+}
+
+
+/* Adjust each control to evenly share the space */
+.search-container, .custom-dropdown {
+    flex: 1; /* Make each control take equal space */
+    min-width: 0; /* Prevent overflow */
+}
+
+
+
+
+/* Search Container Styling */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Search Box Styling */
+#search-box {
+    width: 100%; /* Use the full space of its container */
+    height: 40px; /* Consistent height */
+    padding: 0 40px 0 18px; /* Padding for clear icon */
+    font-size: 1.05em;
+    background: #333;
+    color: #e0e0e0;
+    border: 2px solid #333;
+    border-radius: 5px;
+    transition: border 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+#search-box:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+#search-box::placeholder {
+    color: #aaa;
+}
+
+/* Clear Icon for Search Box */
+#clear-search {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    line-height: 24px;
+    border-radius: 50%;
+    background: rgba(68, 68, 68, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    visibility: hidden;
+    z-index: 2;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+#clear-search:hover {
+    background: rgba(68, 68, 68, 0.9);
+    color: rgba(255, 255, 255, 1);
+}
+
+#clear-search:active {
+    background: rgba(68, 68, 68, 1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+    position: relative;
+    height: 40px;
+    margin: 0;
+}
+
+/* Dropdown Header Styling */
+.dropdown-header {
+    background: #333;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.dropdown-header:hover {
+    background: #444;
+}
+
+/* Dropdown Title Styling */
+.dropdown-title {
+    font-size: 1.05em;
+    font-weight: 600;
+}
+
+/* Header Controls Container */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Selected Count Styling */
+.selected-count {
+    color: var(--link-color);
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+}
+
+/* Clear Icon Styling */
+.clear-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    color: #fff;
+    background: rgba(68, 68, 68, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+    visibility: hidden;
+}
+
+.clear-icon:hover {
+    background: var(--accent-color);
+    color: #555;
+}
+
+.clear-icon:active {
+    background: var(--secondary-text-color);
+    color: #eee;
+}
+
+/* Dropdown List Styles */
+.dropdown-list {
+    display: none;
+    background: #2c2c2c;
+    color: #e0e0e0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.dropdown-list label {
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    font-size: 1.05em;
+    color: #f1f1f1;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.dropdown-list input[type="checkbox"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.dropdown-list label:hover {
+    background: #444;
+    color: #ffffff;
+}
+
+/* Scrollbar Customization */
+.dropdown-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.dropdown-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background: #333;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .search-dropdown-container {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .search-container, .custom-dropdown {
+        width: 100%;
+    }
+
+    .dropdown-header {
+        height: 50px;
+    }
+
+    #search-box {
+        height: 50px;
+    }
+}
 
 --- File: static\css\main.css ---
-
 /* Import Base Styles */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
@@ -1266,7 +343,7 @@ if __name__ == "__main__":
 @import url('./layout/hero.css');
 
 /* Import Component Styles */
-@import url('./components/filter.css');
+@import url('../assets/custom_controls/custom_dropdown.css');
 @import url('./components/cards.css'); /* Import cards.css early */
 @import url('./components/buttons.css');
 @import url('./components/forms.css');
@@ -1276,10 +353,7 @@ if __name__ == "__main__":
 /* Import Page-Specific Styles */
 @import url('./pages/catalog.css');
 
-
-
 --- File: static\css\base\reset.css ---
-
 /* reset.css */
 
 /* Reset default margin and padding */
@@ -1326,10 +400,7 @@ html, body {
 
 /* Additional resets can be added here */
 
-
-
 --- File: static\css\base\typography.css ---
-
 /* typography.css */
 
 @font-face {
@@ -1348,10 +419,7 @@ body {
 }
 
 
-
-
 --- File: static\css\base\variables.css ---
-
 /* variables.css */
 
 :root {
@@ -1365,10 +433,7 @@ body {
     --primary-hover-color:#555;
 }
 
-
-
 --- File: static\css\components\buttons.css ---
-
 /* Button Styles */
 .btn {
     background-color: var(--primary-color);
@@ -1405,10 +470,7 @@ body {
     transform: translateY(-3px);
 }
 
-
-
 --- File: static\css\components\cards.css ---
-
 /* General Movie Card Container */
 .movie-card {
     display: flex;
@@ -1695,112 +757,7 @@ body {
     border: 2px dashed red;  /* Optional border to highlight missing posters */
     opacity: 0.6;  /* Dim the card slightly */
 }
-
-
---- File: static\css\components\filter.css ---
-
-/* General Dropdown Styles */
-.filter-group {
-    margin-bottom: 20px; /* Spacing between dropdown groups */
-    text-align: left;    /* Align labels to the left */
-}
-
-/* Dropdown Label Styling */
-.filter-group label {
-    font-size: 1.1em;
-    color: #ddd;
-    margin-bottom: 8px;
-    display: block;
-}
-
-/* Main Dropdown Styling */
-.filter-dropdown {
-    width: 300px; /* Default width */
-    padding: 10px 15px;
-    font-size: 1em;
-    color: #f7f7f7;
-    background-color: #333;
-    border: 1px solid #444;
-    border-radius: 4px;
-    margin-top: 5px;
-    transition: border-color 0.3s ease, width 0.3s ease;
-    max-width: 100%; /* Ensure it doesn't overflow */
-}
-
-/* Option Styling */
-.filter-dropdown option {
-    padding: 10px;
-    background-color: #444;
-    color: #f7f7f7;
-}
-
-/* Selected Option Styling */
-.filter-dropdown option:checked {
-    background-color: #666;
-    font-weight: bold;
-}
-
-/* Responsive Adjustments */
-
-/* Tablet View */
-@media (max-width: 1024px) {
-    .filter-dropdown {
-        width: 250px; /* Smaller width for tablets */
-        padding: 8px 12px;
-        font-size: 0.9em;
-    }
-
-    .filter-group label {
-        font-size: 1em; /* Slightly reduce label font size */
-    }
-}
-
-/* Mobile View */
-@media (max-width: 768px) {
-    /* Stack dropdowns vertically */
-    .dropdown-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* Center align on mobile */
-    }
-
-    .filter-group {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 15px; /* Less spacing on mobile */
-    }
-
-    .filter-dropdown {
-        width: 100%; /* Full width on mobile */
-        font-size: 0.95em;
-        padding: 8px 10px;
-    }
-
-    .filter-group label {
-        font-size: 0.95em; /* Reduce label size on mobile */
-    }
-}
-
-/* Very Small Screens */
-@media (max-width: 480px) {
-    .filter-group {
-        margin-bottom: 10px; /* Less spacing for compact view */
-    }
-
-    .filter-dropdown {
-        font-size: 0.85em; /* Smaller text */
-        padding: 6px 8px;
-    }
-
-    .filter-group label {
-        font-size: 0.9em; /* Smaller label font */
-    }
-}
-
-
-
 --- File: static\css\components\forms.css ---
-
 /* forms.css */
 
 /* Form Styles */
@@ -1828,10 +785,7 @@ label span {
     margin-bottom: 15px;
 }
 
-
-
 --- File: static\css\components\pagination.css ---
-
 /* pagination.css */
 
 /* Pagination Styles */
@@ -1869,7 +823,7 @@ label span {
 }
 
 .pagination nav ul li a:hover {
-    background-color: #555; /* Darker hover effect */
+    color: var(--accent-color);
 }
 
 .pagination nav ul li.active span {
@@ -1890,10 +844,21 @@ label span {
     cursor: default;
 }
 
+/* Disabled button styling */
+.pagination ul li.disabled a {
+    color: #aaa; /* Greyed out color */
+    pointer-events: none; /* Prevent clicking */
+    cursor: not-allowed;
+    background-color: #444; /* Background to indicate disabled state */
+    border: 1px solid #333; /* Adjust border color */
+}
+
+.pagination ul li.disabled {
+    cursor: default;
+}
 
 
 --- File: static\css\layout\footer.css ---
-
 /* footer.css */
 
 /* Footer Styles */
@@ -1916,10 +881,7 @@ footer {
     margin: 0;
 }
 
-
-
 --- File: static\css\layout\hero.css ---
-
 /* Hero Section */
 .hero {
     position: relative;
@@ -2030,10 +992,7 @@ footer {
     }
 }
 
-
-
 --- File: static\css\layout\navbar.css ---
-
 /* General Navbar Styles */
 .navbar {
     display: flex;
@@ -2045,7 +1004,7 @@ footer {
     left: 0;
     right: 0;
     width: 100%;
-    height: 40px;  /* Default height */
+    height: 60px;  /* Increased default height for visibility */
     padding: 0 20px;
     z-index: 1000;
     transition: height 0.3s ease, top 0.3s ease;  /* Smooth transitions */
@@ -2081,7 +1040,7 @@ footer {
 
 /* Logo Text */
 .logo span {
-    font-size: 3rem;  /* Adjust main logo size */
+    font-size: 2.5rem;  /* Adjust main logo size for better readability */
     color: #fff;
     font-family: 'Spacia Heavy', serif;
     text-transform: lowercase;
@@ -2090,7 +1049,7 @@ footer {
 }
 
 .sub-logo span {
-    font-size: 2rem;  /* Adjust sub-logo size */
+    font-size: 1.5rem;  /* Adjust sub-logo size */
     color: var(--accent-color);
     text-transform: lowercase;
     padding-top: 2px;
@@ -2139,7 +1098,7 @@ footer {
         flex-direction: column;
         align-items: center;
         position: absolute;
-        top: 60px;  /* Position below the navbar */
+        top: 50px;  /* Position below the navbar */
         right: 0;
         width: 100%;
         background-color: rgba(44, 44, 44, 1);
@@ -2158,11 +1117,11 @@ footer {
 
     /* Reduce the size of the main and sub-logos */
     .logo span {
-        font-size: 1.6rem;  /* Smaller size for mobile */
+        font-size: 2rem;  /* Smaller size for mobile */
     }
 
     .sub-logo span {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
     }
 }
 
@@ -2184,11 +1143,11 @@ footer {
 /* Responsive Styles for Very Small Screens */
 @media (max-width: 480px) {
     .logo span {
-        font-size: 1.4rem;  /* Even smaller size for very small screens */
+        font-size: 1.6rem;  /* Smaller size for very small screens */
     }
 
     .sub-logo span {
-        font-size: 1rem;  /* Adjust sub-logo size */
+        font-size: 1.2rem;  /* Adjust sub-logo size */
     }
 
     .nav-links li a {
@@ -2196,10 +1155,29 @@ footer {
     }
 }
 
+/* Animation for Navbar Visibility */
+.navbar {
+    will-change: transform;  /* Optimize for smooth animations */
+}
 
+.navbar.show {
+    transform: translateY(0);  /* Slide-in animation */
+}
+
+.navbar.hide {
+    transform: translateY(-100%);  /* Slide-out animation */
+}
+
+/* Animation for Menu Toggle Button */
+.menu-toggle {
+    transition: transform 0.3s ease-in-out;  /* Smooth rotation animation */
+}
+
+.menu-toggle.active {
+    transform: rotate(90deg);  /* Rotate when active */
+}
 
 --- File: static\css\pages\about.css ---
-
 /* about.css */
 
 /* About Us Page Sections */
@@ -2288,10 +1266,7 @@ footer {
     color: #777;
 }
 
-
-
 --- File: static\css\pages\catalog.css ---
-
 /* Catalog Search Section */
 .catalog-search {
     padding: 40px 20px;
@@ -2369,10 +1344,7 @@ footer {
     }
 }
 
-
-
 --- File: static\css\pages\contact.css ---
-
 /* contact.css */
 
 /* Contact Information Section */
@@ -2469,10 +1441,7 @@ footer {
     background-color: #555;
 }
 
-
-
 --- File: static\css\pages\events.css ---
-
 /* events.css */
 
 /* Events Calendar Section */
@@ -2540,723 +1509,4 @@ footer {
     border-radius: 4px;
     color: var(--secondary-text-color);
 }
-
-
-
---- File: static\js\filter.js ---
-
-document.addEventListener('DOMContentLoaded', function () {
-    console.log("Filter.js: DOM fully loaded");
-    initializeFilterDropdowns();  // Initialize dropdowns on page load
-});
-
-// Function to populate dropdowns with given options dynamically
-function populateDropdown(dropdown, optionsData, preserveSelection = true) {
-    // Store current selection if preservation is enabled
-    const currentSelection = preserveSelection ? Array.from(dropdown.selectedOptions).map(opt => opt.value) : [];
-
-    dropdown.innerHTML = "";  // Clear existing options
-
-    for (const [value, count] of Object.entries(optionsData)) {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = `${value} (${count})`;
-        dropdown.appendChild(option);
-    }
-
-    // Restore the previously selected options if required
-    if (preserveSelection) {
-        currentSelection.forEach(value => {
-            const option = Array.from(dropdown.options).find(opt => opt.value === value);
-            if (option) option.selected = true;
-        });
-    }
-}
-
-// Variables to manage the dropdown update state
-let isDropdownUpdating = false;
-
-// Function to initialize dropdowns and attach event listeners
-const yearDropdown = document.getElementById('year-dropdown');
-const genreDropdown = document.getElementById('genre-dropdown');
-const countryDropdown = document.getElementById('country-dropdown');
-const clearYearBtn = document.getElementById('clear-year');
-const clearGenreBtn = document.getElementById('clear-genre');
-const clearCountryBtn = document.getElementById('clear-country');
-const clearAllBtn = document.getElementById('clear-all');
-
-function initializeFilterDropdowns() {
-    if (!yearDropdown || !genreDropdown || !countryDropdown) {
-        console.warn("Filter dropdowns not found!");
-        return;  // Exit if dropdowns are missing
-    }
-
-    // Attach event listeners to dropdowns
-    yearDropdown.addEventListener('change', handleDropdownChange);
-    genreDropdown.addEventListener('change', handleDropdownChange);
-    countryDropdown.addEventListener('change', handleDropdownChange);
-
-    // Attach event listeners to the clear buttons
-    clearYearBtn.addEventListener('click', () => clearDropdown(yearDropdown));
-    clearGenreBtn.addEventListener('click', () => clearDropdown(genreDropdown));
-    clearCountryBtn.addEventListener('click', () => clearDropdown(countryDropdown));
-    clearAllBtn.addEventListener('click', () => {
-        clearDropdown(yearDropdown);
-        clearDropdown(genreDropdown);
-        clearDropdown(countryDropdown);
-    });
-
-    // Initialize with the first update
-    updateFilters();
-}
-
-// Clear dropdown selection and update filters
-function clearDropdown(dropdown) {
-    dropdown.selectedIndex = -1;
-    updateFilters();
-}
-
-// Function to handle dropdown change events
-function handleDropdownChange() {
-    if (!isDropdownUpdating) {
-        updateFilters();
-    }
-}
-
-// Function to update dropdown values and movie listings based on selection
-function updateFilters(page = 1) {
-    const selectedYears = Array.from(yearDropdown.selectedOptions).map(option => option.value);
-    const selectedGenres = Array.from(genreDropdown.selectedOptions).map(option => option.value);
-    const selectedCountries = Array.from(countryDropdown.selectedOptions).map(option => option.value);
-
-    const params = new URLSearchParams();
-    if (selectedYears.length) params.append('years', selectedYears.join(','));
-    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
-    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
-    params.append('page', page);
-
-    console.log("Fetching updated filter data with params:", params.toString());
-
-    fetch(`/filter_movies?${params.toString()}`)
-        .then(response => response.json())
-        .then(data => {
-            isDropdownUpdating = true;  // Start dropdown update
-
-            // Use fallback values if properties are missing
-            const yearsData = data.years || {};  // Fallback to empty object
-            const genresData = data.genres || {};  // Fallback to empty object
-            const countriesData = data.countries || {};  // Fallback to empty object
-
-            console.log("Dropdown Data:", { yearsData, genresData, countriesData });  // Debugging the response
-
-            if (yearsData) {
-                renderYearDropdown(yearsData, selectedYears);  // Update the year dropdown and preserve selection
-            } else {
-                console.error("Years data not present in the response:", data);
-            }
-
-            populateDropdown(genreDropdown, genresData);
-            populateDropdown(countryDropdown, countriesData);
-            updateMovieListings(data.movies);
-            updatePagination(data.current_page, data.total_pages);
-
-            isDropdownUpdating = false;  // End dropdown update
-        })
-        .catch(error => {
-            console.error('Error fetching filter data:', error);
-            isDropdownUpdating = false;  // Reset the flag on error
-        });
-}
-
-
-// Function to handle year and decade dropdown rendering
-function renderYearDropdown(yearsData, selectedYears = []) {
-    if (!yearsData || typeof yearsData !== 'object') {
-        console.error("Invalid years data:", yearsData);
-        return;
-    }
-
-    const decades = [];
-    const years = [];
-
-    // Separate decades and individual years
-    for (const [year, count] of Object.entries(yearsData)) {
-        if (year.includes("...")) {
-            decades.push({ label: year, count: count });
-        } else {
-            years.push({ label: year, count: count });
-        }
-    }
-
-    // Sort decades and years separately
-    decades.sort((a, b) => parseInt(a.label) - parseInt(b.label));
-    years.sort((a, b) => parseInt(a.label) - parseInt(b.label));
-
-    // Combine sorted decades and years
-    const combinedEntries = [...decades, ...years];
-
-    // Clear and populate the year dropdown
-    isDropdownUpdating = true;  // Mark dropdown as being updated
-    yearDropdown.innerHTML = "";
-    combinedEntries.forEach(entry => {
-        const option = document.createElement("option");
-        option.value = entry.label;
-        option.text = `${entry.label} (${entry.count})`;
-        yearDropdown.appendChild(option);
-    });
-
-    // Restore the selection
-    selectedYears.forEach(value => {
-        const option = Array.from(yearDropdown.options).find(opt => opt.value === value);
-        if (option) option.selected = true;
-    });
-
-    isDropdownUpdating = false;  // Unmark dropdown as being updated
-    console.log("Dropdown populated successfully with years and decades.");
-}
-
-// Remaining functions (updateMovieListings, updatePagination, attachPaginationEventListeners) remain unchanged.
-
-// Function to dynamically update movie listings
-// Function to dynamically update movie listings
-function updateMovieListings(movies) {
-    const movieContainer = document.querySelector('.movie-listings');
-    if (!movieContainer) {
-        console.warn("Movie listings container not found!");
-        return;
-    }
-    movieContainer.innerHTML = "";  // Clear existing listings
-
-    if (movies.length > 0) {
-        movies.forEach(movie => {
-            // Construct the image path and handle missing images
-            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg`;
-            const defaultImagePath = '/static/images/default_movie.png';  // Define path to the default image
-
-            console.log("Attempting to load image from:", imagePath);  // Log for debugging
-
-            const movieCard = document.createElement('div');
-            movieCard.className = 'movie-card poster-background';
-
-            // Set background image with fallback if image is missing
-            movieCard.style.backgroundImage = `url('${imagePath}')`;
-
-            // Construct the movie card content using the movie object
-            movieCard.innerHTML = `
-                <div class="transparency-layer"></div>
-                <div class="movie-content-wrapper">
-                    <div class="image-container">
-                        <img src="${imagePath}" alt="${movie.main_title}" 
-                             onerror="handleMissingPoster(this, '${defaultImagePath}');">
-                    </div>
-                    <div class="info-section">
-                        <h2>${movie.main_title}</h2>
-                        <p><strong>Original: ${movie.original_title}</strong> (${movie.release_date})</p>
-                        <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
-                        <p><strong>Regie:</strong> ${movie.director}</p>
-                        <p><strong>Schauspieler:</strong> ${movie.actors}</p>
-                        ${movie.format_standort ? `<p class="standort"><strong>Standort:</strong> ${movie.format_standort}</p>` : ""}
-                    </div>
-                    <div class="overview-section">
-                        ${movie.overview.length > 150 
-                            ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` 
-                            : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
-                    </div>
-                </div>
-            `;
-
-            // Append the movie card to the container
-            movieContainer.appendChild(movieCard);
-        });
-    } else {
-        const noMoviesMessage = document.createElement('p');
-        noMoviesMessage.className = 'no-movies-message';
-        noMoviesMessage.textContent = 'No movies match the selected filters.';
-        movieContainer.appendChild(noMoviesMessage);
-    }
-}
-
-// Function to handle missing poster images
-function handleMissingPoster(imageElement, defaultImagePath) {
-    console.warn(`Poster not found for: ${imageElement.alt}. Using default image.`);
-    imageElement.src = defaultImagePath;  // Set the default image if the specific one is not found
-    imageElement.closest('.movie-card').classList.add('missing-poster');  // Optionally add a CSS class to indicate missing poster
-}
-
-// Function to dynamically update and attach pagination listeners
-function updatePagination(currentPage, totalPages) {
-    const paginationContainer = document.querySelector('.pagination nav ul');
-    if (!paginationContainer) return;
-
-    paginationContainer.innerHTML = "";  // Clear existing pagination buttons
-
-    // Create "Previous" button
-    let prevDisabled = currentPage <= 1 ? 'disabled' : '';
-    paginationContainer.innerHTML += `<li class="${prevDisabled}"><a href="#" data-page="${currentPage - 1}">&laquo; Previous</a></li>`;
-
-    if (currentPage > 3) {
-        paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
-        paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
-    }
-
-    // Generate page numbers around current page
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, currentPage + 2);
-    for (let p = startPage; p <= endPage; p++) {
-        let activeClass = (p === currentPage) ? 'active' : '';
-        paginationContainer.innerHTML += `<li class="${activeClass}"><a href="#" data-page="${p}">${p}</a></li>`;
-    }
-
-    if (currentPage < totalPages - 2) {
-        paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
-        paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
-    }
-
-    // Create "Next" button
-    let nextDisabled = currentPage >= totalPages ? 'disabled' : '';
-    paginationContainer.innerHTML += `<li class="${nextDisabled}"><a href="#" data-page="${currentPage + 1}">Next &raquo;</a></li>`;
-
-    // Attach event listeners to the pagination buttons
-    attachPaginationEventListeners();
-}
-
-// Function to attach click event listeners for pagination buttons
-function attachPaginationEventListeners() {
-    const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
-    paginationLinks.forEach(link => {
-        link.addEventListener('click', function (event) {
-            event.preventDefault();
-            const page = parseInt(this.getAttribute('data-page'));
-            if (!isNaN(page)) updateFilters(page);  // Trigger filtering with the selected page
-        });
-    });
-}
-
-
-
---- File: static\js\scripts.js ---
-
-document.addEventListener('DOMContentLoaded', function () {
- 
-    // Call the wrapper function after the DOM content is fully loaded
-    initializeHeroSectionIfPresent();
-
-    // Call truncateText function for overview sections
-    truncateText('.info-section.overview p', 500);
-
-    // Call the function on initial load and resize
-    adjustTitleFontSize();
-    window.addEventListener('resize', adjustTitleFontSize);
-
-    // Call the function on initial load and window resize
-    adjustMetadataWidth();
-    window.addEventListener('resize', adjustMetadataWidth);
-
-    // Attach scroll event listener to handle navbar scroll
-    window.addEventListener('scroll', handleNavbarScroll);
-
-    // Call the function on initial load and window resize
-    updateMovieCardBackground();
-    window.addEventListener('resize', updateMovieCardBackground);
-
-});
-
-
-
-// Wrapper function to check the presence of hero section before initializing
-function initializeHeroSectionIfPresent() {
-    function manageHeroAndTaglines() {
-        // Taglines array for the hero section
-        const taglines = [
-            "Entdecke unsere Sammlung von fast 20.000 Filmen.",
-            "Finde deine Lieblingsfilme und entdecke neue Perlen.",
-            "Tauche ein in cineastische Meisterwerke.",
-            "Erlebe das Beste aus Arthouse- und klassischem Kino.",
-            "Dein Zugang zu zeitlosen Filmen.",
-            "Die Filmsammlung des FORMAT Filmkunst-Verleihs.",
-            "Für eine Handvoll Dollar kannst du von den Möglichkeiten profitieren.",
-            "Über 19.000 Filme - die größte private Filmsammlung Mitteldeutschlands.",
-            "Independent- und Arthouse-Filme auf DVD, Blu-ray und 3D-Blu-ray.",
-            "'Unendliche Weiten' an Informationen zu den Filmen.",
-            "Cineastische Raritäten, Arthouse und Blockbuster - alles unter einem Dach.",
-            "FILMKUNST-Verleih seit über 18 Jahren."
-        ];
-    
-        // Hero images array
-        const heroImages = [
-            '/static/images/backdrop_1.jpg',
-            '/static/images/backdrop_2.jpg',
-            '/static/images/backdrop_3.jpg',
-            '/static/images/backdrop_4.jpg'
-        ];
-    
-        // Elements for the hero section
-        const taglineElement = document.getElementById('dynamic-tagline');
-        const heroImageElement = document.querySelector('.hero-image img');
-        const logoElement = document.querySelector('.logo span');
-    
-        // Check for the presence of critical elements before proceeding
-        if (!taglineElement || !heroImageElement || !logoElement) {
-            console.info("Hero elements not found on this page. Skipping hero section initialization.");
-            return; // Exit the function if elements are not found
-        }
-    
-        // Initial setup for tagline and hero image
-        let currentTaglineIndex = Math.floor(Math.random() * taglines.length);
-        taglineElement.textContent = taglines[currentTaglineIndex];
-        taglineElement.classList.add('fade-in');
-    
-        // Set a random hero image
-        const randomImage = heroImages[Math.floor(Math.random() * heroImages.length)];
-        heroImageElement.src = randomImage;
-    
-        // Change taglines periodically
-        setInterval(() => {
-            taglineElement.classList.remove('fade-in');
-            taglineElement.classList.add('fade-out');
-    
-            setTimeout(() => {
-                currentTaglineIndex = (currentTaglineIndex + 1) % taglines.length;
-                taglineElement.textContent = taglines[currentTaglineIndex];
-                taglineElement.classList.remove('fade-out');
-                taglineElement.classList.add('fade-in');
-    
-                // Randomly change logo color
-                const randomChance = Math.random();
-                logoElement.style.color = randomChance < 0.3 ? 'red' : 'white';
-            }, 1000); // Matches transition duration
-        }, 5000);
-    }    
-    // Run the hero management code only if the relevant elements exist on the page
-    const heroSectionExists = document.querySelector('.hero-image img') && document.getElementById('dynamic-tagline') && document.querySelector('.logo span');
-    
-    if (heroSectionExists) {
-        manageHeroAndTaglines(); // Initialize only if hero section elements are present
-    } else {
-        console.info("Hero section elements not found on this page. Skipping hero management.");
-    }
-}
-
-// Truncate text for overview sections
-function truncateText(selector, maxLength) {
-    const elements = document.querySelectorAll(selector);
-    elements.forEach(element => {
-        const originalText = element.textContent;
-        if (originalText.length > maxLength) {
-            const truncatedText = originalText.substring(0, maxLength).trim() + '...';
-            element.textContent = truncatedText;
-        }
-    });
-}
-// Adjust title font size dynamically based on overflow
-function adjustTitleFontSize() {
-    const movieCards = document.querySelectorAll('.movie-card');
-    movieCards.forEach(card => {
-        const titleContainer = card.querySelector('.titles');
-        if (titleContainer) {
-            const mainTitle = titleContainer.querySelector('.main-title');
-            const releaseYear = titleContainer.querySelector('.release-year');
-            
-            if (mainTitle && releaseYear) {
-                // Reset to default size
-                mainTitle.style.fontSize = '1.6em';
-                releaseYear.style.fontSize = '0.8em';
-                
-                // Check if the title overflows
-                if (titleContainer.scrollWidth > titleContainer.clientWidth) {
-                    let fontSize = parseFloat(window.getComputedStyle(mainTitle).fontSize);
-                    while (titleContainer.scrollWidth > titleContainer.clientWidth && fontSize > 0.8) {
-                        fontSize -= 0.1;
-                        mainTitle.style.fontSize = fontSize + 'em';
-                        releaseYear.style.fontSize = (fontSize * 0.7) + 'em';  // Adjust year proportionally
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Adjust the width of metadata elements dynamically
-function adjustMetadataWidth() {
-    const metadataElements = document.querySelectorAll('.movie-metadata');
-    metadataElements.forEach(metadata => {
-        const parentWidth = metadata.parentElement.clientWidth;
-        metadata.style.maxWidth = parentWidth + 'px';
-    });
-}
-
-function handleNavbarScroll() {
-    // Navbar scroll behavior
-    let lastScrollY = window.scrollY;
-    const navbar = document.querySelector('.navbar');        
-    if (!navbar) return;  // Exit if the navbar is not found
-
-    if (window.scrollY > 50) {
-        navbar.classList.add('shrunk');  // Shrink the navbar after scrolling 50px
-    } else {
-        navbar.classList.remove('shrunk');
-    }
-
-    // Show/hide the navbar based on scroll direction
-    if (window.scrollY > lastScrollY && window.scrollY > 100) {
-        navbar.classList.add('hidden');  // Hide on downward scroll
-    } else {
-        navbar.classList.remove('hidden');  // Show on upward scroll
-    }
-    lastScrollY = window.scrollY;
-}
-
-// Function to update movie card background images based on screen size
-function updateMovieCardBackground() {
-const movieCards = document.querySelectorAll('.movie-card.poster-background');
-movieCards.forEach(card => {
-    const mobileImage = card.getAttribute('data-mobile-image');
-    const desktopImage = card.getAttribute('data-desktop-image');
-
-    // Set the correct background based on the screen size
-    if (window.innerWidth >= 1024) {
-        if (desktopImage) {
-            card.style.backgroundImage = `url(${desktopImage})`;
-        }
-    } else {
-        if (mobileImage) {
-            card.style.backgroundImage = `url(${mobileImage})`;
-        }
-    }
-});
-}
-
-
---- File: templates\catalog.html ---
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Catalog - FORMAT Filmkunst-Verleih</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-</head>
-<body>
-    <header>
-        <nav class="navbar">
-            <div class="logo">
-                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
-                <a class="sub-logo"><span>Katalog</span></a>
-            </div>
-            <!-- Toggle button for the mobile menu -->
-            <div class="menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
-            <!-- Main navigation menu -->
-            <ul class="nav-links">
-                <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
-            </ul>
-        </nav>
-        <!-- Additional mobile link placement -->
-        <div class="mobile-footer-link">
-            <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
-        </div>
-    </header>
-
-    <main>
-        <!-- Filter Section in HTML -->
-        <section class="catalog-search">
-            <form id="filter-form">
-                <div class="dropdown-section">
-                    <!-- Year Filter Dropdown -->
-                    <div class="filter-group">
-                        <label for="year-dropdown">Year</label>
-                        <select id="year-dropdown" class="filter-dropdown" multiple>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                        <button type="button" id="clear-year" class="clear-btn" style="display:none;">Clear</button>
-                    </div>
-                    
-                    <!-- Genre Filter Dropdown -->
-                    <div class="filter-group">
-                        <label for="genre-dropdown">Genre</label>
-                        <select id="genre-dropdown" class="filter-dropdown" multiple>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                        <button type="button" id="clear-genre" class="clear-btn" style="display:none;">Clear</button>
-                    </div>
-
-                    <!-- Country Filter Dropdown -->
-                    <div class="filter-group">
-                        <label for="country-dropdown">Country</label>
-                        <select id="country-dropdown" class="filter-dropdown" multiple>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                        <button type="button" id="clear-country" class="clear-btn" style="display:none;">Clear</button>
-                    </div>
-
-                    <!-- Clear All Button -->
-                    <button type="button" id="clear-all" style="display:none;">Clear All</button>
-                </div>
-            </form>
-        </section>
-
-
-        <section class="movie-listings">
-            {% for movie in movies %}
-            <div class="movie-card poster-background" 
-                 style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
-                <div class="transparency-layer"></div>
-                <div class="movie-content-wrapper">
-                    <div class="image-container">
-                        <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
-                             alt="{{ movie['main_title'] }}" 
-                             onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.jpg') }}';">
-                    </div>
-
-                    <div class="info-section">
-                        <div class="header-section">
-                            <h2>{{ movie['main_title'] }}</h2>
-                        </div>
-
-                        <div class="metadata">
-                            <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
-                            <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
-                            <p><strong>Regie:</strong> {{ movie['director'] }}</p>
-                            <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
-                            {% if movie['format_standort'] %}
-                            <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="overview-section">
-                        {% if movie['overview']|length > 150 %}
-                        <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                        {% else %}
-                        <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </section>
-
-        <!-- Pagination Section -->
-        <section class="pagination">
-            <nav>
-                <ul>
-                    <li class="{% if page <= 1 %}disabled{% endif %}">
-                        <a href="#" data-page="{{ page-1 }}">&laquo; Previous</a>
-                    </li>
-
-                    {% if page > 3 %}
-                        <li>
-                            <a href="#" data-page="1">1</a>
-                        </li>
-                        <li class="ellipsis"><span>...</span></li>
-                    {% endif %}
-
-                    {% for p in pagination_range %}
-                        <li class="{% if p == page %}active{% endif %}">
-                            <a href="#" data-page="{{ p }}">{{ p }}</a>
-                        </li>
-                    {% endfor %}
-
-                    {% if page < total_pages - 2 %}
-                        <li class="ellipsis"><span>...</span></li>
-                        <li>
-                            <a href="#" data-page="{{ total_pages }}">{{ total_pages }}</a>
-                        </li>
-                    {% endif %}
-
-                    <li class="{% if page >= total_pages %}disabled{% endif %}">
-                        <a href="#" data-page="{{ page+1 }}">Next &raquo;</a>
-                    </li>
-                </ul>
-            </nav>
-        </section>
-
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V.</p>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/filter.js') }}"></script> 
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-    
-
-</body>
-</html>
-
-
-
---- File: templates\index.html ---
-
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>FORMAT Filmkunst-Verleih - Home</title>
-    <!-- Responsive Meta Tag -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
-    <header>
-        <nav class="navbar">
-            <div class="logo">
-                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
-                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
-            </div>
-            <div class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" role="button" tabindex="0">
-                <i class="fas fa-bars"></i>
-            </div>
-            <ul class="nav-links">
-                <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
-                <!-- Additional menu links can be placed here -->
-            </ul>
-        </nav>
-        <!-- Separate link for mobile users -->
-        <div class="mobile-footer-link">
-            <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
-        </div>
-    </header>
-    
-
-    <main>
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-image">
-                <img src="images/backdrop_1.jpg" alt="Hero Image">
-            </div>
-            <div class="hero-overlay">
-                <h1 id="dynamic-tagline">Für eine Handvoll Dollar kannst du von den Möglichkeiten profitieren.</h1>
-            <!-- Place the button outside of the hero-overlay div -->
-                <a href="{{ url_for('catalog') }}" class="btn btn-primary">Katalog</a>
-            </div>
-
-        </section>
-        
-
-
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V. Alle Rechte vorbehalten.</p>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/scripts.js') }}" type="module"></script>
-</body>
-</html>
-
 

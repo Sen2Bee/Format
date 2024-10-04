@@ -1,99 +1,111 @@
+/* Test Container Styling */
+.search-dropdown-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #444;
+    color: #fff;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.test-content {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+    padding: 10px;
+    
+}
+
+
 /* Container for the entire filter section */
 .catalog-search {
     display: flex;
-    align-items: center;
-    gap: 15px; /* Spacing between elements */
-    padding: 10px 0; /* Adjusted padding for vertical alignment */
+    justify-content: center;
+    padding: 10px 0;
+    width: 100vw; /* Use viewport width to ensure full width */
+    max-width: 100vw; /* Prevent any restrictions from parent elements */
+    margin: 0;
+    box-sizing: border-box; /* Include padding and borders in the total width */
 }
 
-/* Unified Container for Search Box and Dropdowns */
-.search-dropdown-container {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Spacing between the search box and dropdowns */
-    padding: 10px 20px;   /* Internal padding for container */
-    border-radius: 8px;   /* Rounded corners for visual grouping */
+
+/* Adjust each control to evenly share the space */
+.search-container, .custom-dropdown {
+    flex: 1; /* Make each control take equal space */
+    min-width: 0; /* Prevent overflow */
 }
 
+
+
+
+/* Search Container Styling */
 .search-container {
-    position: relative; /* Allows absolute positioning of child elements */
+    position: relative;
     display: flex;
-    align-items: center; /* Vertically center elements */
+    align-items: center;
 }
 
+/* Search Box Styling */
 #search-box {
-    width: 300px; /* Make sure the width matches */
-    height: 40px; /* Same height as the dropdowns */
-    padding: 0 40px 0 18px; /* Add padding to the right for the clear icon */
+    width: 100%; /* Use the full space of its container */
+    height: 40px; /* Consistent height */
+    padding: 0 40px 0 18px; /* Padding for clear icon */
     font-size: 1.05em;
-    background: #333; /* Background color to match the dropdowns */
-    color: #e0e0e0;   /* Light text */
-    border: 2px solid #333; /* Border style */
-    border-radius: 5px; /* Rounded corners */
+    background: #333;
+    color: #e0e0e0;
+    border: 2px solid #333;
+    border-radius: 5px;
     transition: border 0.2s ease-in-out, background 0.2s ease-in-out;
 }
 
 #search-box:focus {
-    outline: none; /* Remove default focus outline */
-    border-color: var(--accent-color); /* Match accent color on focus */
+    outline: none;
+    border-color: var(--accent-color);
 }
-
 
 #search-box::placeholder {
-    color: #aaa; /* Placeholder text color */
+    color: #aaa;
 }
 
-#search-box:focus {
-    outline: none;
-    border-color: var(--accent-color); /* Match accent color on focus */
-}
-
-/* Clear Icon for Search Box (Reusing the Clear Icon Style) */
+/* Clear Icon for Search Box */
 #clear-search {
     position: absolute;
-    right: 25px; /* Position it inside the search box */
-    top: 50%;    /* Center it vertically */
-    transform: translateY(-50%); /* Align it properly */
-    width: 24px; /* Consistent size with other icons */
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
     height: 24px;
-    font-size: 1.2em; /* Size the icon text properly */
-    line-height: 24px; /* Ensure the icon is vertically centered */
-    border-radius: 50%; /* Make it circular */
-    background: rgba(68, 68, 68, 0.6); /* Semi-transparent background */
-    color: rgba(255, 255, 255, 0.6); /* Semi-transparent text */
-    cursor: pointer;    /* Show pointer cursor */
-    visibility: hidden; /* Hidden by default */
-    z-index: 2;         /* Ensure it appears above the search box */
+    font-size: 1.2em;
+    line-height: 24px;
+    border-radius: 50%;
+    background: rgba(68, 68, 68, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    visibility: hidden;
+    z-index: 2;
     transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-/* Modify hover state for more emphasis */
 #clear-search:hover {
-    background: rgba(68, 68, 68, 0.9); /* More opaque on hover */
-    color: rgba(255, 255, 255, 1); /* Full opacity text on hover */
+    background: rgba(68, 68, 68, 0.9);
+    color: rgba(255, 255, 255, 1);
 }
 
-/* Optional: Active state for click effect */
 #clear-search:active {
-    background: rgba(68, 68, 68, 1); /* Fully opaque on click */
-    color: rgba(255, 255, 255, 0.8); /* Slightly less bright text */
+    background: rgba(68, 68, 68, 1);
+    color: rgba(255, 255, 255, 0.8);
 }
 
-
-
-/* Unified Height for Dropdowns and Search */
-.search-container, .custom-dropdown {
-    height: 40px; /* Unified height for all elements */
-}
-
-/* Custom Multi-Select Dropdown Styles */
+/* Custom Dropdown Styles */
 .custom-dropdown {
     position: relative;
-    width: 300px;
-    margin: 0; /* Remove extra margin */
+    height: 40px;
+    margin: 0;
 }
 
-/* Dropdown Header Styles */
+/* Dropdown Header Styling */
 .dropdown-header {
     background: #333;
     color: #ffffff;
@@ -103,12 +115,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 40px; /* Match search box height */
+    height: 100%;
     transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 .dropdown-header:hover {
-    background: #444; /* Subtle hover effect */
+    background: #444;
 }
 
 /* Dropdown Title Styling */
@@ -121,46 +133,44 @@
 .header-controls {
     display: flex;
     align-items: center;
-    gap: 8px; /* Spacing between elements */
+    gap: 8px;
 }
 
 /* Selected Count Styling */
 .selected-count {
-    color:var(--link-color);
+    color: var(--link-color);
     padding: 4px 8px;
-    border-radius: 8px; /* Rounded pill shape */
+    border-radius: 8px;
     font-size: 0.85em;
-    display: flex; /* Flex for better alignment */
-    align-items: center; /* Center text vertically */
+    display: flex;
+    align-items: center;
 }
 
 /* Clear Icon Styling */
 .clear-icon {
-    width: 24px;  /* Consistent size with search clear icon */
+    width: 24px;
     height: 24px;
-    font-size: 1.2em; /* Smaller size for elegance */
-    color: #fff; /* White icon for better contrast */
-    background: rgba(68, 68, 68, 0.6); /* Semi-transparent background */
-    border-radius: 50%; /* Circular shape */
+    font-size: 1.2em;
+    color: #fff;
+    background: rgba(68, 68, 68, 0.6);
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease-in-out, color 0.2s ease-in-out; /* Smooth hover effect */
-    visibility: hidden; /* Hidden by default */
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+    visibility: hidden;
 }
 
 .clear-icon:hover {
-    background: var(--accent-color); /* Lighten the button on hover */
+    background: var(--accent-color);
     color: #555;
 }
 
 .clear-icon:active {
-    background: var(--secondary-text-color); /* Darken on active click */
+    background: var(--secondary-text-color);
     color: #eee;
 }
-
-
 
 /* Dropdown List Styles */
 .dropdown-list {
@@ -176,10 +186,9 @@
     z-index: 1000;
 }
 
-/* Updated Styles for Dropdown Option Labels */
 .dropdown-list label {
-    display: flex;  /* Use flex to control label alignment */
-    align-items: center;  /* Vertically center items */
+    display: flex;
+    align-items: center;
     padding: 12px 18px;
     font-size: 1.05em;
     color: #f1f1f1;
@@ -187,10 +196,9 @@
     cursor: pointer;
 }
 
-/* Checkbox and Label Alignment */
 .dropdown-list input[type="checkbox"] {
-    margin-right: 12px;  /* Space between checkbox and label */
-    transform: scale(1.2); /* Larger checkboxes */
+    margin-right: 12px;
+    transform: scale(1.2);
 }
 
 .dropdown-list label:hover {
@@ -219,13 +227,81 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-    .custom-dropdown {
+    .search-dropdown-container {
+        flex-direction: column;
         width: 100%;
     }
-    .dropdown-header {
-        padding: 12px 14px;
+
+    .search-container, .custom-dropdown {
+        width: 100%;
     }
-    .dropdown-list label {
-        font-size: 1em;
+
+    .dropdown-header {
+        height: 50px;
+    }
+
+    #search-box {
+        height: 50px;
     }
 }
+/* Mobile-Only Styles for Dropdown */
+@media (max-width: 768px) {
+    /* Full-Screen Dropdown List */
+    .dropdown-list {
+        position: fixed; /* Make it fixed for full-screen display */
+        top: 0; /* Align to top */
+        left: 0; /* Align to left */
+        width: 100vw; /* Take the entire width */
+        height: 100vh; /* Take the entire height */
+        max-height: 100vh;
+        background-color: rgba(30, 30, 30, 0.95); /* Darker background for contrast */
+        overflow-y: scroll; /* Scroll for long lists */
+        z-index: 9999; /* Ensure it appears above other content */
+    }
+
+    /* Adjust Dropdown Header for Mobile */
+    .dropdown-header {
+        height: 50px;
+        padding: 12px 18px; /* Add more padding */
+        font-size: 1.2em; /* Increase font size */
+    }
+
+    /* Dropdown Title */
+    .dropdown-title {
+        font-size: 1.2em; /* Larger title */
+    }
+
+    /* Individual Option Styling */
+    .dropdown-list label {
+        padding: 20px 25px; /* Increase padding for touch-friendly design */
+        font-size: 1.2em; /* Larger font for readability */
+    }
+
+    .dropdown-list input[type="checkbox"] {
+        transform: scale(1.5); /* Larger checkboxes for touch devices */
+        margin-right: 20px; /* Space between checkbox and text */
+    }
+
+    /* Full-Screen Dropdown Background */
+    .dropdown-list::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+        z-index: -1; /* Place it behind the dropdown */
+    }
+
+    /* Close Icon for Full-Screen Dropdown */
+    .dropdown-list .close-dropdown {
+        display: block;
+        text-align: right;
+        padding: 20px;
+        font-size: 2em;
+        color: #fff;
+        cursor: pointer;
+    }
+}
+

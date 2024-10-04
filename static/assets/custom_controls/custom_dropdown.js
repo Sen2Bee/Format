@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Custom Dropdowns: DOM fully loaded");
     initializeCustomDropdowns(); // Initialize custom dropdowns when DOM is loaded
@@ -187,7 +188,7 @@ function updateSelectedCount(checkboxes, countElement, clearButton) {
     const count = selectedItems.length;
 
     // Update the count display
-    countElement.textContent = `${count} selected`;
+    countElement.textContent = `${count} sel.`;
     // countElement.style.display = count > 0 ? 'inline-flex' : 'none';
 
     // Show or hide the clear button based on the count

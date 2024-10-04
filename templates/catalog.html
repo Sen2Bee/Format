@@ -6,6 +6,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <style>
+
+    </style>
 </head>
 <body>
     <header>
@@ -27,60 +30,64 @@
     </header>
 
     <main>
-        <!-- Filter Section -->
-        <!-- Unified Container for Search and Dropdowns -->
-        <section class="catalog-search">
-            <div class="search-dropdown-container"> <!-- Unified Container -->
-                <form id="filter-form">
-                    <!-- Search Box Container -->
-                    <div class="search-container">
-                        <input id="search-box" type="text" placeholder="Search...">
-                        <span id="clear-search" class="clear-icon">&times;</span>
-                    </div>
-                    
+        <!-- Existing Filter Section -->
+<!-- Test Section for Full Width -->
+<section class="catalog-search">
+    <div class="search-dropdown-container">
+        <div class="test-content">
+            <!-- Filter Controls Placed Inside the Test Container -->
+            <form id="filter-form">
+                <!-- Search Box Container -->
+                <div class="search-container">
+                    <input id="search-box" type="text" placeholder="Suche...">
+                    <span id="clear-search" class="clear-icon">&times;</span>
+                </div>
 
-                    <!-- Custom Dropdowns for Filters -->
-                    <div class="custom-dropdown">
-                        <div id="year-dropdown-list-header" class="dropdown-header">
-                            <span class="dropdown-title">Years</span>
-                            <div class="header-controls">
-                                <span class="selected-count">0 selected</span>
-                                <span id="clear-year-custom" class="clear-icon">&times;</span>
-                            </div>
-                        </div>
-                        <div id="year-dropdown-list" class="dropdown-list">
-                            <!-- Dynamically populated year options will go here -->
+                <!-- Custom Dropdowns for Filters -->
+                <div class="custom-dropdown">
+                    <div id="year-dropdown-list-header" class="dropdown-header">
+                        <span class="dropdown-title">Jahr</span>
+                        <div class="header-controls">
+                            <span class="selected-count">0 sel.</span>
+                            <span id="clear-year-custom" class="clear-icon">&times;</span>
                         </div>
                     </div>
+                    <div id="year-dropdown-list" class="dropdown-list">
+                        <!-- Dynamically populated year options will go here -->
+                    </div>
+                </div>
 
-                    <div class="custom-dropdown">
-                        <div id="genre-dropdown-list-header" class="dropdown-header">
-                            <span class="dropdown-title">Genres</span>
-                            <div class="header-controls">
-                                <span class="selected-count">0 selected</span>
-                                <span id="clear-genre-custom" class="clear-icon">&times;</span>
-                            </div>
-                        </div>
-                        <div id="genre-dropdown-list" class="dropdown-list">
-                            <!-- Dynamically populated genre options will go here -->
+                <div class="custom-dropdown">
+                    <div id="genre-dropdown-list-header" class="dropdown-header">
+                        <span class="dropdown-title">Genre</span>
+                        <div class="header-controls">
+                            <span class="selected-count">0 sel.</span>
+                            <span id="clear-genre-custom" class="clear-icon">&times;</span>
                         </div>
                     </div>
+                    <div id="genre-dropdown-list" class="dropdown-list">
+                        <!-- Dynamically populated genre options will go here -->
+                    </div>
+                </div>
 
-                    <div class="custom-dropdown">
-                        <div id="country-dropdown-list-header" class="dropdown-header">
-                            <span class="dropdown-title">Countries</span>
-                            <div class="header-controls">
-                                <span class="selected-count">0 selected</span>
-                                <span id="clear-country-custom" class="clear-icon">&times;</span>
-                            </div>
-                        </div>
-                        <div id="country-dropdown-list" class="dropdown-list">
-                            <!-- Dynamically populated country options will go here -->
+                <div class="custom-dropdown">
+                    <div id="country-dropdown-list-header" class="dropdown-header">
+                        <span class="dropdown-title">Land</span>
+                        <div class="header-controls">
+                            <span class="selected-count">0 sel.</span>
+                            <span id="clear-country-custom" class="clear-icon">&times;</span>
                         </div>
                     </div>
-                </form>
-            </div>
-        </section>
+                    <div id="country-dropdown-list" class="dropdown-list">
+                        <!-- Dynamically populated country options will go here -->
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
