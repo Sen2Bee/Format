@@ -1,12 +1,14 @@
 /* variables.css */
 
 :root {
-    --primary-color: #2c2c2c;
-    --accent-color: #edc305;
-    --link-color: #a98b03;    
-    --background-color: #f9f9f9;
-    --text-color: #333;
-    --secondary-text-color: #555;
-    --transition-duration: 1s;
-    --primary-hover-color:#555;
+    --primary-color: #2c3e50; /* Dark Blue */
+    --secondary-color: #34495e; /* Slightly Lighter Blue */
+    --accent-color: #e74c3c; /* Vibrant Red */
+    --background-color: #ecf0f1; /* Light Gray */
+    --text-color: #2c3e50; /* Dark Text */
+    --placeholder-color: #95a5a6; /* Gray Placeholder */
+    --link-color: #a98b03; /* Gold */
+    --secondary-text-color: #555; /* Muted Text */
+    --transition-duration: 0.3s;
+    --button-hover-color: #555;
 }

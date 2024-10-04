@@ -18,29 +18,32 @@
 }
 
 .pagination nav ul li {
-    margin: 0 3px; /* Reduce spacing */
+    margin: 0 5px; /* Reduced spacing */
 }
 
 .pagination nav ul li a,
 .pagination nav ul li span {
     display: inline-block;
-    padding: 6px 10px;
+    padding: 8px 12px;
     background-color: var(--primary-color);
     color: #fff;
     border-radius: 4px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     min-width: 32px; /* Make the buttons more uniform */
     text-align: center;
+    font-size: 1rem;
 }
 
 .pagination nav ul li a:hover {
-    color: var(--accent-color);
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
 }
 
 .pagination nav ul li.active span {
     background-color: var(--accent-color);
     color: var(--primary-color);
+    font-weight: bold;
 }
 
 .pagination nav ul li.disabled span {
@@ -68,4 +71,3 @@
 .pagination ul li.disabled {
     cursor: default;
 }
-

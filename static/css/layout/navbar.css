@@ -1,3 +1,5 @@
+/* navbar.css */
+
 /* General Navbar Styles */
 .navbar {
     display: flex;
@@ -12,8 +14,9 @@
     height: 60px;  /* Increased default height for visibility */
     padding: 0 20px;
     z-index: 1000;
-    transition: height 0.3s ease, top 0.3s ease;  /* Smooth transitions */
+    transition: height 0.3s ease, top 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Open Sans', sans-serif;
 }
 
 /* Shrunk State */
@@ -30,6 +33,7 @@
 .menu-toggle {
     display: none;  /* Hide by default */
     cursor: pointer;
+    transition: transform 0.3s ease-in-out;  /* Smooth rotation animation */
 }
 
 .menu-toggle i {
@@ -40,10 +44,9 @@
 /* Main Logo Styling */
 .logo {
     display: flex;
-    align-items: baseline;
+    align-items: center;
 }
 
-/* Logo Text */
 .logo span {
     font-size: 2.5rem;  /* Adjust main logo size for better readability */
     color: #fff;
@@ -57,13 +60,12 @@
     font-size: 1.5rem;  /* Adjust sub-logo size */
     color: var(--accent-color);
     text-transform: lowercase;
-    padding-top: 2px;
 }
 
 /* Navigation Links */
 .nav-links {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -78,17 +80,19 @@
     text-decoration: none;
     color: #f7f7f7;
     font-size: 1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
     font-family: 'Open Sans', sans-serif;
-    transition: color 0.3s ease;
 }
 
 .nav-links li a:hover {
     color: var(--accent-color);  /* Hover color change */
+    transform: translateY(-2px);
 }
 
 /* Active Link */
 .nav-links li a.active {
     color: var(--accent-color);
+    font-weight: bold;
 }
 
 /* Responsive Styles */
@@ -109,6 +113,7 @@
         background-color: rgba(44, 44, 44, 1);
         z-index: 999;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        padding: 10px 0;
     }
 
     .nav-links li {
@@ -174,10 +179,26 @@
 }
 
 /* Animation for Menu Toggle Button */
-.menu-toggle {
-    transition: transform 0.3s ease-in-out;  /* Smooth rotation animation */
-}
-
 .menu-toggle.active {
     transform: rotate(90deg);  /* Rotate when active */
+}
+
+/* Mobile Footer Link Styling */
+.mobile-footer-link {
+    display: none;  /* Hidden by default */
+}
+
+@media (max-width: 768px) {
+    .mobile-footer-link {
+        display: block;
+        background-color: var(--primary-color);
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    .mobile-footer-link a {
+        color: #fff;
+        font-size: 1rem;
+        text-decoration: none;
+    }
 }

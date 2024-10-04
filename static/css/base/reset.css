@@ -1,4 +1,7 @@
+/* reset.css */
+
 /* Refined Reset */
+
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -31,4 +34,5 @@ ul, ol {
 /* Prevent overflow issues */
 html, body {
     overflow-x: hidden; /* Restrict horizontal overflow */
+    font-family: 'Open Sans', sans-serif; /* Set default font */
 }

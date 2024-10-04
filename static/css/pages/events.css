@@ -2,66 +2,119 @@
 
 /* Events Calendar Section */
 .events-calendar {
-    padding: 40px 20px;
+    padding: 60px 20px;
     background-color: #fff;
 }
 
 .events-calendar h2 {
     text-align: center;
     font-family: 'Cinzel', serif;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     color: var(--primary-color);
+    font-size: 2rem;
 }
 
 .event {
     border: 1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 4px;
+    padding: 25px 20px;
+    margin-bottom: 25px;
+    border-radius: 8px;
     background-color: #fdfdfd;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .event h3 {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     color: var(--primary-color);
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
 }
 
 .event p {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     color: var(--secondary-text-color);
+    font-size: 1.1rem;
 }
 
 .event .btn {
-    margin-top: 10px;
+    margin-top: 15px;
     background-color: var(--primary-color);
     color: #fff;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: 1rem;
 }
 
 .event .btn:hover {
     background-color: #555;
+    transform: translateY(-2px);
 }
 
 /* Calendar View Section */
 .calendar-view {
-    padding: 40px 20px;
+    padding: 60px 20px;
     background-color: var(--background-color);
     text-align: center;
 }
 
 .calendar-view h2 {
     font-family: 'Cinzel', serif;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: var(--primary-color);
+    font-size: 2rem;
 }
 
 #calendar {
     background-color: #fff;
     border: 1px solid #ddd;
     padding: 40px;
-    border-radius: 4px;
+    border-radius: 8px;
     color: var(--secondary-text-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .events-calendar {
+        padding: 40px 15px;
+    }
+
+    .event {
+        padding: 20px 15px;
+    }
+
+    .calendar-view {
+        padding: 40px 15px;
+    }
+
+    #calendar {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .events-calendar {
+        padding: 30px 10px;
+    }
+
+    .event {
+        padding: 15px 10px;
+    }
+
+    .calendar-view {
+        padding: 30px 10px;
+    }
+
+    #calendar {
+        padding: 20px;
+    }
 }

@@ -1,4 +1,6 @@
-/* Button Styles */
+/* buttons.css */
+
+/* General Button Styles */
 .btn {
     background-color: var(--primary-color);
     color: #fff;
@@ -6,21 +8,22 @@
     border: none;
     cursor: pointer;
     font-weight: 600;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border-radius: 8px; /* Increased border-radius for elegance */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .btn:hover {
-    background-color: #555;
+    background-color: var(--button-hover-color);
+    transform: translateY(-2px); /* Subtle lift on hover */
 }
 
-
-/* Styling for the button directly below the tagline */
+/* Primary Button Styling */
 .btn-primary {
     background-color: var(--accent-color);
-    color: #2c2c2c;
+    color: var(--primary-color);
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: none;
     font-size: 1.2em;
     text-transform: uppercase;

@@ -1,26 +1,40 @@
 /* forms.css */
 
-/* Form Styles */
+/* General Form Styles */
 input[type="text"],
 input[type="email"],
 select,
 textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px 15px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     color: var(--primary-color);
+    font-weight: 600;
 }
 
-label span {
-    color: #e74c3c; /* Red for required fields */
+label span.required {
+    color: #e74c3c; /* Red color for required fields */
 }
 
 .contact-form .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }

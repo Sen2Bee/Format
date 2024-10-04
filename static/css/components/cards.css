@@ -1,3 +1,5 @@
+/* cards.css */
+
 /* General Movie Card Container */
 .movie-card {
     display: flex;
@@ -10,12 +12,13 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 1100px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
 }
 
 .movie-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Background Image for Movie Card */
@@ -33,7 +36,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Lighter semi-transparent dark overlay */
+    background: rgba(0, 0, 0, 0.4); /* Semi-transparent dark overlay */
     z-index: 0;
     display: none; /* Only visible on mobile */
     transition: background 0.3s ease;
@@ -54,8 +57,10 @@
     gap: 20px;
     background: rgba(30, 30, 30, 0.85);
     z-index: 1;
+    border-radius: 10px;
 }
 
+/* Image Container */
 .image-container {
     grid-area: poster;
     position: relative;
@@ -73,6 +78,7 @@
     transform: scale(1.05); /* Zoom-in effect on hover */
 }
 
+/* Info Section */
 .info-section {
     grid-area: metadata;
     padding: 20px;
@@ -94,6 +100,7 @@
     font-size: 1.8em;
     color: #ffd700;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-family: 'Cinzel', serif;
 }
 
 /* Metadata Section */
@@ -108,18 +115,16 @@
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Label Styles */
 .metadata p strong {
-    font-size: 1.1em; /* Default size */
-    font-weight: bold; /* Default bold */
-    transition: font-size 0.3s ease, font-weight 0.3s ease;
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
 .metadata p span {
-    font-weight: bold; /* Default bold content */
-    transition: font-size 0.3s ease, font-weight 0.3s ease;
+    font-weight: bold;
 }
 
+/* Inline Metadata */
 .inline-meta {
     font-size: 1.1em;
     color: #ddd;
@@ -228,22 +233,26 @@
 
     /* Text Adjustments for Mobile */
     .metadata p strong {
-        font-size: 1.3em; /* Larger size for labels on mobile */
-        font-weight: bold; /* Default bold on mobile */
+        font-size: 1.3em;
+        font-weight: bold;
     }
 
     .metadata p span {
-        font-weight: bold; /* Content bold on mobile */
+        font-weight: bold;
+    }
+
+    .overview-section {
+        font-weight: bold;
     }
 
     .movie-card:hover .metadata p strong,
     .movie-card:hover .metadata p span {
-        font-size: 1.1em; /* Shrink label size on hover */
-        font-weight: normal; /* Regular weight on hover */
+        font-size: 1.1em;
+        font-weight: normal;
     }
 
     .overview-section {
-        font-weight: bold; /* Default font weight on mobile */
+        font-weight: bold;
     }
 
     /* Thinner font on hover/touch */
@@ -280,6 +289,8 @@
         width: 90%;
     }
 }
+
+/* Missing Poster Styling */
 .missing-poster {
     border: 2px dashed red;  /* Optional border to highlight missing posters */
     opacity: 0.6;  /* Dim the card slightly */

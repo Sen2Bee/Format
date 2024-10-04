@@ -1,5 +1,6 @@
 /* typography.css */
 
+/* Import Fonts */
 @font-face {
     font-family: 'Spacia Heavy';
     src: url('../../assets/fonts/Spacia Heavy.ttf') format('opentype');
@@ -15,3 +16,30 @@ body {
     line-height: 1.6;
 }
 
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+/* Paragraphs */
+p {
+    margin-bottom: 15px;
+    color: var(--secondary-text-color);
+}
+
+/* Links */
+a {
+    color: var(--link-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--accent-color);
+}
+
+/* Buttons inside forms and other components */
+button {
+    font-family: 'Open Sans', sans-serif;
+}

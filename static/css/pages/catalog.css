@@ -1,53 +1,40 @@
+/* catalog.css */
+
 /* Catalog Search Section */
 .catalog-search {
-    padding: 40px 20px;
-    background-color: #1e1e1e; /* Adjust background to match dark theme */
+    padding: 80px 20px;
+    background-color: #1e1e1e; /* Dark background for contrast */
     text-align: center;
 }
 
 .catalog-search form {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
-.catalog-search input[type="text"] {
-    padding: 10px;
-    width: 300px;
-    border: 1px solid #333; /* Darker border for consistency */
-    border-radius: 4px;
-    background-color: #333; /* Match the dark theme */
-    color: #fff; /* White text color */
-}
-
-.catalog-search .filters {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.catalog-search select {
-    padding: 10px;
-    border: 1px solid #333; /* Darker border for dropdowns */
-    border-radius: 4px;
-    background-color: #333; /* Darker dropdown background */
-    color: #fff; /* White text */
-}
+/* No longer needed as search-container and custom-dropdown are handled in their respective CSS */
 
 /* Movie Listings Section */
 .movie-listings {
     display: flex;
-    flex-direction: column; /* Use flex-direction column for aligned layout */
-    align-items: center;    /* Center the cards within the container */
-    gap: 20px;
-    padding: 40px 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 60px 20px;
     background-color: #252b36; /* Dark background for the movie listing */
 }
 
-/* Adjustments for Notebook Resolution */
+.movie-listings .no-movies-message {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+/* Responsive Styles for Notebook Resolution */
 @media (max-width: 1440px) {
     .movie-listings {
         gap: 25px; /* Adjust gap slightly for larger screens */
@@ -58,19 +45,24 @@
 @media (max-width: 1024px) {
     .movie-listings {
         gap: 20px; /* Smaller gap for tablet display */
-        padding: 20px 40px;
+        padding: 40px 40px;
     }
 }
 
 /* Full Column Layout for Mobile */
 @media (max-width: 768px) {
+    .catalog-search {
+        padding: 30px 20px;
+
+    }
+
     .movie-listings {
         gap: 15px; /* Reduced gap for mobile */
-        flex-direction: column; /* Stack cards vertically for mobile */
-        padding: 20px;
+        padding: 40px 20px;
     }
 
     .movie-card {
         width: 90%; /* Make the movie cards narrower on mobile */
     }
+    
 }
