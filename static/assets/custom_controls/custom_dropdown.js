@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeCustomDropdowns() {
     console.log("Initializing Custom Dropdowns...");
 
-    // Retrieve the custom dropdown elements by ID
+    // Retrieve the custom dropdown elements by their header and list classes
     const dropdownHeaders = document.querySelectorAll('.dropdown-header');
     const dropdownLists = document.querySelectorAll('.dropdown-list');
     const clearButtons = document.querySelectorAll('.clear-icon');
@@ -25,61 +25,15 @@ function initializeCustomDropdowns() {
     // Attach event listeners for each dropdown and clear button
     dropdownHeaders.forEach((header, index) => {
         const dropdownList = dropdownLists[index];
-        const clearButton = clearButtons[index];
+        const clearButton = header.querySelector('.clear-icon');
         attachDropdownListeners(header, dropdownList, clearButton);
     });
 }
 
-// Function to populate dropdowns with checkbox options dynamically
-
-function populateDropdown(dropdownListId, options, selectedValues = []) {
-    const dropdownList = document.getElementById(dropdownListId);
-    dropdownList.innerHTML = "";  // Clear any existing options
-
-    // **Separate Decades and Years**
-    const decades = [];
-    const years = [];
-
-    // Iterate through options and separate into decades and years
-    Object.entries(options).forEach(([key, count]) => {
-        if (key.includes("...")) {
-            decades.push({ label: key, count: count });
-        } else {
-            years.push({ label: key, count: count });
-        }
-    });
-
-    console.log("Decades:", decades);
-    console.log("Years:", years);
-
-    // **Sort Decades in Ascending Order (e.g., 1910...1919, 1920...1929)**
-    decades.sort((a, b) => parseInt(a.label.split("...")[0]) - parseInt(b.label.split("...")[0]));
-
-    // **Sort Years in Descending Order (e.g., 2023, 2022, 2021)**
-    years.sort((a, b) => parseInt(b.label) - parseInt(a.label));
-
-    // **Combine Decades First and Years Below**
-    const sortedOptions = [...decades, ...years];
-
-    console.log("Sorted Options for Dropdown:", sortedOptions);
-
-    // **Render Sorted Options to the Dropdown**
-    sortedOptions.forEach(option => {
-        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
-        dropdownList.appendChild(label);
-    });
-
-    console.log(`Dropdown ${dropdownListId} Updated with Correct Order.`);
-}
-
-
 // Function to attach listeners to dropdown header, checkboxes, and clear button
 function attachDropdownListeners(header, dropdownList, clearButton) {
-    console.log(`Attaching listeners to ${header.id}...`);
+    console.log(`Attaching dropdown listeners to ${header.id}...`);
 
-    const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
     const selectedCount = header.querySelector('.selected-count');
 
     if (!selectedCount) {
@@ -101,24 +55,92 @@ function attachDropdownListeners(header, dropdownList, clearButton) {
         }
     });
 
-    // Handle checkbox selection changes
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            updateSelectedCount(checkboxes, selectedCount, clearButton);
-            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
-        });
-    });
-
     // Clear all selections when the clear button is clicked
     clearButton.addEventListener('click', (event) => {
         event.stopPropagation(); // Prevent header dropdown toggle
+        const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
         updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
         triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
     });
 
-    console.log(`Listeners successfully attached to ${header.id}`);
+    console.log(`Dropdown listeners successfully attached to ${header.id}`);
 }
+
+// Function to attach checkbox listeners
+function attachCheckboxListeners(dropdownList, selectedCount, clearButton) {
+    const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+    console.log(`Attaching checkbox listeners to ${dropdownList.id}...`);
+    console.log("Checkboxes found:", checkboxes.length);
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            console.log("Checkbox change detected in", dropdownList.id);
+            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update the selected count
+            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+        });
+    });
+    console.log(`Checkbox listeners successfully attached to ${dropdownList.id}`);
+}
+
+// Function to populate dropdowns dynamically and attach checkbox listeners
+function populateDropdown(dropdownListId, options, selectedValues = []) {
+    const dropdownList = document.getElementById(dropdownListId);
+    dropdownList.innerHTML = "";  // Clear any existing options
+
+    // Separate Decades and Years
+    const decades = [];
+    const years = [];
+
+    // Iterate through options and separate into decades and years
+    Object.entries(options).forEach(([key, count]) => {
+        if (key.includes("...")) {
+            decades.push({ label: key, count: count });
+        } else {
+            years.push({ label: key, count: count });
+        }
+    });
+
+    console.log("Decades:", decades);
+    console.log("Years:", years);
+
+    // Sort Decades in Ascending Order (e.g., 1910...1919, 1920...1929)
+    decades.sort((a, b) => parseInt(a.label.split("...")[0]) - parseInt(b.label.split("...")[0]));
+
+    // Sort Years in Descending Order (e.g., 2023, 2022, 2021)
+    years.sort((a, b) => parseInt(b.label) - parseInt(a.label));
+
+    // Combine Decades First and Years Below
+    const sortedOptions = [...decades, ...years];
+
+    // Render Sorted Options to the Dropdown
+    sortedOptions.forEach(option => {
+        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
+        dropdownList.appendChild(label);
+    });
+
+
+
+    // Attach Checkbox Listeners after the dropdown is populated
+    const header = document.querySelector(`#${dropdownListId}-header`);
+    console.log(`Dropdown ${dropdownListId} header: `, header);
+    if (header) {
+        const selectedCount = header.querySelector('.selected-count');
+        const clearButton = header.querySelector('.clear-icon');
+
+        // Attach checkbox listeners to handle selections and updates
+        if (selectedCount && clearButton) {
+            attachCheckboxListeners(dropdownList, selectedCount, clearButton);
+        } else {
+            console.error(`Dropdown ${dropdownListId}: Could not find header elements for attaching checkbox listeners.`);
+        }
+    } else {
+        console.error(`Dropdown header not found for ${dropdownListId}`);
+    }
+}
+
 
 // Function to show/hide dropdown
 function toggleDropdown(dropdownList) {
@@ -140,8 +162,15 @@ function updateSelectedCount(checkboxes, countElement, clearButton) {
 }
 
 // Function to trigger a custom event to notify filter.js of dropdown changes
+// Trigger a custom change event to update filters
 function triggerDropdownChangeEvent() {
     const event = new CustomEvent('dropdownChange');
     console.log("Dispatching dropdownChange event");
+
+    // Dispatch the custom dropdownChange event
     document.dispatchEvent(event);
+
+    // Call the function to update the movie list and pagination
+    updateMovieListAndPagination();
 }
+

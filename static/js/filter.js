@@ -80,7 +80,7 @@ function updateFilters(page = 1) {
             const { years, genres, countries, movies, current_page, total_pages } = data;
 
             // Populate each dropdown with data
-            console.log("Populating Dropdowns: Years, Genres, and Countries");
+            // console.log("Populating Dropdowns: Years, Genres, and Countries");
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
