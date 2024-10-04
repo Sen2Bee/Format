@@ -1,10 +1,13 @@
+// filter.js
+
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Filter.js: DOM fully loaded");
     initializeFilterDropdowns();  // Initialize dropdowns on page load
 });
 
-// Cache elements and buttons
+/** Cache Elements and Buttons */
 const clearSearchBtn = document.getElementById('clear-search');
+const searchBox = document.getElementById('search-box');
 const movieContainer = document.querySelector('.movie-listings');
 const topPaginationContainer = document.querySelector('.top-pagination nav ul');
 const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
@@ -22,23 +25,121 @@ function initializeFilterDropdowns() {
     });
 
     // Search box input event with debouncing
-    searchBox.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            updateFilters(); // Trigger filter update after user stops typing for 300ms
-        }, 300);
-    });
+    if (searchBox) { // Check if searchBox exists
+        searchBox.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateFilters(); // Trigger filter update after user stops typing for 300ms
+            }, 300);
+        });
+    } else {
+        console.error("initializeFilterDropdowns: searchBox element not found.");
+    }
 
     // Clear search box and trigger update
-    clearSearchBtn.addEventListener('click', () => {
-        searchBox.value = '';
-        clearSearchBtn.classList.remove('visible');
-        updateFilters();
-    });
+    if (clearSearchBtn && searchBox) { // Ensure both elements exist
+        clearSearchBtn.addEventListener('click', () => {
+            searchBox.value = '';
+            clearSearchBtn.classList.remove('visible');
+            updateFilters();
+        });
+    } else {
+        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
+    }
 
+    // Attach event listeners to dropdowns
+    attachDropdownEventListeners();
 
     // Initial filter update
     updateFilters();
+}
+
+/**
+ * Function to attach event listeners to dropdown headers and clear buttons
+ */
+function attachDropdownEventListeners() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+
+    dropdownHeaders.forEach(header => {
+        const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
+        const clearButton = header.querySelector('.clear-icon');
+        const selectedCount = header.querySelector('.selected-count');
+
+        if (!dropdownList) {
+            console.error("attachDropdownEventListeners: Dropdown list not found for a header.");
+            return;
+        }
+
+        if (!selectedCount) {
+            console.error("attachDropdownEventListeners: Selected count element not found in a header.");
+            return;
+        }
+
+        // Toggle dropdown visibility on header click
+        header.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent event from bubbling up
+            toggleDropdown(dropdownList);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
+                dropdownList.classList.remove('show');
+            }
+        });
+
+        // Clear all selections when the clear button is clicked
+        clearButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent header dropdown toggle
+            const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
+            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
+            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+        });
+
+        // Attach checkbox listeners using Event Delegation
+        dropdownList.addEventListener('change', (event) => {
+            if (event.target && event.target.type === 'checkbox') {
+                updateSelectedCount(dropdownList.querySelectorAll('input[type="checkbox"]'), selectedCount, clearButton);
+                triggerDropdownChangeEvent();
+            }
+        });
+    });
+}
+
+/**
+ * Function to toggle dropdown visibility
+ */
+function toggleDropdown(dropdownList) {
+    const isVisible = dropdownList.classList.contains('show');
+    if (isVisible) {
+        dropdownList.classList.remove('show');
+    } else {
+        dropdownList.classList.add('show');
+    }
+}
+
+/**
+ * Function to update the selected count display and handle visibility of the clear button
+ */
+function updateSelectedCount(checkboxes, countElement, clearButton) {
+    const selectedItems = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+    const count = selectedItems.length;
+
+    // Update the count display
+    countElement.textContent = `${count} sel.`;
+
+    // Show or hide the clear button based on the count
+    clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
+}
+
+/**
+ * Function to trigger a custom event to notify filter.js of dropdown changes
+ */
+function triggerDropdownChangeEvent() {
+    const event = new CustomEvent('dropdownChange');
+    console.log("Dispatching dropdownChange event");
+    document.dispatchEvent(event);
 }
 
 /**
@@ -48,7 +149,7 @@ function updateFilters(page = 1) {
     const selectedYears = getCheckedValues('year-dropdown-list');
     const selectedGenres = getCheckedValues('genre-dropdown-list');
     const selectedCountries = getCheckedValues('country-dropdown-list');
-    const searchQuery = searchBox.value.trim();
+    const searchQuery = searchBox ? searchBox.value.trim() : '';
 
     const params = new URLSearchParams();
     if (selectedYears.length) params.append('years', selectedYears.join(','));
@@ -66,7 +167,6 @@ function updateFilters(page = 1) {
             const { years, genres, countries, movies, current_page, total_pages } = data;
 
             // Populate each dropdown with data
-            // console.log("Populating Dropdowns: Years, Genres, and Countries");
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
@@ -74,7 +174,12 @@ function updateFilters(page = 1) {
             updateMovieListings(movies);
             updatePagination(current_page, total_pages);
         })
-        .catch(error => console.error('Error fetching filter data:', error));
+        .catch(error => {
+            console.error('Error fetching filter data:', error);
+            if (movieContainer) {
+                movieContainer.innerHTML = `<p class="no-movies-message">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>`;
+            }
+        });
 }
 
 /**
@@ -85,12 +190,55 @@ function getCheckedValues(dropdownListId) {
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
+/**
+ * Function to populate dropdown lists with options
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @param {Object} options - An object with option labels as keys and counts as values
+ * @param {Array} selectedValues - An array of currently selected option values
+ */
+function populateDropdown(dropdownListId, options, selectedValues = []) {
+    const dropdownList = document.getElementById(dropdownListId);
+    if (!dropdownList) {
+        console.error(`populateDropdown: Element with ID '${dropdownListId}' not found.`);
+        return;
+    }
+
+    dropdownList.innerHTML = "";  // Clear existing options
+
+    if (typeof options !== 'object' || Array.isArray(options)) {
+        console.error(`populateDropdown: 'options' should be an object. Received:`, options);
+        return;
+    }
+
+    // Convert the options object into an array of objects with label and count
+    const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
+
+    // Sort options alphabetically or as needed
+    optionsArray.sort((a, b) => {
+        if (a.label < b.label) return -1;
+        if (a.label > b.label) return 1;
+        return 0;
+    });
+
+    // Render options
+    optionsArray.forEach(option => {
+        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
+        dropdownList.appendChild(label);
+    });
+}
 
 /**
  * Update the movie listings dynamically based on the filter results
  */
 function updateMovieListings(movies) {
     console.log("Updating Movie Listings");
+    if (!movieContainer) {
+        console.error("updateMovieListings: movieContainer element not found.");
+        return;
+    }
+
     movieContainer.innerHTML = "";  // Clear existing listings
 
     if (movies.length > 0) {

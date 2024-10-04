@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-04 22:13:03 ===
+=== Code Summary Generated at 2024-10-05 00:50:49 ===
 
 === Project Folder Structure ===
 
@@ -57,140 +57,6 @@ Format/
 === File Contents ===
 
 --- File: static\assets\custom_controls\custom_dropdown_search.css ---
-/* custom_dropdown_search.css */
-
-/* Custom Dropdown Styles */
-.custom-dropdown {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    width: 100%;
-    height: 40px; /* Same height as search-container */
-    /* border: 2px solid blue; */ /* Remove after debugging */
-}
-
-/* Dropdown Header Styling */
-.dropdown-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #333;
-    color: #ffffff;
-    padding: 0 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    height: 100%;
-    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
-}
-
-.dropdown-header:hover {
-    background: #444;
-}
-
-/* Dropdown Title Styling */
-.dropdown-title {
-    font-size: 1.05em;
-    font-weight: 600;
-}
-
-/* Header Controls Container */
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Selected Count Styling */
-.selected-count {
-    color: var(--link-color);
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 0.85em;
-    display: flex;
-    align-items: center;
-}
-
-/* Clear Icon Styling */
-.clear-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 1.2em;
-    color: #fff;
-    background: rgba(68, 68, 68, 0.6);
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    visibility: hidden;
-}
-
-.dropdown-header:hover .clear-icon,
-.header-controls:hover .clear-icon {
-    visibility: visible; /* Show clear icons on hover */
-}
-
-.clear-icon:hover {
-    background: var(--accent-color);
-    color: #555;
-}
-
-.clear-icon:active {
-    background: var(--secondary-text-color);
-    color: #eee;
-}
-
-/* Dropdown List Styles */
-.dropdown-list {
-    display: none;
-    background: #2c2c2c;
-    color: #e0e0e0;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    border-radius: 5px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    max-height: 250px;
-    overflow-y: auto;
-}
-
-.dropdown-list label {
-    display: flex;
-    align-items: center;
-    padding: 12px 18px;
-    font-size: 1.05em;
-    color: #f1f1f1;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.dropdown-list input[type="checkbox"] {
-    margin-right: 12px;
-    transform: scale(1.2);
-}
-
-.dropdown-list label:hover {
-    background: #444;
-    color: #ffffff;
-}
-
-/* Scrollbar Customization */
-.dropdown-list::-webkit-scrollbar {
-    width: 10px;
-}
-
-.dropdown-list::-webkit-scrollbar-track {
-    background: #333;
-}
-
-.dropdown-list::-webkit-scrollbar-thumb {
-    background-color: #555;
-    border-radius: 5px;
-}
-
---- File: static\assets\custom_controls\search_container.css ---
 /* search_container.css */
 
 /* Parent Container */
@@ -203,10 +69,10 @@ Format/
     max-width: 1200px;
     background-color: #444;
     padding: 20px;
-    margin: 20px auto; /* 20px top and bottom, auto left and right */
-
+    margin-top: 20px;
     box-sizing: border-box;
-    /* border: 2px solid blue; */ /* Remove after debugging */
+    /* Remove debug borders */
+    /* border: 2px solid blue; */
 }
 
 /* Form */
@@ -227,8 +93,9 @@ Format/
     align-items: center;
     position: relative;
     height: 40px; /* Ensure same height */
+    /* Remove debug borders */
+    /* border: 2px solid red; */
     margin: 10px;
-    /* border: 2px solid red; */ /* Remove after debugging */
 }
 
 /* Search Box */
@@ -269,33 +136,19 @@ Format/
     cursor: pointer;
     visibility: hidden;
     z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .search-container:hover #clear-search {
-    visibility: visible;
+    visibility: visible; /* Show clear icon on hover */
 }
 
-#clear-search:hover {
-    background: rgba(68, 68, 68, 0.9);
-    color: rgba(255, 255, 255, 1);
-}
-
-#clear-search:active {
-    background: rgba(68, 68, 68, 1);
-    color: rgba(255, 255, 255, 0.8);
-}
-
-/* Custom Dropdown Styles */
+/* Dropdowns */
 .custom-dropdown {
     display: flex;
     flex-direction: column;
     position: relative;
     width: 100%;
     height: 40px; /* Same height as search-container */
-    /* border: 2px solid blue; */ /* Remove after debugging */
 }
 
 .dropdown-header {
@@ -303,7 +156,7 @@ Format/
     justify-content: space-between;
     align-items: center;
     background: #333;
-    color: #ffffff;
+    color: #fff;
     padding: 0 18px;
     border-radius: 5px;
     cursor: pointer;
@@ -354,17 +207,7 @@ Format/
     visibility: visible; /* Show clear icons on hover */
 }
 
-.clear-icon:hover {
-    background: var(--accent-color);
-    color: #555;
-}
-
-.clear-icon:active {
-    background: var(--secondary-text-color);
-    color: #eee;
-}
-
-/* Dropdown List Styles */
+/* Dropdown List */
 .dropdown-list {
     display: none;
     background: #2c2c2c;
@@ -397,7 +240,7 @@ Format/
 
 .dropdown-list label:hover {
     background: #444;
-    color: #ffffff;
+    color: #fff;
 }
 
 /* Scrollbar Customization */
@@ -412,6 +255,332 @@ Format/
 .dropdown-list::-webkit-scrollbar-thumb {
     background-color: #555;
     border-radius: 5px;
+}
+
+/* Responsive Adjustments for Mobile */
+@media (max-width: 768px) {
+    .catalog-search {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    .search-dropdown-container {
+        flex-direction: column;
+        width: 100%;
+        padding: 15px;
+        margin-top: 15px;
+    }
+
+    .search-container,
+    .custom-dropdown {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .dropdown-header {
+        height: 50px;
+        font-size: 1.2em;
+    }
+}
+
+--- File: static\assets\custom_controls\search_container.css ---
+/* search_container.css */
+
+/* Variables (Ensure these are defined in your variables.css or main.css) */
+:root {
+    --primary-color: #2c3e50; /* Dark Blue */
+    --secondary-color: #34495e; /* Slightly Lighter Blue */
+    --accent-color: #e74c3c; /* Vibrant Red */
+    --link-color: #f1c40f; /* Gold */
+    --secondary-text-color: #7f8c8d; /* Muted Text */
+    --text-color: #ffffff; /* White Text for Dropdown */
+    --placeholder-color: #bdc3c7; /* Placeholder Text Color */
+    --background-color: #f9f9f9; /* Background Color for Container */
+    --transition-duration: 0.3s;
+}
+
+/* Parent Container */
+.search-dropdown-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center; /* Ensures vertical alignment */
+    width: 90%;
+    max-width: 1200px;
+    background-color: var(--background-color);
+    padding: 25px;
+    margin: 25px auto; /* Center horizontally */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-sizing: border-box;
+    /* border: 2px solid blue; */ /* Remove after debugging */
+}
+
+/* Form */
+#filter-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px; /* Space between elements */
+    width: 100%;
+    flex-wrap: wrap; /* Allow elements to wrap on smaller screens */
+}
+
+/* Search Container and Dropdowns */
+.search-container,
+.custom-dropdown {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 50px; /* Increased height for better visibility */
+    border-radius: 8px;
+    flex: 1; /* Allow elements to grow */
+    min-width: 200px; /* Minimum width to prevent shrinking too much */
+}
+
+/* Search Box */
+.search-container {
+    position: relative;
+    max-width: 400px; /* Optional: Limit the maximum width */
+    flex: 2; /* Allows the search box to take up more space */
+}
+
+.search-container input[type="text"],
+#search-box {
+    width: 100%;
+    height: 100%; /* Ensures the input fills the container's height */
+    padding: 0 40px; /* Adjust padding for icons */
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #333; /* Dark background to match dropdowns */
+    color: #fff; /* White text for contrast */
+    transition: border-color var(--transition-duration), box-shadow var(--transition-duration);
+    box-sizing: border-box; /* Ensures padding is included in width and height */
+}
+
+.search-container input[type="text"]:focus,
+#search-box:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+}
+
+.search-container input[type="text"]::placeholder,
+#search-box::placeholder {
+    color: var(--placeholder-color);
+}
+
+/* Search Icon */
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--placeholder-color);
+    font-size: 1rem;
+}
+
+/* Clear Icon for Search Box */
+#clear-search {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    font-size: 1.2rem;
+    line-height: 24px;
+    border-radius: 50%;
+    background: rgba(231, 76, 60, 0.6);
+    color: #fff;
+    cursor: pointer;
+    visibility: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-container:hover #clear-search,
+.search-container input[type="text"]:not(:placeholder-shown) + #clear-search {
+    visibility: visible;
+}
+
+#clear-search:hover {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+#clear-search:active {
+    background: rgba(231, 76, 60, 1);
+    color: #fff;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 200px; /* Fixed width for consistency */
+    height: 50px; /* Same height as search-container */
+    border-radius: 8px; /* Consistent border radius */
+    overflow: hidden; /* Ensure child elements respect border-radius */
+    background-color: #333; /* Consistent background */
+    transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+    flex: 1; /* Allow dropdowns to grow equally */
+}
+
+.custom-dropdown:hover {
+    background-color: #444;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown Header Styling */
+.dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--primary-color); /* Use CSS variable for background */
+    color: var(--text-color); /* Use CSS variable for text color */
+    padding: 0 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    height: 100%;
+    transition: background var(--transition-duration), color var(--transition-duration);
+}
+
+.dropdown-header:hover {
+    background: var(--secondary-color); /* Slightly lighter on hover */
+}
+
+/* Icon Styling */
+.dropdown-header i {
+    font-size: 1.2em; /* Adjust icon size as needed */
+    margin-right: 8px; /* Space between icon and controls */
+}
+
+/* Header Controls Container */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Selected Count Styling */
+.selected-count {
+    color: var(--link-color);
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2); /* Subtle background for readability */
+    transition: background-color var(--transition-duration);
+}
+
+.selected-count:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Clear Icon Styling */
+.clear-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    color: #fff;
+    background: rgba(68, 68, 68, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    transition: background var(--transition-duration), color var(--transition-duration);
+}
+
+.dropdown-header:hover .clear-icon,
+.header-controls:hover .clear-icon {
+    visibility: visible; /* Show clear icons on hover */
+}
+
+.clear-icon:hover {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.clear-icon:active {
+    background: var(--secondary-text-color);
+    color: #eee;
+}
+
+/* Dropdown List Styles */
+.dropdown-list {
+    display: none;
+    background: #2c2c2c;
+    color: #e0e0e0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    transition: opacity var(--transition-duration), transform var(--transition-duration);
+    transform: translateY(-10px);
+    opacity: 0;
+}
+
+.dropdown-list.show {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Dropdown List Items */
+.dropdown-list label {
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    font-size: 1.05em;
+    color: #f1f1f1;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-duration), color var(--transition-duration);
+}
+
+.dropdown-list input[type="checkbox"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.dropdown-list label:hover {
+    background: #444;
+    color: #ffffff;
+}
+
+/* Scrollbar Customization */
+.dropdown-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 4px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+    transition: background-color var(--transition-duration);
+}
+
+.dropdown-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-color);
 }
 
 /* Responsive Adjustments for Mobile */
@@ -436,11 +605,13 @@ Format/
 
     .dropdown-header {
         height: 50px; /* Larger height for touch devices */
-        font-size: 1.2em; /* Slightly larger font */
+        font-size: 1.1rem; /* Slightly larger font */
     }
 }
 
 --- File: static\css\main.css ---
+/* main.css */
+
 /* Import Base Styles */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
@@ -453,20 +624,23 @@ Format/
 
 /* Import Component Styles */
 @import url('../assets/custom_controls/search_container.css');
-
 @import url('../assets/custom_controls/custom_dropdown_search.css');
-
 @import url('./components/cards.css'); /* Import cards.css early */
 @import url('./components/buttons.css');
 @import url('./components/forms.css');
 @import url('./components/pagination.css');
 
-
 /* Import Page-Specific Styles */
 @import url('./pages/catalog.css');
+@import url('./pages/about.css');
+@import url('./pages/contact.css');
+@import url('./pages/events.css');
 
 --- File: static\css\base\reset.css ---
+/* reset.css */
+
 /* Refined Reset */
+
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -499,11 +673,13 @@ ul, ol {
 /* Prevent overflow issues */
 html, body {
     overflow-x: hidden; /* Restrict horizontal overflow */
+    font-family: 'Open Sans', sans-serif; /* Set default font */
 }
 
 --- File: static\css\base\typography.css ---
 /* typography.css */
 
+/* Import Fonts */
 @font-face {
     font-family: 'Spacia Heavy';
     src: url('../../assets/fonts/Spacia Heavy.ttf') format('opentype');
@@ -519,23 +695,54 @@ body {
     line-height: 1.6;
 }
 
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+/* Paragraphs */
+p {
+    margin-bottom: 15px;
+    color: var(--secondary-text-color);
+}
+
+/* Links */
+a {
+    color: var(--link-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--accent-color);
+}
+
+/* Buttons inside forms and other components */
+button {
+    font-family: 'Open Sans', sans-serif;
+}
 
 --- File: static\css\base\variables.css ---
 /* variables.css */
 
 :root {
-    --primary-color: #2c2c2c;
-    --accent-color: #edc305;
-    --link-color: #a98b03;    
-    --background-color: #f9f9f9;
-    --text-color: #333;
-    --secondary-text-color: #555;
-    --transition-duration: 1s;
-    --primary-hover-color:#555;
+    --primary-color: #2c3e50; /* Dark Blue */
+    --secondary-color: #34495e; /* Slightly Lighter Blue */
+    --accent-color: #e74c3c; /* Vibrant Red */
+    --background-color: #ecf0f1; /* Light Gray */
+    --text-color: #2c3e50; /* Dark Text */
+    --placeholder-color: #95a5a6; /* Gray Placeholder */
+    --link-color: #a98b03; /* Gold */
+    --secondary-text-color: #555; /* Muted Text */
+    --transition-duration: 0.3s;
+    --button-hover-color: #555;
 }
 
 --- File: static\css\components\buttons.css ---
-/* Button Styles */
+/* buttons.css */
+
+/* General Button Styles */
 .btn {
     background-color: var(--primary-color);
     color: #fff;
@@ -543,21 +750,22 @@ body {
     border: none;
     cursor: pointer;
     font-weight: 600;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border-radius: 8px; /* Increased border-radius for elegance */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .btn:hover {
-    background-color: #555;
+    background-color: var(--button-hover-color);
+    transform: translateY(-2px); /* Subtle lift on hover */
 }
 
-
-/* Styling for the button directly below the tagline */
+/* Primary Button Styling */
 .btn-primary {
     background-color: var(--accent-color);
-    color: #2c2c2c;
+    color: var(--primary-color);
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: none;
     font-size: 1.2em;
     text-transform: uppercase;
@@ -572,6 +780,8 @@ body {
 }
 
 --- File: static\css\components\cards.css ---
+/* cards.css */
+
 /* General Movie Card Container */
 .movie-card {
     display: flex;
@@ -584,12 +794,13 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 1100px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
 }
 
 .movie-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Background Image for Movie Card */
@@ -607,7 +818,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Lighter semi-transparent dark overlay */
+    background: rgba(0, 0, 0, 0.4); /* Semi-transparent dark overlay */
     z-index: 0;
     display: none; /* Only visible on mobile */
     transition: background 0.3s ease;
@@ -628,8 +839,10 @@ body {
     gap: 20px;
     background: rgba(30, 30, 30, 0.85);
     z-index: 1;
+    border-radius: 10px;
 }
 
+/* Image Container */
 .image-container {
     grid-area: poster;
     position: relative;
@@ -647,6 +860,7 @@ body {
     transform: scale(1.05); /* Zoom-in effect on hover */
 }
 
+/* Info Section */
 .info-section {
     grid-area: metadata;
     padding: 20px;
@@ -668,6 +882,7 @@ body {
     font-size: 1.8em;
     color: #ffd700;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-family: 'Cinzel', serif;
 }
 
 /* Metadata Section */
@@ -682,18 +897,16 @@ body {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Label Styles */
 .metadata p strong {
-    font-size: 1.1em; /* Default size */
-    font-weight: bold; /* Default bold */
-    transition: font-size 0.3s ease, font-weight 0.3s ease;
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
 .metadata p span {
-    font-weight: bold; /* Default bold content */
-    transition: font-size 0.3s ease, font-weight 0.3s ease;
+    font-weight: bold;
 }
 
+/* Inline Metadata */
 .inline-meta {
     font-size: 1.1em;
     color: #ddd;
@@ -802,22 +1015,26 @@ body {
 
     /* Text Adjustments for Mobile */
     .metadata p strong {
-        font-size: 1.3em; /* Larger size for labels on mobile */
-        font-weight: bold; /* Default bold on mobile */
+        font-size: 1.3em;
+        font-weight: bold;
     }
 
     .metadata p span {
-        font-weight: bold; /* Content bold on mobile */
+        font-weight: bold;
+    }
+
+    .overview-section {
+        font-weight: bold;
     }
 
     .movie-card:hover .metadata p strong,
     .movie-card:hover .metadata p span {
-        font-size: 1.1em; /* Shrink label size on hover */
-        font-weight: normal; /* Regular weight on hover */
+        font-size: 1.1em;
+        font-weight: normal;
     }
 
     .overview-section {
-        font-weight: bold; /* Default font weight on mobile */
+        font-weight: bold;
     }
 
     /* Thinner font on hover/touch */
@@ -854,36 +1071,53 @@ body {
         width: 90%;
     }
 }
+
+/* Missing Poster Styling */
 .missing-poster {
     border: 2px dashed red;  /* Optional border to highlight missing posters */
     opacity: 0.6;  /* Dim the card slightly */
 }
+
 --- File: static\css\components\forms.css ---
 /* forms.css */
 
-/* Form Styles */
+/* General Form Styles */
 input[type="text"],
 input[type="email"],
 select,
 textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px 15px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     color: var(--primary-color);
+    font-weight: 600;
 }
 
-label span {
-    color: #e74c3c; /* Red for required fields */
+label span.required {
+    color: #e74c3c; /* Red color for required fields */
 }
 
 .contact-form .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 --- File: static\css\components\pagination.css ---
@@ -907,29 +1141,32 @@ label span {
 }
 
 .pagination nav ul li {
-    margin: 0 3px; /* Reduce spacing */
+    margin: 0 5px; /* Reduced spacing */
 }
 
 .pagination nav ul li a,
 .pagination nav ul li span {
     display: inline-block;
-    padding: 6px 10px;
+    padding: 8px 12px;
     background-color: var(--primary-color);
     color: #fff;
     border-radius: 4px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     min-width: 32px; /* Make the buttons more uniform */
     text-align: center;
+    font-size: 1rem;
 }
 
 .pagination nav ul li a:hover {
-    color: var(--accent-color);
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
 }
 
 .pagination nav ul li.active span {
     background-color: var(--accent-color);
     color: var(--primary-color);
+    font-weight: bold;
 }
 
 .pagination nav ul li.disabled span {
@@ -958,7 +1195,6 @@ label span {
     cursor: default;
 }
 
-
 --- File: static\css\layout\footer.css ---
 /* footer.css */
 
@@ -980,9 +1216,34 @@ footer {
 
 .footer-content p {
     margin: 0;
+    font-size: 1rem;
+    color: #fff;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    footer {
+        padding: 30px 15px;
+    }
+
+    .footer-content p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    footer {
+        padding: 20px 10px;
+    }
+
+    .footer-content p {
+        font-size: 0.8rem;
+    }
 }
 
 --- File: static\css\layout\hero.css ---
+/* hero.css */
+
 /* Hero Section */
 .hero {
     position: relative;
@@ -1006,21 +1267,19 @@ footer {
     left: 0;
 }
 
-/* Hero Overlay Styling */
 .hero-overlay {
     position: relative;
     z-index: 2;
     text-align: center;
-    /* padding: 15px 30px; */
     background-color: rgba(61, 61, 59, 0); /* Semi-transparent overlay */
     color: #ffd700; /* Gold text color for contrast */
     border-radius: 8px;
     display: inline-block;
-    margin-bottom: 20px; /* Add some space between the overlay and the button */
+    margin-bottom: 20px; /* Space between overlay and button */
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-/* Styling for fade-in and fade-out animations */
+/* Fade-in and Fade-out Animations */
 .fade-in {
     animation: fadeIn var(--transition-duration) ease-in-out;
 }
@@ -1054,7 +1313,7 @@ footer {
 #dynamic-tagline {
     font-family: 'Cinzel', serif; /* Cinematic font */
     font-size: 1.6em;  /* Adjust the font size */
-    color: #fff;  /* Gold color for the text */
+    color: #fff;  /* White text color */
     text-align: center;
     text-transform: uppercase;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Text shadow for better readability */
@@ -1062,7 +1321,10 @@ footer {
     margin: 0;
 }
 
-
+/* Button Styling within Hero */
+.hero-overlay .btn-primary {
+    margin-top: 20px;
+}
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
@@ -1094,6 +1356,8 @@ footer {
 }
 
 --- File: static\css\layout\navbar.css ---
+/* navbar.css */
+
 /* General Navbar Styles */
 .navbar {
     display: flex;
@@ -1108,8 +1372,9 @@ footer {
     height: 60px;  /* Increased default height for visibility */
     padding: 0 20px;
     z-index: 1000;
-    transition: height 0.3s ease, top 0.3s ease;  /* Smooth transitions */
+    transition: height 0.3s ease, top 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Open Sans', sans-serif;
 }
 
 /* Shrunk State */
@@ -1126,6 +1391,7 @@ footer {
 .menu-toggle {
     display: none;  /* Hide by default */
     cursor: pointer;
+    transition: transform 0.3s ease-in-out;  /* Smooth rotation animation */
 }
 
 .menu-toggle i {
@@ -1136,10 +1402,9 @@ footer {
 /* Main Logo Styling */
 .logo {
     display: flex;
-    align-items: baseline;
+    align-items: center;
 }
 
-/* Logo Text */
 .logo span {
     font-size: 2.5rem;  /* Adjust main logo size for better readability */
     color: #fff;
@@ -1153,13 +1418,12 @@ footer {
     font-size: 1.5rem;  /* Adjust sub-logo size */
     color: var(--accent-color);
     text-transform: lowercase;
-    padding-top: 2px;
 }
 
 /* Navigation Links */
 .nav-links {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -1174,17 +1438,19 @@ footer {
     text-decoration: none;
     color: #f7f7f7;
     font-size: 1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
     font-family: 'Open Sans', sans-serif;
-    transition: color 0.3s ease;
 }
 
 .nav-links li a:hover {
     color: var(--accent-color);  /* Hover color change */
+    transform: translateY(-2px);
 }
 
 /* Active Link */
 .nav-links li a.active {
     color: var(--accent-color);
+    font-weight: bold;
 }
 
 /* Responsive Styles */
@@ -1205,6 +1471,7 @@ footer {
         background-color: rgba(44, 44, 44, 1);
         z-index: 999;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        padding: 10px 0;
     }
 
     .nav-links li {
@@ -1270,12 +1537,28 @@ footer {
 }
 
 /* Animation for Menu Toggle Button */
-.menu-toggle {
-    transition: transform 0.3s ease-in-out;  /* Smooth rotation animation */
-}
-
 .menu-toggle.active {
     transform: rotate(90deg);  /* Rotate when active */
+}
+
+/* Mobile Footer Link Styling */
+.mobile-footer-link {
+    display: none;  /* Hidden by default */
+}
+
+@media (max-width: 768px) {
+    .mobile-footer-link {
+        display: block;
+        background-color: var(--primary-color);
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    .mobile-footer-link a {
+        color: #fff;
+        font-size: 1rem;
+        text-decoration: none;
+    }
 }
 
 --- File: static\css\pages\about.css ---
@@ -1286,8 +1569,9 @@ footer {
 .about-mission,
 .about-team,
 .about-testimonials {
-    padding: 40px 20px;
-    background-color: #fff;
+    padding: 60px 20px;
+    background-color: #f9f9f9;
+    text-align: center;
 }
 
 .about-history h2,
@@ -1296,55 +1580,67 @@ footer {
 .about-testimonials h2 {
     text-align: center;
     font-family: 'Cinzel', serif;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: var(--primary-color);
 }
 
 .about-history p,
 .about-mission p {
     max-width: 800px;
-    margin: 0 auto 30px auto;
-    line-height: 1.6;
+    margin: 0 auto 40px auto;
+    line-height: 1.8;
     color: var(--secondary-text-color);
+    font-size: 1.1rem;
 }
 
 .about-team {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 30px;
     justify-content: center;
 }
 
 .team-member {
-    width: 200px;
+    width: 220px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .team-member img {
     width: 100%;
-    height: 200px;
+    height: 220px;
     object-fit: cover;
     border-radius: 50%;
     margin-bottom: 15px;
+    border: 3px solid var(--accent-color);
 }
 
 .team-member h3 {
     font-family: 'Cinzel', serif;
     margin-bottom: 5px;
     color: var(--primary-color);
+    font-size: 1.4rem;
 }
 
 .team-member p {
     color: var(--secondary-text-color);
+    font-size: 1rem;
 }
 
 .about-testimonials blockquote {
     max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
+    margin: 40px auto;
+    padding: 25px 20px;
     background-color: #fdfdfd;
     border-left: 5px solid var(--accent-color);
     position: relative;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .about-testimonials blockquote::before {
@@ -1359,65 +1655,108 @@ footer {
 .about-testimonials p {
     margin-bottom: 10px;
     color: var(--secondary-text-color);
+    font-size: 1.1rem;
 }
 
 .about-testimonials cite {
     display: block;
     text-align: right;
     color: #777;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .about-history,
+    .about-mission,
+    .about-team,
+    .about-testimonials {
+        padding: 40px 15px;
+    }
+
+    .team-member {
+        width: 180px;
+    }
+
+    .team-member img {
+        height: 180px;
+    }
+
+    .about-testimonials blockquote {
+        padding: 20px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-history,
+    .about-mission,
+    .about-team,
+    .about-testimonials {
+        padding: 30px 10px;
+    }
+
+    .team-member {
+        width: 150px;
+    }
+
+    .team-member img {
+        height: 150px;
+    }
+
+    .about-testimonials blockquote {
+        padding: 15px 10px;
+    }
+
+    .about-testimonials blockquote::before {
+        font-size: 2rem;
+        left: 5px;
+        top: -5px;
+    }
+
+    .about-testimonials p {
+        font-size: 1rem;
+    }
 }
 
 --- File: static\css\pages\catalog.css ---
+/* catalog.css */
+
 /* Catalog Search Section */
 .catalog-search {
-    padding: 40px 20px;
-    background-color: #1e1e1e; /* Adjust background to match dark theme */
+    padding: 80px 20px;
+    background-color: #1e1e1e; /* Dark background for contrast */
     text-align: center;
 }
 
 .catalog-search form {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
-.catalog-search input[type="text"] {
-    padding: 10px;
-    width: 300px;
-    border: 1px solid #333; /* Darker border for consistency */
-    border-radius: 4px;
-    background-color: #333; /* Match the dark theme */
-    color: #fff; /* White text color */
-}
-
-.catalog-search .filters {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.catalog-search select {
-    padding: 10px;
-    border: 1px solid #333; /* Darker border for dropdowns */
-    border-radius: 4px;
-    background-color: #333; /* Darker dropdown background */
-    color: #fff; /* White text */
-}
+/* No longer needed as search-container and custom-dropdown are handled in their respective CSS */
 
 /* Movie Listings Section */
 .movie-listings {
     display: flex;
-    flex-direction: column; /* Use flex-direction column for aligned layout */
-    align-items: center;    /* Center the cards within the container */
-    gap: 20px;
-    padding: 40px 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 60px 20px;
     background-color: #252b36; /* Dark background for the movie listing */
 }
 
-/* Adjustments for Notebook Resolution */
+.movie-listings .no-movies-message {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+/* Responsive Styles for Notebook Resolution */
 @media (max-width: 1440px) {
     .movie-listings {
         gap: 25px; /* Adjust gap slightly for larger screens */
@@ -1428,21 +1767,26 @@ footer {
 @media (max-width: 1024px) {
     .movie-listings {
         gap: 20px; /* Smaller gap for tablet display */
-        padding: 20px 40px;
+        padding: 40px 40px;
     }
 }
 
 /* Full Column Layout for Mobile */
 @media (max-width: 768px) {
+    .catalog-search {
+        padding: 30px 20px;
+
+    }
+
     .movie-listings {
         gap: 15px; /* Reduced gap for mobile */
-        flex-direction: column; /* Stack cards vertically for mobile */
-        padding: 20px;
+        padding: 40px 20px;
     }
 
     .movie-card {
         width: 90%; /* Make the movie cards narrower on mobile */
     }
+    
 }
 
 --- File: static\css\pages\contact.css ---
@@ -1450,53 +1794,60 @@ footer {
 
 /* Contact Information Section */
 .contact-info {
-    padding: 40px 20px;
+    padding: 60px 20px;
     background-color: #fff;
     text-align: center;
 }
 
 .contact-info h2 {
     font-family: 'Cinzel', serif;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: var(--primary-color);
+    font-size: 2rem;
 }
 
 .contact-details {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .contact-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
     color: var(--secondary-text-color);
+    font-size: 1.1rem;
 }
 
 .contact-item i {
     color: var(--accent-color);
-    font-size: 1.5em;
+    font-size: 1.8em;
 }
 
 .contact-map {
     max-width: 800px;
     margin: 0 auto;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Contact Form Section */
 .contact-form-section {
-    padding: 40px 20px;
+    padding: 60px 20px;
     background-color: var(--background-color);
     text-align: center;
 }
 
 .contact-form-section h2 {
     font-family: 'Cinzel', serif;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: var(--primary-color);
+    font-size: 2rem;
 }
 
 .contact-form {
@@ -1506,40 +1857,55 @@ footer {
 }
 
 .contact-form .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }
 
 .contact-form label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     color: var(--primary-color);
+    font-weight: 600;
 }
 
-.contact-form label span {
-    color: #e74c3c;
+.contact-form label span.required {
+    color: #e74c3c; /* Red color for required fields */
 }
 
 .contact-form input,
 .contact-form textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px 15px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
 }
 
 .contact-form button {
     width: 100%;
-    padding: 10px;
+    padding: 12px 20px;
     background-color: var(--primary-color);
     color: #fff;
     border: none;
     cursor: pointer;
     font-weight: 600;
-    transition: background-color 0.3s ease;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: 1.1rem;
 }
 
 .contact-form button:hover {
     background-color: #555;
+    transform: translateY(-2px);
 }
 
 --- File: static\css\pages\events.css ---
@@ -1547,164 +1913,231 @@ footer {
 
 /* Events Calendar Section */
 .events-calendar {
-    padding: 40px 20px;
+    padding: 60px 20px;
     background-color: #fff;
 }
 
 .events-calendar h2 {
     text-align: center;
     font-family: 'Cinzel', serif;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     color: var(--primary-color);
+    font-size: 2rem;
 }
 
 .event {
     border: 1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 4px;
+    padding: 25px 20px;
+    margin-bottom: 25px;
+    border-radius: 8px;
     background-color: #fdfdfd;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .event h3 {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     color: var(--primary-color);
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
 }
 
 .event p {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     color: var(--secondary-text-color);
+    font-size: 1.1rem;
 }
 
 .event .btn {
-    margin-top: 10px;
+    margin-top: 15px;
     background-color: var(--primary-color);
     color: #fff;
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: 1rem;
 }
 
 .event .btn:hover {
     background-color: #555;
+    transform: translateY(-2px);
 }
 
 /* Calendar View Section */
 .calendar-view {
-    padding: 40px 20px;
+    padding: 60px 20px;
     background-color: var(--background-color);
     text-align: center;
 }
 
 .calendar-view h2 {
     font-family: 'Cinzel', serif;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     color: var(--primary-color);
+    font-size: 2rem;
 }
 
 #calendar {
     background-color: #fff;
     border: 1px solid #ddd;
     padding: 40px;
-    border-radius: 4px;
+    border-radius: 8px;
     color: var(--secondary-text-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .events-calendar {
+        padding: 40px 15px;
+    }
+
+    .event {
+        padding: 20px 15px;
+    }
+
+    .calendar-view {
+        padding: 40px 15px;
+    }
+
+    #calendar {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .events-calendar {
+        padding: 30px 10px;
+    }
+
+    .event {
+        padding: 15px 10px;
+    }
+
+    .calendar-view {
+        padding: 30px 10px;
+    }
+
+    #calendar {
+        padding: 20px;
+    }
 }
 
 --- File: templates\catalog.html ---
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <title>Catalog - FORMAT Filmkunst-Verleih</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-    <style>
-
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/custom_controls/custom_dropdown_search.css') }}">
 </head>
 <body>
     <header>
         <nav class="navbar">
             <div class="logo">
                 <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
-                <a class="sub-logo"><span>Katalog</span></a>
+                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
             </div>
-            <div class="menu-toggle">
+            <div class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" role="button" tabindex="0">
                 <i class="fas fa-bars"></i>
             </div>
             <ul class="nav-links">
                 <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
+                <!-- Additional menu links can be placed here -->
             </ul>
         </nav>
+        <!-- Separate link for mobile users -->
         <div class="mobile-footer-link">
             <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
         </div>
     </header>
 
     <main>
-        <!-- Existing Filter Section -->
-<!-- Test Section for Full Width -->
-<section class="catalog-search">
-    <div class="search-dropdown-container">
-        <form id="filter-form">
-            <!-- Search Box Container -->
-            <div class="search-container">
-                <input id="search-box" type="text" placeholder="Suche...">
-                <span id="clear-search" class="clear-icon">&times;</span>
-            </div>
-
-            <!-- Custom Dropdowns for Filters -->
-            <div class="custom-dropdown">
-                <div id="year-dropdown-list-header" class="dropdown-header">
-                    <span class="dropdown-title">Jahr</span>
-                    <div class="header-controls">
-                        <span class="selected-count">0 sel.</span>
-                        <span id="clear-year-custom" class="clear-icon">&times;</span>
+        <!-- Catalog Search Section -->
+        <section class="catalog-search">
+            <div class="search-dropdown-container">
+                <form id="filter-form">
+                    <!-- Search Box Container -->
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                        <input id="search-box" type="text" placeholder="Suche...">
+                        <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Clear search">&times;</span>
                     </div>
-                </div>
-                <div id="year-dropdown-list" class="dropdown-list">
-                    <!-- Dynamically populated year options will go here -->
-                </div>
-            </div>
 
-            <div class="custom-dropdown">
-                <div id="genre-dropdown-list-header" class="dropdown-header">
-                    <span class="dropdown-title">Genre</span>
-                    <div class="header-controls">
-                        <span class="selected-count">0 sel.</span>
-                        <span id="clear-genre-custom" class="clear-icon">&times;</span>
+                    <!-- Custom Dropdowns for Filters -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Jahr">
+                            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                            <div class="header-controls">
+                                <span class="selected-count">0 sel.</span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Clear year filter">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="year-dropdown-list">
+                            <label><input type="checkbox" value="2023">2023</label>
+                            <label><input type="checkbox" value="2022">2022</label>
+                            <label><input type="checkbox" value="2021">2021</label>
+                            <!-- Add more years as needed -->
+                        </div>
                     </div>
-                </div>
-                <div id="genre-dropdown-list" class="dropdown-list">
-                    <!-- Dynamically populated genre options will go here -->
-                </div>
-            </div>
-
-            <div class="custom-dropdown">
-                <div id="country-dropdown-list-header" class="dropdown-header">
-                    <span class="dropdown-title">Land</span>
-                    <div class="header-controls">
-                        <span class="selected-count">0 sel.</span>
-                        <span id="clear-country-custom" class="clear-icon">&times;</span>
+                    
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Genre">
+                            <i class="fas fa-film" aria-hidden="true"></i>
+                            <div class="header-controls">
+                                <span class="selected-count">0 sel.</span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Clear genre filter">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="genre-dropdown-list">
+                            <label><input type="checkbox" value="Drama">Drama</label>
+                            <label><input type="checkbox" value="Komödie">Komödie</label>
+                            <label><input type="checkbox" value="Action">Action</label>
+                            <!-- Add more genres as needed -->
+                        </div>
                     </div>
-                </div>
-                <div id="country-dropdown-list" class="dropdown-list">
-                    <!-- Dynamically populated country options will go here -->
-                </div>
+                    
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Land">
+                            <i class="fas fa-globe" aria-hidden="true"></i>
+                            <div class="header-controls">
+                                <span class="selected-count">0 sel.</span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Clear country filter">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="country-dropdown-list">
+                            <label><input type="checkbox" value="Deutschland">Deutschland</label>
+                            <label><input type="checkbox" value="USA">USA</label>
+                            <label><input type="checkbox" value="Frankreich">Frankreich</label>
+                            <!-- Add more countries as needed -->
+                        </div>
+                    </div>
+                    
+                </form>
             </div>
-        </form>
-    </div>
-</section>
-
-
+        </section>
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
+                    <!-- Example Pagination -->
+                    <li><a href="#">&laquo;</a></li>
+                    <li class="active"><span>1</span></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">&raquo;</a></li>
                 </ul>
             </nav>
         </section>
@@ -1719,7 +2152,7 @@ footer {
                         <div class="image-container">
                             <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
                                  alt="{{ movie['main_title'] }}" 
-                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.jpg') }}';">
+                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
                         </div>
 
                         <div class="info-section">
@@ -1758,10 +2191,15 @@ footer {
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
+                    <!-- Example Pagination -->
+                    <li><a href="#">&laquo;</a></li>
+                    <li class="active"><span>1</span></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">&raquo;</a></li>
                 </ul>
             </nav>
         </section>
-
     </main>
 
     <footer>

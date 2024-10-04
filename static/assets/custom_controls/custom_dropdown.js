@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Custom Dropdowns: DOM fully loaded");
     initializeCustomDropdowns(); // Initialize custom dropdowns when DOM is loaded
@@ -226,4 +225,3 @@ clearSearchButton.addEventListener('click', () => {
     clearSearchButton.style.visibility = 'hidden';
     // Optionally trigger any search box reset logic here
 });
-
