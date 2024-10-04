@@ -155,7 +155,7 @@ function updateSelectedCount(checkboxes, countElement, clearButton) {
 
     // Update the count display
     countElement.textContent = `${count} selected`;
-    countElement.style.display = count > 0 ? 'inline-flex' : 'none'; // Use 'inline-flex' to support icon/text alignment
+    // countElement.style.display = count > 0 ? 'inline-flex' : 'none';
 
     // Show or hide the clear button based on the count
     clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';

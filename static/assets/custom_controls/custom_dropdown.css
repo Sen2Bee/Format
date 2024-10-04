@@ -31,32 +31,47 @@
 
 /* Selected Count Styling */
 .selected-count {
-    background: var(--accent-color);
-    color: #1c1c1c;
-    padding: 4px 8px;
-    border-radius: 5px;
+
+    color: var(--accent-color);
+    padding: 6px 2px;
+    border-radius: 10px; /* Rounded pill shape */
     font-size: 0.85em;
-    display: flex; /* Changed to flex for better alignment */
+    display: flex; /* Flex for better alignment */
     align-items: center; /* Center text vertically */
     position: relative;
-    padding-right: 30px; /* Space for the clear icon */
+    margin-right: 15px; /* Space for visual separation */
+
 }
 
+/* Clear Icon Styling */
 .clear-icon {
-    font-size: 1.4em;
-    color: #000000; /* Darker color for better contrast */
+    width: 32px;  /* Equal width and height for perfect circle */
+    height: 32px;
+    font-size: 1.7em; /* Smaller size for elegance */
+    color: #fff; /* White icon for better contrast */
+    background: #333; /* Slightly darker gray on hover */
+    border-radius: 50%; /* Circular shape */
     cursor: pointer;
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out; /* Smooth hover effect */
+    margin-left: 10px; /* Separate from label */
 }
 
-
-.clear-icon.visible {
-    visibility:hidden;   /* Make it visible */
+.clear-icon:hover {
+    background: #666; /* Neutral gray background */
+    color: #ddd; /* Light text on hover */
 }
 
+.clear-icon:active {
+    background: #444; /* Even darker gray when active */
+    color: #ccc; /* Softer text when active */
+}
+
+.clear-icon{
+    visibility: hidden;
+}
 /* Dropdown List Styles */
 .dropdown-list {
     display: none;
