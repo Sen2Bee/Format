@@ -5,7 +5,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px 0;
+
+    background-color: var(--primary-color);
 }
 
 .pagination nav ul {
@@ -47,7 +48,7 @@
 }
 
 .pagination nav ul li.disabled span {
-    background-color: #e0e0e0;
+    background-color: #8e0d0d;
     color: #aaa;
     cursor: not-allowed;
 }
