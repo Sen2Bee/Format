@@ -64,41 +64,67 @@ function initializeCustomDropdowns() {
 }
 
 // Function to attach listeners to dropdown header, checkboxes, and clear button
-function attachDropdownListeners(header, dropdownList, clearButton) {
-    console.log(`Attaching dropdown listeners to ${header.id}...`);
+/**
+ * Function to attach event listeners to dropdown headers and clear buttons
+ */
+function attachDropdownListeners() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
 
-    const selectedCount = header.querySelector('.selected-count');
+    dropdownHeaders.forEach(header => {
+        const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
+        const clearButton = header.querySelector('.clear-icon');
+        const selectedCount = header.querySelector('.selected-count');
 
-    if (!selectedCount) {
-        console.error(`Selected count element not found in ${header.id}`);
-        return;
-    }
-
-    // Show/hide dropdown on header click
-    header.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent click propagation
-        console.log(`Toggling dropdown for ${header.id}`);
-        toggleDropdown(dropdownList);
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
-            dropdownList.style.display = 'none';
+        if (!dropdownList) {
+            console.error("attachDropdownEventListeners: Dropdown list not found for a header.");
+            return;
         }
+
+        if (!selectedCount) {
+            console.error("attachDropdownEventListeners: Selected count element not found in a header.");
+            return;
+        }
+
+        // Toggle dropdown visibility on header click
+        header.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent event from bubbling up
+            toggleDropdown(dropdownList, header);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
+                dropdownList.classList.remove('show');
+                header.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Clear all selections when the clear button is clicked
+        clearButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent header dropdown toggle
+            const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
+            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
+            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+        });
     });
 
-    // Clear all selections when the clear button is clicked
-    clearButton.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent header dropdown toggle
-        const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
-        updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
-        triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+    // Attach a single event listener for all dropdown lists (event delegation)
+    const dropdownLists = document.querySelectorAll('.dropdown-list');
+    dropdownLists.forEach(list => {
+        list.addEventListener('change', (event) => {
+            if (event.target && event.target.matches('input[type="checkbox"]')) {
+                const dropdownList = event.currentTarget;
+                const header = dropdownList.previousElementSibling; // Assumes .dropdown-header precedes .dropdown-list
+                const selectedCount = header.querySelector('.selected-count');
+                const clearButton = header.querySelector('.clear-icon');
+                updateSelectedCount(dropdownList.querySelectorAll('input[type="checkbox"]'), selectedCount, clearButton);
+                triggerDropdownChangeEvent();
+            }
+        });
     });
-
-    console.log(`Dropdown listeners successfully attached to ${header.id}`);
 }
+
 
 // Function to attach checkbox listeners
 function attachCheckboxListeners(dropdownList, selectedCount, clearButton) {

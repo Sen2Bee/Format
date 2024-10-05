@@ -11,6 +11,7 @@ const searchBox = document.getElementById('search-box');
 const movieContainer = document.querySelector('.movie-listings');
 const topPaginationContainer = document.querySelector('.top-pagination nav ul');
 const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
+const progressIndicator = document.getElementById('progress-indicator');
 
 let debounceTimer;
 
@@ -43,65 +44,76 @@ function initializeFilterDropdowns() {
             clearSearchBtn.classList.remove('visible');
             updateFilters();
         });
+
+        // Make clearSearchBtn visible when searchBox has input
+        searchBox.addEventListener('input', () => {
+            if (searchBox.value.length > 0) {
+                clearSearchBtn.classList.add('visible');
+            } else {
+                clearSearchBtn.classList.remove('visible');
+            }
+        });
     } else {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
     }
 
-    // Attach event listeners to dropdowns
-    attachDropdownEventListeners();
+    // Attach event listeners to dropdowns using event delegation
+    attachDropdownEventDelegation();
 
     // Initial filter update
     updateFilters();
 }
 
 /**
- * Function to attach event listeners to dropdown headers and clear buttons
+ * Function to attach event listeners to dropdowns using event delegation
  */
-function attachDropdownEventListeners() {
-    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+function attachDropdownEventDelegation() {
+    const dropdownLists = document.querySelectorAll('.dropdown-list');
 
-    dropdownHeaders.forEach(header => {
-        const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
-        const clearButton = header.querySelector('.clear-icon');
-        const selectedCount = header.querySelector('.selected-count');
+    dropdownLists.forEach(dropdownList => {
+        // Handle checkbox changes within the dropdown
+        dropdownList.addEventListener('change', (event) => {
+            const target = event.target;
+            if (target && target.matches('input[type="checkbox"]')) {
+                const dropdownHeader = dropdownList.previousElementSibling; // Assuming .dropdown-header precedes .dropdown-list
+                const clearButton = dropdownHeader.querySelector('.clear-icon');
+                const selectedCount = dropdownHeader.querySelector('.selected-count');
 
-        if (!dropdownList) {
-            console.error("attachDropdownEventListeners: Dropdown list not found for a header.");
-            return;
-        }
-
-        if (!selectedCount) {
-            console.error("attachDropdownEventListeners: Selected count element not found in a header.");
-            return;
-        }
-
-        // Toggle dropdown visibility on header click
-        header.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent event from bubbling up
-            toggleDropdown(dropdownList);
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (event) => {
-            if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
-                dropdownList.classList.remove('show');
+                updateSelectedCount(dropdownList, selectedCount, clearButton);
+                triggerDropdownChangeEvent();
             }
         });
 
-        // Clear all selections when the clear button is clicked
-        clearButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent header dropdown toggle
-            const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
-            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
-            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
-        });
+        // Handle clear button within the dropdown
+        const clearButton = dropdownList.parentElement.querySelector('.clear-icon');
+        if (clearButton) {
+            clearButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent dropdown toggle
+                const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
+                updateSelectedCount(dropdownList, dropdownList.parentElement.querySelector('.selected-count'), clearButton); // Update selection count
+                triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+            });
+        }
+    });
 
-        // Attach checkbox listeners using Event Delegation
-        dropdownList.addEventListener('change', (event) => {
-            if (event.target && event.target.type === 'checkbox') {
-                updateSelectedCount(dropdownList.querySelectorAll('input[type="checkbox"]'), selectedCount, clearButton);
-                triggerDropdownChangeEvent();
+    // Handle dropdown header clicks to toggle visibility
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+    dropdownHeaders.forEach(header => {
+        header.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent event from bubbling up
+            const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
+            toggleDropdown(dropdownList, header);
+        });
+    });
+
+    // Close all dropdowns when clicking outside
+    document.addEventListener('click', (event) => {
+        dropdownLists.forEach(dropdownList => {
+            const header = dropdownList.previousElementSibling;
+            if (!dropdownList.contains(event.target) && !header.contains(event.target)) {
+                dropdownList.classList.remove('show');
+                header.setAttribute('aria-expanded', 'false');
             }
         });
     });
@@ -110,20 +122,22 @@ function attachDropdownEventListeners() {
 /**
  * Function to toggle dropdown visibility
  */
-function toggleDropdown(dropdownList) {
+function toggleDropdown(dropdownList, header) {
     const isVisible = dropdownList.classList.contains('show');
     if (isVisible) {
         dropdownList.classList.remove('show');
+        header.setAttribute('aria-expanded', 'false');
     } else {
         dropdownList.classList.add('show');
+        header.setAttribute('aria-expanded', 'true');
     }
 }
 
 /**
  * Function to update the selected count display and handle visibility of the clear button
  */
-function updateSelectedCount(checkboxes, countElement, clearButton) {
-    const selectedItems = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+function updateSelectedCount(dropdownList, countElement, clearButton) {
+    const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked'));
     const count = selectedItems.length;
 
     // Update the count display
@@ -160,10 +174,13 @@ function updateFilters(page = 1) {
 
     console.log("Fetching updated filter data with params:", params.toString());
 
+    // Show the progress indicator before starting the fetch
+    showProgressIndicator();
+
     fetch(`/filter_movies?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            console.log("API Response Data:", data); // Log the fetched data for verification
+            console.log("API Response Data:", data);
             const { years, genres, countries, movies, current_page, total_pages } = data;
 
             // Populate each dropdown with data
@@ -179,6 +196,10 @@ function updateFilters(page = 1) {
             if (movieContainer) {
                 movieContainer.innerHTML = `<p class="no-movies-message">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>`;
             }
+        })
+        .finally(() => {
+            // Hide the progress indicator after fetch completes (success or error)
+            hideProgressIndicator();
         });
 }
 
@@ -230,7 +251,7 @@ function populateDropdown(dropdownListId, options, selectedValues = []) {
 }
 
 /**
- * Update the movie listings dynamically based on the filter results
+ * Function to update the movie listings dynamically based on filter results
  */
 function updateMovieListings(movies) {
     console.log("Updating Movie Listings");
@@ -243,22 +264,31 @@ function updateMovieListings(movies) {
 
     if (movies.length > 0) {
         movies.forEach(movie => {
+            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg`;
+            const defaultImagePath = '/static/images/default_movie.png';
+
             const movieCard = document.createElement('div');
             movieCard.className = 'movie-card poster-background';
-            movieCard.style.backgroundImage = `url('/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg')`;
+            movieCard.style.backgroundImage = `url('${imagePath}')`;
 
             movieCard.innerHTML = `
                 <div class="transparency-layer"></div>
                 <div class="movie-content-wrapper">
+                    <div class="image-container">
+                        <img src="${imagePath}" alt="${movie.main_title}" onerror="this.src='${defaultImagePath}';">
+                    </div>
                     <div class="info-section">
                         <h2>${movie.main_title}</h2>
                         <p><strong>Original: ${movie.original_title}</strong> (${movie.release_date})</p>
                         <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
                         <p><strong>Regie:</strong> ${movie.director}</p>
                         <p><strong>Schauspieler:</strong> ${movie.actors}</p>
+                        ${movie.format_standort ? `<p class="standort"><strong>Standort:</strong> ${movie.format_standort}</p>` : ''}
                     </div>
                     <div class="overview-section">
-                        ${movie.overview.length > 150 ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
+                        ${movie.overview.length > 150 
+                            ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` 
+                            : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
                     </div>
                 </div>
             `;
@@ -270,7 +300,7 @@ function updateMovieListings(movies) {
 }
 
 /**
- * Function to update pagination based on the current and total pages
+ * Function to handle pagination updates for both top and bottom paginations
  */
 function updatePagination(currentPage, totalPages) {
     [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
@@ -289,7 +319,7 @@ function updatePagination(currentPage, totalPages) {
             paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
         }
 
-        // Generate page numbers around the current page
+        // Generate page numbers around current page
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, currentPage + 2);
         for (let p = startPage; p <= endPage; p++) {
@@ -327,4 +357,32 @@ function attachPaginationEventListeners() {
             if (!isNaN(page)) updateFilters(page);  // Trigger filtering with the selected page
         });
     });
+}
+
+/**
+ * Function to show the progress indicator
+ */
+function showProgressIndicator() {
+    console.log("showProgressIndicator called");
+    if (progressIndicator) {
+        progressIndicator.style.display = 'flex'; // Show the progress indicator
+        progressIndicator.setAttribute('aria-hidden', 'false');
+        console.log("Progress indicator displayed:", progressIndicator.style.display);
+    } else {
+        console.error("showProgressIndicator: Progress indicator element not found.");
+    }
+}
+
+/**
+ * Function to hide the progress indicator
+ */
+function hideProgressIndicator() {
+    console.log("hideProgressIndicator called");
+    if (progressIndicator) {
+        progressIndicator.style.display = 'none'; // Hide the progress indicator
+        progressIndicator.setAttribute('aria-hidden', 'true');
+        console.log("Progress indicator hidden:", progressIndicator.style.display);
+    } else {
+        console.error("hideProgressIndicator: Progress indicator element not found.");
+    }
 }

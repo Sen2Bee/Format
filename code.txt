@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-05 00:50:49 ===
+=== Code Summary Generated at 2024-10-05 09:26:13 ===
 
 === Project Folder Structure ===
 
@@ -56,6 +56,260 @@ Format/
 
 === File Contents ===
 
+--- File: static\assets\custom_controls\custom_dropdown.js ---
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("Custom Dropdowns: DOM fully loaded");
+    initializeCustomDropdowns(); // Initialize custom dropdowns when DOM is loaded
+    initializeSearchBox();
+});
+
+// Function to initialize the search box clear button and its behavior
+function initializeSearchBox() {
+    const searchBox = document.getElementById('search-box');
+    const clearSearchButton = document.getElementById('clear-search');
+
+    if (!searchBox || !clearSearchButton) {
+        console.error("Search box or clear button not found.");
+        return;
+    }
+
+    console.log("Initializing search box listeners...");
+    
+    // Show/hide the clear button based on input value
+    searchBox.addEventListener('input', () => {
+        if (searchBox.value.length > 0) {
+            clearSearchButton.style.visibility = 'visible';  // Show the clear button
+        } else {
+            clearSearchButton.style.visibility = 'hidden';   // Hide the clear button
+        }
+    });
+
+    // Clear the search box when the clear button is clicked
+    clearSearchButton.addEventListener('click', () => {
+        searchBox.value = '';
+        clearSearchButton.style.visibility = 'hidden';
+        console.log("Search box cleared.");
+        // Optionally trigger any search box reset logic here
+    });
+
+    console.log("Search box listeners attached successfully.");
+}
+
+// Function to initialize the custom dropdowns
+function initializeCustomDropdowns() {
+    console.log("Initializing Custom Dropdowns...");
+
+    // Retrieve the custom dropdown elements by their header and list classes
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+    const dropdownLists = document.querySelectorAll('.dropdown-list');
+    const clearButtons = document.querySelectorAll('.clear-icon');
+
+    // Check if all required elements are present
+    if (dropdownHeaders.length !== dropdownLists.length) {
+        console.error("Mismatch in dropdown elements. Headers, lists, or clear buttons are not matching in count.");
+        console.log("Headers found: ", dropdownHeaders.length);
+        console.log("Dropdown lists found: ", dropdownLists.length);
+        console.log("Clear buttons found: ", clearButtons.length);
+        return; // Exit initialization if element counts don't match
+    }
+
+    console.log("Attaching event listeners to custom dropdowns...");
+    // Attach event listeners for each dropdown and clear button
+    dropdownHeaders.forEach((header, index) => {
+        const dropdownList = dropdownLists[index];
+        const clearButton = header.querySelector('.clear-icon');
+        attachDropdownListeners(header, dropdownList, clearButton);
+    });
+}
+
+// Function to attach listeners to dropdown header, checkboxes, and clear button
+/**
+ * Function to attach event listeners to dropdown headers and clear buttons
+ */
+function attachDropdownListeners() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+
+    dropdownHeaders.forEach(header => {
+        const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
+        const clearButton = header.querySelector('.clear-icon');
+        const selectedCount = header.querySelector('.selected-count');
+
+        if (!dropdownList) {
+            console.error("attachDropdownEventListeners: Dropdown list not found for a header.");
+            return;
+        }
+
+        if (!selectedCount) {
+            console.error("attachDropdownEventListeners: Selected count element not found in a header.");
+            return;
+        }
+
+        // Toggle dropdown visibility on header click
+        header.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent event from bubbling up
+            toggleDropdown(dropdownList, header);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
+                dropdownList.classList.remove('show');
+                header.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Clear all selections when the clear button is clicked
+        clearButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent header dropdown toggle
+            const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
+            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
+            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+        });
+    });
+
+    // Attach a single event listener for all dropdown lists (event delegation)
+    const dropdownLists = document.querySelectorAll('.dropdown-list');
+    dropdownLists.forEach(list => {
+        list.addEventListener('change', (event) => {
+            if (event.target && event.target.matches('input[type="checkbox"]')) {
+                const dropdownList = event.currentTarget;
+                const header = dropdownList.previousElementSibling; // Assumes .dropdown-header precedes .dropdown-list
+                const selectedCount = header.querySelector('.selected-count');
+                const clearButton = header.querySelector('.clear-icon');
+                updateSelectedCount(dropdownList.querySelectorAll('input[type="checkbox"]'), selectedCount, clearButton);
+                triggerDropdownChangeEvent();
+            }
+        });
+    });
+}
+
+
+// Function to attach checkbox listeners
+function attachCheckboxListeners(dropdownList, selectedCount, clearButton) {
+    const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+    console.log(`Attaching checkbox listeners to ${dropdownList.id}...`);
+    console.log("Checkboxes found:", checkboxes.length);
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            console.log("Checkbox change detected in", dropdownList.id);
+            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update the selected count
+            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+        });
+    });
+    console.log(`Checkbox listeners successfully attached to ${dropdownList.id}`);
+}
+
+// Function to populate dropdowns dynamically and attach checkbox listeners
+function populateDropdown(dropdownListId, options, selectedValues = []) {
+    const dropdownList = document.getElementById(dropdownListId);
+    dropdownList.innerHTML = "";  // Clear any existing options
+
+    // Separate Decades and Years
+    const decades = [];
+    const years = [];
+
+    // Iterate through options and separate into decades and years
+    Object.entries(options).forEach(([key, count]) => {
+        if (key.includes("...")) {
+            decades.push({ label: key, count: count });
+        } else {
+            years.push({ label: key, count: count });
+        }
+    });
+
+    console.log("Decades:", decades);
+    console.log("Years:", years);
+
+    // Sort Decades in Ascending Order (e.g., 1910...1919, 1920...1929)
+    decades.sort((a, b) => parseInt(a.label.split("...")[0]) - parseInt(b.label.split("...")[0]));
+
+    // Sort Years in Descending Order (e.g., 2023, 2022, 2021)
+    years.sort((a, b) => parseInt(b.label) - parseInt(a.label));
+
+    // Combine Decades First and Years Below
+    const sortedOptions = [...decades, ...years];
+
+    // Render Sorted Options to the Dropdown
+    sortedOptions.forEach(option => {
+        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
+        dropdownList.appendChild(label);
+    });
+
+
+
+    // Attach Checkbox Listeners after the dropdown is populated
+    const header = document.querySelector(`#${dropdownListId}-header`);
+    console.log(`Dropdown ${dropdownListId} header: `, header);
+    if (header) {
+        const selectedCount = header.querySelector('.selected-count');
+        const clearButton = header.querySelector('.clear-icon');
+
+        // Attach checkbox listeners to handle selections and updates
+        if (selectedCount && clearButton) {
+            attachCheckboxListeners(dropdownList, selectedCount, clearButton);
+        } else {
+            console.error(`Dropdown ${dropdownListId}: Could not find header elements for attaching checkbox listeners.`);
+        }
+    } else {
+        console.error(`Dropdown header not found for ${dropdownListId}`);
+    }
+}
+
+
+// Function to show/hide dropdown
+function toggleDropdown(dropdownList) {
+    const isVisible = dropdownList.style.display === 'block';
+    dropdownList.style.display = isVisible ? 'none' : 'block';
+}
+
+// Update the selected count display and handle visibility of the clear button
+function updateSelectedCount(checkboxes, countElement, clearButton) {
+    const selectedItems = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+    const count = selectedItems.length;
+
+    // Update the count display
+    countElement.textContent = `${count} sel.`;
+    // countElement.style.display = count > 0 ? 'inline-flex' : 'none';
+
+    // Show or hide the clear button based on the count
+    clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
+}
+
+// Function to trigger a custom event to notify filter.js of dropdown changes
+// Trigger a custom change event to update filters
+function triggerDropdownChangeEvent() {
+    const event = new CustomEvent('dropdownChange');
+    console.log("Dispatching dropdownChange event");
+
+    // Dispatch the custom dropdownChange event
+    document.dispatchEvent(event);
+
+    // Call the function to update the movie list and pagination
+    updateMovieListAndPagination();
+}
+
+const searchBox = document.getElementById('search-box');
+const clearSearchButton = document.getElementById('clear-search');
+
+// Show/hide the clear button based on input value
+searchBox.addEventListener('input', () => {
+    if (searchBox.value.length > 0) {
+        clearSearchButton.style.visibility = 'visible';  // Show the clear button
+    } else {
+        clearSearchButton.style.visibility = 'hidden';   // Hide the clear button
+    }
+});
+
+// Clear the search box when the clear button is clicked
+clearSearchButton.addEventListener('click', () => {
+    searchBox.value = '';
+    clearSearchButton.style.visibility = 'hidden';
+    // Optionally trigger any search box reset logic here
+});
 --- File: static\assets\custom_controls\custom_dropdown_search.css ---
 /* search_container.css */
 
@@ -284,6 +538,47 @@ Format/
         font-size: 1.2em;
     }
 }
+/* Progress Indicator Styles */
+.progress-indicator {
+    position: absolute; /* Position relative to the nearest positioned ancestor */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(44, 62, 80, 0.8); /* Semi-transparent dark background */
+    color: #ecf0f1; /* Light text color */
+    padding: 20px 40px;
+    border-radius: 8px;
+    display: none; /* Hidden by default */
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000; /* Ensure it appears above other elements */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Spinner Styles */
+.spinner {
+    border: 6px solid #f3f3f3; /* Light grey */
+    border-top: 6px solid var(--accent-color); /* Accent color */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Adjustments for Progress Indicator */
+@media (max-width: 768px) {
+    .progress-indicator {
+        width: 80%;
+        padding: 15px 20px;
+    }
+}
 
 --- File: static\assets\custom_controls\search_container.css ---
 /* search_container.css */
@@ -423,11 +718,11 @@ Format/
 .custom-dropdown {
     display: flex;
     flex-direction: column;
-    position: relative;
+    position: relative; /* Necessary for absolute positioning of .dropdown-list */
     width: 200px; /* Fixed width for consistency */
-    height: 50px; /* Same height as search-container */
+    height: auto; /* Allow height to adjust based on content */
     border-radius: 8px; /* Consistent border radius */
-    overflow: hidden; /* Ensure child elements respect border-radius */
+    overflow: visible; /* Ensure dropdown list is visible outside the container */
     background-color: #333; /* Consistent background */
     transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
     flex: 1; /* Allow dropdowns to grow equally */
@@ -446,9 +741,9 @@ Format/
     background: var(--primary-color); /* Use CSS variable for background */
     color: var(--text-color); /* Use CSS variable for text color */
     padding: 0 18px;
-    border-radius: 8px;
+    border-radius: 8px; /* Consistent border radius */
     cursor: pointer;
-    height: 100%;
+    height: 50px; /* Same height as search-container */
     transition: background var(--transition-duration), color var(--transition-duration);
 }
 
@@ -518,27 +813,28 @@ Format/
 
 /* Dropdown List Styles */
 .dropdown-list {
-    display: none;
-    background: #2c2c2c;
-    color: #e0e0e0;
-    position: absolute;
-    top: 100%;
+    display: none; /* Hidden by default */
+    background: #2c2c2c; /* Dark background for contrast */
+    color: #e0e0e0; /* Light text for readability */
+    position: absolute; /* Position relative to the closest positioned ancestor */
+    top: 100%; /* Position below the header */
     left: 0;
-    width: 100%;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    max-height: 250px;
-    overflow-y: auto;
-    transition: opacity var(--transition-duration), transform var(--transition-duration);
-    transform: translateY(-10px);
-    opacity: 0;
+    width: 100%; /* Match the width of the dropdown container */
+    border-radius: 0 0 8px 8px; /* Rounded corners at the bottom */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    z-index: 1000; /* Ensure it appears above other elements */
+    max-height: 250px; /* Maximum height with scrollbar */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for visibility */
+    transform: translateY(-10px); /* Slightly translate upwards when hidden */
+    opacity: 0; /* Fully transparent when hidden */
 }
 
+/* Show Class to Display Dropdown */
 .dropdown-list.show {
-    display: block;
-    transform: translateY(0);
-    opacity: 1;
+    display: block; /* Make it take up space */
+    transform: translateY(0); /* Reset translation */
+    opacity: 1; /* Fully opaque */
 }
 
 /* Dropdown List Items */
@@ -2030,6 +2326,850 @@ footer {
     }
 }
 
+--- File: static\js\filter - Kopie.js ---
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("Filter.js: DOM fully loaded");
+    initializeFilterDropdowns();  // Initialize dropdowns on page load
+});
+
+// Variables to manage the dropdown update state
+let isDropdownUpdating = false;
+
+// Cache dropdown and button elements
+const yearDropdown = document.getElementById('year-dropdown');
+const genreDropdown = document.getElementById('genre-dropdown');
+const countryDropdown = document.getElementById('country-dropdown');
+const clearYearBtn = document.getElementById('clear-year');
+const clearGenreBtn = document.getElementById('clear-genre');
+const clearCountryBtn = document.getElementById('clear-country');
+const clearAllBtn = document.getElementById('clear-all');
+
+// Function to initialize dropdowns and attach event listeners
+function initializeFilterDropdowns() {
+    if (!yearDropdown || !genreDropdown || !countryDropdown) {
+        console.warn("Filter dropdowns not found!");
+        return;  // Exit if dropdowns are missing
+    }
+
+    // Attach event listeners to dropdowns
+    yearDropdown.addEventListener('change', () => handleDropdownChange(yearDropdown, clearYearBtn));
+    genreDropdown.addEventListener('change', () => handleDropdownChange(genreDropdown, clearGenreBtn));
+    countryDropdown.addEventListener('change', () => handleDropdownChange(countryDropdown, clearCountryBtn));
+
+    // Attach event listeners to the clear buttons
+    clearYearBtn.addEventListener('click', () => clearDropdown(yearDropdown, clearYearBtn));
+    clearGenreBtn.addEventListener('click', () => clearDropdown(genreDropdown, clearGenreBtn));
+    clearCountryBtn.addEventListener('click', () => clearDropdown(countryDropdown, clearCountryBtn));
+    clearAllBtn.addEventListener('click', clearAllDropdowns);
+
+    // Initialize with the first update
+    updateFilters();
+}
+
+// Function to handle dropdown changes and update button states
+function handleDropdownChange(dropdown, clearButton) {
+    updateButtonState(dropdown, clearButton);
+    updateFilters();  // Trigger filter update
+}
+
+// Clear dropdown selection and update filters
+function clearDropdown(dropdown, clearButton) {
+    dropdown.selectedIndex = -1;  // Deselect all options
+    updateButtonState(dropdown, clearButton);
+    updateFilters();
+}
+
+// Global Clear All functionality
+function clearAllDropdowns() {
+    [yearDropdown, genreDropdown, countryDropdown].forEach((dropdown, index) => {
+        dropdown.selectedIndex = -1;  // Clear all selections
+        updateButtonState(dropdown, [clearYearBtn, clearGenreBtn, clearCountryBtn][index]);  // Disable respective buttons
+    });
+    updateGlobalClearButton();
+    updateFilters();
+}
+
+// Update button state based on dropdown selection
+function updateButtonState(dropdown, clearButton) {
+    clearButton.disabled = dropdown.selectedOptions.length === 0;
+    updateGlobalClearButton();
+}
+
+// Update the global "Clear All" button state based on individual clear buttons
+function updateGlobalClearButton() {
+    clearAllBtn.disabled = [clearYearBtn, clearGenreBtn, clearCountryBtn].every(button => button.disabled);
+}
+
+// Function to update dropdown values and movie listings based on selection
+function updateFilters(page = 1) {
+    const selectedYears = Array.from(yearDropdown.selectedOptions).map(option => option.value);
+    const selectedGenres = Array.from(genreDropdown.selectedOptions).map(option => option.value);
+    const selectedCountries = Array.from(countryDropdown.selectedOptions).map(option => option.value);
+
+    const params = new URLSearchParams();
+    if (selectedYears.length) params.append('years', selectedYears.join(','));
+    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
+    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
+    params.append('page', page);
+
+    console.log("Fetching updated filter data with params:", params.toString());
+
+    fetch(`/filter_movies?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            isDropdownUpdating = true;  // Start dropdown update
+
+            const yearsData = data.years || {};  // Fallback to empty object
+            const genresData = data.genres || {};
+            const countriesData = data.countries || {};
+
+            console.log("Dropdown Data:", { yearsData, genresData, countriesData });
+
+            renderYearDropdown(yearsData, selectedYears);  // Update the year dropdown and preserve selection
+            populateDropdown(genreDropdown, genresData);
+            populateDropdown(countryDropdown, countriesData);
+
+            updateMovieListings(data.movies);
+            updatePagination(data.current_page, data.total_pages);
+
+            isDropdownUpdating = false;  // End dropdown update
+        })
+        .catch(error => {
+            console.error('Error fetching filter data:', error);
+            isDropdownUpdating = false;  // Reset the flag on error
+        });
+}
+
+// Populate dropdown with options
+function populateDropdown(dropdown, optionsData) {
+    const currentSelection = Array.from(dropdown.selectedOptions).map(opt => opt.value);
+
+    dropdown.innerHTML = "";  // Clear existing options
+    for (const [value, count] of Object.entries(optionsData)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = `${value} (${count})`;
+        dropdown.appendChild(option);
+    }
+
+    // Restore previously selected options
+    currentSelection.forEach(value => {
+        const option = Array.from(dropdown.options).find(opt => opt.value === value);
+        if (option) option.selected = true;
+    });
+}
+
+// Function to render year dropdown with both years and decades
+function renderYearDropdown(yearsData, selectedYears = []) {
+    const decades = [];
+    const years = [];
+
+    // Separate decades and individual years
+    for (const [year, count] of Object.entries(yearsData)) {
+        if (year.includes("...")) {
+            decades.push({ label: year, count: count });
+        } else {
+            years.push({ label: year, count: count });
+        }
+    }
+
+    // Sort decades and years
+    const combinedEntries = [...decades.sort(), ...years.sort((a, b) => parseInt(a.label) - parseInt(b.label))];
+
+    yearDropdown.innerHTML = "";  // Clear current dropdown
+    combinedEntries.forEach(entry => {
+        const option = document.createElement("option");
+        option.value = entry.label;
+        option.text = `${entry.label} (${entry.count})`;
+        yearDropdown.appendChild(option);
+    });
+
+    // Restore previous selection
+    selectedYears.forEach(value => {
+        const option = Array.from(yearDropdown.options).find(opt => opt.value === value);
+        if (option) option.selected = true;
+    });
+}
+
+// Update the movie listings dynamically based on filter results
+function updateMovieListings(movies) {
+    const movieContainer = document.querySelector('.movie-listings');
+    movieContainer.innerHTML = "";  // Clear existing listings
+
+    if (movies.length > 0) {
+        movies.forEach(movie => {
+            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg`;
+            const defaultImagePath = '/static/images/default_movie.png';
+
+            const movieCard = document.createElement('div');
+            movieCard.className = 'movie-card poster-background';
+            movieCard.style.backgroundImage = `url('${imagePath}')`;
+
+            movieCard.innerHTML = `
+                <div class="transparency-layer"></div>
+                <div class="movie-content-wrapper">
+                    <div class="image-container">
+                        <img src="${imagePath}" alt="${movie.main_title}" onerror="this.src='${defaultImagePath}';">
+                    </div>
+                    <div class="info-section">
+                        <h2>${movie.main_title}</h2>
+                        <p><strong>Original: ${movie.original_title}</strong> (${movie.release_date})</p>
+                        <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
+                        <p><strong>Regie:</strong> ${movie.director}</p>
+                        <p><strong>Schauspieler:</strong> ${movie.actors}</p>
+                    </div>
+                    <div class="overview-section">
+                        ${movie.overview.length > 150 
+                            ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` 
+                            : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
+                    </div>
+                </div>
+            `;
+            movieContainer.appendChild(movieCard);
+        });
+    } else {
+        movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
+    }
+}
+
+// Function to handle pagination updates for both top and bottom paginations
+function updatePagination(currentPage, totalPages) {
+    const topPaginationContainer = document.querySelector('.top-pagination nav ul');
+    const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
+
+    [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
+        if (!paginationContainer) return;
+
+        paginationContainer.innerHTML = "";  // Clear existing pagination buttons
+
+        // Create "Previous" button
+        let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
+        let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
+        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
+
+        if (currentPage > 3) {
+            paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
+            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
+        }
+
+        // Generate page numbers around current page
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        for (let p = startPage; p <= endPage; p++) {
+            let activeClass = (p === currentPage) ? 'active' : '';
+            paginationContainer.innerHTML += `<li class="${activeClass}"><a href="#" data-page="${p}">${p}</a></li>`;
+        }
+
+        if (currentPage < totalPages - 2) {
+            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
+            paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+        }
+
+        // Create "Next" button
+        let nextDisabledClass = currentPage >= totalPages ? 'disabled' : '';
+        let nextDisabledAttr = currentPage >= totalPages ? 'aria-disabled="true"' : '';
+        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
+    });
+
+    attachPaginationEventListeners();
+}
+
+
+
+// Function to attach click event listeners for pagination buttons
+function attachPaginationEventListeners() {
+    const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (this.parentElement.classList.contains('disabled')) {
+                return;  // Ignore clicks on disabled buttons
+            }
+            const page = parseInt(this.getAttribute('data-page'));
+            if (!isNaN(page)) updateFilters(page);  // Trigger filtering with the selected page
+        });
+    });
+}
+
+
+--- File: static\js\filter.js ---
+// filter.js
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log("Filter.js: DOM fully loaded");
+    initializeFilterDropdowns();  // Initialize dropdowns on page load
+});
+
+/** Cache Elements and Buttons */
+const clearSearchBtn = document.getElementById('clear-search');
+const searchBox = document.getElementById('search-box');
+const movieContainer = document.querySelector('.movie-listings');
+const topPaginationContainer = document.querySelector('.top-pagination nav ul');
+const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
+const progressIndicator = document.getElementById('progress-indicator');
+
+let debounceTimer;
+
+/**
+ * Function to initialize dropdowns and attach event listeners
+ */
+function initializeFilterDropdowns() {
+    // Handle filter updates triggered by custom dropdowns
+    document.addEventListener('dropdownChange', () => {
+        console.log("Filter.js: Detected dropdown change event");
+        updateFilters(); // Trigger filter update on dropdown change
+    });
+
+    // Search box input event with debouncing
+    if (searchBox) { // Check if searchBox exists
+        searchBox.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateFilters(); // Trigger filter update after user stops typing for 300ms
+            }, 300);
+        });
+    } else {
+        console.error("initializeFilterDropdowns: searchBox element not found.");
+    }
+
+    // Clear search box and trigger update
+    if (clearSearchBtn && searchBox) { // Ensure both elements exist
+        clearSearchBtn.addEventListener('click', () => {
+            searchBox.value = '';
+            clearSearchBtn.classList.remove('visible');
+            updateFilters();
+        });
+
+        // Make clearSearchBtn visible when searchBox has input
+        searchBox.addEventListener('input', () => {
+            if (searchBox.value.length > 0) {
+                clearSearchBtn.classList.add('visible');
+            } else {
+                clearSearchBtn.classList.remove('visible');
+            }
+        });
+    } else {
+        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
+    }
+
+    // Attach event listeners to dropdowns
+    attachDropdownEventListeners();
+
+    // Initial filter update
+    updateFilters();
+}
+
+/**
+ * Function to attach event listeners to dropdown headers and clear buttons
+ */
+function attachDropdownEventListeners() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+
+    dropdownHeaders.forEach(header => {
+        const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
+        const clearButton = header.querySelector('.clear-icon');
+        const selectedCount = header.querySelector('.selected-count');
+
+        if (!dropdownList) {
+            console.error("attachDropdownEventListeners: Dropdown list not found for a header.");
+            return;
+        }
+
+        if (!selectedCount) {
+            console.error("attachDropdownEventListeners: Selected count element not found in a header.");
+            return;
+        }
+
+        // Toggle dropdown visibility on header click
+        header.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent event from bubbling up
+            toggleDropdown(dropdownList, header);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
+                dropdownList.classList.remove('show');
+                header.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Clear all selections when the clear button is clicked
+        clearButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent header dropdown toggle
+            const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
+            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
+            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+        });
+
+        // Attach checkbox listeners
+        const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                updateSelectedCount(checkboxes, selectedCount, clearButton);
+                triggerDropdownChangeEvent();
+            });
+        });
+    });
+}
+
+/**
+ * Function to toggle dropdown visibility
+ */
+function toggleDropdown(dropdownList, header) {
+    const isVisible = dropdownList.classList.contains('show');
+    if (isVisible) {
+        dropdownList.classList.remove('show');
+        header.setAttribute('aria-expanded', 'false');
+    } else {
+        dropdownList.classList.add('show');
+        header.setAttribute('aria-expanded', 'true');
+    }
+}
+
+/**
+ * Function to update the selected count display and handle visibility of the clear button
+ */
+function updateSelectedCount(checkboxes, countElement, clearButton) {
+    const selectedItems = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+    const count = selectedItems.length;
+
+    // Update the count display
+    countElement.textContent = `${count} sel.`;
+
+    // Show or hide the clear button based on the count
+    clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
+}
+
+/**
+ * Function to trigger a custom event to notify filter.js of dropdown changes
+ */
+function triggerDropdownChangeEvent() {
+    const event = new CustomEvent('dropdownChange');
+    console.log("Dispatching dropdownChange event");
+    document.dispatchEvent(event);
+}
+
+/**
+ * Function to update dropdown values and movie listings based on current selections and search query
+ */
+function updateFilters(page = 1) {
+    const selectedYears = getCheckedValues('year-dropdown-list');
+    const selectedGenres = getCheckedValues('genre-dropdown-list');
+    const selectedCountries = getCheckedValues('country-dropdown-list');
+    const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+    const params = new URLSearchParams();
+    if (selectedYears.length) params.append('years', selectedYears.join(','));
+    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
+    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
+    if (searchQuery) params.append('search', searchQuery);
+    params.append('page', page);
+
+    console.log("Fetching updated filter data with params:", params.toString());
+
+    // Show the progress indicator before starting the fetch
+    showProgressIndicator();
+
+    fetch(`/filter_movies?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("API Response Data:", data); // Log the fetched data for verification
+            const { years, genres, countries, movies, current_page, total_pages } = data;
+
+            // Populate each dropdown with data
+            populateDropdown('year-dropdown-list', years, selectedYears);
+            populateDropdown('genre-dropdown-list', genres, selectedGenres);
+            populateDropdown('country-dropdown-list', countries, selectedCountries);
+
+            updateMovieListings(movies);
+            updatePagination(current_page, total_pages);
+        })
+        .catch(error => {
+            console.error('Error fetching filter data:', error);
+            if (movieContainer) {
+                movieContainer.innerHTML = `<p class="no-movies-message">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>`;
+            }
+        })
+        .finally(() => {
+            // Hide the progress indicator after fetch completes (success or error)
+            hideProgressIndicator();
+        });
+}
+
+/**
+ * Helper to get checked values from a specific dropdown list
+ */
+function getCheckedValues(dropdownListId) {
+    const checkboxes = document.querySelectorAll(`#${dropdownListId} input[type="checkbox"]:checked`);
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+/**
+ * Function to populate dropdown lists with options
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @param {Object} options - An object with option labels as keys and counts as values
+ * @param {Array} selectedValues - An array of currently selected option values
+ */
+function populateDropdown(dropdownListId, options, selectedValues = []) {
+    const dropdownList = document.getElementById(dropdownListId);
+    if (!dropdownList) {
+        console.error(`populateDropdown: Element with ID '${dropdownListId}' not found.`);
+        return;
+    }
+
+    dropdownList.innerHTML = "";  // Clear existing options
+
+    if (typeof options !== 'object' || Array.isArray(options)) {
+        console.error(`populateDropdown: 'options' should be an object. Received:`, options);
+        return;
+    }
+
+    // Convert the options object into an array of objects with label and count
+    const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
+
+    // Sort options alphabetically or as needed
+    optionsArray.sort((a, b) => {
+        if (a.label < b.label) return -1;
+        if (a.label > b.label) return 1;
+        return 0;
+    });
+
+    // Render options
+    optionsArray.forEach(option => {
+        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
+        dropdownList.appendChild(label);
+    });
+}
+
+/**
+ * Function to show the progress indicator
+ */
+function showProgressIndicator() {
+    console.log("showProgressIndicator")
+    if (progressIndicator) {
+        console.log("showProgressIndicator", progressIndicator.style)
+        progressIndicator.style.display = 'flex'; // Use flex to center content
+        progressIndicator.setAttribute('aria-hidden', 'false');
+    } else {
+        console.error("showProgressIndicator: Progress indicator element not found.");
+    }
+}
+
+/**
+ * Function to hide the progress indicator
+ */
+function hideProgressIndicator() {
+
+    if (progressIndicator) {
+        progressIndicator.style.display = 'none';
+        progressIndicator.setAttribute('aria-hidden', 'true');
+    } else {
+        console.error("hideProgressIndicator: Progress indicator element not found.");
+    }
+}
+
+/**
+ * Update the movie listings dynamically based on the filter results
+ */
+function updateMovieListings(movies) {
+    console.log("Updating Movie Listings");
+    if (!movieContainer) {
+        console.error("updateMovieListings: movieContainer element not found.");
+        return;
+    }
+
+    movieContainer.innerHTML = "";  // Clear existing listings
+
+    if (movies.length > 0) {
+        movies.forEach(movie => {
+            const movieCard = document.createElement('div');
+            movieCard.className = 'movie-card poster-background';
+            movieCard.style.backgroundImage = `url('/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg')`;
+
+            movieCard.innerHTML = `
+                <div class="transparency-layer"></div>
+                <div class="movie-content-wrapper">
+                    <div class="info-section">
+                        <h2>${movie.main_title}</h2>
+                        <p><strong>Original: ${movie.original_title}</strong> (${movie.release_date})</p>
+                        <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
+                        <p><strong>Regie:</strong> ${movie.director}</p>
+                        <p><strong>Schauspieler:</strong> ${movie.actors}</p>
+                    </div>
+                    <div class="overview-section">
+                        ${movie.overview.length > 150 ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
+                    </div>
+                </div>
+            `;
+            movieContainer.appendChild(movieCard);
+        });
+    } else {
+        movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
+    }
+}
+
+/**
+ * Function to update pagination based on the current and total pages
+ */
+function updatePagination(currentPage, totalPages) {
+    [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
+        if (!paginationContainer) return;
+
+        paginationContainer.innerHTML = "";  // Clear existing pagination buttons
+
+        // Create "Previous" button
+        let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
+        let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
+        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
+
+        // Add first page and ellipsis if necessary
+        if (currentPage > 3) {
+            paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
+            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
+        }
+
+        // Generate page numbers around the current page
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        for (let p = startPage; p <= endPage; p++) {
+            let activeClass = (p === currentPage) ? 'active' : '';
+            paginationContainer.innerHTML += `<li class="${activeClass}"><a href="#" data-page="${p}">${p}</a></li>`;
+        }
+
+        // Add ellipsis and last page if necessary
+        if (currentPage < totalPages - 2) {
+            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
+            paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+        }
+
+        // Create "Next" button
+        let nextDisabledClass = currentPage >= totalPages ? 'disabled' : '';
+        let nextDisabledAttr = currentPage >= totalPages ? 'aria-disabled="true"' : '';
+        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
+    });
+
+    attachPaginationEventListeners();
+}
+
+/**
+ * Function to attach click event listeners for pagination buttons
+ */
+function attachPaginationEventListeners() {
+    const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (this.parentElement.classList.contains('disabled')) {
+                return;  // Ignore clicks on disabled buttons
+            }
+            const page = parseInt(this.getAttribute('data-page'));
+            if (!isNaN(page)) updateFilters(page);  // Trigger filtering with the selected page
+        });
+    });
+}
+
+--- File: static\js\navbar.js ---
+document.addEventListener('DOMContentLoaded', function () {
+    const navbar = document.querySelector('.navbar'); // Select the navbar element
+    let lastScrollTop = 0; // Track the previous scroll position
+
+    // Function to handle scroll events
+    function handleScroll() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Show navbar at the top of the page
+        if (currentScroll <= 20) {
+            navbar.classList.remove('hide');
+            navbar.classList.add('show');
+        }
+        // Hide navbar on scroll down
+        else if (currentScroll > lastScrollTop) {
+            navbar.classList.add('hide');
+            navbar.classList.remove('show');
+        }
+        // Show navbar on scroll up
+        else {
+            navbar.classList.remove('hide');
+            navbar.classList.add('show');
+        }
+
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Update lastScrollTop
+    }
+
+    // Listen to scroll events
+    window.addEventListener('scroll', handleScroll);
+});
+
+--- File: static\js\scripts.js ---
+document.addEventListener('DOMContentLoaded', function () {
+ 
+    // Call the wrapper function after the DOM content is fully loaded
+    initializeHeroSectionIfPresent();
+
+    // Call truncateText function for overview sections
+    truncateText('.info-section.overview p', 500);
+
+    // Call the function on initial load and resize
+    adjustTitleFontSize();
+    window.addEventListener('resize', adjustTitleFontSize);
+
+    // Call the function on initial load and window resize
+    adjustMetadataWidth();
+    window.addEventListener('resize', adjustMetadataWidth);
+
+    // Call the function on initial load and window resize
+    updateMovieCardBackground();
+    window.addEventListener('resize', updateMovieCardBackground);
+
+});
+
+
+// Wrapper function to check the presence of hero section before initializing
+function initializeHeroSectionIfPresent() {
+    function manageHeroAndTaglines() {
+        // Taglines array for the hero section
+        const taglines = [
+            "Entdecke unsere Sammlung von fast 20.000 Filmen.",
+            "Finde deine Lieblingsfilme und entdecke neue Perlen.",
+            "Tauche ein in cineastische Meisterwerke.",
+            "Erlebe das Beste aus Arthouse- und klassischem Kino.",
+            "Dein Zugang zu zeitlosen Filmen.",
+            "Die Filmsammlung des FORMAT Filmkunst-Verleihs.",
+            "Für eine Handvoll Dollar kannst du von den Möglichkeiten profitieren.",
+            "Über 19.000 Filme - die größte private Filmsammlung Mitteldeutschlands.",
+            "Independent- und Arthouse-Filme auf DVD, Blu-ray und 3D-Blu-ray.",
+            "'Unendliche Weiten' an Informationen zu den Filmen.",
+            "Cineastische Raritäten, Arthouse und Blockbuster - alles unter einem Dach.",
+            "FILMKUNST-Verleih seit über 18 Jahren."
+        ];
+    
+        // Hero images array
+        const heroImages = [
+            '/static/images/backdrop_1.jpg',
+            '/static/images/backdrop_2.jpg',
+            '/static/images/backdrop_3.jpg',
+            '/static/images/backdrop_4.jpg'
+        ];
+    
+        // Elements for the hero section
+        const taglineElement = document.getElementById('dynamic-tagline');
+        const heroImageElement = document.querySelector('.hero-image img');
+        const logoElement = document.querySelector('.logo span');
+    
+        // Check for the presence of critical elements before proceeding
+        if (!taglineElement || !heroImageElement || !logoElement) {
+            console.info("Hero elements not found on this page. Skipping hero section initialization.");
+            return; // Exit the function if elements are not found
+        }
+    
+        // Initial setup for tagline and hero image
+        let currentTaglineIndex = Math.floor(Math.random() * taglines.length);
+        taglineElement.textContent = taglines[currentTaglineIndex];
+        taglineElement.classList.add('fade-in');
+    
+        // Set a random hero image
+        const randomImage = heroImages[Math.floor(Math.random() * heroImages.length)];
+        heroImageElement.src = randomImage;
+    
+        // Change taglines periodically
+        setInterval(() => {
+            taglineElement.classList.remove('fade-in');
+            taglineElement.classList.add('fade-out');
+    
+            setTimeout(() => {
+                currentTaglineIndex = (currentTaglineIndex + 1) % taglines.length;
+                taglineElement.textContent = taglines[currentTaglineIndex];
+                taglineElement.classList.remove('fade-out');
+                taglineElement.classList.add('fade-in');
+    
+                // Randomly change logo color
+                const randomChance = Math.random();
+                logoElement.style.color = randomChance < 0.3 ? 'red' : 'white';
+            }, 1000); // Matches transition duration
+        }, 5000);
+    }    
+    // Run the hero management code only if the relevant elements exist on the page
+    const heroSectionExists = document.querySelector('.hero-image img') && document.getElementById('dynamic-tagline') && document.querySelector('.logo span');
+    
+    if (heroSectionExists) {
+        manageHeroAndTaglines(); // Initialize only if hero section elements are present
+    } else {
+        console.info("Hero section elements not found on this page. Skipping hero management.");
+    }
+}
+
+// Truncate text for overview sections
+function truncateText(selector, maxLength) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(element => {
+        const originalText = element.textContent;
+        if (originalText.length > maxLength) {
+            const truncatedText = originalText.substring(0, maxLength).trim() + '...';
+            element.textContent = truncatedText;
+        }
+    });
+}
+// Adjust title font size dynamically based on overflow
+function adjustTitleFontSize() {
+    const movieCards = document.querySelectorAll('.movie-card');
+    movieCards.forEach(card => {
+        const titleContainer = card.querySelector('.titles');
+        if (titleContainer) {
+            const mainTitle = titleContainer.querySelector('.main-title');
+            const releaseYear = titleContainer.querySelector('.release-year');
+            
+            if (mainTitle && releaseYear) {
+                // Reset to default size
+                mainTitle.style.fontSize = '1.6em';
+                releaseYear.style.fontSize = '0.8em';
+                
+                // Check if the title overflows
+                if (titleContainer.scrollWidth > titleContainer.clientWidth) {
+                    let fontSize = parseFloat(window.getComputedStyle(mainTitle).fontSize);
+                    while (titleContainer.scrollWidth > titleContainer.clientWidth && fontSize > 0.8) {
+                        fontSize -= 0.1;
+                        mainTitle.style.fontSize = fontSize + 'em';
+                        releaseYear.style.fontSize = (fontSize * 0.7) + 'em';  // Adjust year proportionally
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Adjust the width of metadata elements dynamically
+function adjustMetadataWidth() {
+    const metadataElements = document.querySelectorAll('.movie-metadata');
+    metadataElements.forEach(metadata => {
+        const parentWidth = metadata.parentElement.clientWidth;
+        metadata.style.maxWidth = parentWidth + 'px';
+    });
+}
+
+
+// Function to update movie card background images based on screen size
+function updateMovieCardBackground() {
+const movieCards = document.querySelectorAll('.movie-card.poster-background');
+movieCards.forEach(card => {
+    const mobileImage = card.getAttribute('data-mobile-image');
+    const desktopImage = card.getAttribute('data-desktop-image');
+
+    // Set the correct background based on the screen size
+    if (window.innerWidth >= 1024) {
+        if (desktopImage) {
+            card.style.backgroundImage = `url(${desktopImage})`;
+        }
+    } else {
+        if (mobileImage) {
+            card.style.backgroundImage = `url(${mobileImage})`;
+        }
+    }
+});
+}
 --- File: templates\catalog.html ---
 <!DOCTYPE html>
 <html lang="de">
@@ -2076,7 +3216,7 @@ footer {
 
                     <!-- Custom Dropdowns for Filters -->
                     <div class="custom-dropdown">
-                        <div class="dropdown-header" aria-label="Jahr">
+                        <div class="dropdown-header" aria-label="Jahr" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
@@ -2084,15 +3224,12 @@ footer {
                             </div>
                         </div>
                         <div class="dropdown-list" id="year-dropdown-list">
-                            <label><input type="checkbox" value="2023">2023</label>
-                            <label><input type="checkbox" value="2022">2022</label>
-                            <label><input type="checkbox" value="2021">2021</label>
-                            <!-- Add more years as needed -->
+                            <!-- Dropdown options will be populated dynamically via JavaScript -->
                         </div>
                     </div>
                     
                     <div class="custom-dropdown">
-                        <div class="dropdown-header" aria-label="Genre">
+                        <div class="dropdown-header" aria-label="Genre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-film" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
@@ -2100,15 +3237,12 @@ footer {
                             </div>
                         </div>
                         <div class="dropdown-list" id="genre-dropdown-list">
-                            <label><input type="checkbox" value="Drama">Drama</label>
-                            <label><input type="checkbox" value="Komödie">Komödie</label>
-                            <label><input type="checkbox" value="Action">Action</label>
-                            <!-- Add more genres as needed -->
+                            <!-- Dropdown options will be populated dynamically via JavaScript -->
                         </div>
                     </div>
                     
                     <div class="custom-dropdown">
-                        <div class="dropdown-header" aria-label="Land">
+                        <div class="dropdown-header" aria-label="Land" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-globe" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
@@ -2116,10 +3250,7 @@ footer {
                             </div>
                         </div>
                         <div class="dropdown-list" id="country-dropdown-list">
-                            <label><input type="checkbox" value="Deutschland">Deutschland</label>
-                            <label><input type="checkbox" value="USA">USA</label>
-                            <label><input type="checkbox" value="Frankreich">Frankreich</label>
-                            <!-- Add more countries as needed -->
+                            <!-- Dropdown options will be populated dynamically via JavaScript -->
                         </div>
                     </div>
                     
@@ -2132,58 +3263,61 @@ footer {
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
-                    <!-- Example Pagination -->
-                    <li><a href="#">&laquo;</a></li>
-                    <li class="active"><span>1</span></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">&raquo;</a></li>
                 </ul>
             </nav>
         </section>
 
-        <!-- Movie Listings Section -->
-        <section class="movie-listings">
-            {% if movies %}
-                {% for movie in movies %}
-                <div class="movie-card poster-background" style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
-                    <div class="transparency-layer"></div>
-                    <div class="movie-content-wrapper">
-                        <div class="image-container">
-                            <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
-                                 alt="{{ movie['main_title'] }}" 
-                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
-                        </div>
+        <!-- Movie Listings Container -->
+        <section class="movie-listings-container" style="position: relative;">
+            <!-- Progress Indicator -->
+            <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
+                <div class="spinner" aria-hidden="true"></div>
+                <p>Loading movies...</p>
+            </div>
 
-                        <div class="info-section">
-                            <div class="header-section">
-                                <h2>{{ movie['main_title'] }}</h2>
+            <!-- Movie Listings Section -->
+            <section class="movie-listings">
+                {% if movies %}
+                    {% for movie in movies %}
+                    <div class="movie-card poster-background" style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
+                        <div class="transparency-layer"></div>
+                        <div class="movie-content-wrapper">
+                            <div class="image-container">
+                                <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                                    alt="{{ movie['main_title'] }}" 
+                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
                             </div>
 
-                            <div class="metadata">
-                                <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
-                                <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
-                                <p><strong>Regie:</strong> {{ movie['director'] }}</p>
-                                <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
-                                {% if movie['format_standort'] %}
-                                <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                            <div class="info-section">
+                                <div class="header-section">
+                                    <h2>{{ movie['main_title'] }}</h2>
+                                </div>
+
+                                <div class="metadata">
+                                    <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
+                                    <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
+                                    <p><strong>Regie:</strong> {{ movie['director'] }}</p>
+                                    <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
+                                    {% if movie['format_standort'] %}
+                                    <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="overview-section">
+                                {% if movie['overview']|length > 150 %}
+                                <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
+                                {% else %}
+                                <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
                                 {% endif %}
                             </div>
                         </div>
-
-                        <div class="overview-section">
-                            {% if movie['overview']|length > 150 %}
-                            <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                            {% else %}
-                            <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                            {% endif %}
-                        </div>
                     </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p class="no-movies-message">No movies match the selected filters.</p>
-            {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="no-movies-message">No movies match the selected filters.</p>
+                {% endif %}
+            </section>
         </section>
 
         <!-- Bottom Pagination Section -->
@@ -2191,12 +3325,6 @@ footer {
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
-                    <!-- Example Pagination -->
-                    <li><a href="#">&laquo;</a></li>
-                    <li class="active"><span>1</span></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">&raquo;</a></li>
                 </ul>
             </nav>
         </section>
@@ -2209,7 +3337,6 @@ footer {
     </footer>
 
     <!-- Scripts -->
-    <script src="{{ url_for('static', filename='assets/custom_controls/custom_dropdown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/filter.js') }}"></script> 
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
 </body>

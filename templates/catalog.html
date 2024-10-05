@@ -30,6 +30,10 @@
     </header>
 
     <main>
+        <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Loading movies...</p>
+        </div>        
         <!-- Catalog Search Section -->
         <section class="catalog-search">
             <div class="search-dropdown-container">
@@ -43,7 +47,7 @@
 
                     <!-- Custom Dropdowns for Filters -->
                     <div class="custom-dropdown">
-                        <div class="dropdown-header" aria-label="Jahr">
+                        <div class="dropdown-header" aria-label="Jahr" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
@@ -51,15 +55,12 @@
                             </div>
                         </div>
                         <div class="dropdown-list" id="year-dropdown-list">
-                            <label><input type="checkbox" value="2023">2023</label>
-                            <label><input type="checkbox" value="2022">2022</label>
-                            <label><input type="checkbox" value="2021">2021</label>
-                            <!-- Add more years as needed -->
+                            <!-- Dropdown options will be populated dynamically via JavaScript -->
                         </div>
                     </div>
                     
                     <div class="custom-dropdown">
-                        <div class="dropdown-header" aria-label="Genre">
+                        <div class="dropdown-header" aria-label="Genre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-film" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
@@ -67,15 +68,12 @@
                             </div>
                         </div>
                         <div class="dropdown-list" id="genre-dropdown-list">
-                            <label><input type="checkbox" value="Drama">Drama</label>
-                            <label><input type="checkbox" value="Komödie">Komödie</label>
-                            <label><input type="checkbox" value="Action">Action</label>
-                            <!-- Add more genres as needed -->
+                            <!-- Dropdown options will be populated dynamically via JavaScript -->
                         </div>
                     </div>
                     
                     <div class="custom-dropdown">
-                        <div class="dropdown-header" aria-label="Land">
+                        <div class="dropdown-header" aria-label="Land" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-globe" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
@@ -83,10 +81,7 @@
                             </div>
                         </div>
                         <div class="dropdown-list" id="country-dropdown-list">
-                            <label><input type="checkbox" value="Deutschland">Deutschland</label>
-                            <label><input type="checkbox" value="USA">USA</label>
-                            <label><input type="checkbox" value="Frankreich">Frankreich</label>
-                            <!-- Add more countries as needed -->
+                            <!-- Dropdown options will be populated dynamically via JavaScript -->
                         </div>
                     </div>
                     
@@ -99,58 +94,57 @@
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
-                    <!-- Example Pagination -->
-                    <li><a href="#">&laquo;</a></li>
-                    <li class="active"><span>1</span></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">&raquo;</a></li>
                 </ul>
             </nav>
         </section>
 
-        <!-- Movie Listings Section -->
-        <section class="movie-listings">
-            {% if movies %}
-                {% for movie in movies %}
-                <div class="movie-card poster-background" style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
-                    <div class="transparency-layer"></div>
-                    <div class="movie-content-wrapper">
-                        <div class="image-container">
-                            <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
-                                 alt="{{ movie['main_title'] }}" 
-                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
-                        </div>
+        <!-- Movie Listings Container -->
+        <section class="movie-listings-container" style="position: relative;">
 
-                        <div class="info-section">
-                            <div class="header-section">
-                                <h2>{{ movie['main_title'] }}</h2>
+
+            <!-- Movie Listings Section -->
+            <section class="movie-listings">
+                {% if movies %}
+                    {% for movie in movies %}
+                    <div class="movie-card poster-background" style="background-image: url('{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}');">
+                        <div class="transparency-layer"></div>
+                        <div class="movie-content-wrapper">
+                            <div class="image-container">
+                                <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                                    alt="{{ movie['main_title'] }}" 
+                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
                             </div>
 
-                            <div class="metadata">
-                                <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
-                                <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
-                                <p><strong>Regie:</strong> {{ movie['director'] }}</p>
-                                <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
-                                {% if movie['format_standort'] %}
-                                <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                            <div class="info-section">
+                                <div class="header-section">
+                                    <h2>{{ movie['main_title'] }}</h2>
+                                </div>
+
+                                <div class="metadata">
+                                    <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
+                                    <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
+                                    <p><strong>Regie:</strong> {{ movie['director'] }}</p>
+                                    <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
+                                    {% if movie['format_standort'] %}
+                                    <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="overview-section">
+                                {% if movie['overview']|length > 150 %}
+                                <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
+                                {% else %}
+                                <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
                                 {% endif %}
                             </div>
                         </div>
-
-                        <div class="overview-section">
-                            {% if movie['overview']|length > 150 %}
-                            <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                            {% else %}
-                            <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                            {% endif %}
-                        </div>
                     </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p class="no-movies-message">No movies match the selected filters.</p>
-            {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="no-movies-message">No movies match the selected filters.</p>
+                {% endif %}
+            </section>
         </section>
 
         <!-- Bottom Pagination Section -->
@@ -158,12 +152,6 @@
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
-                    <!-- Example Pagination -->
-                    <li><a href="#">&laquo;</a></li>
-                    <li class="active"><span>1</span></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">&raquo;</a></li>
                 </ul>
             </nav>
         </section>
@@ -176,7 +164,6 @@
     </footer>
 
     <!-- Scripts -->
-    <!-- <script src="{{ url_for('static', filename='assets/custom_controls/custom_dropdown.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/filter.js') }}"></script> 
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
 </body>

@@ -12,7 +12,7 @@ text_extensions = {
     # '.py', 
     '.html', 
     '.css', 
-    # '.js'
+    '.js'
     }
 
 # Define directories and files to include
