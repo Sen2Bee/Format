@@ -198,33 +198,82 @@
     border-radius: 5px;
 }
 
-/* Responsive Adjustments for Mobile */
-@media (max-width: 768px) {
-    .catalog-search {
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding: 10px 0;
+/* forms.css */
+
+/* Search Container Styles */
+.search-container {
+    position: relative; /* Establishes a positioning context for the icon and clear button */
+    width: 100%;
+    max-width: 400px; /* Adjust as needed for your layout */
+    margin: 0 auto; /* Centers the search box horizontally */
+}
+
+/* Search Icon Styles */
+.search-container .search-icon {
+    position: absolute; /* Positions the icon relative to the search container */
+    top: 50%; /* Vertically centers the icon */
+    left: 10px; /* Positions the icon 10px from the left edge */
+    transform: translateY(-50%); /* Corrects the vertical alignment */
+    color: #aaa; /* Sets the icon color */
+    pointer-events: none; /* Allows clicks to pass through to the input */
+    font-size: 1.2em; /* Adjusts the icon size */
+}
+
+/* Search Input Field Styles */
+.search-container input#search-box {
+    width: 100%;
+    padding: 10px 10px 10px 35px; /* Top, Right, Bottom, Left padding */
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Search Input Focus Styles */
+.search-container input#search-box:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+}
+
+/* Clear Search Icon Styles */
+.search-container .clear-icon {
+    position: absolute; /* Positions the clear icon relative to the search container */
+    top: 50%; /* Vertically centers the icon */
+    right: 10px; /* Positions the icon 10px from the right edge */
+    transform: translateY(-50%); /* Corrects the vertical alignment */
+    cursor: pointer;
+    color: #aaa;
+    font-size: 1.2em; /* Adjusts the icon size */
+    display: none; /* Hidden by default */
+}
+
+/* Show Clear Icon When Visible */
+.search-container .clear-icon.visible {
+    display: block;
+}
+
+/* Responsive Adjustments for Smaller Screens */
+@media (max-width: 480px) {
+    .search-container {
+        max-width: 100%; /* Allows the search box to take full width on small screens */
+        padding: 0 10px; /* Adds horizontal padding */
     }
 
-    .search-dropdown-container {
-        flex-direction: column;
-        width: 100%;
-        padding: 15px;
-        margin-top: 15px;
+    .search-container .search-icon,
+    .search-container .clear-icon {
+        left: 5px;
+        right: 5px;
+        font-size: 1em; /* Slightly smaller icons */
     }
 
-    .search-container,
-    .custom-dropdown {
-        width: 100%;
-        margin-bottom: 15px;
-    }
-
-    .dropdown-header {
-        height: 50px;
-        font-size: 1.2em;
+    .search-container input#search-box {
+        padding: 8px 8px 8px 30px; /* Adjust padding for smaller screens */
+        font-size: 0.9rem; /* Slightly smaller text */
     }
 }
+
 /* Progress Indicator Styles */
 .progress-indicator {
     position: fixed; /* Overlay the entire viewport */

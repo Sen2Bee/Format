@@ -28,6 +28,13 @@ function initializeFilterDropdowns() {
     // Search box input event with debouncing
     if (searchBox) { // Check if searchBox exists
         searchBox.addEventListener('input', () => {
+            // Toggle visibility of the clear icon
+            if (searchBox.value.length > 0) {
+                clearSearchBtn.classList.add('visible');
+            } else {
+                clearSearchBtn.classList.remove('visible');
+            }
+
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 updateFilters(); // Trigger filter update after user stops typing for 300ms
@@ -43,15 +50,6 @@ function initializeFilterDropdowns() {
             searchBox.value = '';
             clearSearchBtn.classList.remove('visible');
             updateFilters();
-        });
-
-        // Make clearSearchBtn visible when searchBox has input
-        searchBox.addEventListener('input', () => {
-            if (searchBox.value.length > 0) {
-                clearSearchBtn.classList.add('visible');
-            } else {
-                clearSearchBtn.classList.remove('visible');
-            }
         });
     } else {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
