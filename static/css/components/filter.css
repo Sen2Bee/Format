@@ -45,10 +45,11 @@
 /* Search Box */
 .search-container {
     position: relative;
-    flex: 1 1 250px;
+    flex: 1 1 50%;
     max-width: 400px;
-    height: 40px;
+    height: 60px;
 }
+
 /* Position the search icon inside the search box */
 .search-container .search-icon {
     position: absolute;
@@ -58,7 +59,6 @@
     color: var(--placeholder-color);
     pointer-events: none; /* Allows clicks to pass through to the input */
 }
-
 
 #search-box {
     width: 100%;
@@ -114,7 +114,7 @@
     position: relative;
     flex: 1 1 200px;
     max-width: 300px;
-    height: 40px;
+    height: 60px;
 }
 
 .dropdown-header {
@@ -129,6 +129,8 @@
     height: 100%;
     transition: background var(--transition-duration), color var(--transition-duration);
     width: 100%;
+    box-sizing: border-box;
+    padding-right: 40px; /* Increased padding to accommodate clear-icon */
 }
 
 .dropdown-header:hover {
@@ -141,16 +143,7 @@
     gap: 8px;
 }
 
-.selected-count {
-    color: var(--link-color);
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.85em;
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
+/* Selection Badge */
 .selection-badge {
     background-color: var(--accent-color);
     color: #fff;
@@ -166,6 +159,7 @@
     display: inline-block;
 }
 
+/* Clear Icon */
 .clear-icon {
     width: 24px;
     height: 24px;
@@ -178,6 +172,13 @@
     align-items: center;
     justify-content: center;
     transition: background var(--transition-duration), color var(--transition-duration);
+    margin-left: 8px; /* Space between clear-icon and selection-badge */
+    visibility: hidden; /* Hidden by default */
+}
+
+/* Show clear-icon only when there are selections */
+.dropdown-header.has-selection .clear-icon {
+    visibility: visible;
 }
 
 .dropdown-header:hover .clear-icon,
@@ -248,7 +249,8 @@
     font-size: 0.8em;
     color: #fff;
     transition: transform 0.3s ease;
-    margin-left: auto;
+    position: absolute;
+    right: 18px; /* Position caret properly with padding */
 }
 
 .dropdown-header[aria-expanded="true"]::after {
@@ -394,6 +396,7 @@
         margin-bottom: 10px;
     }
 }
+
 /* Progress Indicator Styles */
 .progress-indicator {
     position: fixed;

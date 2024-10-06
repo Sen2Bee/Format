@@ -217,8 +217,7 @@
         const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked'));
         const count = selectedItems.length;
 
-        // Update the count display
-        countElement.textContent = `${count} sel.`;
+
 
         // Show or hide the clear button based on the count
         clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
@@ -256,8 +255,8 @@
      * Function to update the carousel title based on selected genre
      */
     function updateCarouselTitle() {
-        console.log("updateCarouselTitle", updateCarouselTitle)
         const selectedGenres = getCheckedValues('genre-dropdown-list');
+        console.log("updateCarouselTitle", selectedGenres)
         if (selectedGenres.length === 1) {
             const genre = selectedGenres[0];
             carouselTitle.textContent = genreFontMapping[genre] ? `${genre} Filmtitel` : `${genre} Filme`;
@@ -270,7 +269,7 @@
             carouselTitle.textContent = "Hervorgehobene Filme";
             carouselTitle.style.fontFamily = "'Cinzel', serif";
         }
-    }
+    }   
 
     /**
      * Function to update dropdown values and movie listings based on current selections and search query

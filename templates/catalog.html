@@ -32,10 +32,7 @@
             <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
         </div>
     </header>
-
-    <main>
-  
-
+  <main>
         <!-- Movie Carousel Section -->
         <section class="movie-carousel-section">
             <h2 id="carousel-title">Hervorgehobene Filme</h2>
@@ -45,7 +42,7 @@
                     {% for featured_movie in featured_movies %}
                     <div class="swiper-slide">
                         <div class="featured-movie-card">
-                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" alt="{{ featured_movie['main_title'] }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
+                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" alt="{{ featured_movie['main_title'] }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" loading="lazy">>
                             <div class="featured-movie-overlay">
                                 <h3>{{ featured_movie['main_title'] }}</h3>
                                 <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
@@ -83,7 +80,6 @@
                         <div class="dropdown-header" aria-label="Jahr" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                             <div class="header-controls">
-                                <span class="selected-count">0 sel.</span>
                                 <span class="selection-badge" aria-label="Selected Year"></span> <!-- Selection Badge hinzugefügt -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear year filter">&times;</span>
                             </div>
@@ -98,7 +94,6 @@
                         <div class="dropdown-header" aria-label="Genre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-film" aria-hidden="true"></i>
                             <div class="header-controls">
-                                <span class="selected-count">0 sel.</span>
                                 <span class="selection-badge" aria-label="Selected Genre"></span> <!-- Selection Badge hinzugefügt -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear genre filter">&times;</span>
                             </div>
@@ -113,7 +108,6 @@
                         <div class="dropdown-header" aria-label="Land" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-globe" aria-hidden="true"></i>
                             <div class="header-controls">
-                                <span class="selected-count">0 sel.</span>
                                 <span class="selection-badge" aria-label="Selected Country"></span> <!-- Selection Badge hinzugefügt -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear country filter">&times;</span>
                             </div>
@@ -148,7 +142,8 @@
                             <div class="image-container">
                                 <img src="{{ url_for('movie_images', filename=movie['folder_name'] + '/poster/poster_1.jpg') }}" 
                                     alt="{{ movie['main_title'] }}" 
-                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
+                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';"
+                                    loading="lazy">
                             </div>
                             <div class="info-section">
                                 <h2>{{ movie['main_title'] }}</h2>
