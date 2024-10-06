@@ -3,6 +3,11 @@
 /* Import Additional Fonts for Themes */
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
 
+/* Ensure consistent box sizing across all elements */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* Variables */
 :root {
     --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
@@ -45,9 +50,9 @@
 /* Search Box */
 .search-container {
     position: relative;
-    flex: 1 1 50%;
-    max-width: 400px;
+    flex: 1 1 50%; /* Base flex for larger screens */
     height: 60px;
+    margin-bottom: 10px;
 }
 
 /* Position the search icon inside the search box */
@@ -112,8 +117,8 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    flex: 1 1 200px;
-    max-width: 300px;
+    flex: 1 1 50%; /* Base flex for larger screens */
+    max-width: none; /* Removed max-width to allow full stretching */
     height: 60px;
 }
 
@@ -180,8 +185,6 @@
 .dropdown-header.has-selection .clear-icon {
     visibility: visible;
 }
-
-
 
 /* Dropdown List */
 .dropdown-list {
@@ -256,7 +259,7 @@
 
 /* Movie Carousel Section */
 .movie-carousel-section {
-    padding-top: 50px;
+    padding-top: 70px;
     padding-bottom: 20px;
     background-color: var(--primary-bg-color); /* Same background as movie-listings */
     text-align: center;
@@ -264,7 +267,7 @@
 }
 
 .movie-carousel-section h2 {
-    font-size: 2em;
+    font-size: 1.5em;
     color: #fff;
     z-index: 1;
     position: relative;
@@ -357,22 +360,46 @@
 }
 
 /* Responsive Adjustments */
-@media (max-width: 1024px) {
-    .featured-movie-card {
-        width: 180px;
-        height: 270px;
+@media (min-width: 768px) {
+    /* Tablet and Up: Horizontal Layout */
+    #filter-form {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .search-container,
+    .custom-dropdown {
+        flex: 1 1 48%; /* Adjust based on number of dropdowns */
+        max-width: none; /* Ensure full stretching */
     }
 }
 
-@media (max-width: 768px) {
-    .featured-movie-card {
-        width: 150px;
-        height: 225px;
+@media (min-width: 1024px) {
+    /* Desktop and Larger Screens: Extended Horizontal Layout */
+    #filter-form {
+        flex-direction: row;
     }
 
-    .movie-carousel-section h2 {
-        margin-bottom: 15px;
-        font-size: 1.5em;
+    .search-container,
+    .custom-dropdown {
+        flex: 1 1 20%; /* Adjust based on number of dropdowns */
+        max-width: none; /* Ensure full stretching */
+    }
+}
+
+@media (max-width: 767px) {
+    /* Mobile Devices: Vertical Stacking */
+    #filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-container,
+    .custom-dropdown {
+        flex: 1 1 100%; /* Full width on small screens */
+        max-width: none;
+        margin-bottom: 10px;
     }
 }
 
@@ -386,11 +413,13 @@
         font-size: 1.2em;
     }
 
-    /* Adjust search box on mobile */
-    .search-container {
-        flex: 1 1 100%;
-        max-width: none;
-        margin-bottom: 10px;
+    /* Additional adjustments for very small screens */
+    #filter-form {
+        gap: 8px;
+    }
+
+    .dropdown-header::after {
+        right: 12px; /* Adjust caret position for smaller screens */
     }
 }
 
@@ -411,7 +440,7 @@
 
 .progress-indicator .spinner {
     border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid var(--accent-color); /* Blue */
+    border-top: 8px solid var(--accent-color); /* Accent color */
     border-radius: 50%;
     width: 60px;
     height: 60px;
