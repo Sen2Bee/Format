@@ -1,9 +1,9 @@
-/* cards.css */
+/* static/css/components/cards.css */
 
 /* General Movie Card Container */
 .movie-card {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     background-color: #1e1e1e;
     color: #ffffff;
     border-radius: 10px;
@@ -14,40 +14,18 @@
     max-width: 1100px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
-}
-
-.movie-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Background Image for Movie Card */
-.poster-background {
-    background-repeat: no-repeat;
-    background-position: center center;
     background-size: cover;
+    background-position: center;
 }
 
-/* Dark Overlay for Mobile Background Image */
-.movie-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Semi-transparent dark overlay */
-    z-index: 0;
-    display: none; /* Only visible on mobile */
-    transition: background 0.3s ease;
+/* Movie Card Background Image */
+.movie-card.poster-background {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
-.movie-card:active::before,
-.movie-card:hover::before {
-    background: rgba(0, 0, 0, 0.2); /* Show more of the image on hover/tap */
-}
-
-/* Content Wrapper for Poster and Metadata */
+/* Movie Content Wrapper */
 .movie-content-wrapper {
     display: grid;
     grid-template-columns: 250px 1fr; /* Poster and content */
@@ -203,10 +181,6 @@
         background-repeat: no-repeat;
     }
 
-    .movie-card::before {
-        display: block;
-    }
-
     .movie-content-wrapper {
         grid-template-columns: 1fr;
         grid-template-areas: 
@@ -245,6 +219,7 @@
         font-weight: bold;
     }
 
+    /* Thinner font on hover/touch */
     .movie-card:hover .metadata p strong,
     .movie-card:hover .metadata p span {
         font-size: 1.1em;

@@ -1,4 +1,7 @@
-/* static/css/filter.css */
+/* static/css/components/filter.css */
+
+/* Import Additional Fonts for Themes */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
 
 /* Variables */
 :root {
@@ -180,7 +183,7 @@
 
 .dropdown-header:hover .clear-icon,
 .header-controls:hover .clear-icon {
-    visibility: visible;
+    visibility: visible; /* Show clear icons on hover */
 }
 
 /* Dropdown List */
@@ -267,6 +270,7 @@
     color: #fff;
     z-index: 1;
     position: relative;
+    font-family: 'Cinzel', serif; /* Ensure consistent font */
 }
 
 /* Swiper Container */

@@ -5,7 +5,6 @@
         console.log("Filter.js: DOM fully loaded");
         initializeFilterDropdowns();  // Initialize dropdowns on page load
         initializeSwiper(); // Initialize Swiper Carousel
-        selectRandomTheme(); // Select a random theme for the carousel
     });
 
     /** Cache Elements and Buttons */
@@ -18,6 +17,20 @@
     const carouselTitle = document.getElementById('carousel-title');
 
     let debounceTimer;
+
+    /** Genre to Font Mapping */
+    const genreFontMapping = {
+        "Action": "'Anton', sans-serif",
+        "Drama": "'Playfair Display', serif",
+        "Family": "'Baloo 2', cursive",
+        "Comedy": "'Comic Sans MS', cursive, sans-serif",
+        "Thriller": "'Roboto Slab', serif",
+        "Horror": "'Creepster', cursive",
+        "Sci-Fi": "'Orbitron', sans-serif",
+        "Romance": "'Great Vibes', cursive",
+        "Documentary": "'Merriweather', serif",
+        "Fantasy": "'Goudy Bookletter 1911', serif"
+    };
 
     /**
      * Function to initialize dropdowns and attach event listeners
@@ -89,6 +102,11 @@
 
                     updateSelectedCount(dropdownList, selectedCount, clearButton, selectionBadge);
                     triggerDropdownChangeEvent();
+
+                    // Update carousel title based on selected genre
+                    if (dropdownList.id === 'genre-dropdown-list') {
+                        updateCarouselTitle();
+                    }
                 }
             });
 
@@ -103,6 +121,11 @@
                     const selectionBadge = dropdownList.parentElement.querySelector('.selection-badge');
                     updateSelectedCount(dropdownList, selectedCount, clearButton, selectionBadge); // Update selection count
                     triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+
+                    // Update carousel title based on selected genre
+                    if (dropdownList.id === 'genre-dropdown-list') {
+                        updateCarouselTitle();
+                    }
                 });
             }
         });
@@ -230,6 +253,25 @@
     }
 
     /**
+     * Function to update the carousel title based on selected genre
+     */
+    function updateCarouselTitle() {
+        const selectedGenres = getCheckedValues('genre-dropdown-list');
+        if (selectedGenres.length === 1) {
+            const genre = selectedGenres[0];
+            carouselTitle.textContent = genreFontMapping[genre] ? `${genre} Filmtitel` : `${genre} Filme`;
+            // Apply the corresponding font
+            carouselTitle.style.fontFamily = genreFontMapping[genre] || "'Open Sans', sans-serif";
+        } else if (selectedGenres.length > 1) {
+            carouselTitle.textContent = "Verschiedene Genres";
+            carouselTitle.style.fontFamily = "'Open Sans', sans-serif";
+        } else {
+            carouselTitle.textContent = "Hervorgehobene Filme";
+            carouselTitle.style.fontFamily = "'Cinzel', serif";
+        }
+    }
+
+    /**
      * Function to update dropdown values and movie listings based on current selections and search query
      */
     function updateFilters(page = 1) {
@@ -261,6 +303,7 @@
                 populateDropdown('genre-dropdown-list', genres, selectedGenres);
                 populateDropdown('country-dropdown-list', countries, selectedCountries);
 
+                updateCarouselTitle(); // Update carousel title based on selected genre
                 updateMovieListings(movies);
                 updatePagination(current_page, total_pages);
             })
@@ -317,7 +360,7 @@
         // Render the options
         optionsArray.forEach(option => {
             const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
-            const label = document.createElement('label');
+            const label = document.createElement("label");
             label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
             dropdownList.appendChild(label);
         });
@@ -348,9 +391,11 @@
                 const defaultImagePath = '/static/images/default_movie.png';
 
                 const movieCard = document.createElement('div');
-                movieCard.className = 'movie-card';
+                movieCard.className = 'movie-card poster-background';
+                movieCard.style.backgroundImage = `url('${imagePath}')`;
 
                 movieCard.innerHTML = `
+                    <div class="transparency-layer"></div>
                     <div class="movie-content-wrapper">
                         <div class="image-container">
                             <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';">
@@ -363,14 +408,11 @@
                             <p><strong>Schauspieler:</strong> ${movie.actors}</p>
                             ${movie.format_standort ? `<p class="standort"><strong>Standort:</strong> ${movie.format_standort}</p>` : ''}
                             <p class="countries"><strong>Länder:</strong> ${movie.countries}</p> <!-- Länderinformationen -->
-                            <div class="links">
-                                <a href="https://www.imdb.com/title/${movie.imdb_id}" target="_blank" aria-label="IMDb"><i class="fab fa-imdb"></i></a>
-                                <a href="${movie.trailer_url}" target="_blank" aria-label="Trailer"><i class="fas fa-play-circle"></i></a>
-                                <a href="${movie.review_url}" target="_blank" aria-label="Review"><i class="fas fa-comments"></i></a>
-                            </div>
                         </div>
                         <div class="overview-section">
-                            <p><a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>
+                            ${movie.overview.length > 150 
+                                ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` 
+                                : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
                         </div>
                     </div>
                 `;
@@ -509,42 +551,4 @@
         });
     }
 
-    /**
-     * Function to select a random theme for the carousel on each reload
-     */
-    function selectRandomTheme() {
-        const themes = [
-            { genre: "Action", title: "Actionreiche Highlights" },
-            { genre: "Drama", title: "Dramatische Meisterwerke" },
-            { genre: "Family", title: "Familienfreundliche Filme" },
-            { genre: "Comedy", title: "Lustige Komödien" },
-            { genre: "Thriller", title: "Spannende Thriller" },
-            { genre: "Horror", title: "Gruselige Horrorfilme" },
-            { genre: "Sci-Fi", title: "Science-Fiction Abenteuer" },
-            { genre: "Romance", title: "Romantische Geschichten" },
-            { genre: "Documentary", title: "Fesselnde Dokumentationen" },
-            { genre: "Fantasy", title: "Fantastische Welten" }
-        ];
-
-        const randomIndex = Math.floor(Math.random() * themes.length);
-        const selectedTheme = themes[randomIndex];
-
-        // Update the carousel title
-        if (carouselTitle) {
-            carouselTitle.textContent = selectedTheme.title;
-        }
-
-        // Automatically select the genre in the dropdown
-        const genreCheckboxes = document.querySelectorAll('#genre-dropdown-list input[type="checkbox"]');
-        genreCheckboxes.forEach(checkbox => {
-            if (checkbox.value.toLowerCase() === selectedTheme.genre.toLowerCase()) {
-                checkbox.checked = true;
-            } else {
-                checkbox.checked = false;
-            }
-        });
-
-        // Trigger a dropdown change event to update the carousel
-        triggerDropdownChangeEvent();
-    }
 })();
