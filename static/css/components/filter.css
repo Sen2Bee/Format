@@ -181,10 +181,7 @@
     visibility: visible;
 }
 
-.dropdown-header:hover .clear-icon,
-.header-controls:hover .clear-icon {
-    visibility: visible; /* Show clear icons on hover */
-}
+
 
 /* Dropdown List */
 .dropdown-list {

@@ -234,12 +234,14 @@ def catalog():
             WHERE 
                 g.genre = %s AND 
                 m.imdb_rating > 6.7 AND 
-                m.poster_images > 0
+                m.poster_images > 0 AND 
+                g.genre NOT IN ('Adult', 'News', 'Reality-TV')
             ORDER BY RAND()
             LIMIT 50;
         """
         cursor.execute(featured_query, (selected_theme,))
         featured_movies = cursor.fetchall()
+
 
         # Convert 'countries' and 'genres' from strings to lists if needed
         for movie in featured_movies:

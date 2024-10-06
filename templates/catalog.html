@@ -35,14 +35,20 @@
   <main>
         <!-- Movie Carousel Section -->
         <section class="movie-carousel-section">
-            <h2 id="carousel-title">Hervorgehobene Filme</h2>
+            <h2 id="carousel-title">
+                {% if selected_theme %}
+                    A Taste of... {{ selected_theme }}
+                {% else %}
+                    Hervorgehobene Filme
+                {% endif %}
+            </h2>
             <!-- Swiper.js Carousel -->
             <div class="swiper-container">
                 <div class="swiper-wrapper">
                     {% for featured_movie in featured_movies %}
                     <div class="swiper-slide">
                         <div class="featured-movie-card">
-                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" alt="{{ featured_movie['main_title'] }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" loading="lazy">>
+                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" alt="{{ featured_movie['main_title'] }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" loading="lazy">
                             <div class="featured-movie-overlay">
                                 <h3>{{ featured_movie['main_title'] }}</h3>
                                 <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
@@ -58,6 +64,7 @@
                 <div class="swiper-button-next"></div>
             </div>
         </section>
+        
 
         <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
             <div class="spinner" aria-hidden="true"></div>

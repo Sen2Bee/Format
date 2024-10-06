@@ -58,10 +58,6 @@
     transition: opacity 0.3s ease;
     z-index: 1;
 }
-.movie-card::before {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.7) 100%);
-}
-
 
 .movie-card:hover::before {
     opacity: 1;
@@ -119,7 +115,7 @@
 .header-section h2 {
     margin: 0;
     font-size: 1.8em;
-    color: #ffd700;
+    color: #ffd700; /* Yellow color */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     font-family: 'Cinzel', serif;
 }
@@ -133,29 +129,28 @@
 
 .metadata p {
     margin: 5px 0;
+    color: #ffd700; /* Ensure yellow color */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-.metadata p strong {
-    font-size: 1.1em;
-    font-weight: bold;
-}
-
+.metadata p strong,
 .metadata p span {
+    color: #ffd700; /* Ensure yellow color for strong and span elements */
+    font-size: 1.1em;
     font-weight: bold;
 }
 
 /* Inline Metadata */
 .inline-meta {
     font-size: 1.1em;
-    color: #ddd;
+    color: #ffd700; /* Ensure yellow color */
     padding-top: 10px;
     border-top: 1px solid #444;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .standort {
-    color: #ddd;
+    color: #ffd700; /* Ensure yellow color */
     margin-top: 10px;
     border-top: 1px solid #444;
     padding-top: 10px;
@@ -168,7 +163,7 @@
     padding: 15px;
     background-color: rgba(37, 43, 54, 0.8);
     border-radius: 8px;
-    color: #dddddd;
+    color: #ffd700; /* Ensure yellow color */
     line-height: 1.4;
     z-index: 2;
     transition: font-weight 0.3s ease;
@@ -178,11 +173,12 @@
 /* Enhanced Text Visibility in Overview */
 .overview-section p {
     margin: 0;
+    color: #ffd700; /* Ensure yellow color */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); /* Stronger shadow for better readability */
 }
 
 .overview-section a {
-    color: #ffcc00;
+    color: #ffcc00; /* Bright yellow/gold for links */
     text-decoration: none;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
@@ -314,22 +310,6 @@
 
     .action .btn {
         width: 90%;
-    }
-}
-
-@media (max-width: 768px) {
-    .movie-card {
-        position: relative;
-        width: 100%;
-        padding-top: 150%; /* 2:3 aspect ratio */
-    }
-
-    .movie-content-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
     }
 }
 
