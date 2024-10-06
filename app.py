@@ -236,7 +236,7 @@ def catalog():
                 m.imdb_rating > 6.7 AND 
                 m.poster_images > 0
             ORDER BY RAND()
-            LIMIT 20;
+            LIMIT 50;
         """
         cursor.execute(featured_query, (selected_theme,))
         featured_movies = cursor.fetchall()

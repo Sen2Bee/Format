@@ -19,7 +19,6 @@
 
 /* Catalog Search Section */
 .catalog-search {
-    padding: 30px 20px;
     background-color: var(--primary-bg-color); /* Same background as movie-listings */
     text-align: center;
 }
@@ -258,14 +257,14 @@
 
 /* Movie Carousel Section */
 .movie-carousel-section {
-    padding: 60px 0;
+    padding-top: 50px;
+    padding-bottom: 20px;
     background-color: var(--primary-bg-color); /* Same background as movie-listings */
     text-align: center;
     position: relative; /* To prevent overlap with navbar */
 }
 
 .movie-carousel-section h2 {
-    margin-bottom: 20px;
     font-size: 2em;
     color: #fff;
     z-index: 1;
@@ -276,7 +275,7 @@
 /* Swiper Container */
 .swiper-container {
     width: 100%;
-    padding-bottom: 20px; /* Space for pagination bullets */
+    padding-bottom: 10px; /* Space for pagination bullets */
 }
 
 .swiper-wrapper {
@@ -394,4 +393,39 @@
         max-width: none;
         margin-bottom: 10px;
     }
+}
+/* Progress Indicator Styles */
+.progress-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10000; /* Ensure it's on top of other elements */
+}
+
+.progress-indicator .spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.progress-indicator p {
+    margin-top: 15px;
+    color: #fff;
+    font-size: 1.2em;
+    text-align: center;
 }

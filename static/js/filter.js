@@ -256,6 +256,7 @@
      * Function to update the carousel title based on selected genre
      */
     function updateCarouselTitle() {
+        console.log("updateCarouselTitle", updateCarouselTitle)
         const selectedGenres = getCheckedValues('genre-dropdown-list');
         if (selectedGenres.length === 1) {
             const genre = selectedGenres[0];
@@ -290,6 +291,7 @@
         console.log("Fetching updated filter data with params:", params.toString());
 
         // Show the progress indicator before starting the fetch
+        console.log("showProgressIndicator")
         showProgressIndicator();
 
         fetch(`/filter_movies?${params.toString()}`)
@@ -534,17 +536,17 @@
             breakpoints: {
                 // when window width is <= 1024px
                 1024: {
-                    slidesPerView: 3,
-                    spaceBetween: 10
+                    slidesPerView: 6,
+                    spaceBetween: 5
                 },
                 // when window width is <= 768px
                 768: {
-                    slidesPerView: 2,
+                    slidesPerView: 5,
                     spaceBetween: 10
                 },
                 // when window width is <= 480px
                 480: {
-                    slidesPerView: 1,
+                    slidesPerView: 3,
                     spaceBetween: 10
                 }
             }

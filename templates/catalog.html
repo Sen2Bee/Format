@@ -1,3 +1,4 @@
+<!-- File: templates/catalog.html -->
 <!-- templates/catalog.html -->
 <!DOCTYPE html>
 <html lang="de">
@@ -33,10 +34,7 @@
     </header>
 
     <main>
-        <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
-            <div class="spinner" aria-hidden="true"></div>
-            <p>Loading movies...</p>
-        </div>    
+  
 
         <!-- Movie Carousel Section -->
         <section class="movie-carousel-section">
@@ -63,6 +61,11 @@
                 <div class="swiper-button-next"></div>
             </div>
         </section>
+
+        <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Loading movies...</p>
+        </div>          
 
         <!-- Catalog Search Section -->
         <section class="catalog-search">
@@ -147,7 +150,6 @@
                                     alt="{{ movie['main_title'] }}" 
                                     onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
                             </div>
-
                             <div class="info-section">
                                 <h2>{{ movie['main_title'] }}</h2>
                                 <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
