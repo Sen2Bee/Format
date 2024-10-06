@@ -547,59 +547,66 @@ function initializeSwiper() {
     }
 
     const totalSlides = swiperContainer.querySelectorAll('.swiper-slide').length;
-    const slidesPerViewDesktop = 4; // Adjust based on design
+    const slidesPerViewDesktop = 4; // Base number for desktop
 
     const swiper = new Swiper('.swiper-container', {
-        loop: totalSlides > slidesPerViewDesktop ? true : false, // Enable loop only if enough slides
+        loop: totalSlides > slidesPerViewDesktop,
         autoplay: {
             delay: 5000,
             disableOnInteraction: false,
         },
-        // Removed pagination bullets
-        // pagination: {
-        //     el: '.swiper-pagination',
-        //     clickable: true,
-        // },
         navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
         },
-        slidesPerView: slidesPerViewDesktop, // Adjusted for desktop
-        spaceBetween: 10, // Gap between slides set to 10px
+        slidesPerView: 'auto', // Allows Swiper to adjust based on slide width
+        spaceBetween: 10,
+        watchOverflow: true, // Disable Swiper if not enough slides
 
+        // Responsive breakpoints
         breakpoints: {
+            // When window width is >= 1400px
             1400: {
                 slidesPerView: 6.5,
                 spaceBetween: 10
             },
+            // When window width is >= 1200px
             1200: {
                 slidesPerView: 6,
                 spaceBetween: 6
             },
+            // When window width is >= 1024px
             1024: {
                 slidesPerView: 5,
                 spaceBetween: 8
             },
+            // When window width is >= 900px
             900: {
-                slidesPerView: 3,
+                slidesPerView: 4,
                 spaceBetween: 10
             },
+            // When window width is >= 768px
             768: {
-                slidesPerView: 2,
+                slidesPerView: 3,
                 spaceBetween: 12
             },
+            // When window width is >= 640px
             640: {
-                slidesPerView: 1.5,
+                slidesPerView: 2.5,
                 spaceBetween: 14
             },
-            480: {
-                slidesPerView: 1,
+            // When window width is < 640px
+            0: { // Mobile-first
+                slidesPerView: 1.5,
                 spaceBetween: 16
             }
         },
 
-        // Optional: Disable Swiper if there are not enough slides
+        // Adjust to handle slides dynamically
         on: {
+            resize: function () {
+                this.update(); // Update Swiper on window resize
+            },
             init: function () {
                 if (totalSlides <= this.params.slidesPerView) {
                     this.loopDestroy(); // Disable loop if not enough slides
@@ -608,5 +615,4 @@ function initializeSwiper() {
         }
     });
 }
-
 

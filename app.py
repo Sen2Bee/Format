@@ -211,9 +211,10 @@ def catalog():
     # Define pagination range for the current page
     pagination_range = list(range(max(1, page - 2), min(total_pages + 1, page + 3)))
 
+    genre_exclude_list = "('Adult', 'News', 'Reality-TV')"
     # Fetch a random genre for the carousel theme if no genre filter is applied
     if not genre_filter:
-        cursor.execute("SELECT DISTINCT genre FROM genres ORDER BY RAND() LIMIT 1;")
+        cursor.execute(f"SELECT DISTINCT genre FROM genres WHERE genre NOT IN {genre_exclude_list} ORDER BY RAND() LIMIT 1;")
         random_genre_row = cursor.fetchone()
         selected_theme = random_genre_row['genre'] if random_genre_row else None
     else:
@@ -399,7 +400,6 @@ def filter_movies():
 
         # **Sort Years with Decades**
         year_counts = sort_years_with_decades(year_counts)
-
         # **Close the Cursor and Connection**
         cursor.close()
         connection.close()
@@ -583,6 +583,7 @@ def sort_years_with_decades(year_counts):
     # Group years into decades
     decade_counts = {}
     individual_years = {}
+
     for year, count in year_counts.items():
         try:
             # Convert year to an integer (handle exceptions for unexpected values)
@@ -601,17 +602,21 @@ def sort_years_with_decades(year_counts):
 
     # Separate decades and individual years for sorting
     sorted_decades = sorted(decade_counts.items(), key=lambda x: int(x[0].split("...")[0]))
+    # Sort individual years as strings to avoid ValueErrors
     sorted_years = sorted(
-        individual_years.items(),
-        key=lambda x: int(x[0]),
+        year_counts.items(),
+        key=lambda x: (int(x[0]) if x[0].isdigit() else float('inf')),  # Non-numeric years go last
         reverse=True
     )
-
-    # Combine: Decades first, followed by individual Years in descending order
+    
+    # Combine: Decades first, followed by individual years in descending order
     sorted_combined = sorted_decades + sorted_years
 
     # Convert back to dictionary format
     sorted_combined_dict = dict(sorted_combined)
+
+    print(sorted_combined_dict)
+
     return sorted_combined_dict
 
 #endregion SQL
