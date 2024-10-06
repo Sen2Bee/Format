@@ -36,7 +36,7 @@ function initializeSearchBox() {
     console.log("Search box listeners attached successfully.");
 }
 
-// Function to initialize the custom dropdowns
+// Stellen Sie sicher, dass beim Initialisieren der Dropdowns das Selection Badge ebenfalls aktualisiert wird
 function initializeCustomDropdowns() {
     console.log("Initializing Custom Dropdowns...");
 
@@ -59,10 +59,15 @@ function initializeCustomDropdowns() {
     dropdownHeaders.forEach((header, index) => {
         const dropdownList = dropdownLists[index];
         const clearButton = header.querySelector('.clear-icon');
+        const countElement = header.querySelector('.selected-count');
+        const badgeElement = header.querySelector('.selection-badge');
+
+        // Initial Update
+        updateSelectedCount(dropdownList, countElement, clearButton);
+
         attachDropdownListeners(header, dropdownList, clearButton);
     });
 }
-
 // Function to attach listeners to dropdown header, checkboxes, and clear button
 /**
  * Function to attach event listeners to dropdown headers and clear buttons
@@ -207,18 +212,6 @@ function toggleDropdown(dropdownList) {
     dropdownList.style.display = isVisible ? 'none' : 'block';
 }
 
-// Update the selected count display and handle visibility of the clear button
-function updateSelectedCount(checkboxes, countElement, clearButton) {
-    const selectedItems = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-    const count = selectedItems.length;
-
-    // Update the count display
-    countElement.textContent = `${count} sel.`;
-    // countElement.style.display = count > 0 ? 'inline-flex' : 'none';
-
-    // Show or hide the clear button based on the count
-    clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
-}
 
 // Function to trigger a custom event to notify filter.js of dropdown changes
 // Trigger a custom change event to update filters
@@ -251,3 +244,4 @@ clearSearchButton.addEventListener('click', () => {
     clearSearchButton.style.visibility = 'hidden';
     // Optionally trigger any search box reset logic here
 });
+

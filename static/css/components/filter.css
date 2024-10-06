@@ -1,0 +1,393 @@
+/* static/css/filter.css */
+
+/* Variables */
+:root {
+    --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
+    --secondary-bg-color: #333;
+    --accent-color: #e74c3c;
+    --text-color: #e0e0e0;
+    --link-color: #f1c40f;
+    --scrollbar-bg: #333;
+    --scrollbar-thumb: #555;
+    --hover-bg: #444;
+    --placeholder-color: #aaa;
+    --transition-duration: 0.3s;
+}
+
+/* Catalog Search Section */
+.catalog-search {
+    padding: 30px 20px;
+    background-color: var(--primary-bg-color); /* Same background as movie-listings */
+    text-align: center;
+}
+
+.search-dropdown-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Search Box */
+.search-container {
+    position: relative;
+    flex: 1 1 250px;
+    max-width: 400px;
+    height: 40px;
+}
+/* Position the search icon inside the search box */
+.search-container .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--placeholder-color);
+    pointer-events: none; /* Allows clicks to pass through to the input */
+}
+
+
+#search-box {
+    width: 100%;
+    height: 100%;
+    padding: 0 35px 0 35px; /* Ensure space for clear icon */
+    font-size: 1em;
+    background: var(--secondary-bg-color);
+    color: var(--text-color);
+    border: 2px solid var(--secondary-bg-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#search-box:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+#search-box::placeholder {
+    color: var(--placeholder-color);
+}
+
+/* Clear Icon for Search Box */
+#clear-search {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    line-height: 24px;
+    border-radius: 50%;
+    background: rgba(68, 68, 68, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    visibility: hidden;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-container:hover #clear-search,
+.search-container .clear-icon.visible {
+    visibility: visible; /* Show clear icon on hover or when visible class is added */
+}
+
+/* Custom Dropdowns */
+.custom-dropdown {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    flex: 1 1 200px;
+    max-width: 300px;
+    height: 40px;
+}
+
+.dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--secondary-bg-color);
+    color: #fff;
+    padding: 0 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 100%;
+    transition: background var(--transition-duration), color var(--transition-duration);
+    width: 100%;
+}
+
+.dropdown-header:hover {
+    background: var(--hover-bg);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.selected-count {
+    color: var(--link-color);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.selection-badge {
+    background-color: var(--accent-color);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    margin-left: 8px;
+    transition: opacity 0.3s ease;
+    display: none;
+}
+
+.selection-badge.visible {
+    display: inline-block;
+}
+
+.clear-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    color: #fff;
+    background: rgba(68, 68, 68, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-duration), color var(--transition-duration);
+}
+
+.dropdown-header:hover .clear-icon,
+.header-controls:hover .clear-icon {
+    visibility: visible;
+}
+
+/* Dropdown List */
+.dropdown-list {
+    display: none;
+    background: #2c2c2c;
+    color: #e0e0e0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.dropdown-list.show {
+    display: block;
+}
+
+.dropdown-list label {
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    font-size: 1.05em;
+    color: #f1f1f1;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-duration), color var(--transition-duration);
+}
+
+.dropdown-list input[type="checkbox"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.dropdown-list label:hover {
+    background: var(--hover-bg);
+    color: #fff;
+}
+
+/* Scrollbar Customization */
+.dropdown-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background: var(--scrollbar-bg);
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 5px;
+}
+
+/* Dropdown Arrow Icon */
+.dropdown-header::after {
+    content: '\f078'; /* FontAwesome caret-down */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.8em;
+    color: #fff;
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.dropdown-header[aria-expanded="true"]::after {
+    transform: rotate(180deg); /* Rotate arrow when expanded */
+}
+
+/* Movie Carousel Section */
+.movie-carousel-section {
+    padding: 60px 0;
+    background-color: var(--primary-bg-color); /* Same background as movie-listings */
+    text-align: center;
+    position: relative; /* To prevent overlap with navbar */
+}
+
+.movie-carousel-section h2 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #fff;
+    z-index: 1;
+    position: relative;
+}
+
+/* Swiper Container */
+.swiper-container {
+    width: 100%;
+    padding-bottom: 20px; /* Space for pagination bullets */
+}
+
+.swiper-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* Swiper Slides */
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px; /* Half of the desired gap (10px total) */
+}
+
+.featured-movie-card {
+    position: relative;
+    width: 200px; /* Adjust based on desired poster size */
+    height: 300px; /* Adjust based on desired poster size */
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.featured-movie-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Maintains aspect ratio without stretching */
+    transition: transform 0.3s ease;
+}
+
+.featured-movie-card:hover img {
+    transform: scale(1.05); /* Zoom-in effect on hover */
+}
+
+.featured-movie-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.featured-movie-card:hover .featured-movie-overlay {
+    opacity: 1;
+}
+
+.featured-movie-overlay h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.featured-movie-overlay .btn-secondary {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: var(--accent-color);
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.featured-movie-overlay .btn-secondary:hover {
+    background-color: #c0392b; /* Darker accent color on hover */
+}
+
+/* Swiper Pagination Adjustment */
+.swiper-pagination {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .featured-movie-card {
+        width: 180px;
+        height: 270px;
+    }
+}
+
+@media (max-width: 768px) {
+    .featured-movie-card {
+        width: 150px;
+        height: 225px;
+    }
+
+    .movie-carousel-section h2 {
+        margin-bottom: 15px;
+        font-size: 1.5em;
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-movie-card {
+        width: 120px;
+        height: 180px;
+    }
+
+    .movie-carousel-section h2 {
+        font-size: 1.2em;
+    }
+
+    /* Adjust search box on mobile */
+    .search-container {
+        flex: 1 1 100%;
+        max-width: none;
+        margin-bottom: 10px;
+    }
+}

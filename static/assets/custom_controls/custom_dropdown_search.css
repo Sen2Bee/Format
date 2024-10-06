@@ -7,10 +7,10 @@
     justify-content: center;
     align-items: center; /* Ensures vertical alignment */
     width: 90%;
-    max-width: 1200px;
+
     background-color: #444;
     padding: 20px;
-    margin-top: 20px;
+
     box-sizing: border-box;
     /* Remove debug borders */
     /* border: 2px solid blue; */
@@ -147,6 +147,26 @@
 .header-controls:hover .clear-icon {
     visibility: visible; /* Show clear icons on hover */
 }
+
+
+/* Selection Badge Styling */
+.selection-badge {
+    /* display: none;  */
+    background-color: var(--accent-color);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    margin-left: 8px;
+    transition: opacity 0.3s ease;
+}
+
+.dropdown-header .selection-badge.visible {
+    display: inline-block;
+}
+
+
+
 
 /* Dropdown List */
 .dropdown-list {

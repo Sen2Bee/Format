@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-05 09:26:13 ===
+=== Code Summary Generated at 2024-10-06 10:48:34 ===
 
 === Project Folder Structure ===
 
@@ -8,6 +8,7 @@ Format/
             custom_controls/
                 custom_dropdown.js
                 custom_dropdown_search.css
+                custom_dropdown_search.scss
                 search_container.css
             fonts/
                 Spacia Heavy.ttf
@@ -20,6 +21,7 @@ Format/
             components/
                 buttons.css
                 cards.css
+                filter.css
                 forms.css
                 pagination.css
             layout/
@@ -95,7 +97,7 @@ function initializeSearchBox() {
     console.log("Search box listeners attached successfully.");
 }
 
-// Function to initialize the custom dropdowns
+// Stellen Sie sicher, dass beim Initialisieren der Dropdowns das Selection Badge ebenfalls aktualisiert wird
 function initializeCustomDropdowns() {
     console.log("Initializing Custom Dropdowns...");
 
@@ -118,10 +120,15 @@ function initializeCustomDropdowns() {
     dropdownHeaders.forEach((header, index) => {
         const dropdownList = dropdownLists[index];
         const clearButton = header.querySelector('.clear-icon');
+        const countElement = header.querySelector('.selected-count');
+        const badgeElement = header.querySelector('.selection-badge');
+
+        // Initial Update
+        updateSelectedCount(dropdownList, countElement, clearButton);
+
         attachDropdownListeners(header, dropdownList, clearButton);
     });
 }
-
 // Function to attach listeners to dropdown header, checkboxes, and clear button
 /**
  * Function to attach event listeners to dropdown headers and clear buttons
@@ -266,18 +273,6 @@ function toggleDropdown(dropdownList) {
     dropdownList.style.display = isVisible ? 'none' : 'block';
 }
 
-// Update the selected count display and handle visibility of the clear button
-function updateSelectedCount(checkboxes, countElement, clearButton) {
-    const selectedItems = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-    const count = selectedItems.length;
-
-    // Update the count display
-    countElement.textContent = `${count} sel.`;
-    // countElement.style.display = count > 0 ? 'inline-flex' : 'none';
-
-    // Show or hide the clear button based on the count
-    clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
-}
 
 // Function to trigger a custom event to notify filter.js of dropdown changes
 // Trigger a custom change event to update filters
@@ -310,6 +305,18 @@ clearSearchButton.addEventListener('click', () => {
     clearSearchButton.style.visibility = 'hidden';
     // Optionally trigger any search box reset logic here
 });
+
+// Funktion zur Aktualisierung des Selection Badge
+function updateSelectionBadge(dropdownList, badgeElement) {
+    const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    if (selectedItems.length > 0) {
+        badgeElement.textContent = selectedItems.join(', ');
+        badgeElement.classList.add('visible');
+    } else {
+        badgeElement.textContent = '';
+        badgeElement.classList.remove('visible');
+    }
+}
 --- File: static\assets\custom_controls\custom_dropdown_search.css ---
 /* search_container.css */
 
@@ -320,10 +327,10 @@ clearSearchButton.addEventListener('click', () => {
     justify-content: center;
     align-items: center; /* Ensures vertical alignment */
     width: 90%;
-    max-width: 1200px;
+
     background-color: #444;
     padding: 20px;
-    margin-top: 20px;
+
     box-sizing: border-box;
     /* Remove debug borders */
     /* border: 2px solid blue; */
@@ -461,6 +468,26 @@ clearSearchButton.addEventListener('click', () => {
     visibility: visible; /* Show clear icons on hover */
 }
 
+
+/* Selection Badge Styling */
+.selection-badge {
+    /* display: none;  */
+    background-color: var(--accent-color);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    margin-left: 8px;
+    transition: opacity 0.3s ease;
+}
+
+.dropdown-header .selection-badge.visible {
+    display: inline-block;
+}
+
+
+
+
 /* Dropdown List */
 .dropdown-list {
     display: none;
@@ -511,45 +538,94 @@ clearSearchButton.addEventListener('click', () => {
     border-radius: 5px;
 }
 
-/* Responsive Adjustments for Mobile */
-@media (max-width: 768px) {
-    .catalog-search {
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding: 10px 0;
+/* forms.css */
+
+/* Search Container Styles */
+.search-container {
+    position: relative; /* Establishes a positioning context for the icon and clear button */
+    width: 100%;
+    max-width: 400px; /* Adjust as needed for your layout */
+    margin: 0 auto; /* Centers the search box horizontally */
+}
+
+/* Search Icon Styles */
+.search-container .search-icon {
+    position: absolute; /* Positions the icon relative to the search container */
+    top: 50%; /* Vertically centers the icon */
+    left: 10px; /* Positions the icon 10px from the left edge */
+    transform: translateY(-50%); /* Corrects the vertical alignment */
+    color: #aaa; /* Sets the icon color */
+    pointer-events: none; /* Allows clicks to pass through to the input */
+    font-size: 1.2em; /* Adjusts the icon size */
+}
+
+/* Search Input Field Styles */
+.search-container input#search-box {
+    width: 100%;
+    padding: 10px 10px 10px 35px; /* Top, Right, Bottom, Left padding */
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Search Input Focus Styles */
+.search-container input#search-box:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+}
+
+/* Clear Search Icon Styles */
+.search-container .clear-icon {
+    position: absolute; /* Positions the clear icon relative to the search container */
+    top: 50%; /* Vertically centers the icon */
+    right: 10px; /* Positions the icon 10px from the right edge */
+    transform: translateY(-50%); /* Corrects the vertical alignment */
+    cursor: pointer;
+    color: #aaa;
+    font-size: 1.2em; /* Adjusts the icon size */
+    display: none; /* Hidden by default */
+}
+
+/* Show Clear Icon When Visible */
+.search-container .clear-icon.visible {
+    display: block;
+}
+
+/* Responsive Adjustments for Smaller Screens */
+@media (max-width: 480px) {
+    .search-container {
+        max-width: 100%; /* Allows the search box to take full width on small screens */
+        padding: 0 10px; /* Adds horizontal padding */
     }
 
-    .search-dropdown-container {
-        flex-direction: column;
-        width: 100%;
-        padding: 15px;
-        margin-top: 15px;
+    .search-container .search-icon,
+    .search-container .clear-icon {
+        left: 5px;
+        right: 5px;
+        font-size: 1em; /* Slightly smaller icons */
     }
 
-    .search-container,
-    .custom-dropdown {
-        width: 100%;
-        margin-bottom: 15px;
-    }
-
-    .dropdown-header {
-        height: 50px;
-        font-size: 1.2em;
+    .search-container input#search-box {
+        padding: 8px 8px 8px 30px; /* Adjust padding for smaller screens */
+        font-size: 0.9rem; /* Slightly smaller text */
     }
 }
+
 /* Progress Indicator Styles */
 .progress-indicator {
-    position: absolute; /* Position relative to the nearest positioned ancestor */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: fixed; /* Overlay the entire viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(44, 62, 80, 0.8); /* Semi-transparent dark background */
     color: #ecf0f1; /* Light text color */
-    padding: 20px 40px;
-    border-radius: 8px;
     display: none; /* Hidden by default */
     align-items: center;
+    justify-content: center; /* Center content vertically and horizontally */
     flex-direction: column;
     z-index: 1000; /* Ensure it appears above other elements */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -572,12 +648,10 @@ clearSearchButton.addEventListener('click', () => {
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive Adjustments for Progress Indicator */
-@media (max-width: 768px) {
-    .progress-indicator {
-        width: 80%;
-        padding: 15px 20px;
-    }
+/* Progress Indicator Text */
+.progress-indicator p {
+    font-size: 1.2em;
+    margin-top: 10px;
 }
 
 --- File: static\assets\custom_controls\search_container.css ---
@@ -919,9 +993,8 @@ clearSearchButton.addEventListener('click', () => {
 @import url('./layout/hero.css');
 
 /* Import Component Styles */
-@import url('../assets/custom_controls/search_container.css');
-@import url('../assets/custom_controls/custom_dropdown_search.css');
-@import url('./components/cards.css'); /* Import cards.css early */
+@import url('./components/filter.css');
+@import url('./components/cards.css');
 @import url('./components/buttons.css');
 @import url('./components/forms.css');
 @import url('./components/pagination.css');
@@ -1374,6 +1447,402 @@ button {
     opacity: 0.6;  /* Dim the card slightly */
 }
 
+--- File: static\css\components\filter.css ---
+/* filter.css */
+
+/* Variables */
+:root {
+    --primary-bg-color: #f2f2f2; /* Helle Hintergrundfarbe für Filterbereich */
+    --secondary-bg-color: #333;
+    --accent-color: #e74c3c;
+    --text-color: #e0e0e0;
+    --link-color: #f1c40f;
+    --scrollbar-bg: #333;
+    --scrollbar-thumb: #555;
+    --hover-bg: #444;
+    --placeholder-color: #aaa;
+}
+
+/* Parent Container */
+.search-dropdown-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center; /* Ensures vertical alignment */
+    width: 90%;
+
+    background-color: var(--primary-bg-color); /* Helle Hintergrundfarbe */
+    padding: 20px;
+
+    box-sizing: border-box;
+    /* Remove debug borders */
+    /* border: 2px solid blue; */
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Leichte Schattierung */
+    border-radius: 8px; /* Abgerundete Ecken */
+}
+
+/* Form */
+#filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Space between elements */
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Search Container and Dropdowns */
+.search-container,
+.custom-dropdown {
+    flex: 1 1 200px; /* Grow and shrink as needed, with a minimum width */
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 40px; /* Ensure same height */
+    /* Remove debug borders */
+    /* border: 2px solid red; */
+    margin: 10px;
+}
+
+/* Search Box */
+#search-box {
+    flex: 1;
+    height: 100%;
+    padding: 0 40px 0 35px; /* Adjusted padding for clear icon */
+    font-size: 1em;
+    background: var(--secondary-bg-color);
+    color: var(--text-color);
+    border: 2px solid var(--secondary-bg-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+#search-box:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+#search-box::placeholder {
+    color: var(--placeholder-color);
+}
+
+/* Clear Icon for Search Box */
+#clear-search {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    line-height: 24px;
+    border-radius: 50%;
+    background: rgba(68, 68, 68, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    visibility: hidden;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-container:hover #clear-search,
+.search-container .clear-icon.visible {
+    visibility: visible; /* Show clear icon on hover or when visible class is added */
+}
+
+/* Dropdowns */
+.custom-dropdown {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    height: 40px; /* Same height as search-container */
+}
+
+.dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--secondary-bg-color);
+    color: #fff;
+    padding: 0 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 100%;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+    width: 100%; /* Ensure full width */
+}
+
+.dropdown-header:hover {
+    background: var(--hover-bg);
+}
+
+.dropdown-title {
+    font-size: 1.05em;
+    font-weight: 600;
+    text-align: left; /* Left-aligned text */
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.selected-count {
+    color: var(--link-color);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2); /* Leicht transparentes Hintergrund */
+}
+
+.clear-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    color: #fff;
+    background: rgba(68, 68, 68, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+}
+
+.dropdown-header:hover .clear-icon,
+.header-controls:hover .clear-icon {
+    visibility: visible; /* Show clear icons on hover */
+}
+
+/* Selection Badge Styling */
+.selection-badge {
+    /* display: none;  */
+    background-color: var(--accent-color);
+    color: #fff;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    margin-left: 8px;
+    transition: opacity 0.3s ease;
+    display: none; /* Hidden by default */
+}
+
+.selection-badge.visible {
+    display: inline-block;
+}
+
+/* Dropdown List */
+.dropdown-list {
+    display: none;
+    background: #2c2c2c;
+    color: #e0e0e0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.dropdown-list.show {
+    display: block;
+}
+
+.dropdown-list label {
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    font-size: 1.05em;
+    color: #f1f1f1;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.dropdown-list input[type="checkbox"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.dropdown-list label:hover {
+    background: var(--hover-bg);
+    color: #fff;
+}
+
+/* Scrollbar Customization */
+.dropdown-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background: var(--scrollbar-bg);
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 5px;
+}
+
+/* Responsive Adjustments for Smaller Screens */
+@media (max-width: 480px) {
+    .search-dropdown-container {
+        width: 100%; /* Full width on mobile */
+        padding: 10px; /* Adjust padding */
+    }
+
+    .search-container,
+    .custom-dropdown {
+        flex: 1 1 100%; /* Full width */
+        margin: 5px 0; /* Adjust margin */
+    }
+
+    #search-box {
+        padding: 10px 40px 10px 35px; /* Adjusted padding */
+    }
+
+    .dropdown-header {
+        padding: 0 12px;
+    }
+
+    .selected-count {
+        font-size: 0.75em;
+        padding: 2px 6px;
+    }
+
+    .selection-badge {
+        font-size: 0.7em;
+        padding: 1px 6px;
+        margin-left: 6px;
+    }
+
+    /* Ensure clear search icon is inside the search box */
+    #clear-search {
+        right: 10px;
+    }
+
+    /* Carousel Anpassungen für Mobile */
+    .movie-carousel-section {
+        padding: 20px 0;
+    }
+
+    .featured-movie-card {
+        height: 150px; /* Reduzierte Höhe auf Mobile */
+    }
+
+    .featured-movie-overlay {
+        padding: 5px;
+    }
+
+    .featured-movie-overlay h3 {
+        font-size: 1em;
+    }
+
+    .featured-movie-overlay .btn-secondary {
+        padding: 3px 6px;
+        font-size: 0.8em;
+    }
+}
+
+/* Additional Styles for Dropdown Icons */
+.dropdown-header i {
+    margin-right: 8px; /* Space between icon and title */
+    font-size: 1.2em;
+}
+
+/* Dropdown Arrow Icon */
+.dropdown-header::after {
+    content: '\f078'; /* FontAwesome caret-down */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 0.8em;
+    color: #fff;
+    transition: transform 0.3s ease;
+    margin-left: auto;
+}
+
+.dropdown-header[aria-expanded="true"]::after {
+    transform: rotate(180deg); /* Rotate arrow when expanded */
+}
+
+/* Movie Carousel Section Styles */
+
+.movie-carousel-section {
+    padding: 40px 0;
+    background-color: #f9f9f9; /* Optional: Hintergrundfarbe für den Abschnitt */
+    text-align: center;
+}
+
+.movie-carousel-section h2 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #333;
+}
+
+.featured-movie-card {
+    position: relative;
+    width: 100%;
+    height: 200px; /* Maximale Höhe für Desktop */
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.featured-movie-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Bild füllt den Container ohne Verzerrung */
+    transition: transform 0.3s ease;
+}
+
+.featured-movie-card:hover img {
+    transform: scale(1.05); /* Leichter Zoom-Effekt bei Hover */
+}
+
+.featured-movie-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.featured-movie-card:hover .featured-movie-overlay {
+    opacity: 1;
+}
+
+.featured-movie-overlay h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.featured-movie-overlay .btn-secondary {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: var(--accent-color);
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.featured-movie-overlay .btn-secondary:hover {
+    background-color: darken(var(--accent-color), 10%);
+}
+
 --- File: static\css\components\forms.css ---
 /* forms.css */
 
@@ -1424,7 +1893,8 @@ label span.required {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px 0;
+
+    background-color: #444;
 }
 
 .pagination nav ul {
@@ -1466,7 +1936,7 @@ label span.required {
 }
 
 .pagination nav ul li.disabled span {
-    background-color: #e0e0e0;
+    background-color: #8e0d0d;
     color: #aaa;
     cursor: not-allowed;
 }
@@ -2595,382 +3065,519 @@ function attachPaginationEventListeners() {
 --- File: static\js\filter.js ---
 // filter.js
 
-document.addEventListener('DOMContentLoaded', function () {
-    console.log("Filter.js: DOM fully loaded");
-    initializeFilterDropdowns();  // Initialize dropdowns on page load
-});
-
-/** Cache Elements and Buttons */
-const clearSearchBtn = document.getElementById('clear-search');
-const searchBox = document.getElementById('search-box');
-const movieContainer = document.querySelector('.movie-listings');
-const topPaginationContainer = document.querySelector('.top-pagination nav ul');
-const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
-const progressIndicator = document.getElementById('progress-indicator');
-
-let debounceTimer;
-
-/**
- * Function to initialize dropdowns and attach event listeners
- */
-function initializeFilterDropdowns() {
-    // Handle filter updates triggered by custom dropdowns
-    document.addEventListener('dropdownChange', () => {
-        console.log("Filter.js: Detected dropdown change event");
-        updateFilters(); // Trigger filter update on dropdown change
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("Filter.js: DOM fully loaded");
+        initializeFilterDropdowns();  // Initialize dropdowns on page load
+        initializeSwiper(); // Initialize Swiper Carousel
     });
 
-    // Search box input event with debouncing
-    if (searchBox) { // Check if searchBox exists
-        searchBox.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                updateFilters(); // Trigger filter update after user stops typing for 300ms
-            }, 300);
-        });
-    } else {
-        console.error("initializeFilterDropdowns: searchBox element not found.");
-    }
+    /** Cache Elements and Buttons */
+    const clearSearchBtn = document.getElementById('clear-search');
+    const searchBox = document.getElementById('search-box');
+    const movieContainer = document.querySelector('.movie-listings');
+    const topPaginationContainer = document.querySelector('.top-pagination nav ul');
+    const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
+    const progressIndicator = document.getElementById('progress-indicator');
 
-    // Clear search box and trigger update
-    if (clearSearchBtn && searchBox) { // Ensure both elements exist
-        clearSearchBtn.addEventListener('click', () => {
-            searchBox.value = '';
-            clearSearchBtn.classList.remove('visible');
-            updateFilters();
+    let debounceTimer;
+
+    /**
+     * Function to initialize dropdowns and attach event listeners
+     */
+    function initializeFilterDropdowns() {
+        // Handle filter updates triggered by custom dropdowns
+        document.addEventListener('dropdownChange', () => {
+            console.log("Filter.js: Detected dropdown change event");
+            updateFilters(); // Trigger filter update on dropdown change
         });
 
-        // Make clearSearchBtn visible when searchBox has input
-        searchBox.addEventListener('input', () => {
-            if (searchBox.value.length > 0) {
-                clearSearchBtn.classList.add('visible');
-            } else {
+        // Search box input event with debouncing
+        if (searchBox) { // Check if searchBox exists
+            searchBox.addEventListener('input', () => {
+                // Toggle visibility of the clear icon
+                if (searchBox.value.length > 0) {
+                    clearSearchBtn.classList.add('visible');
+                } else {
+                    clearSearchBtn.classList.remove('visible');
+                }
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updateFilters(); // Trigger filter update after user stops typing for 300ms
+                }, 300);
+            });
+        } else {
+            console.error("initializeFilterDropdowns: searchBox element not found.");
+        }
+
+        // Clear search box and trigger update
+        if (clearSearchBtn && searchBox) { // Ensure both elements exist
+            clearSearchBtn.addEventListener('click', () => {
+                searchBox.value = '';
                 clearSearchBtn.classList.remove('visible');
-            }
-        });
-    } else {
-        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
+                updateFilters();
+            });
+        } else {
+            console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
+        }
+
+        // Attach event listeners to dropdowns using event delegation
+        attachDropdownEventDelegation();
+
+        // Initial filter update
+        updateFilters();
     }
 
-    // Attach event listeners to dropdowns
-    attachDropdownEventListeners();
+    /**
+     * Function to attach event listeners to dropdowns using event delegation
+     */
+    function attachDropdownEventDelegation() {
+        const dropdownLists = document.querySelectorAll('.dropdown-list');
 
-    // Initial filter update
-    updateFilters();
-}
+        dropdownLists.forEach(dropdownList => {
+            // Handle checkbox changes within the dropdown
+            dropdownList.addEventListener('change', (event) => {
+                const target = event.target;
+                if (target && target.matches('input[type="checkbox"]')) {
+                    const dropdownHeader = dropdownList.previousElementSibling; // Assuming .dropdown-header precedes .dropdown-list
+                    const clearButton = dropdownHeader.querySelector('.clear-icon');
+                    const selectedCount = dropdownHeader.querySelector('.selected-count');
+                    const selectionBadge = dropdownHeader.parentElement.querySelector('.selection-badge');
 
-/**
- * Function to attach event listeners to dropdown headers and clear buttons
- */
-function attachDropdownEventListeners() {
-    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+                    // If the Year dropdown, handle Decade-Year relationship
+                    if (dropdownList.id === 'year-dropdown-list') {
+                        handleYearDecadeRelationship(target, dropdownList);
+                    }
 
-    dropdownHeaders.forEach(header => {
-        const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
-        const clearButton = header.querySelector('.clear-icon');
-        const selectedCount = header.querySelector('.selected-count');
+                    updateSelectedCount(dropdownList, selectedCount, clearButton, selectionBadge);
+                    triggerDropdownChangeEvent();
+                }
+            });
 
-        if (!dropdownList) {
-            console.error("attachDropdownEventListeners: Dropdown list not found for a header.");
-            return;
-        }
-
-        if (!selectedCount) {
-            console.error("attachDropdownEventListeners: Selected count element not found in a header.");
-            return;
-        }
-
-        // Toggle dropdown visibility on header click
-        header.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent event from bubbling up
-            toggleDropdown(dropdownList, header);
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (event) => {
-            if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
-                dropdownList.classList.remove('show');
-                header.setAttribute('aria-expanded', 'false');
+            // Handle clear button within the dropdown
+            const clearButton = dropdownList.parentElement.querySelector('.clear-icon');
+            if (clearButton) {
+                clearButton.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent dropdown toggle
+                    const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
+                    const selectedCount = dropdownList.parentElement.querySelector('.selected-count');
+                    const selectionBadge = dropdownList.parentElement.querySelector('.selection-badge');
+                    updateSelectedCount(dropdownList, selectedCount, clearButton, selectionBadge); // Update selection count
+                    triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+                });
             }
         });
 
-        // Clear all selections when the clear button is clicked
-        clearButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent header dropdown toggle
-            const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
-            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
-            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
-        });
-
-        // Attach checkbox listeners
-        const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                updateSelectedCount(checkboxes, selectedCount, clearButton);
-                triggerDropdownChangeEvent();
+        // Handle dropdown header clicks to toggle visibility
+        const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+        dropdownHeaders.forEach(header => {
+            header.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent event from bubbling up
+                const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
+                toggleDropdown(dropdownList, header);
             });
         });
-    });
-}
 
-/**
- * Function to toggle dropdown visibility
- */
-function toggleDropdown(dropdownList, header) {
-    const isVisible = dropdownList.classList.contains('show');
-    if (isVisible) {
-        dropdownList.classList.remove('show');
-        header.setAttribute('aria-expanded', 'false');
-    } else {
-        dropdownList.classList.add('show');
-        header.setAttribute('aria-expanded', 'true');
-    }
-}
-
-/**
- * Function to update the selected count display and handle visibility of the clear button
- */
-function updateSelectedCount(checkboxes, countElement, clearButton) {
-    const selectedItems = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-    const count = selectedItems.length;
-
-    // Update the count display
-    countElement.textContent = `${count} sel.`;
-
-    // Show or hide the clear button based on the count
-    clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
-}
-
-/**
- * Function to trigger a custom event to notify filter.js of dropdown changes
- */
-function triggerDropdownChangeEvent() {
-    const event = new CustomEvent('dropdownChange');
-    console.log("Dispatching dropdownChange event");
-    document.dispatchEvent(event);
-}
-
-/**
- * Function to update dropdown values and movie listings based on current selections and search query
- */
-function updateFilters(page = 1) {
-    const selectedYears = getCheckedValues('year-dropdown-list');
-    const selectedGenres = getCheckedValues('genre-dropdown-list');
-    const selectedCountries = getCheckedValues('country-dropdown-list');
-    const searchQuery = searchBox ? searchBox.value.trim() : '';
-
-    const params = new URLSearchParams();
-    if (selectedYears.length) params.append('years', selectedYears.join(','));
-    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
-    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
-    if (searchQuery) params.append('search', searchQuery);
-    params.append('page', page);
-
-    console.log("Fetching updated filter data with params:", params.toString());
-
-    // Show the progress indicator before starting the fetch
-    showProgressIndicator();
-
-    fetch(`/filter_movies?${params.toString()}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log("API Response Data:", data); // Log the fetched data for verification
-            const { years, genres, countries, movies, current_page, total_pages } = data;
-
-            // Populate each dropdown with data
-            populateDropdown('year-dropdown-list', years, selectedYears);
-            populateDropdown('genre-dropdown-list', genres, selectedGenres);
-            populateDropdown('country-dropdown-list', countries, selectedCountries);
-
-            updateMovieListings(movies);
-            updatePagination(current_page, total_pages);
-        })
-        .catch(error => {
-            console.error('Error fetching filter data:', error);
-            if (movieContainer) {
-                movieContainer.innerHTML = `<p class="no-movies-message">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>`;
-            }
-        })
-        .finally(() => {
-            // Hide the progress indicator after fetch completes (success or error)
-            hideProgressIndicator();
+        // Close all dropdowns when clicking outside
+        document.addEventListener('click', (event) => {
+            dropdownLists.forEach(dropdownList => {
+                const header = dropdownList.previousElementSibling;
+                if (!dropdownList.contains(event.target) && !header.contains(event.target)) {
+                    dropdownList.classList.remove('show');
+                    header.setAttribute('aria-expanded', 'false');
+                }
+            });
         });
-}
-
-/**
- * Helper to get checked values from a specific dropdown list
- */
-function getCheckedValues(dropdownListId) {
-    const checkboxes = document.querySelectorAll(`#${dropdownListId} input[type="checkbox"]:checked`);
-    return Array.from(checkboxes).map(cb => cb.value);
-}
-
-/**
- * Function to populate dropdown lists with options
- * @param {string} dropdownListId - The ID of the dropdown list element
- * @param {Object} options - An object with option labels as keys and counts as values
- * @param {Array} selectedValues - An array of currently selected option values
- */
-function populateDropdown(dropdownListId, options, selectedValues = []) {
-    const dropdownList = document.getElementById(dropdownListId);
-    if (!dropdownList) {
-        console.error(`populateDropdown: Element with ID '${dropdownListId}' not found.`);
-        return;
     }
 
-    dropdownList.innerHTML = "";  // Clear existing options
-
-    if (typeof options !== 'object' || Array.isArray(options)) {
-        console.error(`populateDropdown: 'options' should be an object. Received:`, options);
-        return;
+    /**
+     * Function to toggle dropdown visibility
+     */
+    function toggleDropdown(dropdownList, header) {
+        const isVisible = dropdownList.classList.contains('show');
+        if (isVisible) {
+            dropdownList.classList.remove('show');
+            header.setAttribute('aria-expanded', 'false');
+        } else {
+            dropdownList.classList.add('show');
+            header.setAttribute('aria-expanded', 'true');
+        }
     }
 
-    // Convert the options object into an array of objects with label and count
-    const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
-
-    // Sort options alphabetically or as needed
-    optionsArray.sort((a, b) => {
-        if (a.label < b.label) return -1;
-        if (a.label > b.label) return 1;
-        return 0;
-    });
-
-    // Render options
-    optionsArray.forEach(option => {
-        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
-        dropdownList.appendChild(label);
-    });
-}
-
-/**
- * Function to show the progress indicator
- */
-function showProgressIndicator() {
-    console.log("showProgressIndicator")
-    if (progressIndicator) {
-        console.log("showProgressIndicator", progressIndicator.style)
-        progressIndicator.style.display = 'flex'; // Use flex to center content
-        progressIndicator.setAttribute('aria-hidden', 'false');
-    } else {
-        console.error("showProgressIndicator: Progress indicator element not found.");
-    }
-}
-
-/**
- * Function to hide the progress indicator
- */
-function hideProgressIndicator() {
-
-    if (progressIndicator) {
-        progressIndicator.style.display = 'none';
-        progressIndicator.setAttribute('aria-hidden', 'true');
-    } else {
-        console.error("hideProgressIndicator: Progress indicator element not found.");
-    }
-}
-
-/**
- * Update the movie listings dynamically based on the filter results
- */
-function updateMovieListings(movies) {
-    console.log("Updating Movie Listings");
-    if (!movieContainer) {
-        console.error("updateMovieListings: movieContainer element not found.");
-        return;
+    /**
+     * Function to handle the relationship between Decades and Years in the Year dropdown
+     */
+    function handleYearDecadeRelationship(target, dropdownList) {
+        const isDecade = target.value.includes('...'); // Assuming Decades contain '...'
+        if (!isDecade && target.checked) {
+            // If a specific year is selected, uncheck any selected decades
+            const decadeCheckboxes = dropdownList.querySelectorAll('input[type="checkbox"][value*="..."]');
+            decadeCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkbox.checked = false;
+                    const parentLabel = checkbox.parentElement;
+                    const header = parentLabel.closest('.custom-dropdown').querySelector('.dropdown-header');
+                    const selectedCount = header.querySelector('.selected-count');
+                    const selectionBadge = header.parentElement.querySelector('.selection-badge');
+                    updateSelectedCount(dropdownList, selectedCount, header.querySelector('.clear-icon'), selectionBadge);
+                }
+            });
+        } else if (isDecade && target.checked) {
+            // If a decade is selected, uncheck any specific years within that decade
+            const decadePrefix = target.value.split('...')[0]; // e.g., '1980...'
+            const yearCheckboxes = dropdownList.querySelectorAll('input[type="checkbox"]:not([value*="..."])');
+            yearCheckboxes.forEach(checkbox => {
+                if (checkbox.value.startsWith(decadePrefix) && checkbox.checked) {
+                    checkbox.checked = false;
+                    const parentLabel = checkbox.parentElement;
+                    const header = parentLabel.closest('.custom-dropdown').querySelector('.dropdown-header');
+                    const selectedCount = header.querySelector('.selected-count');
+                    const selectionBadge = header.parentElement.querySelector('.selection-badge');
+                    updateSelectedCount(dropdownList, selectedCount, header.querySelector('.clear-icon'), selectionBadge);
+                }
+            });
+        }
     }
 
-    movieContainer.innerHTML = "";  // Clear existing listings
+    /**
+     * Function to update the selected count display, clear button visibility, and selection badge
+     */
+    function updateSelectedCount(dropdownList, countElement, clearButton, selectionBadge) {
+        const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked'));
+        const count = selectedItems.length;
 
-    if (movies.length > 0) {
-        movies.forEach(movie => {
-            const movieCard = document.createElement('div');
-            movieCard.className = 'movie-card poster-background';
-            movieCard.style.backgroundImage = `url('/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg')`;
+        // Update the count display
+        countElement.textContent = `${count} sel.`;
 
-            movieCard.innerHTML = `
-                <div class="transparency-layer"></div>
-                <div class="movie-content-wrapper">
-                    <div class="info-section">
-                        <h2>${movie.main_title}</h2>
-                        <p><strong>Original: ${movie.original_title}</strong> (${movie.release_date})</p>
-                        <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
-                        <p><strong>Regie:</strong> ${movie.director}</p>
-                        <p><strong>Schauspieler:</strong> ${movie.actors}</p>
+        // Show or hide the clear button based on the count
+        clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
+
+        // Update the Selection Badge
+        if (selectionBadge) {
+            updateSelectionBadge(dropdownList, selectionBadge);
+        }
+    }
+
+    /**
+     * Function to update the Selection Badge based on current selections
+     */
+    function updateSelectionBadge(dropdownList, badgeElement) {
+        const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+        if (selectedItems.length > 0) {
+            badgeElement.textContent = selectedItems.join(', ');
+            badgeElement.classList.add('visible');
+        } else {
+            badgeElement.textContent = '';
+            badgeElement.classList.remove('visible');
+        }
+    }
+
+    /**
+     * Function to trigger a custom event to notify filter.js of dropdown changes
+     */
+    function triggerDropdownChangeEvent() {
+        const event = new CustomEvent('dropdownChange');
+        console.log("Dispatching dropdownChange event");
+        document.dispatchEvent(event);
+    }
+
+    /**
+     * Function to update dropdown values and movie listings based on current selections and search query
+     */
+    function updateFilters(page = 1) {
+        const selectedYears = getCheckedValues('year-dropdown-list');
+        const selectedGenres = getCheckedValues('genre-dropdown-list');
+        const selectedCountries = getCheckedValues('country-dropdown-list');
+        const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+        const params = new URLSearchParams();
+        if (selectedYears.length) params.append('years', selectedYears.join(','));
+        if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
+        if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
+        if (searchQuery) params.append('search', searchQuery);
+        params.append('page', page);
+
+        console.log("Fetching updated filter data with params:", params.toString());
+
+        // Show the progress indicator before starting the fetch
+        showProgressIndicator();
+
+        fetch(`/filter_movies?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("API Response Data:", data);
+                const { years, genres, countries, movies, current_page, total_pages } = data;
+
+                // Populate each dropdown with data
+                populateDropdown('year-dropdown-list', years, selectedYears);
+                populateDropdown('genre-dropdown-list', genres, selectedGenres);
+                populateDropdown('country-dropdown-list', countries, selectedCountries);
+
+                updateMovieListings(movies);
+                updatePagination(current_page, total_pages);
+            })
+            .catch(error => {
+                console.error('Error fetching filter data:', error);
+                if (movieContainer) {
+                    movieContainer.innerHTML = `<p class="no-movies-message">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>`;
+                }
+            })
+            .finally(() => {
+                // Hide the progress indicator after fetch completes (success or error)
+                hideProgressIndicator();
+            });
+    }
+
+    /**
+     * Helper to get checked values from a specific dropdown list
+     */
+    function getCheckedValues(dropdownListId) {
+        const checkboxes = document.querySelectorAll(`#${dropdownListId} input[type="checkbox"]:checked`);
+        return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    /**
+     * Function to populate dropdown lists with options
+     * @param {string} dropdownListId - The ID of the dropdown list element
+     * @param {Object} options - An object with option labels as keys and counts as values
+     * @param {Array} selectedValues - An array of currently selected option values
+     */
+    function populateDropdown(dropdownListId, options, selectedValues = []) {
+        const dropdownList = document.getElementById(dropdownListId);
+        if (!dropdownList) {
+            console.error(`populateDropdown: Element mit ID '${dropdownListId}' nicht gefunden.`);
+            return;
+        }
+
+        dropdownList.innerHTML = "";  // Bestehende Optionen löschen
+
+        if (typeof options !== 'object' || Array.isArray(options)) {
+            console.error(`populateDropdown: 'options' sollte ein Objekt sein. Erhalten:`, options);
+            return;
+        }
+
+        // Konvertieren des Options-Objekts in ein Array von Objekten mit Label und Count
+        const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
+
+        // Sortieren der Optionen alphabetisch oder nach Bedarf
+        optionsArray.sort((a, b) => {
+            if (a.label < b.label) return -1;
+            if (a.label > b.label) return 1;
+            return 0;
+        });
+
+        // Rendern der Optionen
+        optionsArray.forEach(option => {
+            const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
+            const label = document.createElement('label');
+            label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
+            dropdownList.appendChild(label);
+        });
+
+        // Update Selection Badge after populating
+        const parentDropdown = dropdownList.parentElement;
+        const selectionBadge = parentDropdown.querySelector('.selection-badge');
+        if (selectionBadge) {
+            updateSelectionBadge(dropdownList, selectionBadge);
+        }
+    }
+
+    /**
+     * Funktion zur Aktualisierung der Movie Listings basierend auf den Filterergebnissen
+     */
+    function updateMovieListings(movies) {
+        console.log("Updating Movie Listings");
+        if (!movieContainer) {
+            console.error("updateMovieListings: movieContainer Element nicht gefunden.");
+            return;
+        }
+
+        movieContainer.innerHTML = "";  // Bestehende Einträge löschen
+
+        if (movies.length > 0) {
+            movies.forEach(movie => {
+                const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg`;
+                const defaultImagePath = '/static/images/default_movie.png';
+
+                const movieCard = document.createElement('div');
+                movieCard.className = 'movie-card poster-background';
+                movieCard.style.backgroundImage = `url('${imagePath}')`;
+
+                movieCard.innerHTML = `
+                    <div class="transparency-layer"></div>
+                    <div class="movie-content-wrapper">
+                        <div class="image-container">
+                            <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';">
+                        </div>
+                        <div class="info-section">
+                            <h2>${movie.main_title}</h2>
+                            <p><strong>Original: ${movie.original_title}</strong> (${movie.release_date})</p>
+                            <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
+                            <p><strong>Regie:</strong> ${movie.director}</p>
+                            <p><strong>Schauspieler:</strong> ${movie.actors}</p>
+                            ${movie.format_standort ? `<p class="standort"><strong>Standort:</strong> ${movie.format_standort}</p>` : ''}
+                            <p class="countries"><strong>Länder:</strong> ${movie.countries}</p> <!-- Länderinformationen -->
+                            <div class="links">
+                                <a href="https://www.imdb.com/title/${movie.imdb_id}" target="_blank" aria-label="IMDb"><i class="fab fa-imdb"></i></a>
+                                <a href="${movie.trailer_url}" target="_blank" aria-label="Trailer"><i class="fas fa-play-circle"></i></a>
+                                <a href="${movie.review_url}" target="_blank" aria-label="Review"><i class="fas fa-comments"></i></a>
+                            </div>
+                        </div>
+                        <div class="overview-section">
+                            <p><a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>
+                        </div>
                     </div>
-                    <div class="overview-section">
-                        ${movie.overview.length > 150 ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>` : `<p>${movie.overview} <a href="/movie/${movie.format_filmId}" class="more-link">mehr</a></p>`}
-                    </div>
-                </div>
-            `;
-            movieContainer.appendChild(movieCard);
-        });
-    } else {
-        movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
+                `;
+                movieContainer.appendChild(movieCard);
+            });
+        } else {
+            movieContainer.innerHTML = `<p class="no-movies-message">Keine Filme entsprechen den ausgewählten Filtern.</p>`;
+        }
     }
-}
 
-/**
- * Function to update pagination based on the current and total pages
- */
-function updatePagination(currentPage, totalPages) {
-    [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
-        if (!paginationContainer) return;
+    /**
+     * Function to handle pagination updates for both top and bottom paginations
+     */
+    function updatePagination(currentPage, totalPages) {
+        [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
+            if (!paginationContainer) return;
 
-        paginationContainer.innerHTML = "";  // Clear existing pagination buttons
+            paginationContainer.innerHTML = "";  // Bestehende Pagination-Buttons löschen
 
-        // Create "Previous" button
-        let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
-        let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
-        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
+            // Erstellen des "Previous" Buttons
+            let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
+            let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
+            paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
 
-        // Add first page and ellipsis if necessary
-        if (currentPage > 3) {
-            paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
-            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
-        }
-
-        // Generate page numbers around the current page
-        let startPage = Math.max(1, currentPage - 2);
-        let endPage = Math.min(totalPages, currentPage + 2);
-        for (let p = startPage; p <= endPage; p++) {
-            let activeClass = (p === currentPage) ? 'active' : '';
-            paginationContainer.innerHTML += `<li class="${activeClass}"><a href="#" data-page="${p}">${p}</a></li>`;
-        }
-
-        // Add ellipsis and last page if necessary
-        if (currentPage < totalPages - 2) {
-            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
-            paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
-        }
-
-        // Create "Next" button
-        let nextDisabledClass = currentPage >= totalPages ? 'disabled' : '';
-        let nextDisabledAttr = currentPage >= totalPages ? 'aria-disabled="true"' : '';
-        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
-    });
-
-    attachPaginationEventListeners();
-}
-
-/**
- * Function to attach click event listeners for pagination buttons
- */
-function attachPaginationEventListeners() {
-    const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
-    paginationLinks.forEach(link => {
-        link.addEventListener('click', function (event) {
-            event.preventDefault();
-            if (this.parentElement.classList.contains('disabled')) {
-                return;  // Ignore clicks on disabled buttons
+            // Hinzufügen der ersten Seite und Ellipsen, falls notwendig
+            if (currentPage > 3) {
+                paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
+                paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
             }
-            const page = parseInt(this.getAttribute('data-page'));
-            if (!isNaN(page)) updateFilters(page);  // Trigger filtering with the selected page
+
+            // Generieren der Seitenzahlen rund um die aktuelle Seite
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+            for (let p = startPage; p <= endPage; p++) {
+                let activeClass = (p === currentPage) ? 'active' : '';
+                paginationContainer.innerHTML += `<li class="${activeClass}"><a href="#" data-page="${p}">${p}</a></li>`;
+            }
+
+            // Hinzufügen von Ellipsen und der letzten Seite, falls notwendig
+            if (currentPage < totalPages - 2) {
+                paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
+                paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+            }
+
+            // Erstellen des "Next" Buttons
+            let nextDisabledClass = currentPage >= totalPages ? 'disabled' : '';
+            let nextDisabledAttr = currentPage >= totalPages ? 'aria-disabled="true"' : '';
+            paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
         });
-    });
-}
+
+        attachPaginationEventListeners();
+    }
+
+    /**
+     * Function to attach click event listeners for pagination buttons
+     */
+    function attachPaginationEventListeners() {
+        const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                if (this.parentElement.classList.contains('disabled')) {
+                    return;  // Klicks auf deaktivierte Buttons ignorieren
+                }
+                const page = parseInt(this.getAttribute('data-page'));
+                if (!isNaN(page)) updateFilters(page);  // Filterung mit ausgewählter Seite auslösen
+            });
+        });
+    }
+
+    /**
+     * Function to show the progress indicator
+     */
+    function showProgressIndicator() {
+        console.log("showProgressIndicator aufgerufen");
+        if (progressIndicator) {
+            progressIndicator.style.display = 'flex'; // Progress Indicator anzeigen
+            progressIndicator.setAttribute('aria-hidden', 'false');
+            console.log("Progress Indicator angezeigt:", progressIndicator.style.display);
+        } else {
+            console.error("showProgressIndicator: Progress Indicator Element nicht gefunden.");
+        }
+    }
+
+    /**
+     * Function to hide the progress indicator
+     */
+    function hideProgressIndicator() {
+        console.log("hideProgressIndicator aufgerufen");
+        if (progressIndicator) {
+            progressIndicator.style.display = 'none'; // Progress Indicator ausblenden
+            progressIndicator.setAttribute('aria-hidden', 'true');
+            console.log("Progress Indicator ausgeblendet:", progressIndicator.style.display);
+        } else {
+            console.error("hideProgressIndicator: Progress Indicator Element nicht gefunden.");
+        }
+    }
+
+    /**
+     * Funktion zur Initialisierung des Swiper Carousels
+     */
+    function initializeSwiper() {
+        const swiperWrapper = document.querySelector('.swiper-wrapper');
+        const numberOfSlides = swiperWrapper.children.length;
+
+        // Bestimmen Sie die Anzahl der Slides pro View basierend auf der Fensterbreite
+        let slidesPerView = 3;
+        if (window.innerWidth <= 768) {
+            slidesPerView = 1;
+        } else if (window.innerWidth <= 1024) {
+            slidesPerView = 2;
+        }
+
+        const minSlidesForLoop = slidesPerView + 1; // Mindestanzahl von Slides für Loop
+        const enableLoop = numberOfSlides >= minSlidesForLoop;
+
+        const swiper = new Swiper('.swiper-container', {
+            loop: enableLoop, // Loop nur aktivieren, wenn genügend Slides vorhanden sind
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            slidesPerView: slidesPerView,
+            spaceBetween: 30,
+            breakpoints: {
+                // when window width is <= 1024px
+                1024: {
+                    slidesPerView: 2,
+                    spaceBetween: 20
+                },
+                // when window width is <= 768px
+                768: {
+                    slidesPerView: 1,
+                    spaceBetween: 10
+                }
+            }
+        });
+
+        if (!enableLoop) {
+            console.warn("Swiper Loop wurde deaktiviert, da nicht genügend Slides vorhanden sind.");
+        }
+    }
+})();
 
 --- File: static\js\navbar.js ---
 document.addEventListener('DOMContentLoaded', function () {
@@ -3179,7 +3786,8 @@ movieCards.forEach(card => {
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/custom_controls/custom_dropdown_search.css') }}">
+    <!-- Swiper.js CSS for Carousel -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
 </head>
 <body>
     <header>
@@ -3203,6 +3811,37 @@ movieCards.forEach(card => {
     </header>
 
     <main>
+        <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Loading movies...</p>
+        </div>    
+
+        <!-- Movie Carousel Section -->
+        <section class="movie-carousel-section">
+            <h2>Hervorgehobene Filme</h2>
+            <!-- Swiper.js Carousel -->
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    {% for featured_movie in featured_movies %}
+                    <div class="swiper-slide">
+                        <div class="featured-movie-card">
+                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" alt="{{ featured_movie['main_title'] }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';">
+                            <div class="featured-movie-overlay">
+                                <h3>{{ featured_movie['main_title'] }}</h3>
+                                <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Navigation -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </section>
+
         <!-- Catalog Search Section -->
         <section class="catalog-search">
             <div class="search-dropdown-container">
@@ -3220,6 +3859,7 @@ movieCards.forEach(card => {
                             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
+                                <span class="selection-badge" aria-label="Selected Year"></span> <!-- Selection Badge hinzugefügt -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear year filter">&times;</span>
                             </div>
                         </div>
@@ -3228,11 +3868,13 @@ movieCards.forEach(card => {
                         </div>
                     </div>
                     
+                    <!-- Genre Dropdown -->
                     <div class="custom-dropdown">
                         <div class="dropdown-header" aria-label="Genre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-film" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
+                                <span class="selection-badge" aria-label="Selected Genre"></span> <!-- Selection Badge hinzugefügt -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear genre filter">&times;</span>
                             </div>
                         </div>
@@ -3240,12 +3882,14 @@ movieCards.forEach(card => {
                             <!-- Dropdown options will be populated dynamically via JavaScript -->
                         </div>
                     </div>
-                    
+
+                    <!-- Country Dropdown -->
                     <div class="custom-dropdown">
                         <div class="dropdown-header" aria-label="Land" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-globe" aria-hidden="true"></i>
                             <div class="header-controls">
                                 <span class="selected-count">0 sel.</span>
+                                <span class="selection-badge" aria-label="Selected Country"></span> <!-- Selection Badge hinzugefügt -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear country filter">&times;</span>
                             </div>
                         </div>
@@ -3269,11 +3913,6 @@ movieCards.forEach(card => {
 
         <!-- Movie Listings Container -->
         <section class="movie-listings-container" style="position: relative;">
-            <!-- Progress Indicator -->
-            <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
-                <div class="spinner" aria-hidden="true"></div>
-                <p>Loading movies...</p>
-            </div>
 
             <!-- Movie Listings Section -->
             <section class="movie-listings">
@@ -3289,33 +3928,30 @@ movieCards.forEach(card => {
                             </div>
 
                             <div class="info-section">
-                                <div class="header-section">
-                                    <h2>{{ movie['main_title'] }}</h2>
-                                </div>
-
-                                <div class="metadata">
-                                    <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
-                                    <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
-                                    <p><strong>Regie:</strong> {{ movie['director'] }}</p>
-                                    <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
-                                    {% if movie['format_standort'] %}
-                                    <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
-                                    {% endif %}
+                                <h2>{{ movie['main_title'] }}</h2>
+                                <p><strong>Original: {{ movie['original_title'] }}</strong> ({{ movie['release_date'] }})</p>
+                                <p class="inline-meta">{{ movie['runtime'] }} min | {{ movie['formats'] }} | FSK {{ movie['format_fsk'] }} | &#9733; {{ movie['imdb_rating'] }}</p>
+                                <p><strong>Regie:</strong> {{ movie['director'] }}</p>
+                                <p><strong>Schauspieler:</strong> {{ movie['actors'] }}</p>
+                                {% if movie['format_standort'] %}
+                                <p class="standort"><strong>Standort:</strong> {{ movie['format_standort'] }}</p>
+                                {% endif %}
+                                <p class="countries"><strong>Länder:</strong> {{ movie['countries'] }}</p> <!-- Länderinformationen hinzugefügt -->
+                                <div class="links">
+                                    <a href="https://www.imdb.com/title/{{ movie['imdb_id'] }}" target="_blank" aria-label="IMDb"><i class="fab fa-imdb"></i></a>
+                                    <a href="{{ movie['trailer_url'] }}" target="_blank" aria-label="Trailer"><i class="fas fa-play-circle"></i></a>
+                                    <a href="{{ movie['review_url'] }}" target="_blank" aria-label="Review"><i class="fas fa-comments"></i></a>
                                 </div>
                             </div>
 
                             <div class="overview-section">
-                                {% if movie['overview']|length > 150 %}
-                                <p>{{ movie['overview'][:150] }}... <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                                {% else %}
-                                <p>{{ movie['overview'] }} <a href="{{ url_for('movie_details', movie_id=movie['movie_id']) }}" class="more-link">mehr</a></p>
-                                {% endif %}
+                                <p><a href="/movie/{{ movie['format_filmId'] }}" class="more-link">mehr</a></p>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 {% else %}
-                    <p class="no-movies-message">No movies match the selected filters.</p>
+                    <p class="no-movies-message">Keine Filme entsprechen den ausgewählten Filtern.</p>
                 {% endif %}
             </section>
         </section>
@@ -3336,8 +3972,10 @@ movieCards.forEach(card => {
         </div>
     </footer>
 
+    <!-- Swiper.js JS für das Karussell -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/filter.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/filter.js') }}?v=1.1"></script> 
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
 </body>
 </html>
