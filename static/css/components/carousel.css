@@ -10,7 +10,7 @@
 }
 
 .movie-carousel-section h2 {
-    font-size: 1.5em;
+    font-size: 2em;
     color: var(--text-light); /* Use defined light text color */
     z-index: 1;
     position: relative;

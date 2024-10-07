@@ -416,6 +416,7 @@ function updateMovieListings(movies) {
             movieCard.className = 'movie-card poster-background';
             movieCard.style.backgroundImage = `url('${imagePath}')`;
 
+            const maxOverviewLength = window.innerWidth <= 768 ? 150 : 350;
             movieCard.innerHTML = `
                 <div class="movie-content-wrapper">
                     <div class="image-container">
@@ -435,13 +436,15 @@ function updateMovieListings(movies) {
                         </div>
                     </div>
                     <div class="overview-section">
-                        ${movie.overview.length > 150 
-                            ? `<p>${movie.overview.substring(0, 150)}... <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>` 
+                        ${movie.overview.length > maxOverviewLength
+                            ? `<p>${movie.overview.substring(0, maxOverviewLength)}... <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>`
                             : `<p>${movie.overview} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>`}
                     </div>
                 </div>
             `;
+            
             movieContainer.appendChild(movieCard);
+            
         });
     } else {
         movieContainer.innerHTML = `<p class="no-movies-message">Keine Filme entsprechen den ausgewählten Filtern.</p>`;
@@ -584,7 +587,7 @@ function initializeSwiper() {
             },
         
             1400: {
-                slidesPerView: 7,
+                slidesPerView: 6.5,
                 spaceBetween: 10
             },
             // When window width is >= 1200px

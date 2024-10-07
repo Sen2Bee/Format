@@ -8,8 +8,8 @@
     --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
     --secondary-bg-color: #333;
     --accent-color: #e74c3c;
-    --text-color: #e0e0e0;
-    --link-color: #f1c40f;
+    --text-color: #e0e0e0; /* Default text color */
+    --link-color: #f1c40f; /* Link color */
     --scrollbar-bg: #333;
     --scrollbar-thumb: #555;
     --hover-bg: #444;
@@ -22,7 +22,7 @@
     display: flex;
     flex-direction: column;
     background-color: #1e1e1e;
-    color: #ffffff;
+    color: var(--text-color);
     border-radius: 10px;
     margin: 20px auto;
     overflow: hidden;
@@ -33,9 +33,6 @@
     position: relative;
     background-size: cover;
     background-position: center;
-    /* Added to ensure relative positioning for overlay */
-    display: flex;
-    flex-direction: column;
 }
 
 /* Movie Card Background Image */
@@ -72,7 +69,7 @@
         "overview overview"; /* Overview spans below */
     gap: 20px;
     background: rgba(30, 30, 30, 0.85);
-    z-index: 2; /* Increased z-index to be above the overlay */
+    z-index: 2;
     border-radius: 10px;
     position: relative;
 }
@@ -115,7 +112,7 @@
 .header-section h2 {
     margin: 0;
     font-size: 1.8em;
-    color: #ffd700; /* Yellow color */
+    color: var(--link-color); /* Bright Yellow for headline */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     font-family: 'Cinzel', serif;
 }
@@ -129,13 +126,13 @@
 
 .metadata p {
     margin: 5px 0;
-    color: #ffd700; /* Ensure yellow color */
+    color: var(--text-color); /* White text for metadata */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .metadata p strong,
 .metadata p span {
-    color: #ffd700; /* Ensure yellow color for strong and span elements */
+    color: var(--text-color); /* Ensure white color for strong and span elements */
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -143,14 +140,14 @@
 /* Inline Metadata */
 .inline-meta {
     font-size: 1.1em;
-    color: #ffd700; /* Ensure yellow color */
+    color: var(--text-color); /* Use white color for inline meta */
     padding-top: 10px;
     border-top: 1px solid #444;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .standort {
-    color: #ffd700; /* Ensure yellow color */
+    color: var(--text-color); /* Use white text for location */
     margin-top: 10px;
     border-top: 1px solid #444;
     padding-top: 10px;
@@ -163,7 +160,7 @@
     padding: 15px;
     background-color: rgba(37, 43, 54, 0.8);
     border-radius: 8px;
-    color: #ffd700; /* Ensure yellow color */
+    color: var(--text-color); /* Use white color */
     line-height: 1.4;
     z-index: 2;
     transition: font-weight 0.3s ease;
@@ -173,12 +170,12 @@
 /* Enhanced Text Visibility in Overview */
 .overview-section p {
     margin: 0;
-    color: #ffd700; /* Ensure yellow color */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); /* Stronger shadow for better readability */
+    color: var(--text-color); /* White text for overview */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 .overview-section a {
-    color: #ffcc00; /* Bright yellow/gold for links */
+    color: var(--link-color); /* Bright yellow for links */
     text-decoration: none;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
@@ -188,7 +185,7 @@
     text-decoration: underline;
 }
 
-/* Responsive Styles for Tablet */
+/* Responsive Styles for Tablet and Mobile */
 @media (max-width: 1024px) {
     .movie-card {
         width: 95%;
@@ -212,15 +209,10 @@
     }
 }
 
-/* Responsive Styles for Mobile */
 @media (max-width: 768px) {
     .movie-card {
         width: 100%;
         margin: 10px auto;
-        background-size: cover;
-        background-position: center center;
-        background-repeat: no-repeat;
-        aspect-ratio: 2 / 3; /* Maintain poster aspect ratio */
     }
 
     .movie-content-wrapper {
@@ -238,57 +230,13 @@
 
     .info-section,
     .overview-section {
-        background: rgba(0, 0, 0, 0.6); /* Slightly darker for better text visibility */
-        margin: 10px;
-        border-radius: 8px;
-    }
-
-    .metadata p, .overview-section p {
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-    }
-
-    /* Text Adjustments for Mobile */
-    .metadata p strong {
-        font-size: 1.3em;
-        font-weight: bold;
-    }
-
-    .metadata p span {
-        font-weight: bold;
-    }
-
-    .overview-section {
-        font-weight: bold;
-    }
-
-    /* Thinner font on hover/touch */
-    .movie-card:hover .metadata p strong,
-    .movie-card:hover .metadata p span {
-        font-size: 1.1em;
-        font-weight: normal;
-    }
-
-    .overview-section {
-        font-weight: bold;
-    }
-
-    /* Thinner font on hover/touch */
-    .movie-card:hover .overview-section {
-        font-weight: normal;
-    }
-
-    /* Maintain Aspect Ratio with Flexbox */
-    .movie-card {
-        display: flex;
-        flex-direction: column;
+        background: rgba(0, 0, 0, 0.6);
     }
 }
 
-/* Styles for Very Small Screens */
 @media (max-width: 480px) {
     .movie-card {
         width: 100%;
-        margin: 15px auto;
     }
 
     .movie-content-wrapper {
@@ -298,23 +246,48 @@
             "overview";
         gap: 10px;
     }
-
-    .metadata p {
-        text-align: center;
-    }
-
-    .overview-section {
-        width: 95%;
-        padding: 5px;
-    }
-
-    .action .btn {
-        width: 90%;
-    }
 }
 
 /* Missing Poster Styling */
 .missing-poster {
-    border: 2px dashed red;  /* Optional border to highlight missing posters */
-    opacity: 0.6;  /* Dim the card slightly */
+    border: 2px dashed red;
+    opacity: 0.6;
+}
+
+/* Desktop Styles */
+.desktop-layout {
+    display: grid; /* Default structure for desktop */
+}
+
+.mobile-layout {
+    display: none; /* Hide mobile structure by default */
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .desktop-layout {
+        display: none; /* Hide desktop layout on mobile */
+    }
+
+    .mobile-layout {
+        display: grid; /* Show mobile layout on small screens */
+    }
+
+    .mobile-layout .info-section,
+    .mobile-layout .overview-section {
+        padding: 10px;
+        margin: 10px;
+    }
+
+    .mobile-layout .header-section h2 {
+        font-size: 1.2em;
+    }
+
+    .mobile-layout .metadata {
+        padding: 0;
+    }
+
+    .mobile-layout .overview-section {
+        font-size: 0.9em;
+    }
 }
