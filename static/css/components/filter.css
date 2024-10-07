@@ -1,30 +1,13 @@
-/* static/css/components/filter.css */
-
-/* Import Additional Fonts for Themes */
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
+/* filter.css */
 
 /* Ensure consistent box sizing across all elements */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
-/* Variables */
-:root {
-    --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
-    --secondary-bg-color: #333;
-    --accent-color: #e74c3c;
-    --text-color: #e0e0e0;
-    --link-color: #f1c40f;
-    --scrollbar-bg: #333;
-    --scrollbar-thumb: #555;
-    --hover-bg: #444;
-    --placeholder-color: #aaa;
-    --transition-duration: 0.3s;
-}
-
 /* Catalog Search Section */
 .catalog-search {
-    background-color: var(--primary-bg-color); /* Same background as movie-listings */
+    background-color: var(--background-dark); /* Updated background to use defined variable */
     text-align: center;
 }
 
@@ -41,7 +24,7 @@
 #filter-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px; /* Slightly increased gap for better spacing */
     width: 100%;
     justify-content: center;
     align-items: center;
@@ -50,29 +33,37 @@
 /* Search Box */
 .search-container {
     position: relative;
-    flex: 1 1 50%; /* Base flex for larger screens */
+    flex: 1 1 50%;
     height: 60px;
     margin-bottom: 10px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    background-color: var(--background-light); /* Subtle background to make it stand out */
+    transition: border 0.3s ease, background-color 0.3s ease;
 }
 
-/* Position the search icon inside the search box */
+.search-container:hover {
+    border-color: var(--accent-color); /* Accent color on hover */
+}
+
 .search-container .search-icon {
     position: absolute;
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--placeholder-color);
-    pointer-events: none; /* Allows clicks to pass through to the input */
+    pointer-events: none;
+    font-size: 1.3em; /* Increased icon size */
 }
 
 #search-box {
     width: 100%;
     height: 100%;
-    padding: 0 35px 0 35px; /* Ensure space for clear icon */
+    padding: 0 35px 0 35px;
     font-size: 1em;
-    background: var(--secondary-bg-color);
-    color: var(--text-color);
-    border: 2px solid var(--secondary-bg-color);
+    background: var(--secondary-color);
+    color: var(--text-light);
+    border: none;
     border-radius: 5px;
     box-sizing: border-box;
 }
@@ -92,10 +83,10 @@
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    font-size: 1.2em;
-    line-height: 24px;
+    width: 28px;
+    height: 28px;
+    font-size: 1.3em;
+    line-height: 28px;
     border-radius: 50%;
     background: rgba(68, 68, 68, 0.6);
     color: rgba(255, 255, 255, 0.6);
@@ -109,7 +100,7 @@
 
 .search-container:hover #clear-search,
 .search-container .clear-icon.visible {
-    visibility: visible; /* Show clear icon on hover or when visible class is added */
+    visibility: visible;
 }
 
 /* Custom Dropdowns */
@@ -117,17 +108,24 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    flex: 1 1 50%; /* Base flex for larger screens */
-    max-width: none; /* Removed max-width to allow full stretching */
+    flex: 1 1 50%;
     height: 60px;
+    border: 2px solid var(--border-color); /* Border to define dropdown boundaries */
+    border-radius: 5px;
+    background-color: var(--background-light);
+    transition: border 0.3s ease, background-color 0.3s ease;
+}
+
+.custom-dropdown:hover {
+    border-color: var(--accent-color);
 }
 
 .dropdown-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--secondary-bg-color);
-    color: #fff;
+    background: var(--secondary-color);
+    color: var(--text-light);
     padding: 0 18px;
     border-radius: 5px;
     cursor: pointer;
@@ -135,7 +133,8 @@
     transition: background var(--transition-duration), color var(--transition-duration);
     width: 100%;
     box-sizing: border-box;
-    padding-right: 40px; /* Increased padding to accommodate clear-icon */
+    padding-right: 40px;
+    border: none;
 }
 
 .dropdown-header:hover {
@@ -166,10 +165,10 @@
 
 /* Clear Icon */
 .clear-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 1.2em;
-    color: #fff;
+    width: 28px;
+    height: 28px;
+    font-size: 1.3em;
+    color: var(--text-light);
     background: rgba(68, 68, 68, 0.6);
     border-radius: 50%;
     cursor: pointer;
@@ -177,11 +176,10 @@
     align-items: center;
     justify-content: center;
     transition: background var(--transition-duration), color var(--transition-duration);
-    margin-left: 8px; /* Space between clear-icon and selection-badge */
-    visibility: hidden; /* Hidden by default */
+    margin-left: 8px;
+    visibility: hidden;
 }
 
-/* Show clear-icon only when there are selections */
 .dropdown-header.has-selection .clear-icon {
     visibility: visible;
 }
@@ -189,17 +187,18 @@
 /* Dropdown List */
 .dropdown-list {
     display: none;
-    background: #2c2c2c;
-    color: #e0e0e0;
+    background: var(--secondary-bg-color);
+    color: var(--text-light);
     position: absolute;
     top: 100%;
     left: 0;
     width: 100%;
     border-radius: 5px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px var(--shadow-color);
     z-index: 1000;
     max-height: 250px;
     overflow-y: auto;
+    border: 1px solid var(--border-color); /* Subtle border for dropdown */
 }
 
 .dropdown-list.show {
@@ -211,7 +210,7 @@
     align-items: center;
     padding: 12px 18px;
     font-size: 1.05em;
-    color: #f1f1f1;
+    color: var(--text-light);
     font-weight: 500;
     cursor: pointer;
     transition: background var(--transition-duration), color var(--transition-duration);
@@ -243,218 +242,16 @@
 
 /* Dropdown Arrow Icon */
 .dropdown-header::after {
-    content: '\f078'; /* FontAwesome caret-down */
+    content: '\f078';
     font-family: 'Font Awesome 5 Free';
     font-weight: 900;
-    font-size: 0.8em;
+    font-size: 1em;
     color: #fff;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-duration);
     position: absolute;
-    right: 18px; /* Position caret properly with padding */
+    right: 18px;
 }
 
 .dropdown-header[aria-expanded="true"]::after {
-    transform: rotate(180deg); /* Rotate arrow when expanded */
-}
-
-/* Movie Carousel Section */
-.movie-carousel-section {
-    padding-top: 70px;
-    padding-bottom: 20px;
-    background-color: var(--primary-bg-color); /* Same background as movie-listings */
-    text-align: center;
-    position: relative; /* To prevent overlap with navbar */
-}
-
-.movie-carousel-section h2 {
-    font-size: 1.5em;
-    color: #fff;
-    z-index: 1;
-    position: relative;
-    font-family: 'Cinzel', serif; /* Ensure consistent font */
-}
-
-/* Swiper Container */
-.swiper-container {
-    width: 100%;
-    padding-bottom: 10px; /* Space for pagination bullets */
-}
-
-.swiper-wrapper {
-    display: flex;
-    align-items: center;
-}
-
-/* Swiper Slides */
-.swiper-slide {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 5px; /* Half of the desired gap (10px total) */
-}
-
-.featured-movie-card {
-    position: relative;
-    width: 200px; /* Adjust based on desired poster size */
-    height: 300px; /* Adjust based on desired poster size */
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.featured-movie-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Maintains aspect ratio without stretching */
-    transition: transform 0.3s ease;
-}
-
-.featured-movie-card:hover img {
-    transform: scale(1.05); /* Zoom-in effect on hover */
-}
-
-.featured-movie-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    padding: 10px;
-    box-sizing: border-box;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.featured-movie-card:hover .featured-movie-overlay {
-    opacity: 1;
-}
-
-.featured-movie-overlay h3 {
-    margin: 0;
-    font-size: 1.2em;
-}
-
-.featured-movie-overlay .btn-secondary {
-    display: inline-block;
-    padding: 5px 10px;
-    background-color: var(--accent-color);
-    color: #fff;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 0.9em;
-    transition: background-color 0.3s ease;
-}
-
-.featured-movie-overlay .btn-secondary:hover {
-    background-color: #c0392b; /* Darker accent color on hover */
-}
-
-/* Swiper Pagination Adjustment */
-.swiper-pagination {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    z-index: 10;
-}
-
-/* Responsive Adjustments */
-@media (min-width: 768px) {
-    /* Tablet and Up: Horizontal Layout */
-    #filter-form {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .search-container,
-    .custom-dropdown {
-        flex: 1 1 48%; /* Adjust based on number of dropdowns */
-        max-width: none; /* Ensure full stretching */
-    }
-}
-
-@media (min-width: 1024px) {
-    /* Desktop and Larger Screens: Extended Horizontal Layout */
-    #filter-form {
-        flex-direction: row;
-    }
-
-    .search-container,
-    .custom-dropdown {
-        flex: 1 1 20%; /* Adjust based on number of dropdowns */
-        max-width: none; /* Ensure full stretching */
-    }
-}
-
-@media (max-width: 767px) {
-    /* Mobile Devices: Vertical Stacking */
-    #filter-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-container,
-    .custom-dropdown {
-        flex: 1 1 100%; /* Full width on small screens */
-        max-width: none;
-        margin-bottom: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .featured-movie-card {
-        width: 120px;
-        height: 180px;
-    }
-
-    .movie-carousel-section h2 {
-        font-size: 1.2em;
-    }
-
-    /* Additional adjustments for very small screens */
-    #filter-form {
-        gap: 8px;
-    }
-
-    .dropdown-header::after {
-        right: 12px; /* Adjust caret position for smaller screens */
-    }
-}
-
-/* Progress Indicator Styles */
-.progress-indicator {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 10000; /* Ensure it's on top of other elements */
-}
-
-.progress-indicator .spinner {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid var(--accent-color); /* Accent color */
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1.5s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.progress-indicator p {
-    margin-top: 15px;
-    color: #fff;
-    font-size: 1.2em;
-    text-align: center;
+    transform: rotate(180deg);
 }

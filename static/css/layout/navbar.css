@@ -5,18 +5,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(44, 44, 44, 1);  /* Default background color */
+    background-color: var(--primary-color);  /* Use defined primary color */
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     width: 100%;
-    height: 60px;  /* Increased default height for visibility */
+    height: 60px;  /* Default height */
     padding: 0 20px;
     z-index: 1000;
-    transition: height 0.3s ease, top 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: 'Open Sans', sans-serif;
+    transition: height var(--transition-duration), top var(--transition-duration), box-shadow var(--transition-duration);
+    box-shadow: 0 4px 8px var(--shadow-color);  /* Use defined shadow color */
+    font-family: var(--font-body);  /* Use body font */
 }
 
 /* Shrunk State */
@@ -33,11 +33,11 @@
 .menu-toggle {
     display: none;  /* Hide by default */
     cursor: pointer;
-    transition: transform 0.3s ease-in-out;  /* Smooth rotation animation */
+    transition: transform var(--transition-duration);  /* Smooth rotation animation */
 }
 
 .menu-toggle i {
-    color: #ffffff;
+    color: var(--text-light);
     font-size: 1.5em;
 }
 
@@ -49,16 +49,16 @@
 
 .logo span {
     font-size: 2.5rem;  /* Adjust main logo size for better readability */
-    color: #fff;
-    font-family: 'Spacia Heavy', serif;
+    color: var(--text-light);  /* Use defined light text color */
+    font-family: var(--font-heading);  /* Use heading font */
     text-transform: lowercase;
     margin-right: 5px;
-    transition: font-size 0.3s ease;  /* Smooth logo size transition */
+    transition: font-size var(--transition-duration);  /* Smooth logo size transition */
 }
 
 .sub-logo span {
     font-size: 1.5rem;  /* Adjust sub-logo size */
-    color: var(--accent-color);
+    color: var(--accent-color);  /* Use defined accent color */
     text-transform: lowercase;
 }
 
@@ -78,20 +78,20 @@
 /* Navigation Link Styling */
 .nav-links li a {
     text-decoration: none;
-    color: #f7f7f7;
+    color: var(--text-light);  /* Use defined light text color */
     font-size: 1rem;
-    transition: color 0.3s ease, transform 0.3s ease;
-    font-family: 'Open Sans', sans-serif;
+    transition: color var(--transition-duration), transform var(--transition-duration);
+    font-family: var(--font-body);  /* Use body font */
 }
 
 .nav-links li a:hover {
-    color: var(--accent-color);  /* Hover color change */
+    color: var(--link-color);  /* Use defined link hover color */
     transform: translateY(-2px);
 }
 
 /* Active Link */
 .nav-links li a.active {
-    color: var(--accent-color);
+    color: var(--link-color);  /* Use defined link color */
     font-weight: bold;
 }
 
@@ -110,9 +110,9 @@
         top: 50px;  /* Position below the navbar */
         right: 0;
         width: 100%;
-        background-color: rgba(44, 44, 44, 1);
+        background-color: var(--primary-color);  /* Use defined primary color */
         z-index: 999;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 8px var(--shadow-color);  /* Use defined shadow color */
         padding: 10px 0;
     }
 
@@ -191,13 +191,13 @@
 @media (max-width: 768px) {
     .mobile-footer-link {
         display: block;
-        background-color: var(--primary-color);
+        background-color: var(--primary-color);  /* Use defined primary color */
         text-align: center;
         padding: 10px 0;
     }
 
     .mobile-footer-link a {
-        color: #fff;
+        color: var(--text-light);  /* Use defined light text color */
         font-size: 1rem;
         text-decoration: none;
     }

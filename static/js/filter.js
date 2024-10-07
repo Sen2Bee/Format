@@ -566,8 +566,25 @@ function initializeSwiper() {
         // Responsive breakpoints
         breakpoints: {
             // When window width is >= 1400px
+            2200: {
+                slidesPerView: 13,
+                spaceBetween: 10
+            },
+            2000: {
+                slidesPerView: 10,
+                spaceBetween: 10
+            },
+            1800: {
+                slidesPerView: 9,
+                spaceBetween: 10
+            },
+            1600: {
+                slidesPerView: 8,
+                spaceBetween: 10
+            },
+        
             1400: {
-                slidesPerView: 6.5,
+                slidesPerView: 7,
                 spaceBetween: 10
             },
             // When window width is >= 1200px
@@ -597,7 +614,7 @@ function initializeSwiper() {
             },
             // When window width is < 640px
             0: { // Mobile-first
-                slidesPerView: 1.5,
+                slidesPerView: 2.5,
                 spaceBetween: 16
             }
         },

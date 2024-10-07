@@ -1,14 +1,16 @@
 /* pagination.css */
 
-/* Pagination Styles */
+/* General Pagination Container */
 .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-
-    background-color: #444;
+    background-color: var(--primary-color);
+    padding: 15px 0; /* Added padding for spacing */
+    color: var(--text-light);
 }
 
+/* Pagination Navigation List */
 .pagination nav ul {
     display: flex;
     justify-content: center;
@@ -18,57 +20,81 @@
     margin: 0;
 }
 
+/* Pagination Item Styling */
 .pagination nav ul li {
-    margin: 0 5px; /* Reduced spacing */
+    margin: 0 5px; /* Reduced spacing between items */
 }
 
+/* Pagination Links and Buttons */
 .pagination nav ul li a,
 .pagination nav ul li span {
     display: inline-block;
     padding: 8px 12px;
     background-color: var(--primary-color);
-    color: #fff;
+    color: var(--text-light);
     border-radius: 4px;
     text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    min-width: 32px; /* Make the buttons more uniform */
+    transition: background-color var(--transition-duration), transform var(--transition-duration);
+    min-width: 32px; /* Consistent button sizing */
     text-align: center;
     font-size: 1rem;
 }
 
-.pagination nav ul li a:hover {
+/* Hover and Active State */
+.pagination nav ul li a:hover,
+.pagination nav ul li span:hover {
     background-color: var(--accent-color);
-    transform: translateY(-2px);
+    color: var(--background-dark);
+    transform: translateY(-2px); /* Subtle lift effect */
 }
 
+/* Active State for Current Page */
 .pagination nav ul li.active span {
     background-color: var(--accent-color);
-    color: var(--primary-color);
+    color: var(--background-dark);
     font-weight: bold;
+    cursor: default;
 }
 
-.pagination nav ul li.disabled span {
-    background-color: #8e0d0d;
-    color: #aaa;
+/* Disabled State for Non-clickable Items */
+.pagination nav ul li.disabled span,
+.pagination ul li.disabled a {
+    background-color: var(--secondary-color); /* Muted color for disabled state */
+    color: var(--secondary-text-color);
     cursor: not-allowed;
+    border: 1px solid var(--border-color);
+    pointer-events: none; /* Prevent interaction */
 }
 
-/* Optional: Style for Ellipsis */
+/* Optional: Ellipsis Styling */
 .pagination nav ul li.ellipsis span {
     background: none;
-    color: #666;
+    color: var(--secondary-text-color);
     cursor: default;
 }
 
-/* Disabled button styling */
-.pagination ul li.disabled a {
-    color: #aaa; /* Greyed out color */
-    pointer-events: none; /* Prevent clicking */
-    cursor: not-allowed;
-    background-color: #444; /* Background to indicate disabled state */
-    border: 1px solid #333; /* Adjust border color */
+/* Highlighting for Previous and Next */
+.pagination nav ul li a.prev,
+.pagination nav ul li a.next {
+    font-weight: bold;
+    background-color: var(--accent-color);
 }
 
-.pagination ul li.disabled {
-    cursor: default;
+.pagination nav ul li a.prev:hover,
+.pagination nav ul li a.next:hover {
+    background-color: var(--button-hover-bg);
+    color: var(--text-light);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .pagination nav ul li {
+        margin: 0 3px; /* Reduced spacing on mobile */
+    }
+
+    .pagination nav ul li a,
+    .pagination nav ul li span {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
 }

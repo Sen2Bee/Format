@@ -1,14 +1,20 @@
-/* variables.css */
-
 :root {
-    --primary-color: #2c3e50; /* Dark Blue */
-    --secondary-color: #34495e; /* Slightly Lighter Blue */
-    --accent-color: #e74c3c; /* Vibrant Red */
-    --background-color: #ecf0f1; /* Light Gray */
-    --text-color: #2c3e50; /* Dark Text */
-    --placeholder-color: #95a5a6; /* Gray Placeholder */
-    --link-color: #a98b03; /* Gold */
-    --secondary-text-color: #555; /* Muted Text */
-    --transition-duration: 0.3s;
-    --button-hover-color: #555;
+    /* Color Variables */
+    --primary-color: #000000; /* Solid Black for main backgrounds */
+    --secondary-color: #1a1a1a; /* Dark Gray for secondary sections */
+    --accent-color: #e7b000; /* Yellow for highlights */
+    --background-light: #ffffff; /* White for light backgrounds */
+    --background-dark: #1a1a1a; /* Dark gray for sections */
+    --text-light: #ffffff; /* White text for dark backgrounds */
+    --text-dark: #000000; /* Black text for light backgrounds */
+    --secondary-text-color: #bfbfbf; /* Muted Light Gray */
+    --link-color: #e7b000; /* Yellow for links */
+    --link-hover-color: #ff6a00; /* Orange for link hover states */
+    --button-bg: #e7b000; /* Yellow for buttons */
+    --button-hover-bg: #ff6a00; /* Orange for button hover background */
+    --border-color: #333333; /* Darker Gray for borders */
+    --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle shadow color */
+    --font-heading: 'Playfair Display', serif; /* Elegant Serif for Headings */
+    --font-body: 'Roboto', sans-serif; /* Clean Sans-Serif for Body */
+    --transition-duration: 0.3s; /* Consistent transition duration */
 }

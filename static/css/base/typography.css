@@ -1,24 +1,19 @@
 /* typography.css */
 
 /* Import Fonts */
-@font-face {
-    font-family: 'Spacia Heavy';
-    src: url('../../assets/fonts/Spacia Heavy.ttf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;700&display=swap');
 
 /* Typography Styles */
 body {
-    font-family: 'Open Sans', sans-serif;
-    color: var(--text-color);
-    background-color: var(--background-color);
+    font-family: var(--font-body);
+    color: var(--text-dark);
+    background-color: var(--background-light);
     line-height: 1.6;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     color: var(--primary-color);
     margin-bottom: 15px;
 }
@@ -27,19 +22,20 @@ h1, h2, h3, h4, h5, h6 {
 p {
     margin-bottom: 15px;
     color: var(--secondary-text-color);
+    font-size: 1.1em;
 }
 
 /* Links */
 a {
     color: var(--link-color);
-    transition: color 0.3s ease;
+    transition: color var(--transition-duration) ease;
 }
 
 a:hover {
-    color: var(--accent-color);
+    color: var(--link-hover-color);
 }
 
 /* Buttons inside forms and other components */
 button {
-    font-family: 'Open Sans', sans-serif;
+    font-family: var(--font-body);
 }
