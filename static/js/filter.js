@@ -1,5 +1,4 @@
-// static/js/filter.js
-
+// File: static/js/filter.js
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Filter.js: DOM fully loaded");
@@ -86,21 +85,26 @@ function attachDropdownEventDelegation() {
     const dropdownLists = document.querySelectorAll('.dropdown-list');
 
     dropdownLists.forEach(dropdownList => {
-        // Handle checkbox changes within the dropdown
-        dropdownList.addEventListener('change', (event) => {
+        // Handle button clicks within the dropdown
+        dropdownList.addEventListener('click', (event) => {
             const target = event.target;
-            if (target && target.matches('input[type="checkbox"]')) {
-                const dropdownHeader = dropdownList.previousElementSibling; // Assuming .dropdown-header precedes .dropdown-list
+            if (target && target.classList.contains('filter-button')) {
+                event.preventDefault();
+                const value = target.dataset.value;
+                target.classList.toggle('selected');
+
+                // Update the selected values
+                const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+                const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
+
+                // Update the selection badge and clear button
+                const dropdownHeader = dropdownList.previousElementSibling;
                 const clearButton = dropdownHeader.querySelector('.clear-icon');
-                const selectedCount = dropdownHeader.querySelector('.selected-count');
-                const selectionBadge = dropdownHeader.parentElement.querySelector('.selection-badge');
+                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+                updateSelectionBadge(selectedValues, selectionBadge);
+                clearButton.style.visibility = selectedValues.length > 0 ? 'visible' : 'hidden';
 
-                // If the Year dropdown, handle Decade-Year relationship
-                if (dropdownList.id === 'year-dropdown-list') {
-                    handleYearDecadeRelationship(target, dropdownList);
-                }
-
-                updateSelectedCount(dropdownList, selectedCount, clearButton, selectionBadge);
+                // Trigger filter update
                 triggerDropdownChangeEvent();
 
                 // Update carousel title based on selected genre
@@ -110,17 +114,18 @@ function attachDropdownEventDelegation() {
             }
         });
 
-        // Handle clear button within the dropdown
+        // Handle clear button
         const clearButton = dropdownList.parentElement.querySelector('.clear-icon');
         if (clearButton) {
             clearButton.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent dropdown toggle
-                const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
-                checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
-                const selectedCount = dropdownList.parentElement.querySelector('.selected-count');
-                const selectionBadge = dropdownList.parentElement.querySelector('.selection-badge');
-                updateSelectedCount(dropdownList, selectedCount, clearButton, selectionBadge); // Update selection count
-                triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
+                event.stopPropagation();
+                const buttons = dropdownList.querySelectorAll('.filter-button.selected');
+                buttons.forEach(button => button.classList.remove('selected'));
+                const dropdownHeader = dropdownList.previousElementSibling;
+                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+                updateSelectionBadge([], selectionBadge);
+                clearButton.style.visibility = 'hidden';
+                triggerDropdownChangeEvent();
 
                 // Update carousel title based on selected genre
                 if (dropdownList.id === 'genre-dropdown-list') {
@@ -130,12 +135,12 @@ function attachDropdownEventDelegation() {
         }
     });
 
-    // Handle dropdown header clicks to toggle visibility
+    // Handle dropdown header clicks
     const dropdownHeaders = document.querySelectorAll('.dropdown-header');
     dropdownHeaders.forEach(header => {
         header.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent event from bubbling up
-            const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
+            event.stopPropagation();
+            const dropdownList = header.nextElementSibling;
             toggleDropdown(dropdownList, header);
         });
 
@@ -149,7 +154,7 @@ function attachDropdownEventDelegation() {
         });
     });
 
-    // Close all dropdowns when clicking outside
+    // Close dropdowns when clicking outside
     document.addEventListener('click', (event) => {
         dropdownLists.forEach(dropdownList => {
             const header = dropdownList.previousElementSibling;
@@ -176,73 +181,11 @@ function toggleDropdown(dropdownList, header) {
 }
 
 /**
- * Function to handle the relationship between Decades and Years in the Year dropdown
- */
-function handleYearDecadeRelationship(target, dropdownList) {
-    const isDecade = target.value.includes('...'); // Assuming Decades contain '...'
-    if (!isDecade && target.checked) {
-        // If a specific year is selected, uncheck any selected decades
-        const decadeCheckboxes = dropdownList.querySelectorAll('input[type="checkbox"][value*="..."]');
-        decadeCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                checkbox.checked = false;
-                const parentLabel = checkbox.parentElement;
-                const header = parentLabel.closest('.custom-dropdown').querySelector('.dropdown-header');
-                const selectedCount = header.querySelector('.selected-count');
-                const selectionBadge = header.parentElement.querySelector('.selection-badge');
-                updateSelectedCount(dropdownList, selectedCount, header.querySelector('.clear-icon'), selectionBadge);
-            }
-        });
-    } else if (isDecade && target.checked) {
-        // If a decade is selected, uncheck any specific years within that decade
-        const decadePrefix = target.value.split('...')[0]; // e.g., '1980...'
-        const yearCheckboxes = dropdownList.querySelectorAll('input[type="checkbox"]:not([value*="..."])');
-        yearCheckboxes.forEach(checkbox => {
-            if (checkbox.value.startsWith(decadePrefix) && checkbox.checked) {
-                checkbox.checked = false;
-                const parentLabel = checkbox.parentElement;
-                const header = parentLabel.closest('.custom-dropdown').querySelector('.dropdown-header');
-                const selectedCount = header.querySelector('.selected-count');
-                const selectionBadge = header.parentElement.querySelector('.selection-badge');
-                updateSelectedCount(dropdownList, selectedCount, header.querySelector('.clear-icon'), selectionBadge);
-            }
-        });
-    }
-}
-
-/**
- * Function to update the selected count display, clear button visibility, and selection badge
- */
-function updateSelectedCount(dropdownList, countElement, clearButton, selectionBadge) {
-    const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked'));
-    const count = selectedItems.length;
-
-    // Show or hide the clear button based on the count
-    clearButton.style.visibility = count > 0 ? 'visible' : 'hidden';
-
-    // Update the Selection Badge
-    if (selectionBadge) {
-        updateSelectionBadge(dropdownList, selectionBadge);
-    }
-
-    // Add or remove the .has-selection class based on the count
-    const dropdownHeader = dropdownList.previousElementSibling;
-    if (dropdownHeader) {
-        if (count > 0) {
-            dropdownHeader.classList.add('has-selection');
-        } else {
-            dropdownHeader.classList.remove('has-selection');
-        }
-    }
-}
-
-/**
  * Function to update the Selection Badge based on current selections
  */
-function updateSelectionBadge(dropdownList, badgeElement) {
-    const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-    if (selectedItems.length > 0) {
-        badgeElement.textContent = selectedItems.join(', ');
+function updateSelectionBadge(selectedValues, badgeElement) {
+    if (selectedValues.length > 0) {
+        badgeElement.textContent = selectedValues.join(', ');
         badgeElement.classList.add('visible');
     } else {
         badgeElement.textContent = '';
@@ -260,24 +203,10 @@ function triggerDropdownChangeEvent() {
 }
 
 /**
- * Function to set the initial carousel title based on selected_theme from backend
- */
-function setInitialCarouselTitle() {
-    const initialTheme = document.getElementById('initial-selected-theme').value;
-    if (initialTheme) {
-        carouselTitle.textContent = genreFontMapping[initialTheme] ? `${initialTheme} Filmtitel` : `${initialTheme} Filme`;
-        carouselTitle.style.fontFamily = genreFontMapping[initialTheme] || "'Cinzel', serif";
-    } else {
-        carouselTitle.textContent = "Hervorgehobene Filme";
-        carouselTitle.style.fontFamily = "'Cinzel', serif";
-    }
-}
-
-/**
  * Function to update the carousel title based on selected genre
  */
-function updateCarouselTitle(selected_theme) {
-    const selectedGenres = getCheckedValues('genre-dropdown-list');
+function updateCarouselTitle() {
+    const selectedGenres = getSelectedValues('genre-dropdown-list');
     if (selectedGenres.length === 1) {
         const genre = selectedGenres[0];
         carouselTitle.textContent = genreFontMapping[genre] ? `${genre} Filmtitel` : `${genre} Filme`;
@@ -287,19 +216,18 @@ function updateCarouselTitle(selected_theme) {
         carouselTitle.textContent = "Verschiedene Genres";
         carouselTitle.style.fontFamily = "'Open Sans', sans-serif";
     } else {
-        const initialTheme = document.getElementById('initial-selected-theme').value;
-        carouselTitle.textContent = initialTheme ? `${initialTheme} Filmtitel` : "Hervorgehobene Filme";
-        carouselTitle.style.fontFamily = genreFontMapping[initialTheme] || "'Cinzel', serif";
+        carouselTitle.textContent = "Hervorgehobene Filme";
+        carouselTitle.style.fontFamily = "'Cinzel', serif";
     }
-}   
+}
 
 /**
  * Function to update dropdown values and movie listings based on current selections and search query
  */
 function updateFilters(page = 1) {
-    const selectedYears = getCheckedValues('year-dropdown-list');
-    const selectedGenres = getCheckedValues('genre-dropdown-list');
-    const selectedCountries = getCheckedValues('country-dropdown-list');
+    const selectedYears = getSelectedValues('year-dropdown-list');
+    const selectedGenres = getSelectedValues('genre-dropdown-list');
+    const selectedCountries = getSelectedValues('country-dropdown-list');
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
     const params = new URLSearchParams();
@@ -312,7 +240,6 @@ function updateFilters(page = 1) {
     console.log("Fetching updated filter data with params:", params.toString());
 
     // Show the progress indicator before starting the fetch
-    console.log("showProgressIndicator")
     showProgressIndicator();
 
     fetch(`/filter_movies?${params.toString()}`)
@@ -342,11 +269,11 @@ function updateFilters(page = 1) {
 }
 
 /**
- * Helper to get checked values from a specific dropdown list
+ * Helper to get selected values from a specific dropdown list
  */
-function getCheckedValues(dropdownListId) {
-    const checkboxes = document.querySelectorAll(`#${dropdownListId} input[type="checkbox"]:checked`);
-    return Array.from(checkboxes).map(cb => cb.value);
+function getSelectedValues(dropdownListId) {
+    const buttons = document.querySelectorAll(`#${dropdownListId} .filter-button.selected`);
+    return Array.from(buttons).map(btn => btn.dataset.value);
 }
 
 /**
@@ -369,30 +296,33 @@ function populateDropdown(dropdownListId, options, selectedValues = []) {
         return;
     }
 
-    // Convert the options object into an array of objects with label and count
+    // Convert options object to array and sort
     const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
 
-    // Sort the options alphabetically
-    optionsArray.sort((a, b) => {
-        if (a.label < b.label) return -1;
-        if (a.label > b.label) return 1;
-        return 0;
-    });
+    // Sort options as needed (e.g., alphabetically)
+    optionsArray.sort((a, b) => a.label.localeCompare(b.label));
 
-    // Render the options
+    // Render buttons
     optionsArray.forEach(option => {
-        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
-        const label = document.createElement("label");
-        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
-        dropdownList.appendChild(label);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "filter-button";
+        button.textContent = `${option.label} (${option.count})`;
+        button.dataset.value = option.label;
+
+        if (selectedValues.includes(option.label)) {
+            button.classList.add('selected');
+        }
+
+        dropdownList.appendChild(button);
     });
 
     // Update Selection Badge after populating
     const parentDropdown = dropdownList.parentElement;
     const selectionBadge = parentDropdown.querySelector('.selection-badge');
-    if (selectionBadge) {
-        updateSelectionBadge(dropdownList, selectionBadge);
-    }
+    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
 }
 
 /**
@@ -442,9 +372,8 @@ function updateMovieListings(movies) {
                     </div>
                 </div>
             `;
-            
+
             movieContainer.appendChild(movieCard);
-            
         });
     } else {
         movieContainer.innerHTML = `<p class="no-movies-message">Keine Filme entsprechen den ausgewählten Filtern.</p>`;
@@ -635,4 +564,3 @@ function initializeSwiper() {
         }
     });
 }
-

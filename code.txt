@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-08 17:23:21 ===
+=== Code Summary Generated at 2024-10-08 18:27:42 ===
 
 === Project Folder Structure ===
 
@@ -7,8 +7,6 @@ Format/
         assets/
             custom_controls/
                 custom_dropdown.js
-                custom_dropdown_search.css
-                custom_dropdown_search.scss
                 search_container.css
             fonts/
                 Spacia Heavy.ttf
@@ -307,343 +305,6 @@ clearSearchButton.addEventListener('click', () => {
     // Optionally trigger any search box reset logic here
 });
 
-
---- File: static\assets\custom_controls\custom_dropdown_search.css ---
-/* search_container.css */
-
-/* Parent Container */
-.search-dropdown-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center; /* Ensures vertical alignment */
-    width: 90%;
-
-    background-color: #444;
-    padding: 20px;
-
-    box-sizing: border-box;
-    /* Remove debug borders */
-    /* border: 2px solid blue; */
-}
-
-/* Form */
-#filter-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px; /* Space between elements */
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Search Container and Dropdowns */
-.search-container,
-.custom-dropdown {
-    flex: 1 1 200px; /* Grow and shrink as needed, with a minimum width */
-    display: flex;
-    align-items: center;
-    position: relative;
-    height: 40px; /* Ensure same height */
-    /* Remove debug borders */
-    /* border: 2px solid red; */
-    margin: 10px;
-}
-
-/* Search Box */
-#search-box {
-    flex: 1;
-    height: 100%;
-    padding: 0 40px 0 18px;
-    font-size: 1em;
-    background: #333;
-    color: #e0e0e0;
-    border: 2px solid #333;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-#search-box:focus {
-    outline: none;
-    border-color: var(--accent-color);
-}
-
-#search-box::placeholder {
-    color: #aaa;
-}
-
-/* Clear Icon for Search Box */
-#clear-search {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    font-size: 1.2em;
-    line-height: 24px;
-    border-radius: 50%;
-    background: rgba(68, 68, 68, 0.6);
-    color: rgba(255, 255, 255, 0.6);
-    cursor: pointer;
-    visibility: hidden;
-    z-index: 2;
-}
-
-.search-container:hover #clear-search {
-    visibility: visible; /* Show clear icon on hover */
-}
-
-/* Dropdowns */
-.custom-dropdown {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    width: 100%;
-    height: 40px; /* Same height as search-container */
-}
-
-.dropdown-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #333;
-    color: #fff;
-    padding: 0 18px;
-    border-radius: 5px;
-    cursor: pointer;
-    height: 100%;
-    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
-}
-
-.dropdown-header:hover {
-    background: #444;
-}
-
-.dropdown-title {
-    font-size: 1.05em;
-    font-weight: 600;
-}
-
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.selected-count {
-    color: var(--link-color);
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 0.85em;
-    display: flex;
-    align-items: center;
-}
-
-.clear-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 1.2em;
-    color: #fff;
-    background: rgba(68, 68, 68, 0.6);
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    visibility: hidden;
-}
-
-.dropdown-header:hover .clear-icon,
-.header-controls:hover .clear-icon {
-    visibility: visible; /* Show clear icons on hover */
-}
-
-
-/* Selection Badge Styling */
-.selection-badge {
-    /* display: none;  */
-    background-color: var(--accent-color);
-    color: #fff;
-    border-radius: 12px;
-    padding: 2px 8px;
-    font-size: 0.8em;
-    margin-left: 8px;
-    transition: opacity 0.3s ease;
-}
-
-.dropdown-header .selection-badge.visible {
-    display: inline-block;
-}
-
-
-
-
-/* Dropdown List */
-.dropdown-list {
-    display: none;
-    background: #2c2c2c;
-    color: #e0e0e0;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    border-radius: 5px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    max-height: 250px;
-    overflow-y: auto;
-}
-
-.dropdown-list label {
-    display: flex;
-    align-items: center;
-    padding: 12px 18px;
-    font-size: 1.05em;
-    color: #f1f1f1;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.dropdown-list input[type="checkbox"] {
-    margin-right: 12px;
-    transform: scale(1.2);
-}
-
-.dropdown-list label:hover {
-    background: #444;
-    color: #fff;
-}
-
-/* Scrollbar Customization */
-.dropdown-list::-webkit-scrollbar {
-    width: 10px;
-}
-
-.dropdown-list::-webkit-scrollbar-track {
-    background: #333;
-}
-
-.dropdown-list::-webkit-scrollbar-thumb {
-    background-color: #555;
-    border-radius: 5px;
-}
-
-/* forms.css */
-
-/* Search Container Styles */
-.search-container {
-    position: relative; /* Establishes a positioning context for the icon and clear button */
-    width: 100%;
-    max-width: 400px; /* Adjust as needed for your layout */
-    margin: 0 auto; /* Centers the search box horizontally */
-}
-
-/* Search Icon Styles */
-.search-container .search-icon {
-    position: absolute; /* Positions the icon relative to the search container */
-    top: 50%; /* Vertically centers the icon */
-    left: 10px; /* Positions the icon 10px from the left edge */
-    transform: translateY(-50%); /* Corrects the vertical alignment */
-    color: #aaa; /* Sets the icon color */
-    pointer-events: none; /* Allows clicks to pass through to the input */
-    font-size: 1.2em; /* Adjusts the icon size */
-}
-
-/* Search Input Field Styles */
-.search-container input#search-box {
-    width: 100%;
-    padding: 10px 10px 10px 35px; /* Top, Right, Bottom, Left padding */
-    border: 1px solid #bdc3c7;
-    border-radius: 6px;
-    font-size: 1rem;
-    color: var(--text-color);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Search Input Focus Styles */
-.search-container input#search-box:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
-}
-
-/* Clear Search Icon Styles */
-.search-container .clear-icon {
-    position: absolute; /* Positions the clear icon relative to the search container */
-    top: 50%; /* Vertically centers the icon */
-    right: 10px; /* Positions the icon 10px from the right edge */
-    transform: translateY(-50%); /* Corrects the vertical alignment */
-    cursor: pointer;
-    color: #aaa;
-    font-size: 1.2em; /* Adjusts the icon size */
-    display: none; /* Hidden by default */
-}
-
-/* Show Clear Icon When Visible */
-.search-container .clear-icon.visible {
-    display: block;
-}
-
-/* Responsive Adjustments for Smaller Screens */
-@media (max-width: 480px) {
-    .search-container {
-        max-width: 100%; /* Allows the search box to take full width on small screens */
-        padding: 0 10px; /* Adds horizontal padding */
-    }
-
-    .search-container .search-icon,
-    .search-container .clear-icon {
-        left: 5px;
-        right: 5px;
-        font-size: 1em; /* Slightly smaller icons */
-    }
-
-    .search-container input#search-box {
-        padding: 8px 8px 8px 30px; /* Adjust padding for smaller screens */
-        font-size: 0.9rem; /* Slightly smaller text */
-    }
-}
-
-/* Progress Indicator Styles */
-.progress-indicator {
-    position: fixed; /* Overlay the entire viewport */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(44, 62, 80, 0.8); /* Semi-transparent dark background */
-    color: #ecf0f1; /* Light text color */
-    display: none; /* Hidden by default */
-    align-items: center;
-    justify-content: center; /* Center content vertically and horizontally */
-    flex-direction: column;
-    z-index: 1000; /* Ensure it appears above other elements */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Spinner Styles */
-.spinner {
-    border: 6px solid #f3f3f3; /* Light grey */
-    border-top: 6px solid var(--accent-color); /* Accent color */
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 10px;
-}
-
-/* Spinner Animation */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Progress Indicator Text */
-.progress-indicator p {
-    font-size: 1.2em;
-    margin-top: 10px;
-}
 
 --- File: static\assets\custom_controls\search_container.css ---
 /* search_container.css */
@@ -1544,17 +1205,7 @@ button {
 }
 
 --- File: static\css\components\filter.css ---
-/* Ensure consistent box sizing across all elements */
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
-/* Catalog Search Section */
-.catalog-search {
-    background-color: var(--background-dark);
-    text-align: center;
-}
-
+/* Container for Search and Dropdowns */
 .search-dropdown-container {
     display: flex;
     flex-wrap: wrap;
@@ -1563,12 +1214,13 @@ button {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    gap: 15px; /* Default gap */
 }
 
 #filter-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px; /* Increased gap for better spacing */
+    gap: 15px;
     width: 100%;
     justify-content: center;
     align-items: center;
@@ -1577,18 +1229,13 @@ button {
 /* Search Box */
 .search-container {
     position: relative;
-    flex: 1 1 50%;
-    height: 70px; /* Increased height */
+    flex: 1 1 100%;
+    height: 60px;
     margin-bottom: 10px;
     border: 2px solid var(--border-color);
-    border-radius: 10px; /* Softer corners */
+    border-radius: 10px;
     background-color: #fff;
     transition: border 0.3s ease, background-color 0.3s ease;
-}
-
-.search-container:hover {
-    background-color: var(--primary-color);
-    border-color: var(--link-hover-color);
 }
 
 .search-container .search-icon {
@@ -1598,14 +1245,14 @@ button {
     transform: translateY(-50%);
     color: var(--link-hover-color);
     pointer-events: none;
-    font-size: 1.8em; /* Increased icon size */
+    font-size: 1.5em;
 }
 
 #search-box {
     width: 100%;
     height: 100%;
-    padding: 0 50px 0 50px; /* Increased padding */
-    font-size: 1.2em; /* Larger text */
+    padding: 0 50px 0 50px;
+    font-size: 1.2em;
     background: transparent;
     color: var(--text-dark);
     border: none;
@@ -1617,47 +1264,18 @@ button {
     outline: none;
 }
 
-#search-box::placeholder {
-    color: var(--placeholder-color);
-}
-
-/* Clear Icon for Search Box */
-#clear-search {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 32px; /* Larger size */
-    height: 32px;
-    font-size: 1.8em;
-    line-height: 32px;
-    border-radius: 50%;
-    background: rgba(68, 68, 68, 0.6);
-    color: rgba(255, 255, 255, 0.6);
-    cursor: pointer;
-    visibility: hidden;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.search-container:hover #clear-search,
-.search-container .clear-icon.visible {
-    visibility: visible;
-}
-
 /* Custom Dropdowns */
 .custom-dropdown {
     display: flex;
-    flex-direction: column;
     position: relative;
-    flex: 1 1 50%;
-    height: 70px; /* Increased height */
-    border-radius: 10px;
-    background-color: #fff; /* White by default */
+    height: 45px;
+    border-radius: 8px;
+    background-color: #fff;
     border: 2px solid var(--border-color);
     transition: border 0.3s ease, background-color 0.3s ease;
+    width: auto;
+    flex: 0 1 32%; /* Ensure 3 items per row on mobile */
+    cursor: pointer;
 }
 
 .custom-dropdown:hover {
@@ -1667,153 +1285,131 @@ button {
 
 .dropdown-header {
     display: flex;
-    font-size: 1.5em; /* Increased icon size */
-    justify-content: space-between;
-    align-items: center;
-    background: transparent;
-    color: var(--text-dark);
-    padding: 0 25px; /* Adjusted padding */
-    border-radius: 10px;
-    cursor: pointer;
-    height: 100%;
-    transition: background var(--transition-duration), color var(--transition-duration);
-    width: 100%;
-    box-sizing: border-box;
-    padding-right: 60px; /* More space for clear icon */
-    border: none;
-}
-
-.dropdown-header:hover {
-    color: var(--link-hover-color);
-}
-
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Selection Badge */
-.selection-badge {
-    background-color: var(--accent-color);
-    color: #fff;
-    border-radius: 12px;
-    padding: 2px 8px;
-    font-size: 0.8em;
-    margin-left: 8px;
-    transition: opacity 0.3s ease;
-    display: none;
-}
-
-.selection-badge.visible {
-    display: inline-block;
-}
-
-/* Clear Icon */
-.clear-icon {
-    width: 32px; /* Larger size */
-    height: 32px;
-    font-size: 1.8em; /* Larger size */
-    color: var(--text-light);
-    background: rgba(68, 68, 68, 0.6);
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
     align-items: center;
     justify-content: center;
+    background: transparent;
+    color: var(--text-dark);
+    padding: 0 12px;
+    height: 100%;
     transition: background var(--transition-duration), color var(--transition-duration);
-    margin-left: 8px;
-    visibility: hidden;
-}
-
-.dropdown-header.has-selection .clear-icon {
-    visibility: visible;
+    cursor: pointer;
+    font-size: 1.0em;
+    border: none;
+    width: 100%; /* Ensure button width is consistent */
 }
 
 /* Dropdown List */
 .dropdown-list {
     display: none;
-    background: #fff; /* White dropdown list */
-    color: var(--text-dark); /* Dark text */
+    background: #fff;
+    color: var(--text-dark);
     position: absolute;
     top: 100%;
     left: 0;
-    width: 100%;
-    border-radius: 10px; /* Softer corners */
+    width: 100vw;
+    margin-left: -15px;
+    box-sizing: border-box;
+    border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 12px var(--shadow-color);
     z-index: 1000;
     max-height: 250px;
     overflow-y: auto;
-    border: 2px solid var(--border-color); /* Stronger border */
+    border: 2px solid var(--border-color);
+    transition: transform 0.3s ease-in-out;
 }
 
+/* Dropdown List when Open */
 .dropdown-list.show {
     display: block;
-}
-
-.dropdown-list label {
-    display: flex;
-    align-items: center;
-    padding: 15px 25px; /* Increased padding */
-    font-size: 1.1em;
-    color: var(--text-dark); /* Dark text */
-    font-weight: 500;
-    cursor: pointer;
-    transition: background var(--transition-duration), color var(--transition-duration);
-}
-
-.dropdown-list input[type="checkbox"] {
-    margin-right: 12px;
-    transform: scale(1.3); /* Larger checkboxes */
-}
-
-.dropdown-list label:hover {
-    background: var(--hover-bg);
-    color: var(--link-hover-color);
-}
-
-/* Scrollbar Customization */
-.dropdown-list::-webkit-scrollbar {
-    width: 12px; /* Slightly wider scrollbar */
-}
-
-.dropdown-list::-webkit-scrollbar-track {
-    background: var(--scrollbar-bg);
-}
-
-.dropdown-list::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
-    border-radius: 6px; /* Adjusted border radius */
-}
-
-/* Dropdown Arrow Icon */
-.dropdown-header::after {
-    content: '\f078';
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
-    font-size: 1.8em; /* Increased icon size */
-    color: var(--link-hover-color);
-    transition: transform var(--transition-duration);
-    position: absolute;
-    right: 20px; /* Adjusted position */
-}
-
-.dropdown-header[aria-expanded="true"]::after {
-    transform: rotate(180deg);
 }
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .search-container,
     .custom-dropdown {
-        flex: 1 1 100%;
-        margin-bottom: 15px;
+        flex: 1 1 30%; /* Fit 3 items in a row */
+        margin-bottom: 10px; /* Remove bottom margin */
+    }
+
+    .search-dropdown-container {
+        gap: 5px; /* Reduce gap between buttons */
+    }
+
+    .dropdown-list {
+        width: 100vw;
+        margin-left: -15px;
     }
 }
 
 @media (max-width: 480px) {
-    .dropdown-header::after {
-        right: 12px;
+    .search-container,
+    .custom-dropdown {
+        flex: 1 1 30%; /* Maintain 3 items per row on small screens */
+        margin-bottom: 5px; /* Minimize spacing */
+    }
+
+    .search-dropdown-container {
+        gap: 3px; /* Minimal gap for small screens */
+    }
+
+    .dropdown-header {
+        font-size: 0.9em; /* Slightly smaller text */
+    }
+
+    .dropdown-list {
+        width: 100vw;
+        margin-left: -10px;
+    }
+}
+
+/* Badge Container */
+.badge-container {
+    display: flex;
+    justify-content: flex-start; /* Align to the left */
+    align-items: center;
+    flex-wrap: wrap; /* Allow badges to wrap */
+    gap: 10px; /* Spacing between badges */
+    margin: 10px 0; /* Spacing from other elements */
+    width: 100%; /* Full width */
+}
+
+/* Individual Filter Badge */
+.filter-badge {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    line-height: 1.2;
+    cursor: default;
+}
+
+/* Hide Badge Container if Empty */
+.filter-badge:empty {
+    display: none;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 768px) {
+    .badge-container {
+        justify-content: center;
+    }
+
+    .custom-dropdown {
+        flex: 1 1 30%; /* Ensure dropdowns are narrower on mobile */
+        max-width: 30%; /* Limit width */
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-dropdown {
+        flex: 1 1 100%; /* Full width on very small screens */
+        max-width: 100%;
+    }
+
+    .badge-container {
+        flex-direction: column; /* Stack badges vertically */
     }
 }
 
@@ -3095,19 +2691,16 @@ function updateSelectedCount(dropdownList, countElement, clearButton, selectionB
     }
 }
 
-/**
- * Function to update the Selection Badge based on current selections
- */
-function updateSelectionBadge(dropdownList, badgeElement) {
-    const selectedItems = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-    if (selectedItems.length > 0) {
-        badgeElement.textContent = selectedItems.join(', ');
+function updateSelectionBadge(selectedValues, badgeElement) {
+    if (selectedValues.length > 0) {
+        badgeElement.textContent = selectedValues.join(', ');
         badgeElement.classList.add('visible');
     } else {
         badgeElement.textContent = '';
         badgeElement.classList.remove('visible');
     }
 }
+
 
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes
@@ -3771,60 +3364,58 @@ movieCards.forEach(card => {
         <!-- Catalog Search Section -->
         <section class="catalog-search">
             <div class="search-dropdown-container">
-                    <!-- Search Box Container -->
+                <!-- Search Box Container -->
                 <div class="search-container">
                     <i class="fas fa-search search-icon" aria-hidden="true"></i>
                     <input id="search-box" type="text" placeholder="Suche...">
                     <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Clear search">&times;</span>
-                </div>                
+                </div>
+        
+                <!-- Badge Container: New Addition -->
+                <div class="badge-container">
+                    <span id="badge-year" class="filter-badge">Year: 1938</span>
+                    <span id="badge-genre" class="filter-badge">Genre: Comedy</span>
+                    <span id="badge-country" class="filter-badge">Country: Germany</span>
+                </div>        
+        
+                <!-- Custom Dropdowns for Filters -->
                 <form id="filter-form">
-
-
-                    <!-- Custom Dropdowns for Filters -->
                     <div class="custom-dropdown">
                         <div class="dropdown-header" aria-label="Jahr" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                             <div class="header-controls">
-                                <span class="selection-badge" aria-label="Selected Year"></span> <!-- Selection Badge hinzugefügt -->
+                                <span class="selection-badge" aria-label="Selected Year"></span>
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear year filter">&times;</span>
                             </div>
                         </div>
-                        <div class="dropdown-list" id="year-dropdown-list">
-                            <!-- Dropdown options will be populated dynamically via JavaScript -->
-                        </div>
+                        <div class="dropdown-list" id="year-dropdown-list"></div>
                     </div>
-                    
-                    <!-- Genre Dropdown -->
+        
                     <div class="custom-dropdown">
                         <div class="dropdown-header" aria-label="Genre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-film" aria-hidden="true"></i>
                             <div class="header-controls">
-                                <span class="selection-badge" aria-label="Selected Genre"></span> <!-- Selection Badge hinzugefügt -->
+                                <span class="selection-badge" aria-label="Selected Genre"></span>
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear genre filter">&times;</span>
                             </div>
                         </div>
-                        <div class="dropdown-list" id="genre-dropdown-list">
-                            <!-- Dropdown options will be populated dynamically via JavaScript -->
-                        </div>
+                        <div class="dropdown-list" id="genre-dropdown-list"></div>
                     </div>
-
-                    <!-- Country Dropdown -->
+        
                     <div class="custom-dropdown">
                         <div class="dropdown-header" aria-label="Land" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-globe" aria-hidden="true"></i>
                             <div class="header-controls">
-                                <span class="selection-badge" aria-label="Selected Country"></span> <!-- Selection Badge hinzugefügt -->
+                                <span class="selection-badge" aria-label="Selected Country"></span>
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Clear country filter">&times;</span>
                             </div>
                         </div>
-                        <div class="dropdown-list" id="country-dropdown-list">
-                            <!-- Dropdown options will be populated dynamically via JavaScript -->
-                        </div>
+                        <div class="dropdown-list" id="country-dropdown-list"></div>
                     </div>
-                    
                 </form>
             </div>
         </section>
+        
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
