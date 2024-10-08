@@ -1,9 +1,9 @@
-// File: static/js/filter.js
-
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Filter.js: DOM fully loaded");
     initializeFilterDropdowns();  // Initialize dropdowns on page load
     initializeSwiper(); // Initialize Swiper Carousel
+    initializeFilterPanelToggle(); // Initialize filter panel toggle
+    initializeFilterActionButtons(); // Initialize "Clear All" and "Show All Results" buttons
 });
 
 /** Cache Elements and Buttons */
@@ -14,6 +14,10 @@ const topPaginationContainer = document.querySelector('.top-pagination nav ul');
 const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
 const progressIndicator = document.getElementById('progress-indicator');
 const carouselTitle = document.getElementById('carousel-title');
+const toggleFiltersButton = document.getElementById('toggle-filters-button');
+const searchDropdownContainer = document.querySelector('.search-dropdown-container');
+const clearAllFiltersButton = document.getElementById('clear-all-filters-button');
+const showAllResultsButton = document.getElementById('show-all-results-button');
 
 let debounceTimer;
 
@@ -30,6 +34,120 @@ const genreFontMapping = {
     "Documentary": "'Merriweather', serif",
     "Fantasy": "'Goudy Bookletter 1911', serif"
 };
+
+/**
+ * Function to initialize filter panel toggle
+ */
+function initializeFilterPanelToggle() {
+    if (toggleFiltersButton && searchDropdownContainer) {
+        toggleFiltersButton.addEventListener('click', () => {
+            searchDropdownContainer.classList.toggle('hidden');
+            toggleFiltersButton.classList.toggle('rotate');
+        });
+    }
+}
+
+/**
+ * Function to initialize "Clear All" and "Show All Results" buttons
+ */
+function initializeFilterActionButtons() {
+    if (clearAllFiltersButton) {
+        clearAllFiltersButton.addEventListener('click', () => {
+            clearAllFilters();
+            updateFilters();
+        });
+    }
+
+    if (showAllResultsButton) {
+        showAllResultsButton.addEventListener('click', () => {
+            clearAllFilters();
+            searchBox.value = '';
+            updateFilters();
+        });
+    }
+}
+
+/**
+ * Function to clear all filters
+ */
+function clearAllFilters() {
+    // Clear selections in all dropdowns
+    const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
+    filterButtons.forEach(button => button.classList.remove('selected'));
+
+    // Reset include/exclude toggles
+    const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
+    includeExcludeCheckboxes.forEach(checkbox => {
+        checkbox.checked = true; // Set to include
+    });
+
+    // Hide clear icons and reset selection badges
+    const clearIcons = document.querySelectorAll('.clear-icon');
+    clearIcons.forEach(icon => {
+        icon.style.visibility = 'hidden';
+    });
+
+    const selectionBadges = document.querySelectorAll('.selection-badge');
+    selectionBadges.forEach(badge => {
+        badge.textContent = '';
+        badge.classList.remove('visible');
+    });
+}
+
+/**
+ * Function to initialize dropdowns and attach event listeners
+ */
+function initializeFilterDropdowns() {
+    // Handle filter updates triggered by custom dropdowns
+    document.addEventListener('dropdownChange', () => {
+        console.log("Filter.js: Detected dropdown change event");
+        updateFilters(); // Trigger filter update on dropdown change
+    });
+
+    // Search box input event with debouncing
+    if (searchBox) { // Check if searchBox exists
+        searchBox.addEventListener('input', () => {
+            // Toggle visibility of the clear icon
+            if (searchBox.value.length > 0) {
+                clearSearchBtn.classList.add('visible');
+            } else {
+                clearSearchBtn.classList.remove('visible');
+            }
+
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateFilters(); // Trigger filter update after user stops typing for 300ms
+            }, 300);
+        });
+    } else {
+        console.error("initializeFilterDropdowns: searchBox element not found.");
+    }
+
+    // Clear search box and trigger update
+    if (clearSearchBtn && searchBox) { // Ensure both elements exist
+        clearSearchBtn.addEventListener('click', () => {
+            searchBox.value = '';
+            clearSearchBtn.classList.remove('visible');
+            updateFilters();
+        });
+    } else {
+        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
+    }
+
+    // Attach event listeners to dropdowns using event delegation
+    attachDropdownEventDelegation();
+
+    // Attach event listeners to include/exclude toggles
+    const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
+    includeExcludeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            triggerDropdownChangeEvent();
+        });
+    });
+
+    // Initial filter update
+    updateFilters();
+}
 
 /**
  * Function to initialize dropdowns and attach event listeners
@@ -230,10 +348,24 @@ function updateFilters(page = 1) {
     const selectedCountries = getSelectedValues('country-dropdown-list');
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
+    // Get include/exclude status
+    const yearInclude = document.querySelector('.include-exclude-checkbox[data-filter="year"]').checked;
+    const genreInclude = document.querySelector('.include-exclude-checkbox[data-filter="genre"]').checked;
+    const countryInclude = document.querySelector('.include-exclude-checkbox[data-filter="country"]').checked;
+
     const params = new URLSearchParams();
-    if (selectedYears.length) params.append('years', selectedYears.join(','));
-    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
-    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
+    if (selectedYears.length) {
+        params.append('years', selectedYears.join(','));
+        params.append('years_include', yearInclude ? '1' : '0');
+    }
+    if (selectedGenres.length) {
+        params.append('genres', selectedGenres.join(','));
+        params.append('genres_include', genreInclude ? '1' : '0');
+    }
+    if (selectedCountries.length) {
+        params.append('countries', selectedCountries.join(','));
+        params.append('countries_include', countryInclude ? '1' : '0');
+    }
     if (searchQuery) params.append('search', searchQuery);
     params.append('page', page);
 
@@ -267,7 +399,6 @@ function updateFilters(page = 1) {
             hideProgressIndicator();
         });
 }
-
 /**
  * Helper to get selected values from a specific dropdown list
  */
