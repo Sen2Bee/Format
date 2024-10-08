@@ -5,10 +5,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--primary-color);
+    background-color: var(--background-dark);
     padding: 15px 0; /* Added padding for spacing */
     color: var(--text-light);
+    border-bottom: 1px solid var(--link-hover-color); /* Add a 1px thick red border */
 }
+
 
 /* Pagination Navigation List */
 .pagination nav ul {

@@ -16,19 +16,11 @@ def fetch_featured_movies():
 
         # Modified query to return unique movie titles where poster_images > 0
         featured_query = """
-            SELECT 
-                m.movie_id, 
-                m.title, 
-                m.folder_name, 
-                m.overview,
-                m.imdb_rating,
-                m.poster_images
-            FROM movies m
-            JOIN genres g ON m.movie_id = g.movie_id
+SELECT movie_id, COUNT(*) as count
+FROM movies
+GROUP BY movie_id
+HAVING count = 1;"""
 
-            ORDER BY RAND()
-            LIMIT 20;
-        """
 
 
         # Execute the query

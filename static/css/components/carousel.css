@@ -3,15 +3,17 @@
 /* Movie Carousel Section */
 .movie-carousel-section {
     padding-top: 70px;
-    padding-bottom: 20px;
-    background-color: var(--primary-bg-color); /* Use defined primary background */
+
+    background-color: var(--background-dark); /* Use defined primary background */
     text-align: center;
     position: relative;
 }
 
 .movie-carousel-section h2 {
     font-size: 2em;
+    font-weight: 100;
     color: var(--text-light); /* Use defined light text color */
+
     z-index: 1;
     position: relative;
     font-family: var(--font-heading); /* Use defined heading font */
@@ -101,3 +103,26 @@
     text-align: center;
     z-index: 10;
 }
+
+/* theme-fonts.css */
+.theme-action { font-family: 'Impact', sans-serif; font-weight: bold; color: #ff4d4d; }
+.theme-comedy { font-family: 'Comic Sans MS', cursive; color: #ffcc00; }
+.theme-drama { font-family: 'Times New Roman', Times, serif; font-style: italic; color: #993300; }
+.theme-sci-fi { font-family: 'Courier New', Courier, monospace; color: #00ccff; }
+.theme-romance { font-family: 'Georgia', serif; color: #cc0066; }
+.theme-horror { font-family: 'Creepster', cursive; color: #cc0000; }
+.theme-thriller { font-family: 'Arial Black', sans-serif; color: #666666; }
+.theme-animated { font-family: 'Chalkduster', cursive; color: #3399ff; }
+.theme-family { font-family: 'Verdana', sans-serif; color: #66cc66; }
+.theme-adventure { font-family: 'Trebuchet MS', sans-serif; color: #ff6600; }
+.theme-crime { font-family: 'Lucida Console', Monaco, monospace; color: #333399; }
+.theme-fantasy { font-family: 'Papyrus', sans-serif; color: #663399; }
+.theme-mystery { font-family: 'Garamond', serif; color: #9933cc; }
+.theme-documentary { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #999999; }
+.theme-biography { font-family: 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif; color: #cc9900; }
+.theme-war { font-family: 'Stencil Std', 'Stencil', sans-serif; color: #666600; }
+.theme-western { font-family: 'Rockwell', serif; color: #cc6633; }
+.theme-musical { font-family: 'Brush Script MT', cursive; color: #ff66cc; }
+.theme-sport { font-family: 'Copperplate Gothic Bold', sans-serif; color: #009999; }
+.theme-history { font-family: 'Baskerville', serif; color: #660000; }
+

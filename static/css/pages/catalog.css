@@ -1,21 +1,7 @@
 /* File: static/css/pages/catalog.css */
 /* catalog.css */
 
-/* Catalog Search Section */
-.catalog-search {
-    padding: 80px 20px;
-    background-color: #1e1e1e; /* Dark background for contrast */
-    text-align: center;
-}
 
-.catalog-search form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
-}
 
 /* No longer needed as search-container and custom-dropdown are handled in their respective CSS */
 
@@ -26,7 +12,7 @@
     align-items: center;
     gap: 30px;
     padding: 60px 20px;
-    background-color: #252b36; /* Dark background for the movie listing */
+    background-color: var(--background-dark); /* Dark background for the movie listing */
 }
 
 .movie-listings .no-movies-message {

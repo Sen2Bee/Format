@@ -14,7 +14,7 @@
     --button-hover-bg: #ff6a00; /* Orange for button hover background */
     --border-color: #333333; /* Darker Gray for borders */
     --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle shadow color */
-    --font-heading: 'Playfair Display', serif; /* Elegant Serif for Headings */
+    --font-heading: 'Segoe UI', 'sans-serif;' /* Elegant Serif for Headings */
     --font-body: 'Roboto', sans-serif; /* Clean Sans-Serif for Body */
     --transition-duration: 0.3s; /* Consistent transition duration */
 }

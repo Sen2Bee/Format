@@ -1,151 +1,87 @@
-import unittest
-from flask import Flask, jsonify
-from unittest.mock import patch, MagicMock
-from app import app
-from flask import Flask, render_template, request, send_from_directory, jsonify
-import mysql.connector
-from vars import db_name, db_passwd, db_user
-import math
+@app.route('/catalog')
+def catalog():
+    """
+    The /catalog route handles:
+    1. Theme-Based Movie Selection
+    2. Search, Filter, and Pagination
+    3. Featured Movies for Carousel
+    """
+    # Retrieve query parameters
+    search_query = request.args.get('search', '').strip()
+    genre_filter = request.args.get('genres', '').strip()
+    year_filter = request.args.get('years', '').strip()
+    page = int(request.args.get('page', 1))
+    per_page = 10
+    offset = (page - 1) * per_page
 
-# Database configuration
-db_config = {
-    'host': 'localhost',
-    'user': db_user,
-    'password': db_passwd,
-    'database': db_name
-}
+    # Establish database connection
+    connection = connect_to_db()
+    if not connection:
+        return "Database connection failed", 500
 
-def connect_to_db():
+    cursor = connection.cursor(dictionary=True)
+
     try:
-        connection = mysql.connector.connect(**db_config)
-        print("Successfully connected to the database.")
-        return connection
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        return None
+        # =============================
+        # 1. Theme-Based Movie Selection
+        # =============================
 
-def sort_years_with_decades(year_counts):
-    """Sorts year counts so that grouped decades appear at the top of the list."""
-    # Separate decades and years
-    decades = {key: value for key, value in year_counts.items() if "..." in key}
-    years = {key: value for key, value in year_counts.items() if "..." not in key}
+        carousel_themes = themes
+        random.shuffle(carousel_themes)
+        selected_themes = []
+        num_themes_needed = 5  # Number of themes to include for rotation
 
-    # Create sorted lists for both groups
-    sorted_decades = sorted(decades.items(), key=lambda x: int(x[0].split("...")[0]))
-    sorted_years = sorted(years.items(), key=lambda x: int(x[0]))
+        # Fetch movies from the database for each theme
+        for theme in carousel_themes:
+            theme_query = f"""
+                SELECT DISTINCT m.movie_id, COALESCE(m.format_titel, m.title) AS title, m.folder_name, 
+                       m.overview, m.imdb_rating, m.poster_images
+                FROM movies m
+                {theme['sql_condition']}
+                AND m.imdb_rating > 6.7 AND m.poster_images > 0
+                LIMIT 50;
+            """
+            cursor.execute(theme_query)
+            movies = cursor.fetchall()
 
-    # Combine: Decades first, followed by Years
-    sorted_combined = sorted_decades + sorted_years
-
-    return dict(sorted_combined)
-
-def get_counts(cursor, field, selected_years, selected_countries, selected_genres):
-    table, field_name, join_clause = None, None, None
-
-    # Determine table, field name, and join clause based on the field type
-    if field == "genre":
-        table, field_name, join_clause = "genres", "genre", "JOIN movies m ON genres.movie_id = m.movie_id"
-    elif field == "release_date":
-        table, field_name = "movies", "release_date"
-    elif field == "country":
-        table, field_name, join_clause = "countries", "country", "JOIN movies m ON countries.movie_id = m.movie_id"
-    else:
-        raise ValueError(f"Unsupported field: {field}")
-
-    # Construct the base query
-    if table == "movies":
-        query = f"SELECT {field_name}, COUNT(DISTINCT movie_id) as count FROM {table}"
-    else:
-        query = f"SELECT {field_name}, COUNT(DISTINCT {table}.movie_id) as count FROM {table} {join_clause if join_clause else ''}"
-
-    # Prepare WHERE clauses based on the filters
-    where_clauses, params = [], []
-
-    if selected_years and field != "release_date":
-        where_clauses.append(f"{table}.movie_id IN (SELECT movie_id FROM movies WHERE release_date IN (" + ",".join(["%s"] * len(selected_years)) + "))")
-        params.extend(selected_years)
-
-    if selected_countries and field != "country":
-        where_clauses.append(f"{table}.movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))")
-        params.extend(selected_countries)
-
-    if selected_genres and field != "genre":
-        where_clauses.append(f"{table}.movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))")
-        params.extend(selected_genres)
-
-    # Add the WHERE clauses to the query if they exist
-    if where_clauses:
-        query += " WHERE " + " AND ".join(where_clauses)
-
-    # Add GROUP BY clause
-    query += f" GROUP BY {field_name}"
-
-    # Debug print the query and parameters
-    print(f"Executing query: {query} with params: {params}")
-
-    # Execute the query and fetch the results
-    cursor.execute(query, params)
-    results = cursor.fetchall()
-
-    # Handle decade grouping if the field is `release_date`
-    if field == "release_date":
-        year_counts = {}
-        decades = {}
-
-        # Convert each year to string and calculate decades
-        for row in results:
-            year = str(row[field_name])  # Ensure the year is a string
-            count = row['count']
-
-            # Group by individual years
-            year_counts[year] = count
-
-            # Calculate the decade and add the counts
-            if year.isdigit():  # Only group by decade if the year is a valid number
-                decade = f"{int(year) // 10 * 10}..."
-                if decade in decades:
-                    decades[decade] += count
+            # Debug: Check if all movies have folder_name
+            for movie in movies:
+                if 'folder_name' not in movie or not movie['folder_name']:
+                    print(f"Missing or empty 'folder_name' for movie ID: {movie.get('movie_id', 'Unknown')}, Title: {movie.get('title', 'Unknown')}")
                 else:
-                    decades[decade] = count
+                    print(f"Movie ID: {movie['movie_id']}, Folder Name: {movie['folder_name']}")
 
-        # Combine decades (sorted) and years (sorted) with decades appearing on top
-        sorted_decades = sorted(decades.items(), key=lambda x: int(x[0].replace("...", "")))
-        sorted_years = sorted(year_counts.items(), key=lambda x: int(x[0]))
+            if len(movies) >= 12:
+                selected_themes.append({'name': theme['name'], 'movies': movies[:12]})
+                if len(selected_themes) == num_themes_needed:
+                    break
 
-        # Convert the lists back to a dictionary for better handling
-        counts = {decade: count for decade, count in sorted_decades}
-        counts.update({year: count for year, count in sorted_years})
-        return counts
+        # If not enough themes, add a fallback theme
+        if len(selected_themes) < num_themes_needed:
+            fallback_query = """
+                SELECT m.movie_id, COALESCE(m.format_titel, m.title) AS title, m.folder_name, 
+                       m.overview, m.imdb_rating, m.poster_images
+                FROM movies m
+                WHERE m.imdb_rating > 6.7 AND m.poster_images > 0
+                ORDER BY RAND()
+                LIMIT 50;
+            """
+            cursor.execute(fallback_query)
+            fallback_movies = cursor.fetchall()
 
-    # For other fields (genre or country), return the counts as a dictionary
-    return {row[field_name]: row['count'] for row in results}
+            # Ensure 'folder_name' exists
+            for movie in fallback_movies:
+                if 'folder_name' not in movie or not movie['folder_name']:
+                    movie['folder_name'] = 'N/A'  # Assign a default value or handle appropriately
+                    print(f"Assigned default 'folder_name' for movie ID: {movie.get('movie_id', 'Unknown')}, Title: {movie.get('title', 'Unknown')}")
+                else:
+                    print(f"Fallback Movie ID: {movie['movie_id']}, Folder Name: {movie['folder_name']}")
 
-def filter_movies():
-    try:
-        # Retrieve filter values from request arguments
-        selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
-        selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
-        selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
-        page = int(request.args.get('page', 1))  # Retrieve the current page
-        per_page = 10
-        offset = (page - 1) * per_page
+            selected_themes.append({'name': 'Featured Movies', 'movies': fallback_movies[:12]})
 
-        # Connect to the database
-        connection = connect_to_db()
-        if not connection:
-            return "Database connection failed", 500
-
-        cursor = connection.cursor(dictionary=True)
-
-        # Determine if the year filters are for single years or decades
-        years_conditions = []
-        for year in selected_years:
-            if "..." in year:  # Handle decade format
-                start_year = int(year.split("...")[0])
-                end_year = start_year + 9
-                years_conditions.append(f"m.release_date BETWEEN {start_year} AND {end_year}")
-            else:
-                years_conditions.append(f"m.release_date = {year}")
+        # =============================
+        # 2. Search, Filter, and Pagination
+        # =============================
 
         # Construct the base query
         base_query = """
@@ -163,14 +99,14 @@ def filter_movies():
                 m.format_standort,  
                 GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
-                (SELECT name FROM crew WHERE movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
-                (SELECT GROUP_CONCAT(DISTINCT c.name ORDER BY c.popularity DESC SEPARATOR ', ') 
-                FROM cast c WHERE c.movie_id = m.movie_id LIMIT 3) AS actors,
+                (SELECT name FROM crew WHERE crew.movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
+                (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') 
+                    FROM cast WHERE cast.movie_id = m.movie_id LIMIT 3) AS actors,
                 TRIM(BOTH ', ' FROM CONCAT_WS(', ',
-                CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
-                CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
-                CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
+                    CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
+                    CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
+                    CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
+                    CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
                 )) AS formats
             FROM 
                 movies m
@@ -178,133 +114,95 @@ def filter_movies():
                 LEFT JOIN countries c ON m.movie_id = c.movie_id
             WHERE 1=1
         """
+
+        # Construct the count query
         count_query = """
-            SELECT COUNT(DISTINCT movie_id) as total 
+            SELECT COUNT(DISTINCT m.movie_id) as total 
             FROM movies m 
-            LEFT JOIN genres g ON m.movie_id = g.movie_id 
-            LEFT JOIN countries c ON m.movie_id = c.movie_id 
+                LEFT JOIN genres g ON m.movie_id = g.movie_id
+                LEFT JOIN countries c ON m.movie_id = c.movie_id
             WHERE 1=1
         """
-        
-        # Apply year conditions if available
-        if years_conditions:
-            base_query += f" AND ({' OR '.join(years_conditions)})"
-            count_query += f" AND ({' OR '.join(years_conditions)})"
 
-        # Apply filters
-        if selected_genres:
-            base_query += f" AND movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))"
-            count_query += f" AND movie_id IN (SELECT movie_id FROM genres WHERE genre IN (" + ",".join(["%s"] * len(selected_genres)) + "))"
+        params = []
 
-        if selected_countries:
-            base_query += f" AND movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))"
-            count_query += f" AND movie_id IN (SELECT movie_id FROM countries WHERE country IN (" + ",".join(["%s"] * len(selected_countries)) + "))"
-        
-        # Append the parameters to the query
-        params = selected_genres + selected_countries + [per_page, offset]
+        # Apply search condition
+        if search_query:
+            base_query += " AND (m.title LIKE %s OR m.original_title LIKE %s)"
+            count_query += " AND (m.title LIKE %s OR m.original_title LIKE %s)"
+            search_pattern = f"%{search_query}%"
+            params.extend([search_pattern, search_pattern])
+
+        # Apply genre filter
+        if genre_filter:
+            base_query += " AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre = %s)"
+            count_query += " AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre = %s)"
+            params.append(genre_filter)
+
+        # Apply year filter
+        if year_filter:
+            base_query += " AND YEAR(m.release_date) = %s"  # Assuming release_date is a DATE or DATETIME field
+            count_query += " AND YEAR(m.release_date) = %s"
+            params.append(int(year_filter))
 
         # Finalize the base query with pagination
-        base_query += " GROUP BY m.movie_id LIMIT %s OFFSET %s"
+        base_query += " GROUP BY m.movie_id ORDER BY m.release_date DESC LIMIT %s OFFSET %s"
+        params.extend([per_page, offset])
 
         # Execute the base query to get the filtered movie data
         cursor.execute(base_query, params)
-        filtered_movies = cursor.fetchall()
+        movies = cursor.fetchall()
+
+        # Debug: Check if all movies have folder_name
+        print("Movies from Search/Filter/Pagination:")
+        for movie in movies:
+            if 'folder_name' not in movie or not movie['folder_name']:
+                print(f"Missing or empty 'folder_name' for movie ID: {movie.get('movie_id', 'Unknown')}, Title: {movie.get('main_title', 'Unknown')}")
+            else:
+                print(f"Movie ID: {movie['movie_id']}, Folder Name: {movie['folder_name']}")
+
+        # Convert 'countries' and 'genres' from strings to lists
+        for movie in movies:
+            movie['countries'] = movie['countries'].split(', ') if movie.get('countries') else []
+            movie['genres'] = movie['genres'].split(', ') if movie.get('genres') else []
 
         # Execute the count query to get the total count of filtered movies
-        cursor.execute(count_query, params[:-2])  # Remove pagination params
+        count_params = params[:-2]  # Exclude LIMIT and OFFSET
+        cursor.execute(count_query, count_params)
         total_movies = cursor.fetchone()['total']
-        total_pages = math.ceil(total_movies / per_page)
+        total_pages = math.ceil(total_movies / per_page) if per_page else 1
 
-        # Retrieve counts for dropdown filters
-        genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres)
-        year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres)
-        country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres)
+        # Define pagination range for the current page
+        pagination_range = list(range(max(1, page - 2), min(total_pages + 1, page + 3)))
 
-        # Apply sorting to place grouped decades at the top
-        year_counts = sort_years_with_decades(year_counts)
+        # =============================
+        # 3. Additional Debugging
+        # =============================
+        print(f"Selected themes: {selected_themes}")
+        print(f"Movies from Search/Filter/Pagination count: {len(movies)}")
+        print(f"Total movies found: {total_movies}, Total pages: {total_pages}")
 
-        # Close the cursor and connection
+        # =============================
+        # 4. Pass Data to Template
+        # =============================
+
+        return render_template(
+            'catalog.html',
+            themes=selected_themes,
+            movies=movies,
+            page=page,
+            total_pages=total_pages,
+            search_query=search_query,
+            pagination_range=pagination_range,
+            featured_movies=selected_themes,  # Pass all selected themes for rotation
+            selected_theme=selected_themes[0]['name'] if selected_themes else 'Featured Movies'
+        )
+
+    except Exception as e:
+        print(f"Error in /catalog route: {e}")
+        return "An error occurred while processing your request.", 500
+
+    finally:
         cursor.close()
         connection.close()
 
-        # Return updated JSON response with new grouped counts
-        return jsonify({
-            'movies': filtered_movies,
-            'years': year_counts if year_counts else {},  # Make sure `years` is included, even if empty
-            'genres': genre_counts,
-            'countries': country_counts,
-            'current_page': page,
-            'total_pages': total_pages
-        })
-
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        return jsonify({'error': str(e)}), 500
-
-
-#/////////////////////////////////////////////////////////////////////////////////////////
-class FilterMoviesTestCase(unittest.TestCase):
-    def setUp(self):
-        self.app = app.test_client()
-        self.app.testing = True
-
-    @patch('app.connect_to_db')
-    def test_filter_movies_action_genre(self, mock_connect_to_db):
-        # Mock database connection and cursor
-        mock_connection = MagicMock()
-        mock_cursor = MagicMock()
-
-        # Set up the mock to return a mock connection and cursor
-        mock_connect_to_db.return_value = mock_connection
-        mock_connection.cursor.return_value = mock_cursor
-
-        # Mock data for each query executed in the function
-        mock_cursor.fetchall.side_effect = [
-            [{'genre': 'Action', 'count': 15}],  # Mock for genre counts
-            [{'release_date': 1985, 'count': 5}],  # Mock for year counts
-            [{'country': 'USA', 'count': 7}],  # Mock for country counts
-            [{'movie_id': 1, 'main_title': 'Movie 1', 'original_title': 'Movie Original 1',
-              'release_date': 1985, 'runtime': 120, 'imdb_id': 'tt1234567',
-              'imdb_rating': '7.8', 'format_fsk': 12, 'folder_name': 'Movie 1',
-              'overview': 'Test overview', 'format_standort': 'Location 1',
-              'countries': 'USA', 'genres': 'Action', 'director': 'Director 1',
-              'actors': 'Actor 1, Actor 2', 'formats': 'DVD'}
-            ]
-        ]
-
-        # Mock the count query to return the total number of movies
-        mock_cursor.fetchone.return_value = {'total': 1}
-
-        # Call the filter_movies function with a request context for genre 'Action'
-        with app.test_request_context('/filter_movies?genres=Action'):
-            response = filter_movies()
-
-        # Extract the actual response and status code
-        response_data = response.get_json() if hasattr(response, 'get_json') else response[0]
-        status_code = response.status_code if hasattr(response, 'status_code') else response[1]
-
-        # Check the status code
-        self.assertEqual(status_code, 200)
-
-        # Check if response is a JSON object and contains expected keys
-        self.assertIn('movies', response_data)
-        self.assertIn('years', response_data)
-        self.assertIn('genres', response_data)
-        self.assertIn('countries', response_data)
-
-        # Check if the genres data is correct
-        self.assertEqual(response_data['genres'], {'Action': 15})
-
-        # Check the movie data for the first movie in the response
-        movie = response_data['movies'][0]
-        self.assertEqual(movie['main_title'], 'Movie 1')
-        self.assertEqual(movie['imdb_rating'], '7.8')
-        self.assertEqual(movie['genres'], 'Action')
-        self.assertEqual(movie['countries'], 'USA')
-
-        print("Test case passed successfully with genres:", response_data['genres'])
-
-
-# Ensure the test script runs correctly
-if __name__ == '__main__':
-    unittest.main()

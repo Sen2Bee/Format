@@ -31,13 +31,14 @@
         </div>
     </header>
   <main>
-        <!-- Movie Carousel Section -->
-        <section class="movie-carousel-section">
-            <h2 id="carousel-title">a taste of {{ selected_theme }}</h2>
-            <!-- Swiper.js Carousel -->
-            <div class="swiper-container">
-                <div class="swiper-wrapper">
-                    {% for featured_movie in featured_movies %}
+    <!-- Movie Carousel Section -->
+    <section class="movie-carousel-section">
+        <h2 id="carousel-title">{{ selected_theme }}</h2>
+        <!-- Swiper.js Carousel -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                {% for theme in featured_movies %}
+                    {% for featured_movie in theme.movies %}
                     <div class="swiper-slide">
                         <div class="featured-movie-card">
                             <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" alt="{{ featured_movie['main_title'] }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" loading="lazy">
@@ -48,15 +49,15 @@
                         </div>
                     </div>
                     {% endfor %}
-                </div>
-                <!-- Add Pagination -->
-                <div class="swiper-pagination"></div>
-                <!-- Add Navigation -->
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
+                {% endfor %}
             </div>
-        </section>
-        
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+            <!-- Add Navigation -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+    </section>
 
         <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
             <div class="spinner" aria-hidden="true"></div>
