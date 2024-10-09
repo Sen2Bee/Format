@@ -1,5 +1,3 @@
-/* navbar.css */
-
 /* General Navbar Styles */
 .navbar {
     display: flex;
@@ -19,9 +17,29 @@
     font-family: var(--font-body);  /* Use body font */
 }
 
+/* Centered Theme Title in Navbar */
+.nav-center-title {
+    position: absolute;  /* Position it absolutely to center within the nav */
+    left: 50%;
+    transform: translateX(-50%);  /* Center horizontally */
+    font-family: var(--font-heading);  /* Use heading font */
+}
+
+.theme-title {
+    font-size: 1.4rem;  /* Adjust font size for the theme title */
+    color: var(--accent-color);  /* Use defined accent color */
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: color var(--transition-duration);  /* Smooth color transition */
+}
+
 /* Shrunk State */
 .navbar.shrunk {
     height: 40px;  /* Smaller height when shrunk */
+}
+
+.nav-center-title .theme-title {
+    font-size: 1.2rem;  /* Reduce size when navbar is shrunk */
 }
 
 /* Hidden State */
@@ -133,6 +151,18 @@
     .sub-logo span {
         font-size: 1.4rem;
     }
+
+    /* Center the theme title for mobile screens */
+    .nav-center-title {
+        position: relative;  /* Position relative for smaller screens */
+        left: auto;
+        transform: none;
+        margin: 10px 0;  /* Add spacing */
+    }
+
+    .theme-title {
+        font-size: 1.3rem;
+    }
 }
 
 /* Shrinking & Hiding Behavior for Mobile */
@@ -162,6 +192,10 @@
 
     .nav-links li a {
         font-size: 1.2rem;  /* Larger link font size for better readability */
+    }
+
+    .theme-title {
+        font-size: 1.2rem;  /* Adjust the title size for very small screens */
     }
 }
 

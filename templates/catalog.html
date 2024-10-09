@@ -17,9 +17,16 @@
                 <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
                 <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
             </div>
+            
+            <!-- Centered theme title in the navbar -->
+            <div class="nav-center-title">
+                <span class="theme-title">a taste of {{ selected_theme }}</span>
+            </div>
+            
             <div class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" role="button" tabindex="0">
                 <i class="fas fa-bars"></i>
             </div>
+            
             <ul class="nav-links">
                 <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
                 <!-- Additional menu links can be placed here -->
@@ -30,25 +37,26 @@
             <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
         </div>
     </header>
+    
   <main>
     <!-- Movie Carousel Section -->
     <section class="movie-carousel-section">
-        <h2 id="carousel-title">{{ selected_theme }}</h2>
         <!-- Swiper.js Carousel -->
         <div class="swiper-container">
             <div class="swiper-wrapper">
-                {% for theme in featured_movies %}
-                    {% for featured_movie in theme.movies %}
-                    <div class="swiper-slide">
-                        <div class="featured-movie-card">
-                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" alt="{{ featured_movie['main_title'] }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" loading="lazy">
-                            <div class="featured-movie-overlay">
-                                <h3>{{ featured_movie['main_title'] }}</h3>
-                                <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
-                            </div>
+                {% for featured_movie in featured_movies %}
+                <div class="swiper-slide">
+                    <div class="featured-movie-card">
+                        <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                             alt="{{ featured_movie['main_title'] }}" 
+                             onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
+                             loading="lazy">
+                        <div class="featured-movie-overlay">
+                            <h3>{{ featured_movie['main_title'] }}</h3>
+                            <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
                         </div>
                     </div>
-                    {% endfor %}
+                </div>
                 {% endfor %}
             </div>
             <!-- Add Pagination -->

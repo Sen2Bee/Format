@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, send_from_directory, jsonify
 import mysql.connector
-from vars import db_name, db_passwd, db_user
+from vars import db_name, db_passwd, db_user, themes
 import math
 import os
 import redis
@@ -11,6 +11,8 @@ import random
 os.environ['FLASK_ENV'] = 'development'
 
 app = Flask(__name__)
+# Redis cache setup
+redis_cache = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 # Database configuration
 db_config = {
@@ -40,7 +42,6 @@ def index():
     print("Rendering the index page.")
     return render_template('index.html')
 
-#region SQL
 @app.route('/movie/<int:movie_id>')
 def movie_details(movie_id):
     print(f"Fetching details for movie ID: {movie_id}")
@@ -154,45 +155,51 @@ def catalog():
             movies m
             LEFT JOIN genres g ON m.movie_id = g.movie_id
             LEFT JOIN countries c ON m.movie_id = c.movie_id
-        WHERE 1=1
     """
-    
+
     # Construct the count query to get the total count of movies
     count_query = """
         SELECT COUNT(DISTINCT m.movie_id) as total 
         FROM movies m 
         LEFT JOIN genres g ON m.movie_id = g.movie_id
         LEFT JOIN countries c ON m.movie_id = c.movie_id
-        WHERE 1=1
     """
 
     params = []
 
+    # Initialize WHERE clause
+    where_clauses = []
+
     # Apply search condition
     if search_query:
-        base_query += " AND (m.title LIKE %s OR m.original_title LIKE %s)"
-        count_query += " AND (m.title LIKE %s OR m.original_title LIKE %s)"
+        where_clauses.append("(m.title LIKE %s OR m.original_title LIKE %s)")
         search_pattern = f"%{search_query}%"
         params.extend([search_pattern, search_pattern])
 
     # Apply genre filter
     if genre_filter:
-        base_query += " AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre = %s)"
-        count_query += " AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre = %s)"
+        where_clauses.append("m.movie_id IN (SELECT movie_id FROM genres WHERE genre = %s)")
         params.append(genre_filter)
 
     # Apply year filter
     if year_filter:
-        base_query += " AND m.release_date = %s"
-        count_query += " AND m.release_date = %s"
+        where_clauses.append("m.release_date = %s")
         params.append(year_filter)
 
-    # Finalize the base query with pagination
+    # Append WHERE clauses to base_query and count_query
+    if where_clauses:
+        base_query += " WHERE " + " AND ".join(where_clauses)
+        count_query += " WHERE " + " AND ".join(where_clauses)
+    else:
+        base_query += " WHERE 1=1"
+        count_query += " WHERE 1=1"
+
+    # Finalize the base query with pagination and grouping
     base_query += " GROUP BY m.movie_id ORDER BY m.release_date DESC LIMIT %s OFFSET %s"
-    params.extend([per_page, offset])
+    pag_params = params + [per_page, offset]
 
     # Execute the base query to get the filtered movie data
-    cursor.execute(base_query, params)
+    cursor.execute(base_query, pag_params)
     movies = cursor.fetchall()
 
     # Convert 'countries' and 'genres' from strings to lists
@@ -200,49 +207,54 @@ def catalog():
         movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
         movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
 
-    # Remove pagination parameters for the count query
-    count_params = params[:-2]
-
     # Execute the count query to get the total count of filtered movies
-    cursor.execute(count_query, count_params)
+    cursor.execute(count_query, params)
     total_movies = cursor.fetchone()['total']
     total_pages = math.ceil(total_movies / per_page)
 
     # Define pagination range for the current page
     pagination_range = list(range(max(1, page - 2), min(total_pages + 1, page + 3)))
 
-    genre_exclude_list = "('Adult', 'News', 'Reality-TV')"
-    # Fetch a random genre for the carousel theme if no genre filter is applied
-    if not genre_filter:
-        cursor.execute(f"SELECT DISTINCT genre FROM genres WHERE genre NOT IN {genre_exclude_list} ORDER BY RAND() LIMIT 1;")
-        random_genre_row = cursor.fetchone()
-        selected_theme = random_genre_row['genre'] if random_genre_row else None
-    else:
-        selected_theme = genre_filter
+    # Determine the selected theme
+    selected_theme = None
 
-    # Fetch featured movies for the carousel based on the selected theme
+    if genre_filter:
+        # Find the theme that matches the genre_filter
+        matched_themes = [theme for theme in themes if theme['name'].lower().startswith(genre_filter.lower()) or genre_filter.lower() in theme['name'].lower()]
+        if matched_themes:
+            selected_theme = matched_themes[0]
+        else:
+            # If no exact match, select a random theme excluding certain genres
+            selected_theme = random.choice([theme for theme in themes if "genre" in theme['sql_condition'].lower()])
+    else:
+        # Select a random theme from the themes list
+        selected_theme = random.choice(themes)
+
+    # Fetch featured movies based on the selected theme's sql_condition
     if selected_theme:
-        featured_query = """
+        # Extract the JOIN and WHERE conditions from the selected theme's sql_condition
+        theme_sql_condition = selected_theme['sql_condition']
+
+        featured_query = f"""
             SELECT 
                 m.movie_id, 
-                m.title, 
+                COALESCE(m.format_titel, m.title) AS main_title,  
+                m.original_title, 
+                m.release_date, 
+                m.imdb_rating, 
                 m.folder_name, 
                 m.overview,
-                m.imdb_rating,
                 m.poster_images
-            FROM movies m
-            JOIN genres g ON m.movie_id = g.movie_id
-            WHERE 
-                g.genre = %s AND 
-                m.imdb_rating > 6.7 AND 
-                m.poster_images > 0 AND 
-                g.genre NOT IN ('Adult', 'News', 'Reality-TV')
+            FROM 
+                movies m
+                {theme_sql_condition}
+            GROUP BY m.movie_id
+            HAVING m.imdb_rating > 6.7 AND m.poster_images > 0
             ORDER BY RAND()
             LIMIT 50;
         """
-        cursor.execute(featured_query, (selected_theme,))
+        cursor.execute(featured_query, ())
         featured_movies = cursor.fetchall()
-
 
         # Convert 'countries' and 'genres' from strings to lists if needed
         for movie in featured_movies:
@@ -256,18 +268,19 @@ def catalog():
     connection.close()
 
     # Render the catalog template with the movies and pagination data
-    return render_template('catalog.html', 
-                           movies=movies, 
-                           page=page, 
-                           total_pages=total_pages, 
-                           search_query=search_query, 
-                           pagination_range=pagination_range,
-                           featured_movies=featured_movies,
-                           selected_theme=selected_theme)
+    ret_val = render_template('catalog.html', 
+                               movies=movies, 
+                               page=page, 
+                               total_pages=total_pages, 
+                               search_query=search_query, 
+                               pagination_range=pagination_range,
+                               featured_movies=featured_movies,
+                               selected_theme=selected_theme['name'] if selected_theme else "Featured")
 
-# Redis cache setup
-redis_cache = redis.StrictRedis(host='localhost', port=6379, db=0)
+    # Debugging: Print featured movies data
+    print("Featured Movies Data:", selected_theme)
 
+    return ret_val
 @app.route('/filter_movies', methods=['GET'])
 def filter_movies():
     try:
@@ -419,78 +432,6 @@ def filter_movies():
         return jsonify({'error': str(e)}), 500
 
 
-def get_counts(cursor, field, selected_years, selected_countries, selected_genres):
-    """
-    Helper function to get counts of distinct values for the specified field.
-    """
-    # Ensure field is a valid column name to prevent SQL injection
-    if field not in {"genre", "release_date", "country"}:
-        raise ValueError(f"Invalid field name: {field}")
-
-    # Construct the base count query
-    count_query = f"""
-        SELECT {field}, COUNT(DISTINCT m.movie_id) AS count
-        FROM movies m
-        LEFT JOIN genres g ON m.movie_id = g.movie_id
-        LEFT JOIN countries c ON m.movie_id = c.movie_id
-        WHERE 1=1
-    """
-
-    params = []
-
-    # Apply year filters if available
-    if selected_years:
-        years_conditions = []
-        for year in selected_years:
-            if "..." in year:  # Handle decade ranges in string format
-                start_year = int(year.split("...")[0])
-                end_year = start_year + 9
-                years_conditions.append("m.release_date BETWEEN %s AND %s")
-                params.extend([start_year, end_year])
-            else:
-                # Treat single years as integers for SQL comparison
-                years_conditions.append("m.release_date = %s")
-                params.append(int(year))
-
-        count_query += f" AND ({' OR '.join(years_conditions)})"
-
-    # Apply genre filters if available
-    if selected_genres:
-        genre_placeholders = ','.join(['%s'] * len(selected_genres))
-        count_query += f" AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre IN ({genre_placeholders}))"
-        params.extend(selected_genres)
-
-    # Apply country filters if available
-    if selected_countries:
-        country_placeholders = ','.join(['%s'] * len(selected_countries))
-        count_query += f" AND m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({country_placeholders}))"
-        params.extend(selected_countries)
-
-    # Group by the field and order by count descending
-    count_query += f" GROUP BY {field} ORDER BY count DESC"
-
-    # Execute the query and fetch the results
-    cursor.execute(count_query, params)
-    
-    # Convert the fetched rows into a dictionary with proper key types
-    result = {}
-    for row in cursor.fetchall():
-        key = row[field]
-        
-        # Handle None values for the keys
-        if key is None:
-            key = 'Unknown'  # Replace None with a placeholder or remove this line to skip None keys
-
-        # Ensure that all keys are strings for consistent comparison and sorting
-        if isinstance(key, bytes):  # Handle potential binary values from database
-            key = key.decode("utf-8")
-        elif isinstance(key, int):  # Ensure int keys (e.g., years) are strings
-            key = str(key)
-
-        result[key] = row['count']
-
-    return result
-
 @app.route('/count_movies', methods=['GET'])
 def count_movies():
     try:
@@ -500,7 +441,7 @@ def count_movies():
         selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
         search_query = request.args.get('search', '').strip()
 
-        print(f"Counting movies for search_query: '{search_query}', years: {selected_years}, genres: {selected_genres}, countries: {selected_countries}")
+        # print(f"Counting movies for search_query: '{search_query}', years: {selected_years}, genres: {selected_genres}, countries: {selected_countries}")
 
         # Connect to the database
         connection = connect_to_db()
@@ -578,6 +519,79 @@ def count_movies():
         print(f"Error occurred while counting movies: {e}")
         return jsonify({'error': str(e)}), 500
 
+def get_counts(cursor, field, selected_years, selected_countries, selected_genres):
+    """
+    Helper function to get counts of distinct values for the specified field.
+    """
+    # Ensure field is a valid column name to prevent SQL injection
+    if field not in {"genre", "release_date", "country"}:
+        raise ValueError(f"Invalid field name: {field}")
+
+    # Construct the base count query
+    count_query = f"""
+        SELECT {field}, COUNT(DISTINCT m.movie_id) AS count
+        FROM movies m
+        LEFT JOIN genres g ON m.movie_id = g.movie_id
+        LEFT JOIN countries c ON m.movie_id = c.movie_id
+        WHERE 1=1
+    """
+
+    params = []
+
+    # Apply year filters if available
+    if selected_years:
+        years_conditions = []
+        for year in selected_years:
+            if "..." in year:  # Handle decade ranges in string format
+                start_year = int(year.split("...")[0])
+                end_year = start_year + 9
+                years_conditions.append("m.release_date BETWEEN %s AND %s")
+                params.extend([start_year, end_year])
+            else:
+                # Treat single years as integers for SQL comparison
+                years_conditions.append("m.release_date = %s")
+                params.append(int(year))
+
+        count_query += f" AND ({' OR '.join(years_conditions)})"
+
+    # Apply genre filters if available
+    if selected_genres:
+        genre_placeholders = ','.join(['%s'] * len(selected_genres))
+        count_query += f" AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre IN ({genre_placeholders}))"
+        params.extend(selected_genres)
+
+    # Apply country filters if available
+    if selected_countries:
+        country_placeholders = ','.join(['%s'] * len(selected_countries))
+        count_query += f" AND m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({country_placeholders}))"
+        params.extend(selected_countries)
+
+    # Group by the field and order by count descending
+    count_query += f" GROUP BY {field} ORDER BY count DESC"
+
+    # Execute the query and fetch the results
+    cursor.execute(count_query, params)
+    
+    # Convert the fetched rows into a dictionary with proper key types
+    result = {}
+    for row in cursor.fetchall():
+        key = row[field]
+        
+        # Handle None values for the keys
+        if key is None:
+            key = 'Unknown'  # Replace None with a placeholder or remove this line to skip None keys
+
+        # Ensure that all keys are strings for consistent comparison and sorting
+        if isinstance(key, bytes):  # Handle potential binary values from database
+            key = key.decode("utf-8")
+        elif isinstance(key, int):  # Ensure int keys (e.g., years) are strings
+            key = str(key)
+
+        result[key] = row['count']
+
+    return result
+
+
 def sort_years_with_decades(year_counts):
     """Sorts year counts so that grouped decades appear at the top of the list."""
     # Group years into decades
@@ -615,11 +629,10 @@ def sort_years_with_decades(year_counts):
     # Convert back to dictionary format
     sorted_combined_dict = dict(sorted_combined)
 
-    print(sorted_combined_dict)
+    # print(sorted_combined_dict)
 
     return sorted_combined_dict
 
-#endregion SQL
 
 if __name__ == '__main__':
     app.run(debug=True)
