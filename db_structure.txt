@@ -1,6 +1,43 @@
 DB-Structure:
-Structure of table movies:
-('format_filmId', 'int', 'NO', 'PRI', None, '')
+Structure of table `awards`:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', '', None, '')
+('award', 'varchar(255)', 'YES', '', None, '')
+
+Structure of table `cast`:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('name', 'varchar(255)', 'YES', '', None, '')
+('role', 'text', 'YES', '', None, '')
+('popularity', 'decimal(7,3)', 'YES', '', None, '')
+('tmdb_id', 'varchar(50)', 'YES', '', None, '')
+
+Structure of table `certificates`:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('country', 'varchar(100)', 'YES', '', None, '')
+('rating', 'varchar(20)', 'YES', '', None, '')
+('additional_info', 'text', 'YES', '', None, '')
+
+Structure of table `countries`:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('country', 'varchar(100)', 'YES', '', None, '')
+
+Structure of table `crew`:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('name', 'varchar(255)', 'YES', '', None, '')
+('job', 'varchar(255)', 'YES', '', None, '')
+('tmdb_id', 'varchar(50)', 'YES', '', None, '')
+
+Structure of table `genres`:
+('id', 'int', 'NO', 'PRI', None, 'auto_increment')
+('movie_id', 'int', 'NO', 'MUL', None, '')
+('genre', 'varchar(100)', 'YES', '', None, '')
+
+Structure of table `movies`:
+('movie_id', 'int', 'NO', 'PRI', None, '')
 ('title', 'varchar(255)', 'YES', '', None, '')
 ('imdb_id', 'varchar(50)', 'YES', '', None, '')
 ('original_title', 'varchar(255)', 'YES', '', None, '')
@@ -37,45 +74,12 @@ Structure of table movies:
 ('tmdb_votes', 'varchar(100)', 'YES', '', None, '')
 ('original_air_date', 'varchar(255)', 'YES', '', None, '')
 
-Structure of table cast:
-('id', 'int', 'NO', 'PRI', None, 'auto_increment')
-('movie_id', 'int', 'NO', 'MUL', None, '')
-('name', 'varchar(255)', 'YES', '', None, '')
-('role', 'text', 'YES', '', None, '')
-('popularity', 'decimal(7,3)', 'YES', '', None, '')
-('tmdb_id', 'varchar(50)', 'YES', '', None, '')
-
-Structure of table certificates:
-('id', 'int', 'NO', 'PRI', None, 'auto_increment')
-('movie_id', 'int', 'NO', 'MUL', None, '')
-('country', 'varchar(100)', 'YES', '', None, '')
-('rating', 'varchar(20)', 'YES', '', None, '')
-('additional_info', 'text', 'YES', '', None, '')
-
-Structure of table countries:
-('id', 'int', 'NO', 'PRI', None, 'auto_increment')
-('movie_id', 'int', 'NO', 'MUL', None, '')
-('country', 'varchar(100)', 'YES', '', None, '')
-
-Structure of table crew:
-('id', 'int', 'NO', 'PRI', None, 'auto_increment')
-('movie_id', 'int', 'NO', 'MUL', None, '')
-('name', 'varchar(255)', 'YES', '', None, '')
-('job', 'varchar(255)', 'YES', '', None, '')
-('tmdb_id', 'varchar(50)', 'YES', '', None, '')
-
-Structure of table genres:
-('id', 'int', 'NO', 'PRI', None, 'auto_increment')
-('movie_id', 'int', 'NO', 'MUL', None, '')
-('genre', 'varchar(100)', 'YES', '', None, '')
-
-
-Structure of table production_companies:
+Structure of table `production_companies`:
 ('id', 'int', 'NO', 'PRI', None, 'auto_increment')
 ('movie_id', 'int', 'NO', 'MUL', None, '')
 ('company_name', 'varchar(255)', 'YES', '', None, '')
 
-Structure of table spoken_languages:
+Structure of table `spoken_languages`:
 ('id', 'int', 'NO', 'PRI', None, 'auto_increment')
 ('movie_id', 'int', 'NO', 'MUL', None, '')
 ('language', 'varchar(100)', 'YES', '', None, '')
