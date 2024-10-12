@@ -262,7 +262,15 @@ export function updateFilters(page = 1) {
         params.append('countries', selectedCountries.join(','));
         params.append('countries_include', countryInclude ? '1' : '0');
     }
-    if (searchQuery) params.append('search', searchQuery);
+
+    // Adjust search logic as per the requirement
+    const shouldIncludeSearch = (searchQuery.length > 3) || (searchQuery.endsWith('!'));
+    if (shouldIncludeSearch) {
+        params.append('search', searchQuery);
+    }
+    else
+        return;
+
     params.append('page', page);
 
     console.log("Fetching updated filter data with params:", params.toString());
@@ -317,7 +325,6 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
         return;
     }
 
-
     dropdownList.innerHTML = ""; // Clear existing options
 
     if (typeof options !== 'object' || Array.isArray(options)) {
@@ -334,8 +341,6 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
     const buttonsContainer = document.createElement('div');
     buttonsContainer.className = 'filter-buttons-container';
 
-
-
     // Render buttons
     optionsArray.forEach(option => {
         const button = document.createElement("button");
@@ -344,10 +349,8 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
         button.textContent = `${option.label} (${option.count})`;
         button.dataset.value = option.label;
 
-
         if (selectedValues.includes(option.label)) {
             button.classList.add('selected');
-
         }
 
         buttonsContainer.appendChild(button);
