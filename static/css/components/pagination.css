@@ -8,7 +8,7 @@
     background-color: var(--background-dark);
     padding: 15px 0; /* Added padding for spacing */
     color: var(--text-light);
-    border-bottom: 1px solid var(--link-hover-color); /* Add a 1px thick red border */
+    border-top: 1px solid var(--link-hover-color); /* Add a 1px thick red border */
 }
 
 
