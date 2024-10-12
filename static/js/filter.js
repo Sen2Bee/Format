@@ -97,7 +97,8 @@ export function initializeFilterDropdowns() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 updateFilters(); // Trigger filter update after user stops typing for 300ms
-            }, 300);
+                handleAutocomplete(); // Handle autocomplete for cast and director
+            }, 2000);
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
@@ -109,6 +110,7 @@ export function initializeFilterDropdowns() {
             searchBox.value = '';
             clearSearchBtn.classList.remove('visible');
             updateFilters();
+            hideAutocompleteSuggestions(); // Hide autocomplete suggestions
         });
     } else {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
@@ -269,7 +271,9 @@ export function updateFilters(page = 1) {
         params.append('search', searchQuery);
     }
     else
-        return;
+        if(searchQuery.length != 0)
+            return
+        
 
     params.append('page', page);
 
@@ -365,3 +369,72 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
     const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
     updateSelectionBadge(selectedValuesUpdated, selectionBadge);
 }
+
+/**
+ * Function to handle autocomplete for cast and director names
+ */
+function handleAutocomplete() {
+    const searchQuery = searchBox.value.trim();
+
+    // Only perform autocomplete if the search query length is sufficient
+    if (searchQuery.length >= 2) {
+        fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
+            .then(response => response.json())
+            .then(data => {
+                showAutocompleteSuggestions(data);
+            })
+            .catch(error => {
+                console.error('Error fetching autocomplete suggestions:', error);
+            });
+    } else {
+        hideAutocompleteSuggestions();
+    }
+}
+
+/**
+ * Function to show autocomplete suggestions
+ */
+function showAutocompleteSuggestions(suggestions) {
+    let autocompleteList = document.getElementById('autocomplete-list');
+    if (!autocompleteList) {
+        autocompleteList = document.createElement('div');
+        autocompleteList.id = 'autocomplete-list';
+        autocompleteList.className = 'autocomplete-items';
+        searchBox.parentNode.appendChild(autocompleteList);
+    }
+
+    autocompleteList.innerHTML = ''; // Clear existing suggestions
+
+    suggestions.forEach(item => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'autocomplete-item';
+        suggestionItem.textContent = item.name + ' (' + item.type + ')';
+        suggestionItem.dataset.name = item.name;
+        suggestionItem.dataset.type = item.type;
+
+        suggestionItem.addEventListener('click', () => {
+            searchBox.value = item.name;
+            hideAutocompleteSuggestions();
+            updateFilters();
+        });
+
+        autocompleteList.appendChild(suggestionItem);
+    });
+}
+
+/**
+ * Function to hide autocomplete suggestions
+ */
+function hideAutocompleteSuggestions() {
+    const autocompleteList = document.getElementById('autocomplete-list');
+    if (autocompleteList) {
+        autocompleteList.parentNode.removeChild(autocompleteList);
+    }
+}
+
+// Event listener to close autocomplete suggestions when clicking outside
+document.addEventListener('click', function (e) {
+    if (e.target !== searchBox) {
+        hideAutocompleteSuggestions();
+    }
+});

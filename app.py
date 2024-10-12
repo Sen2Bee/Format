@@ -306,10 +306,26 @@ def filter_movies():
 
         # **Apply Search Condition**
         if search_query:
-            # Search in title and original_title (case-insensitive)
-            where_conditions.append("(m.title LIKE %s OR m.original_title LIKE %s)")
+            # Define the search pattern
             search_pattern = f"%{search_query}%"
-            params.extend([search_pattern, search_pattern])
+            
+            # Search in title, original_title, and other specified fields
+            where_conditions.append("""
+                (m.title LIKE %s 
+                OR m.original_title LIKE %s 
+                OR m.format_titel LIKE %s 
+                OR m.format_orig_titel LIKE %s 
+                OR m.wiki_awards LIKE %s
+                OR EXISTS (
+                    SELECT 1 FROM cast c WHERE c.movie_id = m.movie_id AND c.name LIKE %s
+                )
+                OR EXISTS (
+                    SELECT 1 FROM crew cr WHERE cr.movie_id = m.movie_id AND cr.job = 'director' AND cr.name LIKE %s
+                ))
+            """)
+            
+            # Add the search pattern for each field
+            params.extend([search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, search_pattern])
 
         # **Apply Year Conditions**
         if selected_years:
