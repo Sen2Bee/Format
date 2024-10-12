@@ -649,6 +649,46 @@ def sort_years_with_decades(year_counts):
 
     return sorted_combined_dict
 
+@app.route('/autocomplete', methods=['GET'])
+def autocomplete():
+    query = request.args.get('query', '').strip()
+
+    if not query:
+        return jsonify([])  # Return an empty list if the query is empty
+
+    try:
+        # Connect to the database
+        connection = connect_to_db()
+        if not connection:
+            return jsonify({"error": "Database connection failed"}), 500
+
+        cursor = connection.cursor(dictionary=True)
+
+        # Construct the query for autocomplete suggestions (movies, cast, directors)
+        search_pattern = f"%{query}%"
+        autocomplete_query = """
+            SELECT title AS name, 'movie' AS type FROM movies WHERE title LIKE %s
+            UNION
+            SELECT name AS name, 'cast' AS type FROM cast WHERE name LIKE %s
+            UNION
+            SELECT name AS name, 'director' AS type FROM crew WHERE job = 'Director' AND name LIKE %s
+            LIMIT 10;
+        """
+        cursor.execute(autocomplete_query, (search_pattern, search_pattern, search_pattern))
+        results = cursor.fetchall()
+
+        # Close the cursor and connection
+        cursor.close()
+        connection.close()
+
+        # Return the results as JSON
+        return jsonify(results)
+
+    except Exception as e:
+        print(f"Error during autocomplete: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
