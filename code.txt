@@ -1,13 +1,10 @@
-=== Code Summary Generated at 2024-10-10 21:18:10 ===
+=== Code Summary Generated at 2024-10-12 07:24:25 ===
 
 === Project Folder Structure ===
 
 Format/
     static/
         assets/
-            custom_controls/
-                custom_dropdown.js
-                search_container.css
             fonts/
                 Spacia Heavy.ttf
         css/
@@ -61,580 +58,6 @@ Format/
         index.html
 
 === File Contents ===
-
---- File: static\assets\custom_controls\custom_dropdown.js ---
-document.addEventListener('DOMContentLoaded', function () {
-    console.log("Custom Dropdowns: DOM fully loaded");
-    initializeCustomDropdowns(); // Initialize custom dropdowns when DOM is loaded
-    initializeSearchBox();
-});
-
-// Function to initialize the search box clear button and its behavior
-function initializeSearchBox() {
-    const searchBox = document.getElementById('search-box');
-    const clearSearchButton = document.getElementById('clear-search');
-
-    if (!searchBox || !clearSearchButton) {
-        console.error("Search box or clear button not found.");
-        return;
-    }
-
-    console.log("Initializing search box listeners...");
-    
-    // Show/hide the clear button based on input value
-    searchBox.addEventListener('input', () => {
-        if (searchBox.value.length > 0) {
-            clearSearchButton.style.visibility = 'visible';  // Show the clear button
-        } else {
-            clearSearchButton.style.visibility = 'hidden';   // Hide the clear button
-        }
-    });
-
-    // Clear the search box when the clear button is clicked
-    clearSearchButton.addEventListener('click', () => {
-        searchBox.value = '';
-        clearSearchButton.style.visibility = 'hidden';
-        console.log("Search box cleared.");
-        // Optionally trigger any search box reset logic here
-    });
-
-    console.log("Search box listeners attached successfully.");
-}
-
-// Stellen Sie sicher, dass beim Initialisieren der Dropdowns das Selection Badge ebenfalls aktualisiert wird
-function initializeCustomDropdowns() {
-    console.log("Initializing Custom Dropdowns...");
-
-    // Retrieve the custom dropdown elements by their header and list classes
-    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
-    const dropdownLists = document.querySelectorAll('.dropdown-list');
-    const clearButtons = document.querySelectorAll('.clear-icon');
-
-    // Check if all required elements are present
-    if (dropdownHeaders.length !== dropdownLists.length) {
-        console.error("Mismatch in dropdown elements. Headers, lists, or clear buttons are not matching in count.");
-        console.log("Headers found: ", dropdownHeaders.length);
-        console.log("Dropdown lists found: ", dropdownLists.length);
-        console.log("Clear buttons found: ", clearButtons.length);
-        return; // Exit initialization if element counts don't match
-    }
-
-    console.log("Attaching event listeners to custom dropdowns...");
-    // Attach event listeners for each dropdown and clear button
-    dropdownHeaders.forEach((header, index) => {
-        const dropdownList = dropdownLists[index];
-        const clearButton = header.querySelector('.clear-icon');
-        const countElement = header.querySelector('.selected-count');
-        const badgeElement = header.querySelector('.selection-badge');
-
-        // Initial Update
-        updateSelectedCount(dropdownList, countElement, clearButton);
-
-        attachDropdownListeners(header, dropdownList, clearButton);
-    });
-}
-// Function to attach listeners to dropdown header, checkboxes, and clear button
-/**
- * Function to attach event listeners to dropdown headers and clear buttons
- */
-function attachDropdownListeners() {
-    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
-
-    dropdownHeaders.forEach(header => {
-        const dropdownList = header.nextElementSibling; // Assumes .dropdown-list follows .dropdown-header
-        const clearButton = header.querySelector('.clear-icon');
-        const selectedCount = header.querySelector('.selected-count');
-
-        if (!dropdownList) {
-            console.error("attachDropdownEventListeners: Dropdown list not found for a header.");
-            return;
-        }
-
-        if (!selectedCount) {
-            console.error("attachDropdownEventListeners: Selected count element not found in a header.");
-            return;
-        }
-
-        // Toggle dropdown visibility on header click
-        header.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent event from bubbling up
-            toggleDropdown(dropdownList, header);
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (event) => {
-            if (!header.contains(event.target) && !dropdownList.contains(event.target)) {
-                dropdownList.classList.remove('show');
-                header.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        // Clear all selections when the clear button is clicked
-        clearButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent header dropdown toggle
-            const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => (checkbox.checked = false)); // Uncheck all boxes
-            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update selection count
-            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
-        });
-    });
-
-    // Attach a single event listener for all dropdown lists (event delegation)
-    const dropdownLists = document.querySelectorAll('.dropdown-list');
-    dropdownLists.forEach(list => {
-        list.addEventListener('change', (event) => {
-            if (event.target && event.target.matches('input[type="checkbox"]')) {
-                const dropdownList = event.currentTarget;
-                const header = dropdownList.previousElementSibling; // Assumes .dropdown-header precedes .dropdown-list
-                const selectedCount = header.querySelector('.selected-count');
-                const clearButton = header.querySelector('.clear-icon');
-                updateSelectedCount(dropdownList.querySelectorAll('input[type="checkbox"]'), selectedCount, clearButton);
-                triggerDropdownChangeEvent();
-            }
-        });
-    });
-}
-
-
-// Function to attach checkbox listeners
-function attachCheckboxListeners(dropdownList, selectedCount, clearButton) {
-    const checkboxes = dropdownList.querySelectorAll('input[type="checkbox"]');
-    console.log(`Attaching checkbox listeners to ${dropdownList.id}...`);
-    console.log("Checkboxes found:", checkboxes.length);
-
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            console.log("Checkbox change detected in", dropdownList.id);
-            updateSelectedCount(checkboxes, selectedCount, clearButton); // Update the selected count
-            triggerDropdownChangeEvent();  // Trigger a custom change event to update filters
-        });
-    });
-    console.log(`Checkbox listeners successfully attached to ${dropdownList.id}`);
-}
-
-// Function to populate dropdowns dynamically and attach checkbox listeners
-function populateDropdown(dropdownListId, options, selectedValues = []) {
-    const dropdownList = document.getElementById(dropdownListId);
-    dropdownList.innerHTML = "";  // Clear any existing options
-
-    // Separate Decades and Years
-    const decades = [];
-    const years = [];
-
-    // Iterate through options and separate into decades and years
-    Object.entries(options).forEach(([key, count]) => {
-        if (key.includes("...")) {
-            decades.push({ label: key, count: count });
-        } else {
-            years.push({ label: key, count: count });
-        }
-    });
-
-    console.log("Decades:", decades);
-    console.log("Years:", years);
-
-    // Sort Decades in Ascending Order (e.g., 1910...1919, 1920...1929)
-    decades.sort((a, b) => parseInt(a.label.split("...")[0]) - parseInt(b.label.split("...")[0]));
-
-    // Sort Years in Descending Order (e.g., 2023, 2022, 2021)
-    years.sort((a, b) => parseInt(b.label) - parseInt(a.label));
-
-    // Combine Decades First and Years Below
-    const sortedOptions = [...decades, ...years];
-
-    // Render Sorted Options to the Dropdown
-    sortedOptions.forEach(option => {
-        const isChecked = selectedValues.includes(option.label) ? 'checked' : '';
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" value="${option.label}" ${isChecked}> ${option.label} (${option.count})`;
-        dropdownList.appendChild(label);
-    });
-
-
-
-    // Attach Checkbox Listeners after the dropdown is populated
-    const header = document.querySelector(`#${dropdownListId}-header`);
-    console.log(`Dropdown ${dropdownListId} header: `, header);
-    if (header) {
-        const selectedCount = header.querySelector('.selected-count');
-        const clearButton = header.querySelector('.clear-icon');
-
-        // Attach checkbox listeners to handle selections and updates
-        if (selectedCount && clearButton) {
-            attachCheckboxListeners(dropdownList, selectedCount, clearButton);
-        } else {
-            console.error(`Dropdown ${dropdownListId}: Could not find header elements for attaching checkbox listeners.`);
-        }
-    } else {
-        console.error(`Dropdown header not found for ${dropdownListId}`);
-    }
-}
-
-
-// Function to show/hide dropdown
-function toggleDropdown(dropdownList) {
-    const isVisible = dropdownList.style.display === 'block';
-    dropdownList.style.display = isVisible ? 'none' : 'block';
-}
-
-
-// Function to trigger a custom event to notify filter.js of dropdown changes
-// Trigger a custom change event to update filters
-function triggerDropdownChangeEvent() {
-    const event = new CustomEvent('dropdownChange');
-    console.log("Dispatching dropdownChange event");
-
-    // Dispatch the custom dropdownChange event
-    document.dispatchEvent(event);
-
-    // Call the function to update the movie list and pagination
-    updateMovieListAndPagination();
-}
-
-const searchBox = document.getElementById('search-box');
-const clearSearchButton = document.getElementById('clear-search');
-
-// Show/hide the clear button based on input value
-searchBox.addEventListener('input', () => {
-    if (searchBox.value.length > 0) {
-        clearSearchButton.style.visibility = 'visible';  // Show the clear button
-    } else {
-        clearSearchButton.style.visibility = 'hidden';   // Hide the clear button
-    }
-});
-
-// Clear the search box when the clear button is clicked
-clearSearchButton.addEventListener('click', () => {
-    searchBox.value = '';
-    clearSearchButton.style.visibility = 'hidden';
-    // Optionally trigger any search box reset logic here
-});
-
-
---- File: static\assets\custom_controls\search_container.css ---
-/* search_container.css */
-
-/* Variables (Ensure these are defined in your variables.css or main.css) */
-:root {
-    --primary-color: #2c3e50; /* Dark Blue */
-    --secondary-color: #34495e; /* Slightly Lighter Blue */
-    --accent-color: #e74c3c; /* Vibrant Red */
-    --link-color: #f1c40f; /* Gold */
-    --secondary-text-color: #7f8c8d; /* Muted Text */
-    --text-color: #ffffff; /* White Text for Dropdown */
-    --placeholder-color: #bdc3c7; /* Placeholder Text Color */
-    --background-color: #f9f9f9; /* Background Color for Container */
-    --transition-duration: 0.3s;
-}
-
-/* Parent Container */
-.search-dropdown-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center; /* Ensures vertical alignment */
-    width: 90%;
-    max-width: 1200px;
-    background-color: var(--background-color);
-    padding: 25px;
-    margin: 25px auto; /* Center horizontally */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    box-sizing: border-box;
-    /* border: 2px solid blue; */ /* Remove after debugging */
-}
-
-/* Form */
-#filter-form {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px; /* Space between elements */
-    width: 100%;
-    flex-wrap: wrap; /* Allow elements to wrap on smaller screens */
-}
-
-/* Search Container and Dropdowns */
-.search-container,
-.custom-dropdown {
-    display: flex;
-    align-items: center;
-    position: relative;
-    height: 50px; /* Increased height for better visibility */
-    border-radius: 8px;
-    flex: 1; /* Allow elements to grow */
-    min-width: 200px; /* Minimum width to prevent shrinking too much */
-}
-
-/* Search Box */
-.search-container {
-    position: relative;
-    max-width: 400px; /* Optional: Limit the maximum width */
-    flex: 2; /* Allows the search box to take up more space */
-}
-
-.search-container input[type="text"],
-#search-box {
-    width: 100%;
-    height: 100%; /* Ensures the input fills the container's height */
-    padding: 0 40px; /* Adjust padding for icons */
-    border: 1px solid #bdc3c7;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #333; /* Dark background to match dropdowns */
-    color: #fff; /* White text for contrast */
-    transition: border-color var(--transition-duration), box-shadow var(--transition-duration);
-    box-sizing: border-box; /* Ensures padding is included in width and height */
-}
-
-.search-container input[type="text"]:focus,
-#search-box:focus {
-    outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
-}
-
-.search-container input[type="text"]::placeholder,
-#search-box::placeholder {
-    color: var(--placeholder-color);
-}
-
-/* Search Icon */
-.search-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--placeholder-color);
-    font-size: 1rem;
-}
-
-/* Clear Icon for Search Box */
-#clear-search {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    font-size: 1.2rem;
-    line-height: 24px;
-    border-radius: 50%;
-    background: rgba(231, 76, 60, 0.6);
-    color: #fff;
-    cursor: pointer;
-    visibility: hidden;
-    transition: background 0.3s ease, color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.search-container:hover #clear-search,
-.search-container input[type="text"]:not(:placeholder-shown) + #clear-search {
-    visibility: visible;
-}
-
-#clear-search:hover {
-    background: var(--accent-color);
-    color: #fff;
-}
-
-#clear-search:active {
-    background: rgba(231, 76, 60, 1);
-    color: #fff;
-}
-
-/* Custom Dropdown Styles */
-.custom-dropdown {
-    display: flex;
-    flex-direction: column;
-    position: relative; /* Necessary for absolute positioning of .dropdown-list */
-    width: 200px; /* Fixed width for consistency */
-    height: auto; /* Allow height to adjust based on content */
-    border-radius: 8px; /* Consistent border radius */
-    overflow: visible; /* Ensure dropdown list is visible outside the container */
-    background-color: #333; /* Consistent background */
-    transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
-    flex: 1; /* Allow dropdowns to grow equally */
-}
-
-.custom-dropdown:hover {
-    background-color: #444;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Dropdown Header Styling */
-.dropdown-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--primary-color); /* Use CSS variable for background */
-    color: var(--text-color); /* Use CSS variable for text color */
-    padding: 0 18px;
-    border-radius: 8px; /* Consistent border radius */
-    cursor: pointer;
-    height: 50px; /* Same height as search-container */
-    transition: background var(--transition-duration), color var(--transition-duration);
-}
-
-.dropdown-header:hover {
-    background: var(--secondary-color); /* Slightly lighter on hover */
-}
-
-/* Icon Styling */
-.dropdown-header i {
-    font-size: 1.2em; /* Adjust icon size as needed */
-    margin-right: 8px; /* Space between icon and controls */
-}
-
-/* Header Controls Container */
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Selected Count Styling */
-.selected-count {
-    color: var(--link-color);
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 0.85em;
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.2); /* Subtle background for readability */
-    transition: background-color var(--transition-duration);
-}
-
-.selected-count:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Clear Icon Styling */
-.clear-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 1.2em;
-    color: #fff;
-    background: rgba(68, 68, 68, 0.6);
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    visibility: hidden;
-    transition: background var(--transition-duration), color var(--transition-duration);
-}
-
-.dropdown-header:hover .clear-icon,
-.header-controls:hover .clear-icon {
-    visibility: visible; /* Show clear icons on hover */
-}
-
-.clear-icon:hover {
-    background: var(--accent-color);
-    color: #fff;
-}
-
-.clear-icon:active {
-    background: var(--secondary-text-color);
-    color: #eee;
-}
-
-/* Dropdown List Styles */
-.dropdown-list {
-    display: none; /* Hidden by default */
-    background: #2c2c2c; /* Dark background for contrast */
-    color: #e0e0e0; /* Light text for readability */
-    position: absolute; /* Position relative to the closest positioned ancestor */
-    top: 100%; /* Position below the header */
-    left: 0;
-    width: 100%; /* Match the width of the dropdown container */
-    border-radius: 0 0 8px 8px; /* Rounded corners at the bottom */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
-    z-index: 1000; /* Ensure it appears above other elements */
-    max-height: 250px; /* Maximum height with scrollbar */
-    overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for visibility */
-    transform: translateY(-10px); /* Slightly translate upwards when hidden */
-    opacity: 0; /* Fully transparent when hidden */
-}
-
-/* Show Class to Display Dropdown */
-.dropdown-list.show {
-    display: block; /* Make it take up space */
-    transform: translateY(0); /* Reset translation */
-    opacity: 1; /* Fully opaque */
-}
-
-/* Dropdown List Items */
-.dropdown-list label {
-    display: flex;
-    align-items: center;
-    padding: 12px 18px;
-    font-size: 1.05em;
-    color: #f1f1f1;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background var(--transition-duration), color var(--transition-duration);
-}
-
-.dropdown-list input[type="checkbox"] {
-    margin-right: 12px;
-    transform: scale(1.2);
-}
-
-.dropdown-list label:hover {
-    background: #444;
-    color: #ffffff;
-}
-
-/* Scrollbar Customization */
-.dropdown-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.dropdown-list::-webkit-scrollbar-track {
-    background: #333;
-    border-radius: 4px;
-}
-
-.dropdown-list::-webkit-scrollbar-thumb {
-    background-color: #555;
-    border-radius: 4px;
-    transition: background-color var(--transition-duration);
-}
-
-.dropdown-list::-webkit-scrollbar-thumb:hover {
-    background-color: var(--accent-color);
-}
-
-/* Responsive Adjustments for Mobile */
-@media (max-width: 768px) {
-    .catalog-search {
-        flex-direction: column; /* Stack everything vertically */
-        align-items: center;
-        width: 100%; /* Full width */
-        padding: 10px 0; /* Add some padding */
-    }
-    .search-dropdown-container {
-        flex-direction: column; /* Stack search box and dropdowns */
-        width: 100%; /* Use full width */
-        padding: 15px; /* Padding for mobile */
-        margin-top: 15px;
-    }
-
-    .search-container, .custom-dropdown {
-        width: 100%; /* Full width for each element */
-        margin-bottom: 15px; /* Spacing between controls */
-    }
-
-    .dropdown-header {
-        height: 50px; /* Larger height for touch devices */
-        font-size: 1.1rem; /* Slightly larger font */
-    }
-}
 
 --- File: static\css\main.css ---
 /* main.css */
@@ -1117,7 +540,7 @@ button {
 }
 
 .movie-carousel-section h2 {
-    font-size: 2em;
+    font-size: 1.2em;
     font-weight: 100;
     color: var(--text-light); /* Use defined light text color */
 
@@ -1130,6 +553,8 @@ button {
 .swiper-container {
     width: 100%;
     padding-bottom: 10px; /* Space for pagination bullets */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */    
 }
 
 .swiper-wrapper {
@@ -1147,8 +572,8 @@ button {
 
 .featured-movie-card {
     position: relative;
-    width: 200px; /* Adjust based on desired poster size */
-    height: 300px; /* Adjust based on desired poster size */
+    width: 180px; /* Adjust based on desired poster size */
+
     overflow: hidden;
     border-radius: 8px;
 }
@@ -1244,8 +669,8 @@ button {
     align-items: center;
     width: 100%;
     background-color: #1e1e1e;
-    position: relative; /* Added for positioning */
-    margin-top: 0; /* Remove top margin */
+    position: relative;
+    margin-top: 0;
 }
 
 #filter-form {
@@ -1278,7 +703,7 @@ button {
     width: 100%;
     max-width: 800px;
     height: 50px;
-    margin-bottom: 5px; /* Reduced margin */
+    margin-bottom: 5px;
     border: 2px solid var(--border-color);
     border-radius: 10px;
     background-color: #fff;
@@ -1300,7 +725,7 @@ button {
     height: 100%;
     padding: 0 50px;
     font-size: 1.1em;
-    background:  var(--secondary-text-color);
+    background: var(--secondary-text-color);
     color: var(--text-dark);
     border: none;
     border-radius: 10px;
@@ -1315,7 +740,7 @@ button {
 .custom-dropdown {
     width: 100%;
     max-width: 800px;
-    margin-bottom: 10px; /* Reduced margin */
+    margin-bottom: 10px;
 }
 
 .dropdown-header {
@@ -1324,7 +749,7 @@ button {
     justify-content: space-between;
     background-color: #333;
     color: #fff;
-    padding: 10px 10px; /* Reduced padding */
+    padding: 10px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
@@ -1342,7 +767,7 @@ button {
 }
 
 .dropdown-header .header-label i {
-    font-size: 1.5em; /* Increased icon size */
+    font-size: 1.5em;
     margin-right: 10px;
 }
 
@@ -1403,25 +828,63 @@ button {
 /* Dropdown List */
 .dropdown-list {
     width: 100%;
-    max-height: 0;
+    max-height: 0; /* Initially collapsed */
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.3s ease, padding 0.3s ease;
     background-color: #2c2c2c;
     padding: 0 10px;
     box-sizing: border-box;
     border-radius: 0 0 10px 10px;
+    position: relative;
 }
 
 .dropdown-list.show {
-    max-height: 500px;
+    max-height: 500px; /* Adjust as needed */
     padding: 10px;
+}
+
+/* Filter Buttons Container */
+.dropdown-list .filter-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    max-height: 300px; /* Ensure it fits within .dropdown-list */
+    overflow-y: auto; /* Enable vertical scrolling */
+    
+    /* Hide Scrollbar for Firefox */
+    scrollbar-width: none; /* Firefox */
+    
+    /* Hide Scrollbar for IE, Edge */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide Scrollbar for WebKit Browsers (Chrome, Safari, Edge) */
+.dropdown-list .filter-buttons-container::-webkit-scrollbar {
+    width: 0; /* Removes scrollbar width */
+    height: 0; /* Removes horizontal scrollbar if any */
+}
+
+/* Optional: Add a gradient to indicate more content */
+.dropdown-list .filter-buttons-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background: linear-gradient(to top, #2c2c2c, rgba(44, 44, 44, 0));
+    pointer-events: none;
+    display: none; /* Hidden by default */
+}
+
+.dropdown-list.show .filter-buttons-container::after {
+    display: block; /* Show when dropdown is open */
 }
 
 /* Filter Buttons */
 .dropdown-list .filter-button {
-    display: inline-block;
     padding: 8px 12px;
-    margin: 5px;
     background-color: #444;
     color: #fff;
     border: 1px solid #555;
@@ -1429,6 +892,9 @@ button {
     cursor: pointer;
     transition: background-color 0.3s, border-color 0.3s;
     font-size: 0.9em;
+    flex: 1 0 30%; /* Approximately three buttons per row */
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .dropdown-list .filter-button.selected {
@@ -1448,6 +914,7 @@ button {
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+    gap: 10px;
 }
 
 .filter-action-button {
@@ -1489,7 +956,7 @@ button {
     .filter-button {
         font-size: 0.85em;
         padding: 6px 10px;
-        margin: 4px;
+        flex: 1 0 45%; /* Two buttons per row on medium screens */
     }
 
     .filter-action-button {
@@ -1506,7 +973,7 @@ button {
     .filter-button {
         font-size: 0.8em;
         padding: 6px 8px;
-        margin: 3px;
+        flex: 1 0 100%; /* Full width on very small screens */
     }
 }
 
@@ -2315,11 +1782,6 @@ footer {
 
 /* Full Column Layout for Mobile */
 @media (max-width: 768px) {
-    .catalog-search {
-        padding: 30px 20px;
-
-    }
-
     .movie-listings {
         gap: 15px; /* Reduced gap for mobile */
         padding: 40px 20px;
@@ -2577,7 +2039,6 @@ import {getSelectedValues } from './filter.js';  // Example import
 
 
 
-
 export function initializeSwiper() {
     const swiperContainer = document.querySelector('.swiper-container');
     if (!swiperContainer) {
@@ -2586,7 +2047,7 @@ export function initializeSwiper() {
     }
 
     const totalSlides = swiperContainer.querySelectorAll('.swiper-slide').length;
-    const slidesPerViewDesktop = 4; // Base number for desktop
+    const slidesPerViewDesktop = 7; // Base number for desktop
 
     const swiper = new Swiper('.swiper-container', {
         loop: totalSlides > slidesPerViewDesktop,
@@ -2602,9 +2063,17 @@ export function initializeSwiper() {
         spaceBetween: 10,
         watchOverflow: true, // Disable Swiper if not enough slides
 
+        // Enable mousewheel scrolling
+        mousewheel: {
+            forceToAxis: true,  // Forces scrolling to work only in the horizontal axis
+            sensitivity: 1,     // Adjust the sensitivity of the scroll wheel
+        },
+
+        // Enable touch controls for mobile devices
+        simulateTouch: true,
+
         // Responsive breakpoints
         breakpoints: {
-            // When window width is >= 1400px
             2200: {
                 slidesPerView: 13,
                 spaceBetween: 10
@@ -2621,37 +2090,30 @@ export function initializeSwiper() {
                 slidesPerView: 8,
                 spaceBetween: 10
             },
-        
             1400: {
                 slidesPerView: 6.5,
                 spaceBetween: 10
             },
-            // When window width is >= 1200px
             1200: {
                 slidesPerView: 6,
                 spaceBetween: 6
             },
-            // When window width is >= 1024px
             1024: {
                 slidesPerView: 5,
                 spaceBetween: 8
             },
-            // When window width is >= 900px
             900: {
                 slidesPerView: 4,
                 spaceBetween: 10
             },
-            // When window width is >= 768px
             768: {
                 slidesPerView: 3,
                 spaceBetween: 12
             },
-            // When window width is >= 640px
             640: {
                 slidesPerView: 2.5,
                 spaceBetween: 14
             },
-            // When window width is < 640px
             0: { // Mobile-first
                 slidesPerView: 2.5,
                 spaceBetween: 16
@@ -2671,6 +2133,8 @@ export function initializeSwiper() {
         }
     });
 }
+
+
 /**
  * Function to update the carousel title based on selected genre
  */
@@ -2749,12 +2213,10 @@ export function updateMovieListings(movies) {
 }
 
 --- File: static\js\entry.js ---
+// File: static/js/entry.js
+
 import { initializeSwiper } from './carousel.js';  // Example import
-import { initializeFilterDropdowns } from './filter.js';  // Example import
-import { initializeFilterPanelToggle } from './filter.js';  // Example import
-import { initializeFilterActionButtons } from './filter.js';  // Example import
-
-
+import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js';  // Example imports
 
 /** Cache Elements and Buttons */
 export const clearSearchBtn = document.getElementById('clear-search');
@@ -2775,7 +2237,7 @@ export let debounceTimer = null;
 export const genreFontMapping = {
     "Action": "'Anton', sans-serif",
     "Drama": "'Playfair Display', serif",
-    "Family": "'Baloo 2', cursive",
+    "Family": "'Baloo 2', cursive", 
     "Comedy": "'Comic Sans MS', cursive, sans-serif",
     "Thriller": "'Roboto Slab', serif",
     "Horror": "'Creepster', cursive",
@@ -2789,13 +2251,13 @@ export const genreFontMapping = {
  * Function to show the progress indicator
  */
 export function showProgressIndicator() {
-    console.log("showProgressIndicator aufgerufen");
+    console.log("showProgressIndicator called");
     if (progressIndicator) {
-        progressIndicator.style.display = 'flex'; // Progress Indicator anzeigen
+        progressIndicator.style.display = 'flex'; // Show the Progress Indicator
         progressIndicator.setAttribute('aria-hidden', 'false');
-        console.log("Progress Indicator angezeigt:", progressIndicator.style.display);
+        console.log("Progress Indicator displayed:", progressIndicator.style.display);
     } else {
-        console.error("showProgressIndicator: Progress Indicator Element nicht gefunden.");
+        console.error("showProgressIndicator: Progress Indicator Element not found.");
     }
 }
 
@@ -2803,23 +2265,33 @@ export function showProgressIndicator() {
  * Function to hide the progress indicator
  */
 export function hideProgressIndicator() {
-    console.log("hideProgressIndicator aufgerufen");
+    console.log("hideProgressIndicator called");
     if (progressIndicator) {
-        progressIndicator.style.display = 'none'; // Progress Indicator ausblenden
+        progressIndicator.style.display = 'none'; // Hide the Progress Indicator
         progressIndicator.setAttribute('aria-hidden', 'true');
-        console.log("Progress Indicator ausgeblendet:", progressIndicator.style.display);
+        console.log("Progress Indicator hidden:", progressIndicator.style.display);
     } else {
-        console.error("hideProgressIndicator: Progress Indicator Element nicht gefunden.");
+        console.error("hideProgressIndicator: Progress Indicator Element not found.");
     }
 }
 
 --- File: static\js\filter.js ---
+// File: static/js/filter.js
 
-import { searchBox, debounceTimer, clearSearchBtn, toggleFiltersButton, searchDropdownContainer, clearAllFiltersButton,showAllResultsButton, movieContainer } from './entry.js';  // Example import
-import { updateCarouselTitle } from './carousel.js';  // Example import
-import { showProgressIndicator, hideProgressIndicator } from './entry.js';  // Example import
-import {updateMovieListings} from './catalog.js';  // Example import
-import {updatePagination } from './pagination.js';  // Example import
+import {
+    searchBox,
+    debounceTimer,
+    clearSearchBtn,
+    toggleFiltersButton,
+    searchDropdownContainer,
+    clearAllFiltersButton,
+    showAllResultsButton,
+    movieContainer
+} from './entry.js';
+import { updateCarouselTitle } from './carousel.js';
+import { showProgressIndicator, hideProgressIndicator } from './entry.js';
+import { updateMovieListings } from './catalog.js';
+import { updatePagination } from './pagination.js';
 
 /**
  * Function to initialize filter panel toggle
@@ -2879,6 +2351,7 @@ export function clearAllFilters() {
         badge.classList.remove('visible');
     });
 }
+
 /**
  * Function to initialize dropdowns and attach event listeners
  */
@@ -2925,6 +2398,7 @@ export function initializeFilterDropdowns() {
     // Initial filter update
     updateFilters();
 }
+
 /**
  * Function to attach event listeners to dropdowns using event delegation
  */
@@ -2953,11 +2427,6 @@ export function attachDropdownEventDelegation() {
 
                 // Trigger filter update
                 triggerDropdownChangeEvent();
-
-                // // Update carousel title based on selected genre
-                // if (dropdownList.id === 'genre-dropdown-list') {
-                //     updateCarouselTitle();
-                // }
             }
         });
 
@@ -2973,11 +2442,6 @@ export function attachDropdownEventDelegation() {
                 updateSelectionBadge([], selectionBadge);
                 clearButton.style.visibility = 'hidden';
                 triggerDropdownChangeEvent();
-
-                // // Update carousel title based on selected genre
-                // if (dropdownList.id === 'genre-dropdown-list') {
-                //     updateCarouselTitle();
-                // }
             });
         }
     });
@@ -3049,7 +2513,6 @@ export function triggerDropdownChangeEvent() {
     document.dispatchEvent(event);
 }
 
-
 /**
  * Function to update dropdown values and movie listings based on current selections and search query
  */
@@ -3096,7 +2559,7 @@ export function updateFilters(page = 1) {
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
 
-            updateMovieListings(movies);//in carousel.js
+            updateMovieListings(movies);
             updatePagination(current_page, total_pages);
         })
         .catch(error => {
@@ -3110,6 +2573,7 @@ export function updateFilters(page = 1) {
             hideProgressIndicator();
         });
 }
+
 /**
  * Helper to get selected values from a specific dropdown list
  */
@@ -3131,18 +2595,24 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
         return;
     }
 
-    dropdownList.innerHTML = "";  // Bestehende Optionen löschen
+
+    dropdownList.innerHTML = ""; // Clear existing options
 
     if (typeof options !== 'object' || Array.isArray(options)) {
         console.error(`populateDropdown: 'options' sollte ein Objekt sein. Erhalten:`, options);
         return;
     }
-
     // Convert options object to array and sort
     const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
 
     // Sort options as needed (e.g., alphabetically)
     optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+
+    // Create a container for the filter buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'filter-buttons-container';
+
+
 
     // Render buttons
     optionsArray.forEach(option => {
@@ -3152,12 +2622,16 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
         button.textContent = `${option.label} (${option.count})`;
         button.dataset.value = option.label;
 
+
         if (selectedValues.includes(option.label)) {
             button.classList.add('selected');
+
         }
 
-        dropdownList.appendChild(button);
+        buttonsContainer.appendChild(button);
     });
+    console.log(buttonsContainer);
+    dropdownList.appendChild(buttonsContainer);
 
     // Update Selection Badge after populating
     const parentDropdown = dropdownList.parentElement;
@@ -3334,10 +2808,10 @@ movieCards.forEach(card => {
 });
 }
 --- File: static\js\main.js ---
+// File: static/js/main.js
+
 import { initializeSwiper } from './carousel.js';  // Example import
-import {initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js'; 
-
-
+import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js'; 
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Filter.js: DOM fully loaded");
@@ -3346,6 +2820,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeFilterPanelToggle(); // Initialize filter panel toggle
     initializeFilterActionButtons(); // Initialize "Clear All" and "Show All Results" buttons
 });
+
 --- File: static\js\navbar.js ---
 document.addEventListener('DOMContentLoaded', function () {
     const navbar = document.querySelector('.navbar'); // Select the navbar element
@@ -3656,7 +3131,6 @@ export function attachPaginationEventListeners() {
     <!-- Swiper.js JS for Carousel -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <!-- Scripts -->
-    <!-- templates/index.html -->
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
