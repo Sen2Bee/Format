@@ -95,10 +95,12 @@
     color: var(--accent-color);
     transition: visibility 0.3s ease, opacity 0.3s ease;
 }
+
 #clear-search.visible {
     visibility: visible;
     opacity: 1;
 }
+
 /* Custom Dropdowns */
 .custom-dropdown {
     width: 100%;
@@ -192,11 +194,11 @@
     opacity: 1;
 }
 
-/* Show clear icon when hovering over the dropdown header */
-.dropdown-header:hover .clear-icon {
+/* Removed hover effect to make clear-icon visibility independent of hover */
+/* .dropdown-header:hover .clear-icon {
     visibility: visible;
     opacity: 1;
-}
+} */
 
 /* Dropdown List */
 .dropdown-list {

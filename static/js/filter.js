@@ -121,6 +121,14 @@ export function initializeFilterDropdowns() {
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
 
+    // Attach event listeners to include/exclude checkboxes
+    const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
+    includeExcludeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateFilters(); // Update filters when include/exclude toggles change
+        });
+    });    
+
     // Initial filter update
     updateFilters();
 }
@@ -149,7 +157,11 @@ export function attachDropdownEventDelegation() {
                 const clearButton = dropdownHeader.querySelector('.clear-icon');
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge(selectedValues, selectionBadge);
-                clearButton.style.visibility = selectedValues.length > 0 ? 'visible' : 'hidden';
+                if (selectedValues.length > 0) {
+                    clearButton.classList.add('visible');
+                } else {
+                    clearButton.classList.remove('visible');
+                }
 
                 // Trigger filter update
                 triggerDropdownChangeEvent();
@@ -166,7 +178,7 @@ export function attachDropdownEventDelegation() {
                 const dropdownHeader = dropdownList.previousElementSibling;
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge([], selectionBadge);
-                clearButton.style.visibility = 'hidden';
+                clearButton.classList.remove('visible');
                 triggerDropdownChangeEvent();
             });
         }
@@ -202,6 +214,7 @@ export function attachDropdownEventDelegation() {
         });
     });
 }
+
 
 /**
  * Function to toggle dropdown visibility
@@ -249,6 +262,7 @@ export function updateFilters(page = 1) {
     const yearInclude = document.querySelector('.include-exclude-checkbox[data-filter="year"]').checked;
     const genreInclude = document.querySelector('.include-exclude-checkbox[data-filter="genre"]').checked;
     const countryInclude = document.querySelector('.include-exclude-checkbox[data-filter="country"]').checked;
+    console.log(yearInclude, genreInclude, countryInclude)
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
@@ -300,7 +314,6 @@ export function updateFilters(page = 1) {
             hideProgressIndicator(); // Hide the progress indicator after the fetch completes
         });
 }
-
 
 /**
  * Helper to get selected values from a specific dropdown list
