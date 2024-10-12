@@ -56,6 +56,9 @@
     color: var(--link-hover-color);
     pointer-events: none;
     font-size: 1.5em;
+    visibility: hidden; /* Initially hidden */
+    transition: visibility 0.3s, opacity 0.3s ease;
+    opacity: 0; /* Hidden by default */
 }
 
 #search-box {
@@ -72,6 +75,11 @@
 
 #search-box:focus {
     outline: none;
+}
+/* When the search box contains text, show the icon */
+#search-box:not(:placeholder-shown) + .search-icon {
+    visibility: visible;
+    opacity: 1; /* Fade in the icon when text is present */
 }
 
 /* Custom Dropdowns */

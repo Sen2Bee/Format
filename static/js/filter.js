@@ -89,7 +89,7 @@ export function initializeFilterDropdowns() {
     if (searchBox) { // Check if searchBox exists
         searchBox.addEventListener('input', () => {
             // Toggle visibility of the clear icon
-            if (searchBox.value.length > 0) {
+            if (searchBox.value.length > 3) {
                 clearSearchBtn.classList.add('visible');
             } else {
                 clearSearchBtn.classList.remove('visible');
