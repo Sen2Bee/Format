@@ -237,11 +237,16 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     if (selectedValues.length > 0) {
         badgeElement.textContent = selectedValues.join(', ');
         badgeElement.classList.add('visible');
+        badgeElement.style.display = 'inline-block'; // Show the badge
     } else {
         badgeElement.textContent = '';
         badgeElement.classList.remove('visible');
+        badgeElement.style.display = 'none'; // hide the badge
     }
 }
+
+
+
 
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes

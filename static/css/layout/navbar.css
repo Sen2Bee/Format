@@ -26,10 +26,9 @@
 }
 
 .theme-title {
-    font-size: 1.4rem;  /* Adjust font size for the theme title */
+    font-size: 1.2rem;  /* Adjust font size for the theme title */
     color: var(--accent-color);  /* Use defined accent color */
-    font-weight: bold;
-    text-transform: uppercase;
+    text-transform: lowercase;
     transition: color var(--transition-duration);  /* Smooth color transition */
 }
 

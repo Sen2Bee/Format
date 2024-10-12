@@ -147,7 +147,8 @@
 
 /* Include/Exclude Toggle */
 .include-exclude-toggle {
-    display: flex;
+    /* display: flex; */
+    display: none;
     align-items: center;
     margin-right: 10px;
 }
@@ -167,7 +168,8 @@
 }
 
 .include-exclude-toggle input[type="checkbox"]:checked + .toggle-label {
-    background-color: var(--accent-color);
+    outline-color: var(--accent-color);
+    /* background-color: var(--accent-color); */
     color: #fff;
 }
 
@@ -179,9 +181,24 @@
     content: 'Exclude';
 }
 
+.selection-badge {
+    padding: 5px 10px;
+    border-radius: 50px;
+    background-color: var(--accent-color);
+    color: #fff;
+    font-size: 0.9em;
+    display: none; /* Hide initially */
+    height: auto;
+    line-height: normal;
+    white-space: nowrap;
+}
+
+
+
 /* Clear Icon for Dropdowns */
 .dropdown-header .clear-icon {
     visibility: hidden;
+    padding-left: 10px;
     opacity: 0;
     font-size: 1.4em;
     cursor: pointer;
