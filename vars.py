@@ -49,3 +49,19 @@ themes = [
     # {'name': 'Animated Disney Movies', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Animation' AND m.production_company LIKE '%Disney%'", 'css_class': 'theme-disney'},
     # {'name': 'Pixar Animation Movies', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Animation' AND m.production_company LIKE '%Pixar%'", 'css_class': 'theme-pixar'},
 ]
+
+
+# Search in title, original_title, and other specified fields
+search_conditions = ("""
+    (m.title LIKE %s 
+    OR m.original_title LIKE %s 
+    OR m.format_titel LIKE %s 
+    OR m.format_orig_titel LIKE %s 
+    OR m.wiki_awards LIKE %s
+    OR EXISTS (
+        SELECT 1 FROM cast c WHERE c.movie_id = m.movie_id AND c.name LIKE %s
+    )
+    OR EXISTS (
+        SELECT 1 FROM crew cr WHERE cr.movie_id = m.movie_id AND cr.job = 'director' AND cr.name LIKE %s
+    ))
+""")

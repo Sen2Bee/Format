@@ -238,9 +238,6 @@ export function triggerDropdownChangeEvent() {
     document.dispatchEvent(event);
 }
 
-/**
- * Function to update dropdown values and movie listings based on current selections and search query
- */
 export function updateFilters(page = 1) {
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
@@ -266,15 +263,10 @@ export function updateFilters(page = 1) {
         params.append('countries_include', countryInclude ? '1' : '0');
     }
 
-    // Adjust search logic as per the requirement
-    const shouldIncludeSearch = (searchQuery.length > 3) || (searchQuery.endsWith('!'));
-    if (shouldIncludeSearch) {
+    // Search logic: apply filters and shrink dropdowns based on search query
+    if (searchQuery.length > 0) {
         params.append('search', searchQuery);
     }
-    else
-        if(searchQuery.length != 0)
-            return
-        
 
     params.append('page', page);
 
@@ -289,25 +281,25 @@ export function updateFilters(page = 1) {
             console.log("API Response Data:", data);
             const { years, genres, countries, movies, current_page, total_pages } = data;
 
-            // Populate each dropdown with data
+            // Populate dropdowns based on the filtered data from search query
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
 
-            updateMovieListings(movies);
-            updatePagination(current_page, total_pages);
+            updateMovieListings(movies); // Updates the displayed movie cards
+            updatePagination(current_page, total_pages); // Updates the pagination controls
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
             if (movieContainer) {
-                movieContainer.innerHTML = `<p class="no-movies-message">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>`;
+                movieContainer.innerHTML = `<p class="no-movies-message">An error occurred. Please try again later.</p>`;
             }
         })
         .finally(() => {
-            // Hide the progress indicator after fetch completes (success or error)
-            hideProgressIndicator();
+            hideProgressIndicator(); // Hide the progress indicator after the fetch completes
         });
 }
+
 
 /**
  * Helper to get selected values from a specific dropdown list

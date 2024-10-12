@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, send_from_directory, jsonify
 import mysql.connector
-from vars import db_name, db_passwd, db_user, themes
+from vars import db_name, db_passwd, db_user, themes, search_conditions
 import math
 import os
 import redis
@@ -281,6 +281,9 @@ def catalog():
     print("Featured Movies Data:", selected_theme)
 
     return ret_val
+
+
+
 @app.route('/filter_movies', methods=['GET'])
 def filter_movies():
     try:
@@ -310,19 +313,7 @@ def filter_movies():
             search_pattern = f"%{search_query}%"
             
             # Search in title, original_title, and other specified fields
-            where_conditions.append("""
-                (m.title LIKE %s 
-                OR m.original_title LIKE %s 
-                OR m.format_titel LIKE %s 
-                OR m.format_orig_titel LIKE %s 
-                OR m.wiki_awards LIKE %s
-                OR EXISTS (
-                    SELECT 1 FROM cast c WHERE c.movie_id = m.movie_id AND c.name LIKE %s
-                )
-                OR EXISTS (
-                    SELECT 1 FROM crew cr WHERE cr.movie_id = m.movie_id AND cr.job = 'director' AND cr.name LIKE %s
-                ))
-            """)
+            where_conditions.append(search_conditions)
             
             # Add the search pattern for each field
             params.extend([search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, search_pattern])
@@ -423,9 +414,9 @@ def filter_movies():
 
         # **Fetch Counts for Dropdown Filters**
         # Diese Funktionen sollten die aktuellen Filter berücksichtigen, um aktualisierte Counts bereitzustellen
-        genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres)
-        year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres)
-        country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres)
+        genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres, search_query)
+        year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres, search_query)
+        country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres, search_query)
 
         # **Sort Years with Decades**
         year_counts = sort_years_with_decades(year_counts)
@@ -535,9 +526,9 @@ def count_movies():
         print(f"Error occurred while counting movies: {e}")
         return jsonify({'error': str(e)}), 500
 
-def get_counts(cursor, field, selected_years, selected_countries, selected_genres):
+def get_counts(cursor, field, selected_years, selected_countries, selected_genres, search_query):
     """
-    Helper function to get counts of distinct values for the specified field.
+    Helper function to get counts of distinct values for the specified field, including search query filtering.
     """
     # Ensure field is a valid column name to prevent SQL injection
     if field not in {"genre", "release_date", "country"}:
@@ -554,6 +545,25 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
 
     params = []
 
+    # Apply search filter if available
+    if search_query:
+        search_pattern = f"%{search_query}%"
+        search_conditions = ("""
+            AND (m.title LIKE %s 
+            OR m.original_title LIKE %s 
+            OR m.format_titel LIKE %s 
+            OR m.format_orig_titel LIKE %s 
+            OR m.wiki_awards LIKE %s
+            OR EXISTS (
+                SELECT 1 FROM cast c WHERE c.movie_id = m.movie_id AND c.name LIKE %s
+            )
+            OR EXISTS (
+                SELECT 1 FROM crew cr WHERE cr.movie_id = m.movie_id AND cr.job = 'director' AND cr.name LIKE %s
+            ))
+        """)
+        count_query += search_conditions
+        params.extend([search_pattern] * 7)
+
     # Apply year filters if available
     if selected_years:
         years_conditions = []
@@ -564,7 +574,6 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
                 years_conditions.append("m.release_date BETWEEN %s AND %s")
                 params.extend([start_year, end_year])
             else:
-                # Treat single years as integers for SQL comparison
                 years_conditions.append("m.release_date = %s")
                 params.append(int(year))
 
@@ -585,20 +594,22 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
     # Group by the field and order by count descending
     count_query += f" GROUP BY {field} ORDER BY count DESC"
 
+    print(count_query, params)
+
     # Execute the query and fetch the results
     cursor.execute(count_query, params)
-    
+
     # Convert the fetched rows into a dictionary with proper key types
     result = {}
     for row in cursor.fetchall():
         key = row[field]
-        
+
         # Handle None values for the keys
         if key is None:
             key = 'Unknown'  # Replace None with a placeholder or remove this line to skip None keys
 
         # Ensure that all keys are strings for consistent comparison and sorting
-        if isinstance(key, bytes):  # Handle potential binary values from database
+        if isinstance(key, bytes):  # Handle potential binary values from the database
             key = key.decode("utf-8")
         elif isinstance(key, int):  # Ensure int keys (e.g., years) are strings
             key = str(key)
@@ -606,7 +617,6 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
         result[key] = row['count']
 
     return result
-
 
 def sort_years_with_decades(year_counts):
     """Sorts year counts so that grouped decades appear at the top of the list."""
