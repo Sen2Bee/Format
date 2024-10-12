@@ -78,7 +78,7 @@ export function clearAllFilters() {
 /**
  * Function to initialize dropdowns and attach event listeners
  */
-export function initializeFilterDropdowns() {
+export function initializeFilterDropdowns() {   
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
         console.log("Filter.js: Detected dropdown change event");
@@ -89,17 +89,18 @@ export function initializeFilterDropdowns() {
     if (searchBox) { // Check if searchBox exists
         searchBox.addEventListener('input', () => {
             // Toggle visibility of the clear icon
-            if (searchBox.value.length > 3) {
+            if (searchBox.value.length > 0) {
                 clearSearchBtn.classList.add('visible');
             } else {
                 clearSearchBtn.classList.remove('visible');
             }
-
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                updateFilters(); // Trigger filter update after user stops typing for 300ms
-                handleAutocomplete(); // Handle autocomplete for cast and director
-            }, 1000);
+            if (searchBox.value.length > 3) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updateFilters(); // Trigger filter update after user stops typing for 300ms
+                    handleAutocomplete(); // Handle autocomplete for cast and director
+                }, 1000);
+            }
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
@@ -264,7 +265,7 @@ export function updateFilters(page = 1) {
     }
 
     // Search logic: apply filters and shrink dropdowns based on search query
-    if (searchQuery.length > 0) {
+    if (searchQuery.length > 3) {
         params.append('search', searchQuery);
     }
 

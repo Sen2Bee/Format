@@ -35,7 +35,6 @@
     transform: rotate(180deg);
 }
 
-/* Search Box */
 .search-container {
     position: relative;
     width: 100%;
@@ -57,8 +56,8 @@
     pointer-events: none;
     font-size: 1.5em;
     visibility: hidden; /* Initially hidden */
-    transition: visibility 0.3s, opacity 0.3s ease;
     opacity: 0; /* Hidden by default */
+    transition: visibility 0.3s, opacity 0.3s ease;
 }
 
 #search-box {
@@ -76,12 +75,30 @@
 #search-box:focus {
     outline: none;
 }
+
 /* When the search box contains text, show the icon */
 #search-box:not(:placeholder-shown) + .search-icon {
     visibility: visible;
     opacity: 1; /* Fade in the icon when text is present */
 }
 
+/* Clear-Search Icon */
+#clear-search {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    visibility: hidden;
+    opacity: 0;
+    font-size: 1.4em;
+    cursor: pointer;
+    color: var(--accent-color);
+    transition: visibility 0.3s ease, opacity 0.3s ease;
+}
+#clear-search.visible {
+    visibility: visible;
+    opacity: 1;
+}
 /* Custom Dropdowns */
 .custom-dropdown {
     width: 100%;
@@ -160,15 +177,25 @@
     content: 'Exclude';
 }
 
-/* Clear Icon */
-.clear-icon {
+/* Clear Icon for Dropdowns */
+.dropdown-header .clear-icon {
     visibility: hidden;
-    font-size: 1.2em;
+    opacity: 0;
+    font-size: 1.4em;
     cursor: pointer;
+    color: var(--accent-color);
+    transition: visibility 0.3s ease, opacity 0.3s ease;
 }
 
+.dropdown-header .clear-icon.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Show clear icon when hovering over the dropdown header */
 .dropdown-header:hover .clear-icon {
     visibility: visible;
+    opacity: 1;
 }
 
 /* Dropdown List */
