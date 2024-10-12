@@ -3,7 +3,6 @@ import {getSelectedValues } from './filter.js';  // Example import
 
 
 
-
 export function initializeSwiper() {
     const swiperContainer = document.querySelector('.swiper-container');
     if (!swiperContainer) {
@@ -12,7 +11,7 @@ export function initializeSwiper() {
     }
 
     const totalSlides = swiperContainer.querySelectorAll('.swiper-slide').length;
-    const slidesPerViewDesktop = 4; // Base number for desktop
+    const slidesPerViewDesktop = 7; // Base number for desktop
 
     const swiper = new Swiper('.swiper-container', {
         loop: totalSlides > slidesPerViewDesktop,
@@ -28,9 +27,17 @@ export function initializeSwiper() {
         spaceBetween: 10,
         watchOverflow: true, // Disable Swiper if not enough slides
 
+        // Enable mousewheel scrolling
+        mousewheel: {
+            forceToAxis: true,  // Forces scrolling to work only in the horizontal axis
+            sensitivity: 1,     // Adjust the sensitivity of the scroll wheel
+        },
+
+        // Enable touch controls for mobile devices
+        simulateTouch: true,
+
         // Responsive breakpoints
         breakpoints: {
-            // When window width is >= 1400px
             2200: {
                 slidesPerView: 13,
                 spaceBetween: 10
@@ -47,37 +54,30 @@ export function initializeSwiper() {
                 slidesPerView: 8,
                 spaceBetween: 10
             },
-        
             1400: {
                 slidesPerView: 6.5,
                 spaceBetween: 10
             },
-            // When window width is >= 1200px
             1200: {
                 slidesPerView: 6,
                 spaceBetween: 6
             },
-            // When window width is >= 1024px
             1024: {
                 slidesPerView: 5,
                 spaceBetween: 8
             },
-            // When window width is >= 900px
             900: {
                 slidesPerView: 4,
                 spaceBetween: 10
             },
-            // When window width is >= 768px
             768: {
                 slidesPerView: 3,
                 spaceBetween: 12
             },
-            // When window width is >= 640px
             640: {
                 slidesPerView: 2.5,
                 spaceBetween: 14
             },
-            // When window width is < 640px
             0: { // Mobile-first
                 slidesPerView: 2.5,
                 spaceBetween: 16
@@ -97,6 +97,8 @@ export function initializeSwiper() {
         }
     });
 }
+
+
 /**
  * Function to update the carousel title based on selected genre
  */

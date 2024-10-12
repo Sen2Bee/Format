@@ -23,6 +23,8 @@
 .swiper-container {
     width: 100%;
     padding-bottom: 10px; /* Space for pagination bullets */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */    
 }
 
 .swiper-wrapper {
