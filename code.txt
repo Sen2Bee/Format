@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-12 14:36:15 ===
+=== Code Summary Generated at 2024-10-12 23:59:17 ===
 
 === Project Folder Structure ===
 
@@ -757,10 +757,12 @@ button {
     color: var(--accent-color);
     transition: visibility 0.3s ease, opacity 0.3s ease;
 }
+
 #clear-search.visible {
     visibility: visible;
     opacity: 1;
 }
+
 /* Custom Dropdowns */
 .custom-dropdown {
     width: 100%;
@@ -807,7 +809,8 @@ button {
 
 /* Include/Exclude Toggle */
 .include-exclude-toggle {
-    display: flex;
+    /* display: flex; */
+    display: none;
     align-items: center;
     margin-right: 10px;
 }
@@ -827,7 +830,8 @@ button {
 }
 
 .include-exclude-toggle input[type="checkbox"]:checked + .toggle-label {
-    background-color: var(--accent-color);
+    outline-color: var(--accent-color);
+    /* background-color: var(--accent-color); */
     color: #fff;
 }
 
@@ -839,9 +843,24 @@ button {
     content: 'Exclude';
 }
 
+.selection-badge {
+    padding: 5px 10px;
+    border-radius: 50px;
+    background-color: var(--accent-color);
+    color: #fff;
+    font-size: 0.9em;
+    display: none; /* Hide initially */
+    height: auto;
+    line-height: normal;
+    white-space: nowrap;
+}
+
+
+
 /* Clear Icon for Dropdowns */
 .dropdown-header .clear-icon {
     visibility: hidden;
+    padding-left: 10px;
     opacity: 0;
     font-size: 1.4em;
     cursor: pointer;
@@ -854,11 +873,11 @@ button {
     opacity: 1;
 }
 
-/* Show clear icon when hovering over the dropdown header */
-.dropdown-header:hover .clear-icon {
+/* Removed hover effect to make clear-icon visibility independent of hover */
+/* .dropdown-header:hover .clear-icon {
     visibility: visible;
     opacity: 1;
-}
+} */
 
 /* Dropdown List */
 .dropdown-list {
@@ -1389,10 +1408,9 @@ footer {
 }
 
 .theme-title {
-    font-size: 1.4rem;  /* Adjust font size for the theme title */
+    font-size: 1.2rem;  /* Adjust font size for the theme title */
     color: var(--accent-color);  /* Use defined accent color */
-    font-weight: bold;
-    text-transform: uppercase;
+    text-transform: lowercase;
     transition: color var(--transition-duration);  /* Smooth color transition */
 }
 
@@ -2409,7 +2427,7 @@ export function clearAllFilters() {
 /**
  * Function to initialize dropdowns and attach event listeners
  */
-export function initializeFilterDropdowns() {
+export function initializeFilterDropdowns() {   
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
         console.log("Filter.js: Detected dropdown change event");
@@ -2420,17 +2438,18 @@ export function initializeFilterDropdowns() {
     if (searchBox) { // Check if searchBox exists
         searchBox.addEventListener('input', () => {
             // Toggle visibility of the clear icon
-            if (searchBox.value.length > 3) {
+            if (searchBox.value.length > 0) {
                 clearSearchBtn.classList.add('visible');
             } else {
                 clearSearchBtn.classList.remove('visible');
             }
-
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                updateFilters(); // Trigger filter update after user stops typing for 300ms
-                handleAutocomplete(); // Handle autocomplete for cast and director
-            }, 1000);
+            if (searchBox.value.length > 3) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updateFilters(); // Trigger filter update after user stops typing for 300ms
+                    handleAutocomplete(); // Handle autocomplete for cast and director
+                }, 1000);
+            }
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
@@ -2450,6 +2469,14 @@ export function initializeFilterDropdowns() {
 
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
+
+    // Attach event listeners to include/exclude checkboxes
+    const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
+    includeExcludeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateFilters(); // Update filters when include/exclude toggles change
+        });
+    });    
 
     // Initial filter update
     updateFilters();
@@ -2479,7 +2506,11 @@ export function attachDropdownEventDelegation() {
                 const clearButton = dropdownHeader.querySelector('.clear-icon');
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge(selectedValues, selectionBadge);
-                clearButton.style.visibility = selectedValues.length > 0 ? 'visible' : 'hidden';
+                if (selectedValues.length > 0) {
+                    clearButton.classList.add('visible');
+                } else {
+                    clearButton.classList.remove('visible');
+                }
 
                 // Trigger filter update
                 triggerDropdownChangeEvent();
@@ -2496,7 +2527,7 @@ export function attachDropdownEventDelegation() {
                 const dropdownHeader = dropdownList.previousElementSibling;
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge([], selectionBadge);
-                clearButton.style.visibility = 'hidden';
+                clearButton.classList.remove('visible');
                 triggerDropdownChangeEvent();
             });
         }
@@ -2533,6 +2564,7 @@ export function attachDropdownEventDelegation() {
     });
 }
 
+
 /**
  * Function to toggle dropdown visibility
  */
@@ -2554,11 +2586,16 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     if (selectedValues.length > 0) {
         badgeElement.textContent = selectedValues.join(', ');
         badgeElement.classList.add('visible');
+        badgeElement.style.display = 'inline-block'; // Show the badge
     } else {
         badgeElement.textContent = '';
         badgeElement.classList.remove('visible');
+        badgeElement.style.display = 'none'; // hide the badge
     }
 }
+
+
+
 
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes
@@ -2579,6 +2616,7 @@ export function updateFilters(page = 1) {
     const yearInclude = document.querySelector('.include-exclude-checkbox[data-filter="year"]').checked;
     const genreInclude = document.querySelector('.include-exclude-checkbox[data-filter="genre"]').checked;
     const countryInclude = document.querySelector('.include-exclude-checkbox[data-filter="country"]').checked;
+    console.log(yearInclude, genreInclude, countryInclude)
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
@@ -2630,7 +2668,6 @@ export function updateFilters(page = 1) {
             hideProgressIndicator(); // Hide the progress indicator after the fetch completes
         });
 }
-
 
 /**
  * Helper to get selected values from a specific dropdown list
