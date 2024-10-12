@@ -17,7 +17,7 @@
     justify-content: space-between; /* Align filters side by side */
     gap: 10px; /* Add space between filter dropdowns */
     width: 100%;
-    max-width: 90%; /* Limit width for better layout */
+    max-width: 95%; /* Limit width for better layout */
 }
 
 
@@ -41,7 +41,8 @@
 /* Search Box */
 .search-container {
     position: relative;
-    width: 90%;
+    width: 100%;
+    max-width: 95%;
     height: 50px;
     margin-bottom: 5px;
     border: 2px solid var(--border-color);
