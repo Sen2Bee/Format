@@ -5,7 +5,6 @@ import { movieContainer } from './entry.js';  // Example import
  * Funktion zur Aktualisierung der Movie Listings basierend auf den Filterergebnissen
  */
 export function updateMovieListings(movies) {
-    console.log("Updating Movie Listings");
     if (!movieContainer) {
         console.error("updateMovieListings: movieContainer Element nicht gefunden.");
         return;

@@ -16,7 +16,7 @@ export const searchDropdownContainer = document.querySelector('.search-dropdown-
 export const clearAllFiltersButton = document.getElementById('clear-all-filters-button');
 export const showAllResultsButton = document.getElementById('show-all-results-button');
 
-export let debounceTimer = null;
+
 
 /** Genre to Font Mapping */
 export const genreFontMapping = {
@@ -36,11 +36,9 @@ export const genreFontMapping = {
  * Function to show the progress indicator
  */
 export function showProgressIndicator() {
-    console.log("showProgressIndicator called");
     if (progressIndicator) {
         progressIndicator.style.display = 'flex'; // Show the Progress Indicator
         progressIndicator.setAttribute('aria-hidden', 'false');
-        console.log("Progress Indicator displayed:", progressIndicator.style.display);
     } else {
         console.error("showProgressIndicator: Progress Indicator Element not found.");
     }
@@ -50,11 +48,9 @@ export function showProgressIndicator() {
  * Function to hide the progress indicator
  */
 export function hideProgressIndicator() {
-    console.log("hideProgressIndicator called");
     if (progressIndicator) {
         progressIndicator.style.display = 'none'; // Hide the Progress Indicator
         progressIndicator.setAttribute('aria-hidden', 'true');
-        console.log("Progress Indicator hidden:", progressIndicator.style.display);
     } else {
         console.error("hideProgressIndicator: Progress Indicator Element not found.");
     }

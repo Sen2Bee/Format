@@ -2,7 +2,6 @@
 
 import {
     searchBox,
-    debounceTimer,
     clearSearchBtn,
     toggleFiltersButton,
     searchDropdownContainer,
@@ -14,6 +13,8 @@ import { updateCarouselTitle } from './carousel.js';
 import { showProgressIndicator, hideProgressIndicator } from './entry.js';
 import { updateMovieListings } from './catalog.js';
 import { updatePagination } from './pagination.js';
+
+let debounceTimer = null;
 
 /**
  * Function to initialize filter panel toggle
@@ -98,7 +99,7 @@ export function initializeFilterDropdowns() {
             debounceTimer = setTimeout(() => {
                 updateFilters(); // Trigger filter update after user stops typing for 300ms
                 handleAutocomplete(); // Handle autocomplete for cast and director
-            }, 2000);
+            }, 1000);
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
@@ -359,7 +360,6 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
 
         buttonsContainer.appendChild(button);
     });
-    console.log(buttonsContainer);
     dropdownList.appendChild(buttonsContainer);
 
     // Update Selection Badge after populating
@@ -377,19 +377,28 @@ function handleAutocomplete() {
     const searchQuery = searchBox.value.trim();
 
     // Only perform autocomplete if the search query length is sufficient
-    if (searchQuery.length >= 2) {
+    if (searchQuery.length >= 3) {
         fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // Handle 404 or other error responses
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();  // Attempt to parse JSON
+            })
             .then(data => {
                 showAutocompleteSuggestions(data);
             })
             .catch(error => {
                 console.error('Error fetching autocomplete suggestions:', error);
+                hideAutocompleteSuggestions();  // Hide suggestions in case of error
+                // Optionally, show a user-friendly message (e.g., "No results found" or "Error fetching data")
             });
     } else {
         hideAutocompleteSuggestions();
     }
 }
+
 
 /**
  * Function to show autocomplete suggestions
