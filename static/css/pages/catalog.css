@@ -56,11 +56,6 @@
 
 /* Full Column Layout for Mobile */
 @media (max-width: 768px) {
-    .catalog-search {
-        padding: 30px 20px;
-
-    }
-
     .movie-listings {
         gap: 15px; /* Reduced gap for mobile */
         padding: 40px 20px;

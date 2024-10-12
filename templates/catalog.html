@@ -20,7 +20,7 @@
             
             <!-- Centered theme title in the navbar -->
             <div class="nav-center-title">
-                <span class="theme-title">a taste of {{ selected_theme }}</span>
+                <span class="theme-title">feature: {{ selected_theme }}</span>
             </div>
             
             <div class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" role="button" tabindex="0">
@@ -202,7 +202,6 @@
     <!-- Swiper.js JS for Carousel -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <!-- Scripts -->
-    <!-- templates/index.html -->
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>

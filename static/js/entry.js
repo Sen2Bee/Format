@@ -1,9 +1,7 @@
+// File: static/js/entry.js
+
 import { initializeSwiper } from './carousel.js';  // Example import
-import { initializeFilterDropdowns } from './filter.js';  // Example import
-import { initializeFilterPanelToggle } from './filter.js';  // Example import
-import { initializeFilterActionButtons } from './filter.js';  // Example import
-
-
+import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js';  // Example imports
 
 /** Cache Elements and Buttons */
 export const clearSearchBtn = document.getElementById('clear-search');
@@ -24,7 +22,7 @@ export let debounceTimer = null;
 export const genreFontMapping = {
     "Action": "'Anton', sans-serif",
     "Drama": "'Playfair Display', serif",
-    "Family": "'Baloo 2', cursive",
+    "Family": "'Baloo 2', cursive", 
     "Comedy": "'Comic Sans MS', cursive, sans-serif",
     "Thriller": "'Roboto Slab', serif",
     "Horror": "'Creepster', cursive",
@@ -38,13 +36,13 @@ export const genreFontMapping = {
  * Function to show the progress indicator
  */
 export function showProgressIndicator() {
-    console.log("showProgressIndicator aufgerufen");
+    console.log("showProgressIndicator called");
     if (progressIndicator) {
-        progressIndicator.style.display = 'flex'; // Progress Indicator anzeigen
+        progressIndicator.style.display = 'flex'; // Show the Progress Indicator
         progressIndicator.setAttribute('aria-hidden', 'false');
-        console.log("Progress Indicator angezeigt:", progressIndicator.style.display);
+        console.log("Progress Indicator displayed:", progressIndicator.style.display);
     } else {
-        console.error("showProgressIndicator: Progress Indicator Element nicht gefunden.");
+        console.error("showProgressIndicator: Progress Indicator Element not found.");
     }
 }
 
@@ -52,12 +50,12 @@ export function showProgressIndicator() {
  * Function to hide the progress indicator
  */
 export function hideProgressIndicator() {
-    console.log("hideProgressIndicator aufgerufen");
+    console.log("hideProgressIndicator called");
     if (progressIndicator) {
-        progressIndicator.style.display = 'none'; // Progress Indicator ausblenden
+        progressIndicator.style.display = 'none'; // Hide the Progress Indicator
         progressIndicator.setAttribute('aria-hidden', 'true');
-        console.log("Progress Indicator ausgeblendet:", progressIndicator.style.display);
+        console.log("Progress Indicator hidden:", progressIndicator.style.display);
     } else {
-        console.error("hideProgressIndicator: Progress Indicator Element nicht gefunden.");
+        console.error("hideProgressIndicator: Progress Indicator Element not found.");
     }
 }

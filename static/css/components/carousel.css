@@ -10,7 +10,7 @@
 }
 
 .movie-carousel-section h2 {
-    font-size: 2em;
+    font-size: 1.2em;
     font-weight: 100;
     color: var(--text-light); /* Use defined light text color */
 
@@ -40,8 +40,8 @@
 
 .featured-movie-card {
     position: relative;
-    width: 200px; /* Adjust based on desired poster size */
-    height: 300px; /* Adjust based on desired poster size */
+    width: 180px; /* Adjust based on desired poster size */
+
     overflow: hidden;
     border-radius: 8px;
 }

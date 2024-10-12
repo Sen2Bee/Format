@@ -1,9 +1,19 @@
+// File: static/js/filter.js
 
-import { searchBox, debounceTimer, clearSearchBtn, toggleFiltersButton, searchDropdownContainer, clearAllFiltersButton,showAllResultsButton, movieContainer } from './entry.js';  // Example import
-import { updateCarouselTitle } from './carousel.js';  // Example import
-import { showProgressIndicator, hideProgressIndicator } from './entry.js';  // Example import
-import {updateMovieListings} from './catalog.js';  // Example import
-import {updatePagination } from './pagination.js';  // Example import
+import {
+    searchBox,
+    debounceTimer,
+    clearSearchBtn,
+    toggleFiltersButton,
+    searchDropdownContainer,
+    clearAllFiltersButton,
+    showAllResultsButton,
+    movieContainer
+} from './entry.js';
+import { updateCarouselTitle } from './carousel.js';
+import { showProgressIndicator, hideProgressIndicator } from './entry.js';
+import { updateMovieListings } from './catalog.js';
+import { updatePagination } from './pagination.js';
 
 /**
  * Function to initialize filter panel toggle
@@ -63,6 +73,7 @@ export function clearAllFilters() {
         badge.classList.remove('visible');
     });
 }
+
 /**
  * Function to initialize dropdowns and attach event listeners
  */
@@ -109,6 +120,7 @@ export function initializeFilterDropdowns() {
     // Initial filter update
     updateFilters();
 }
+
 /**
  * Function to attach event listeners to dropdowns using event delegation
  */
@@ -137,11 +149,6 @@ export function attachDropdownEventDelegation() {
 
                 // Trigger filter update
                 triggerDropdownChangeEvent();
-
-                // // Update carousel title based on selected genre
-                // if (dropdownList.id === 'genre-dropdown-list') {
-                //     updateCarouselTitle();
-                // }
             }
         });
 
@@ -157,11 +164,6 @@ export function attachDropdownEventDelegation() {
                 updateSelectionBadge([], selectionBadge);
                 clearButton.style.visibility = 'hidden';
                 triggerDropdownChangeEvent();
-
-                // // Update carousel title based on selected genre
-                // if (dropdownList.id === 'genre-dropdown-list') {
-                //     updateCarouselTitle();
-                // }
             });
         }
     });
@@ -233,7 +235,6 @@ export function triggerDropdownChangeEvent() {
     document.dispatchEvent(event);
 }
 
-
 /**
  * Function to update dropdown values and movie listings based on current selections and search query
  */
@@ -280,7 +281,7 @@ export function updateFilters(page = 1) {
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
 
-            updateMovieListings(movies);//in carousel.js
+            updateMovieListings(movies);
             updatePagination(current_page, total_pages);
         })
         .catch(error => {
@@ -294,6 +295,7 @@ export function updateFilters(page = 1) {
             hideProgressIndicator();
         });
 }
+
 /**
  * Helper to get selected values from a specific dropdown list
  */
@@ -315,18 +317,24 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
         return;
     }
 
-    dropdownList.innerHTML = "";  // Bestehende Optionen löschen
+
+    dropdownList.innerHTML = ""; // Clear existing options
 
     if (typeof options !== 'object' || Array.isArray(options)) {
         console.error(`populateDropdown: 'options' sollte ein Objekt sein. Erhalten:`, options);
         return;
     }
-
     // Convert options object to array and sort
     const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
 
     // Sort options as needed (e.g., alphabetically)
     optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+
+    // Create a container for the filter buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'filter-buttons-container';
+
+
 
     // Render buttons
     optionsArray.forEach(option => {
@@ -336,12 +344,16 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
         button.textContent = `${option.label} (${option.count})`;
         button.dataset.value = option.label;
 
+
         if (selectedValues.includes(option.label)) {
             button.classList.add('selected');
+
         }
 
-        dropdownList.appendChild(button);
+        buttonsContainer.appendChild(button);
     });
+    console.log(buttonsContainer);
+    dropdownList.appendChild(buttonsContainer);
 
     // Update Selection Badge after populating
     const parentDropdown = dropdownList.parentElement;
