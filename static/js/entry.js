@@ -15,6 +15,9 @@ export const toggleFiltersButton = document.getElementById('toggle-filters-butto
 export const searchDropdownContainer = document.querySelector('.search-dropdown-container');
 export const clearAllFiltersButton = document.getElementById('clear-all-filters-button');
 export const showAllResultsButton = document.getElementById('show-all-results-button');
+// New elements for advanced filters
+export const toggleAdvancedFiltersButton = document.getElementById('toggle-advanced-filters-button');
+export const advancedFiltersContainer = document.getElementById('advanced-filters-container');
 
 
 

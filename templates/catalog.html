@@ -151,6 +151,61 @@
                         <!-- Buttons will be populated here dynamically -->
                     </div>
                 </div>
+                <!-- Advanced Filters Toggle Button -->
+                <button id="toggle-advanced-filters-button" class="toggle-advanced-filters-button" type="button">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+                
+                <!-- Advanced Filters Section -->
+                <div id="advanced-filters-container" class="advanced-filters-container hidden">
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                <span>Standort</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Standorte"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="standort-dropdown-list">
+                            <!-- Buttons will be populated here dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-compact-disc" aria-hidden="true"></i>
+                                <span>Medium</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Medien"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="medium-dropdown-list">
+                            <!-- Buttons will be populated here dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-sort" aria-hidden="true"></i>
+                                <span>Sortieren nach</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Aktuelle Sortierung"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Sortierung zurücksetzen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="sort-dropdown-list">
+                            <!-- Buttons will be populated here dynamically -->
+                        </div>
+                    </div>    
+                </div>          
             </form>
 
             <!-- Buttons Row -->

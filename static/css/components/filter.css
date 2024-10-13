@@ -380,3 +380,52 @@
         flex: 1 0 100%; /* Full width on very small screens */
     }
 }
+
+
+/* ... existing CSS ... */
+
+/* Advanced Filters Toggle Button */
+#toggle-advanced-filters-button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#toggle-advanced-filters-button:hover {
+    background-color: #444;
+}
+
+/* Advanced Filters Container */
+.advanced-filters-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    max-width: var(--filter-width);
+}
+
+.advanced-filters-container.hidden {
+    display: none;
+}
+
+/* Adjust custom-dropdown for advanced filters */
+.advanced-filters-container .custom-dropdown {
+    max-width: calc(33.33% - 10px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .advanced-filters-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .advanced-filters-container .custom-dropdown {
+        max-width: 100%;
+    }
+}

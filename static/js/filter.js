@@ -7,7 +7,9 @@ import {
     searchDropdownContainer,
     clearAllFiltersButton,
     showAllResultsButton,
-    movieContainer
+    movieContainer,
+    toggleAdvancedFiltersButton,
+    advancedFiltersContainer    
 } from './entry.js';
 import { updateCarouselTitle } from './carousel.js';
 import { showProgressIndicator, hideProgressIndicator } from './entry.js';
@@ -24,6 +26,15 @@ export function initializeFilterPanelToggle() {
         toggleFiltersButton.addEventListener('click', () => {
             searchDropdownContainer.classList.toggle('hidden');
             toggleFiltersButton.classList.toggle('rotate');
+        });
+    }
+
+    // Initialize Advanced Filters Toggle
+    if (toggleAdvancedFiltersButton && advancedFiltersContainer) {
+        toggleAdvancedFiltersButton.addEventListener('click', () => {
+            advancedFiltersContainer.classList.toggle('hidden');
+            toggleAdvancedFiltersButton.classList.toggle('active');
+            // Ensure no unnecessary filter reload is triggered here
         });
     }
 }
@@ -241,7 +252,6 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     } else {
         badgeElement.textContent = '';
         badgeElement.classList.remove('visible');
-        badgeElement.style.display = 'none'; // hide the badge
     }
 }
 
