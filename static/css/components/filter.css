@@ -14,28 +14,42 @@
 /* Filter Form Layout */
 #filter-form {
     display: flex;
-    justify-content: space-between; /* Align filters side by side */
-    gap: 10px; /* Add space between filter dropdowns */
+    justify-content: space-between;
+    gap: 10px;
     width: 100%;
-    max-width: var(--filter-width); /* Limit width for better layout */
+    max-width: var(--filter-width);
 }
 
+/* Toggle Buttons */
+#toggle-filters-button,
+#toggle-advanced-filters-button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.5em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
 
-/* Show/Hide Filter Button */
 #toggle-filters-button {
     position: absolute;
     top: 10px;
     right: 20px;
-    background-color: transparent;
-    border: none;
-    color: #fff;
-    font-size: 1.5em;
-    cursor: pointer;
-    transition: transform 0.3s ease;
 }
 
 #toggle-filters-button.rotate {
     transform: rotate(180deg);
+}
+
+#toggle-advanced-filters-button {
+    background-color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#toggle-advanced-filters-button:hover {
+    background-color: #444;
 }
 
 /* Search Box */
@@ -57,10 +71,10 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--link-hover-color);
-    pointer-events: none;
     font-size: 1.5em;
-    visibility: hidden; /* Initially hidden */
-    opacity: 0; /* Hidden by default */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
     transition: visibility 0.3s, opacity 0.3s ease;
 }
 
@@ -80,23 +94,21 @@
     outline: none;
 }
 
-/* When the search box contains text, show the icon */
 #search-box:not(:placeholder-shown) + .search-icon {
     visibility: visible;
-    opacity: 1; /* Fade in the icon when text is present */
+    opacity: 1;
 }
 
-/* Clear-Search Icon */
 #clear-search {
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    visibility: hidden;
-    opacity: 0;
     font-size: 1.4em;
     cursor: pointer;
     color: var(--accent-color);
+    visibility: hidden;
+    opacity: 0;
     transition: visibility 0.3s ease, opacity 0.3s ease;
 }
 
@@ -105,22 +117,20 @@
     opacity: 1;
 }
 
-
-/* Custom Dropdowns Layout */
+/* Custom Dropdowns */
 .custom-dropdown {
     width: 100%;
-    max-width: calc(33.33% - 10px); /* Equal width for all dropdowns with a small gap */
+    max-width: calc(33.33% - 10px);
     margin-bottom: 10px;
 }
 
-/* Dropdown Header Styling */
 .dropdown-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     background-color: #333;
     color: #fff;
-    padding: 10px 10px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
@@ -152,7 +162,6 @@
 
 /* Include/Exclude Toggle */
 .include-exclude-toggle {
-    /* display: flex; */
     display: none;
     align-items: center;
     margin-right: 10px;
@@ -174,7 +183,6 @@
 
 .include-exclude-toggle input[type="checkbox"]:checked + .toggle-label {
     outline-color: var(--accent-color);
-    /* background-color: var(--accent-color); */
     color: #fff;
 }
 
@@ -186,19 +194,16 @@
     content: 'Exclude';
 }
 
+/* Selection Badge */
 .selection-badge {
     padding: 5px 10px;
     border-radius: 50px;
     background-color: var(--accent-color);
     color: #fff;
     font-size: 0.9em;
-    display: none; /* Hide initially */
-    height: auto;
-    line-height: normal;
+    display: none;
     white-space: nowrap;
 }
-
-
 
 /* Clear Icon for Dropdowns */
 .dropdown-header .clear-icon {
@@ -216,16 +221,10 @@
     opacity: 1;
 }
 
-/* Removed hover effect to make clear-icon visibility independent of hover */
-/* .dropdown-header:hover .clear-icon {
-    visibility: visible;
-    opacity: 1;
-} */
-
 /* Dropdown List */
 .dropdown-list {
     width: 100%;
-    max-height: 0; /* Initially collapsed */
+    max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease, padding 0.3s ease;
     background-color: #2c2c2c;
@@ -236,34 +235,29 @@
 }
 
 .dropdown-list.show {
-    max-height: 500px; /* Adjust as needed */
+    max-height: 500px;
     padding: 10px;
 }
 
 /* Filter Buttons Container */
-.dropdown-list .filter-buttons-container {
+.filter-buttons-container {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     width: 100%;
-    max-height: 300px; /* Ensure it fits within .dropdown-list */
-    overflow-y: auto; /* Enable vertical scrolling */
-    
-    /* Hide Scrollbar for Firefox */
-    scrollbar-width: none; /* Firefox */
-    
-    /* Hide Scrollbar for IE, Edge */
-    -ms-overflow-style: none; /* IE and Edge */
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
 }
 
-/* Hide Scrollbar for WebKit Browsers (Chrome, Safari, Edge) */
-.dropdown-list .filter-buttons-container::-webkit-scrollbar {
-    width: 0; /* Removes scrollbar width */
-    height: 0; /* Removes horizontal scrollbar if any */
+.filter-buttons-container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
-/* Optional: Add a gradient to indicate more content */
-.dropdown-list .filter-buttons-container::after {
+.filter-buttons-container::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -272,15 +266,15 @@
     height: 30px;
     background: linear-gradient(to top, #2c2c2c, rgba(44, 44, 44, 0));
     pointer-events: none;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
 .dropdown-list.show .filter-buttons-container::after {
-    display: block; /* Show when dropdown is open */
+    display: block;
 }
 
 /* Filter Buttons */
-.dropdown-list .filter-button {
+.filter-button {
     padding: 8px 12px;
     background-color: #444;
     color: #fff;
@@ -289,18 +283,17 @@
     cursor: pointer;
     transition: background-color 0.3s, border-color 0.3s;
     font-size: 0.9em;
-    flex: 1 0 30%; /* Approximately three buttons per row */
+    flex: 1 0 30%;
     text-align: center;
     box-sizing: border-box;
 }
 
-.dropdown-list .filter-button.selected {
+.filter-button.selected {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
-    color: #fff;
 }
 
-.dropdown-list .filter-button:hover {
+.filter-button:hover {
     background-color: #555;
     border-color: #666;
 }
@@ -330,15 +323,22 @@
     background-color: var(--accent-color);
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    #filter-form {
+@media (min-width: 768px) {
+
+    .advanced-filters-container.hidden {
+        display: none;
+    }    
+    .advanced-filters-container {
         flex-direction: column;
         align-items: stretch;
+        width: 100%; /* Ensure full width on mobile */
+        max-width: 100%; /* Prevent any unintentional shrinking */
     }
-    .custom-dropdown {
+
+    .advanced-filters-container .custom-dropdown {
         max-width: 100%;
-    }        
+    }
+
     #toggle-filters-button {
         top: 5px;
         right: 10px;
@@ -360,7 +360,50 @@
     .filter-button {
         font-size: 0.85em;
         padding: 6px 10px;
-        flex: 1 0 45%; /* Two buttons per row on medium screens */
+        flex: 1 0 45%;
+    }
+
+    .filter-action-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+    }
+}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #filter-form,
+    .advanced-filters-container {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%; /* Ensure full width on mobile */
+    }
+
+    .custom-dropdown,
+    .advanced-filters-container .custom-dropdown {
+        max-width: 100%;
+    }
+
+    #toggle-filters-button {
+        top: 5px;
+        right: 10px;
+        font-size: 1.3em;
+    }
+
+    .dropdown-header {
+        font-size: 1em;
+    }
+
+    .dropdown-header .header-label i {
+        font-size: 1.3em;
+    }
+
+    .include-exclude-toggle .toggle-label {
+        font-size: 0.75em;
+    }
+
+    .filter-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+        flex: 1 0 45%;
     }
 
     .filter-action-button {
@@ -377,55 +420,6 @@
     .filter-button {
         font-size: 0.8em;
         padding: 6px 8px;
-        flex: 1 0 100%; /* Full width on very small screens */
-    }
-}
-
-
-/* ... existing CSS ... */
-
-/* Advanced Filters Toggle Button */
-#toggle-advanced-filters-button {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1em;
-    margin-bottom: 10px;
-    transition: background-color 0.3s ease;
-}
-
-#toggle-advanced-filters-button:hover {
-    background-color: #444;
-}
-
-/* Advanced Filters Container */
-.advanced-filters-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-    max-width: var(--filter-width);
-}
-
-.advanced-filters-container.hidden {
-    display: none;
-}
-
-/* Adjust custom-dropdown for advanced filters */
-.advanced-filters-container .custom-dropdown {
-    max-width: calc(33.33% - 10px);
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .advanced-filters-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .advanced-filters-container .custom-dropdown {
-        max-width: 100%;
+        flex: 1 0 100%;
     }
 }

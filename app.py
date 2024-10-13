@@ -277,13 +277,9 @@ def catalog():
                                featured_movies=featured_movies,
                                selected_theme=selected_theme['name'] if selected_theme else "Featured")
 
-    # Debugging: Print featured movies data
-    print("Featured Movies Data:", selected_theme)
-
     return ret_val
 
-
-
+# Existing route with new parameters and logic integrated
 @app.route('/filter_movies', methods=['GET'])
 def filter_movies():
     try:
@@ -291,7 +287,13 @@ def filter_movies():
         selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
         selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
         selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
-        search_query = request.args.get('search', '').strip()  # **New: Retrieve search query**
+        search_query = request.args.get('search', '').strip()  # Retrieve search query
+
+        # New parameters
+        standorte = request.args.get('standorte', '')
+        media = request.args.get('media', '')
+        sort_by = request.args.get('sort_by', 'title')  # Default sorting by title
+
         page = int(request.args.get('page', 1))  # Retrieve the current page
         per_page = 10
         offset = (page - 1) * per_page
@@ -309,14 +311,9 @@ def filter_movies():
 
         # **Apply Search Condition**
         if search_query:
-            # Define the search pattern
             search_pattern = f"%{search_query}%"
-            
-            # Search in title, original_title, and other specified fields
-            where_conditions.append(search_conditions)
-            
-            # Add the search pattern for each field
-            params.extend([search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, search_pattern, search_pattern])
+            where_conditions.append("(m.title LIKE %s OR m.original_title LIKE %s OR m.director LIKE %s)")
+            params.extend([search_pattern, search_pattern, search_pattern])
 
         # **Apply Year Conditions**
         if selected_years:
@@ -344,44 +341,53 @@ def filter_movies():
             where_conditions.append(f"m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({country_placeholders}))")
             params.extend(selected_countries)
 
+        # **Apply Standorte (Location) Filter**
+        if standorte:
+            standort_list = standorte.split(',')
+            standort_placeholders = ','.join(['%s'] * len(standort_list))
+            where_conditions.append(f"m.format_standort IN ({standort_placeholders})")
+            params.extend(standort_list)
+        # **Apply Media Filter**
+        if media:
+            media_list = media.split(',')
+            media_filters = [f"m.{medium} > 0" for medium in media_list]
+            where_conditions.append(f"({' OR '.join(media_filters)})")
+
         # **Construct the WHERE Clause**
-        if where_conditions:
-            where_clause = " WHERE " + " AND ".join(where_conditions)
-        else:
-            where_clause = ""
+        where_clause = " WHERE " + " AND ".join(where_conditions) if where_conditions else ""
 
         # **Construct the Base Query**
         base_query = f"""
-            SELECT 
-                m.movie_id, 
-                COALESCE(m.format_titel, m.title) AS main_title,  
-                m.original_title, 
-                m.release_date, 
-                m.runtime, 
-                m.imdb_id, 
-                m.imdb_rating, 
-                m.format_fsk, 
-                m.folder_name, 
-                m.overview, 
-                m.format_standort,  
+            SELECT
+                m.movie_id,
+                COALESCE(m.format_titel, m.title) AS main_title,
+                m.original_title,
+                m.release_date,
+                m.runtime,
+                m.imdb_id,
+                m.imdb_rating,
+                m.format_fsk,
+                m.folder_name,
+                m.overview,
+                m.format_standort,
                 GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
-                GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
+                GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,  -- Correct retrieval of genres      
                 (SELECT name FROM crew WHERE crew.movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
-                (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') 
+                (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ')
                     FROM cast WHERE cast.movie_id = m.movie_id LIMIT 3) AS actors,
                 TRIM(BOTH ', ' FROM CONCAT_WS(', ',
-                    CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
-                    CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
-                    CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
-                    CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
+                    CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END,
+                    CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END,
+                    CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END,     
+                    CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END 
                 )) AS formats
-            FROM 
+            FROM
                 movies m
-                LEFT JOIN genres g ON m.movie_id = g.movie_id
+                LEFT JOIN genres g ON m.movie_id = g.movie_id  -- Correct join with genres
                 LEFT JOIN countries c ON m.movie_id = c.movie_id
             {where_clause}
             GROUP BY m.movie_id
-            ORDER BY m.release_date DESC
+            ORDER BY {sort_by}  -- Sorting Logic
             LIMIT %s OFFSET %s
         """
 
@@ -399,10 +405,11 @@ def filter_movies():
         base_query_params.extend([per_page, offset])
 
         # **Execute the Base Query to Get Filtered Movie Data**
+
         cursor.execute(base_query, base_query_params)
         filtered_movies = cursor.fetchall()
 
-        # **Convert 'countries' und 'genres' von Strings zu Listen**
+        # **Convert 'countries' and 'genres' from Strings to Lists**
         for movie in filtered_movies:
             movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
             movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
@@ -413,13 +420,15 @@ def filter_movies():
         total_pages = math.ceil(total_movies / per_page) if per_page else 1  # Avoid division by zero
 
         # **Fetch Counts for Dropdown Filters**
-        # Diese Funktionen sollten die aktuellen Filter berücksichtigen, um aktualisierte Counts bereitzustellen
         genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres, search_query)
         year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres, search_query)
         country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres, search_query)
+        standorte_counts = get_counts(cursor, "format_standort", selected_years, selected_countries, selected_genres, search_query)
+        media_counts = get_counts(cursor, "media", selected_years, selected_countries, selected_genres, search_query)
 
         # **Sort Years with Decades**
         year_counts = sort_years_with_decades(year_counts)
+
         # **Close the Cursor and Connection**
         cursor.close()
         connection.close()
@@ -427,121 +436,70 @@ def filter_movies():
         # **Return the JSON Response**
         return jsonify({
             'movies': filtered_movies,
-            'years': year_counts if year_counts else {},  # Ensure `years` is included, even if empty
+            'years': year_counts,
             'genres': genre_counts,
             'countries': country_counts,
+            'standorte': standorte_counts,
+            'media': media_counts,
             'current_page': page,
             'total_pages': total_pages,
-            'total_movies': total_movies  # **New: Include total_movies in the response**
+            'total_movies': total_movies  # Include total_movies in the response
         })
     except Exception as e:
         print(f"Error occurred: {e}")
         return jsonify({'error': str(e)}), 500
 
-
-@app.route('/count_movies', methods=['GET'])
-def count_movies():
-    try:
-        # Retrieve filter values and search query from request arguments
-        selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
-        selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
-        selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
-        search_query = request.args.get('search', '').strip()
-
-        # print(f"Counting movies for search_query: '{search_query}', years: {selected_years}, genres: {selected_genres}, countries: {selected_countries}")
-
-        # Connect to the database
-        connection = connect_to_db()
-        if not connection:
-            return jsonify({"error": "Database connection failed"}), 500
-
-        cursor = connection.cursor(dictionary=True)
-
-        # Initialize conditions and parameters lists
-        where_conditions = []
-        params = []
-
-        # Apply Search Condition
-        if search_query:
-            # Search in title, original_title, director, and actor names
-            where_conditions.append("(m.title LIKE %s OR m.original_title LIKE %s OR "
-                                    "m.movie_id IN (SELECT movie_id FROM crew WHERE name LIKE %s AND job = 'Director') OR "
-                                    "m.movie_id IN (SELECT movie_id FROM cast WHERE name LIKE %s))")
-            search_pattern = f"%{search_query}%"
-            params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
-
-        # Apply Year Conditions
-        if selected_years:
-            year_filters = []
-            for year in selected_years:
-                if "..." in year:  # Handle decade ranges in string format
-                    start_year = int(year.split("...")[0])
-                    end_year = start_year + 9
-                    year_filters.append("m.release_date BETWEEN %s AND %s")
-                    params.extend([start_year, end_year])
-                else:
-                    year_filters.append("m.release_date = %s")
-                    params.append(int(year))
-            where_conditions.append(f"({' OR '.join(year_filters)})")
-
-        # Apply Genre Filter
-        if selected_genres:
-            genre_placeholders = ','.join(['%s'] * len(selected_genres))
-            where_conditions.append(f"m.movie_id IN (SELECT movie_id FROM genres WHERE genre IN ({genre_placeholders}))")
-            params.extend(selected_genres)
-
-        # Apply Country Filter
-        if selected_countries:
-            country_placeholders = ','.join(['%s'] * len(selected_countries))
-            where_conditions.append(f"m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({country_placeholders}))")
-            params.extend(selected_countries)
-
-        # Construct the WHERE clause
-        if where_conditions:
-            where_clause = " WHERE " + " AND ".join(where_conditions)
-        else:
-            where_clause = ""
-
-        # Construct the count query
-        count_query = f"""
-            SELECT COUNT(DISTINCT m.movie_id) as total 
-            FROM movies m 
-            LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.movie_id
-            {where_clause}
-        """
-
-        # Execute the count query to get the total number of matching movies
-        cursor.execute(count_query, params)
-        total_movies = cursor.fetchone()['total']
-
-        # Close cursor and connection
-        cursor.close()
-        connection.close()
-
-        # Return the total count as a JSON response
-        return jsonify({'total_movies': total_movies})
-
-    except Exception as e:
-        print(f"Error occurred while counting movies: {e}")
-        return jsonify({'error': str(e)}), 500
-
-def get_counts(cursor, field, selected_years, selected_countries, selected_genres, search_query):
+def get_counts(cursor, field, selected_years=None, selected_countries=None, selected_genres=None, search_query=None):
     """
-    Helper function to get counts of distinct values for the specified field, including search query filtering.
+    Generalized helper function to get counts of distinct values for the specified field,
+    including search query filtering and filters for years, countries, and genres.
     """
-    # Ensure field is a valid column name to prevent SQL injection
-    if field not in {"genre", "release_date", "country"}:
+
+    # Ensure field is valid to prevent SQL injection and handle media formats separately
+    valid_fields = {"genre", "release_date", "country", "format_standort", "media"}
+    if field not in valid_fields:
         raise ValueError(f"Invalid field name: {field}")
 
-    # Construct the base count query
-    count_query = f"""
-        SELECT {field}, COUNT(DISTINCT m.movie_id) AS count
-        FROM movies m
-        LEFT JOIN genres g ON m.movie_id = g.movie_id
-        LEFT JOIN countries c ON m.movie_id = c.movie_id
-        WHERE 1=1
-    """
+    # Special case for media formats
+    if field == "media":
+        count_query = """
+            SELECT
+                SUM(CASE WHEN m.format_vhs > 0 THEN 1 ELSE 0 END) AS vhs_count,
+                SUM(CASE WHEN m.format_dvd > 0 THEN 1 ELSE 0 END) AS dvd_count,
+                SUM(CASE WHEN m.format_blu > 0 THEN 1 ELSE 0 END) AS blu_count,
+                SUM(CASE WHEN m.format_blu3 > 0 THEN 1 ELSE 0 END) AS blu3_count
+            FROM movies m
+            LEFT JOIN genres g ON m.movie_id = g.movie_id
+            LEFT JOIN countries c ON m.movie_id = c.movie_id
+            WHERE 1=1
+        """
+    elif field == "genre":
+        # Handle genre field, which is in the 'genres' table
+        count_query = """
+            SELECT g.genre, COUNT(DISTINCT m.movie_id) AS count
+            FROM movies m
+            LEFT JOIN genres g ON m.movie_id = g.movie_id
+            LEFT JOIN countries c ON m.movie_id = c.movie_id
+            WHERE 1=1
+        """
+    elif field == "country":
+        # Handle country field, which is in the 'countries' table
+        count_query = """
+            SELECT c.country, COUNT(DISTINCT m.movie_id) AS count
+            FROM movies m
+            LEFT JOIN genres g ON m.movie_id = g.movie_id
+            LEFT JOIN countries c ON m.movie_id = c.movie_id
+            WHERE 1=1
+        """
+    else:
+        # Construct the base count query for other fields
+        count_query = f"""
+            SELECT m.{field}, COUNT(DISTINCT m.movie_id) AS count
+            FROM movies m
+            LEFT JOIN genres g ON m.movie_id = g.movie_id
+            LEFT JOIN countries c ON m.movie_id = c.movie_id
+            WHERE 1=1
+        """
 
     params = []
 
@@ -552,7 +510,6 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
             AND (m.title LIKE %s 
             OR m.original_title LIKE %s 
             OR m.format_titel LIKE %s 
-            OR m.format_orig_titel LIKE %s 
             OR m.wiki_awards LIKE %s
             OR EXISTS (
                 SELECT 1 FROM cast c WHERE c.movie_id = m.movie_id AND c.name LIKE %s
@@ -562,7 +519,7 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
             ))
         """)
         count_query += search_conditions
-        params.extend([search_pattern] * 7)
+        params.extend([search_pattern] * 6)
 
     # Apply year filters if available
     if selected_years:
@@ -576,7 +533,6 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
             else:
                 years_conditions.append("m.release_date = %s")
                 params.append(int(year))
-
         count_query += f" AND ({' OR '.join(years_conditions)})"
 
     # Apply genre filters if available
@@ -591,32 +547,42 @@ def get_counts(cursor, field, selected_years, selected_countries, selected_genre
         count_query += f" AND m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({country_placeholders}))"
         params.extend(selected_countries)
 
-    # Group by the field and order by count descending
-    count_query += f" GROUP BY {field} ORDER BY count DESC"
+    # Special handling for media fields
+    if field == "media":
+        print("in get_counts", count_query, params)
+        cursor.execute(count_query, params)
+        result = cursor.fetchone()
+        return {
+            'format_vhs': result['vhs_count'],
+            'format_dvd': result['dvd_count'],
+            'format_blu': result['blu_count'],
+            'format_blu3': result['blu3_count']
+        }
+    else:
+        # Group by the field and order by count descending
+        count_query += f" GROUP BY {('g.genre' if field == 'genre' else 'c.country' if field == 'country' else 'm.' + field)} ORDER BY count DESC"
 
-    print(count_query, params)
+        print("in get_counts", count_query, params)
+        cursor.execute(count_query, params)
 
-    # Execute the query and fetch the results
-    cursor.execute(count_query, params)
+        # Convert the fetched rows into a dictionary with proper key types
+        result = {}
+        for row in cursor.fetchall():
+            key = row[field if field != "genre" and field != "country" else "genre" if field == "genre" else "country"]
 
-    # Convert the fetched rows into a dictionary with proper key types
-    result = {}
-    for row in cursor.fetchall():
-        key = row[field]
+            # Handle None values for the keys
+            if key is None:
+                key = 'Unknown'  # Replace None with a placeholder, or handle as needed
 
-        # Handle None values for the keys
-        if key is None:
-            key = 'Unknown'  # Replace None with a placeholder or remove this line to skip None keys
+            # Ensure all keys are strings for consistent comparison and sorting
+            if isinstance(key, bytes):  # Handle potential binary values from the database
+                key = key.decode("utf-8")
+            elif isinstance(key, int):  # Ensure int keys (e.g., years) are strings
+                key = str(key)
 
-        # Ensure that all keys are strings for consistent comparison and sorting
-        if isinstance(key, bytes):  # Handle potential binary values from the database
-            key = key.decode("utf-8")
-        elif isinstance(key, int):  # Ensure int keys (e.g., years) are strings
-            key = str(key)
+            result[key] = row['count']
 
-        result[key] = row['count']
-
-    return result
+        return result
 
 def sort_years_with_decades(year_counts):
     """Sorts year counts so that grouped decades appear at the top of the list."""

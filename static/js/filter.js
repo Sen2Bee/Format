@@ -39,51 +39,48 @@ export function initializeFilterPanelToggle() {
     }
 }
 
-/**
- * Function to initialize "Clear All" and "Show All Results" buttons
- */
-export function initializeFilterActionButtons() {
-    if (clearAllFiltersButton) {
-        clearAllFiltersButton.addEventListener('click', () => {
-            clearAllFilters();
-            updateFilters();
-        });
-    }
-
-    if (showAllResultsButton) {
-        showAllResultsButton.addEventListener('click', () => {
-            clearAllFilters();
-            searchBox.value = '';
-            updateFilters();
-        });
-    }
-}
-
-/**
- * Function to clear all filters
- */
 export function clearAllFilters() {
     // Clear selections in all dropdowns
     const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
-    filterButtons.forEach(button => button.classList.remove('selected'));
+    filterButtons.forEach(button => button.classList.remove('selected')); // Remove 'selected' class from all buttons
 
     // Reset include/exclude toggles
     const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
     includeExcludeCheckboxes.forEach(checkbox => {
-        checkbox.checked = true; // Set to include
+        checkbox.checked = true; // Reset all checkboxes to 'include'
     });
 
-    // Hide clear icons and reset selection badges
+    // Hide clear icons
     const clearIcons = document.querySelectorAll('.clear-icon');
     clearIcons.forEach(icon => {
-        icon.style.visibility = 'hidden';
+        icon.style.visibility = 'hidden'; // Hide all clear icons
     });
 
+    // Reset and hide selection badges
     const selectionBadges = document.querySelectorAll('.selection-badge');
     selectionBadges.forEach(badge => {
-        badge.textContent = '';
-        badge.classList.remove('visible');
+        badge.textContent = ''; // Clear the text in the badges
+        badge.classList.remove('visible'); // Hide the badges
     });
+}
+
+export function initializeFilterActionButtons() {
+    // Attach event listener to "Clear All" button
+    if (clearAllFiltersButton) {
+        clearAllFiltersButton.addEventListener('click', () => {
+            clearAllFilters(); // Call clearAllFilters function
+            updateFilters();   // Update the filters after clearing
+        });
+    }
+
+    // Attach event listener to "Show All Results" button
+    if (showAllResultsButton) {
+        showAllResultsButton.addEventListener('click', () => {
+            clearAllFilters(); // Call clearAllFilters function to clear the filters
+            searchBox.value = ''; // Clear the search box
+            updateFilters();   // Update the filters to show all results
+        });
+    }
 }
 
 /**
@@ -255,9 +252,6 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     }
 }
 
-
-
-
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes
  */
@@ -271,13 +265,17 @@ export function updateFilters(page = 1) {
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
     const selectedCountries = getSelectedValues('country-dropdown-list');
+    // Get selected values from advanced filters
+    const selectedStandorte = getSelectedValues('standort-dropdown-list');
+    const selectedMedia = getSelectedValues('medium-dropdown-list');
+    const selectedSortBy = getSelectedValues('sort-dropdown-list'); // Should be only one value
+
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
     // Get include/exclude status
     const yearInclude = document.querySelector('.include-exclude-checkbox[data-filter="year"]').checked;
     const genreInclude = document.querySelector('.include-exclude-checkbox[data-filter="genre"]').checked;
     const countryInclude = document.querySelector('.include-exclude-checkbox[data-filter="country"]').checked;
-    console.log(yearInclude, genreInclude, countryInclude)
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
@@ -292,6 +290,15 @@ export function updateFilters(page = 1) {
         params.append('countries', selectedCountries.join(','));
         params.append('countries_include', countryInclude ? '1' : '0');
     }
+    if (selectedStandorte.length) {
+        params.append('standorte', selectedStandorte.join(','));
+    }
+    if (selectedMedia.length) {
+        params.append('media', selectedMedia.join(','));
+    }
+    if (selectedSortBy.length) {
+        params.append('sort_by', selectedSortBy[0]); // Only one sort option should be selected
+    }    
 
     // Search logic: apply filters and shrink dropdowns based on search query
     if (searchQuery.length > 3) {
@@ -300,7 +307,6 @@ export function updateFilters(page = 1) {
 
     params.append('page', page);
 
-    console.log("Fetching updated filter data with params:", params.toString());
 
     // Show the progress indicator before starting the fetch
     showProgressIndicator();
@@ -309,12 +315,16 @@ export function updateFilters(page = 1) {
         .then(response => response.json())
         .then(data => {
             console.log("API Response Data:", data);
-            const { years, genres, countries, movies, current_page, total_pages } = data;
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
 
             // Populate dropdowns based on the filtered data from search query
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
+            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
+            populateDropdown('medium-dropdown-list', media, selectedMedia);
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true); // Pass 'true' if single selection
+
 
             updateMovieListings(movies); // Updates the displayed movie cards
             updatePagination(current_page, total_pages); // Updates the pagination controls
@@ -338,13 +348,30 @@ export function getSelectedValues(dropdownListId) {
     return Array.from(buttons).map(btn => btn.dataset.value);
 }
 
+function checkType(variable) {
+    if (typeof variable === 'object') {
+        if (Array.isArray(variable)) {
+            console.log('The variable is an array.');
+        } else if (variable === null) {
+            console.log('The variable is null.');
+        } else {
+            console.log('The variable is an object.');
+        }
+    } else {
+        console.log(`The variable is of type: ${typeof variable}`);
+    }
+
+    console.log(variable); // Print the actual value for inspection
+}
+
 /**
  * Function to populate dropdown lists with options
  * @param {string} dropdownListId - The ID of the dropdown list element
  * @param {Object} options - An object with option labels as keys and counts as values
  * @param {Array} selectedValues - An array of currently selected option values
+ * @param {boolean} singleSelect - If true, only one option can be selected
  */
-export function populateDropdown(dropdownListId, options, selectedValues = []) {
+export function populateDropdown(dropdownListId, options, selectedValues = [], singleSelect = false) {
     const dropdownList = document.getElementById(dropdownListId);
     if (!dropdownList) {
         console.error(`populateDropdown: Element mit ID '${dropdownListId}' nicht gefunden.`);
@@ -354,6 +381,8 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
     dropdownList.innerHTML = ""; // Clear existing options
 
     if (typeof options !== 'object' || Array.isArray(options)) {
+        console.log(options)
+        // checkType(options);
         console.error(`populateDropdown: 'options' sollte ein Objekt sein. Erhalten:`, options);
         return;
     }
@@ -379,6 +408,19 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
             button.classList.add('selected');
         }
 
+        // For single selection dropdowns
+        if (singleSelect) {
+            button.addEventListener('click', () => {
+                // Deselect other buttons
+                const otherButtons = buttonsContainer.querySelectorAll('.filter-button.selected');
+                otherButtons.forEach(btn => {
+                    if (btn !== button) {
+                        btn.classList.remove('selected');
+                    }
+                });
+            });
+        }
+
         buttonsContainer.appendChild(button);
     });
     dropdownList.appendChild(buttonsContainer);
@@ -391,9 +433,11 @@ export function populateDropdown(dropdownListId, options, selectedValues = []) {
     updateSelectionBadge(selectedValuesUpdated, selectionBadge);
 }
 
+
 /**
  * Function to handle autocomplete for cast and director names
  */
+
 function handleAutocomplete() {
     const searchQuery = searchBox.value.trim();
 
