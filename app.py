@@ -279,6 +279,32 @@ def catalog():
 
     return ret_val
 
+
+def build_sort_expression(sort_option):
+    """
+    Builds the sort expression based on the sort_option.
+    """
+
+    sort_options = {
+        "Zufall": "Rand()",
+        "Title": "m.title asc",
+        "Jahr": "m.release_date desc",
+        "Bewertung": 'CAST(m.imdb_rating AS DECIMAL(3,1))',
+        "Regisseur": "director asc",  # This assumes 'director' is retrieved elsewhere in the query
+        "Länge": "m.runtime asc",
+
+    }     
+    
+    # Default sort option
+    default_sort = 'm.release_date DESC'
+    
+    # Fetch the corresponding SQL expression
+    sort_expression = sort_options.get(sort_option.lower(), default_sort)
+
+    print("in build_sort_expression", sort_expression, sort_option)
+   
+    return sort_expression, sort_options
+
 # Existing route with new parameters and logic integrated
 @app.route('/filter_movies', methods=['GET'])
 def filter_movies():
@@ -286,13 +312,22 @@ def filter_movies():
         # Retrieve filter values from request arguments
         selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
         selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
+
         selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
         search_query = request.args.get('search', '').strip()  # Retrieve search query
+        
 
         # New parameters
         standorte = request.args.get('standorte', '')
         media = request.args.get('media', '')
-        sort_by = request.args.get('sort_by', 'title')  # Default sorting by title
+
+        # Define available sorting options as a dictionary
+       print(sort_by)
+        sort_by = request.args.get('sort_by', 'Title')  # Default sorting by title
+        print(sort_by)
+        sort_by_expression, sort_options = build_sort_expression(sort_by)    
+
+        print("sort_by", sort_by)
 
         page = int(request.args.get('page', 1))  # Retrieve the current page
         per_page = 10
@@ -355,6 +390,7 @@ def filter_movies():
 
         # **Construct the WHERE Clause**
         where_clause = " WHERE " + " AND ".join(where_conditions) if where_conditions else ""
+        # print("selected_genres_"*5, selected_genres)
 
         # **Construct the Base Query**
         base_query = f"""
@@ -387,7 +423,7 @@ def filter_movies():
                 LEFT JOIN countries c ON m.movie_id = c.movie_id
             {where_clause}
             GROUP BY m.movie_id
-            ORDER BY {sort_by}  -- Sorting Logic
+            ORDER BY {sort_by_expression}
             LIMIT %s OFFSET %s
         """
 
@@ -405,6 +441,9 @@ def filter_movies():
         base_query_params.extend([per_page, offset])
 
         # **Execute the Base Query to Get Filtered Movie Data**
+        
+        print(base_query, base_query_params)
+
 
         cursor.execute(base_query, base_query_params)
         filtered_movies = cursor.fetchall()
@@ -433,6 +472,9 @@ def filter_movies():
         cursor.close()
         connection.close()
 
+
+
+
         # **Return the JSON Response**
         return jsonify({
             'movies': filtered_movies,
@@ -443,11 +485,14 @@ def filter_movies():
             'media': media_counts,
             'current_page': page,
             'total_pages': total_pages,
-            'total_movies': total_movies  # Include total_movies in the response
+            'total_movies': total_movies,  # Include total_movies in the response
+            'sort_options': sort_options
         })
     except Exception as e:
         print(f"Error occurred: {e}")
         return jsonify({'error': str(e)}), 500
+
+
 
 def get_counts(cursor, field, selected_years=None, selected_countries=None, selected_genres=None, search_query=None):
     """
@@ -549,7 +594,6 @@ def get_counts(cursor, field, selected_years=None, selected_countries=None, sele
 
     # Special handling for media fields
     if field == "media":
-        print("in get_counts", count_query, params)
         cursor.execute(count_query, params)
         result = cursor.fetchone()
         return {
@@ -562,7 +606,6 @@ def get_counts(cursor, field, selected_years=None, selected_countries=None, sele
         # Group by the field and order by count descending
         count_query += f" GROUP BY {('g.genre' if field == 'genre' else 'c.country' if field == 'country' else 'm.' + field)} ORDER BY count DESC"
 
-        print("in get_counts", count_query, params)
         cursor.execute(count_query, params)
 
         # Convert the fetched rows into a dictionary with proper key types
@@ -581,6 +624,7 @@ def get_counts(cursor, field, selected_years=None, selected_countries=None, sele
                 key = str(key)
 
             result[key] = row['count']
+        
 
         return result
 

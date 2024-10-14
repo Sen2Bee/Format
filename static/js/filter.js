@@ -18,9 +18,6 @@ import { updatePagination } from './pagination.js';
 
 let debounceTimer = null;
 
-/**
- * Function to initialize filter panel toggle
- */
 export function initializeFilterPanelToggle() {
     if (toggleFiltersButton && searchDropdownContainer) {
         toggleFiltersButton.addEventListener('click', () => {
@@ -32,9 +29,17 @@ export function initializeFilterPanelToggle() {
     // Initialize Advanced Filters Toggle
     if (toggleAdvancedFiltersButton && advancedFiltersContainer) {
         toggleAdvancedFiltersButton.addEventListener('click', () => {
-            advancedFiltersContainer.classList.toggle('hidden');
-            toggleAdvancedFiltersButton.classList.toggle('active');
-            // Ensure no unnecessary filter reload is triggered here
+            const mainFiltersContainer = document.querySelector('.main-filters-container');
+            
+            // Toggle the advanced filters container
+            advancedFiltersContainer.classList.toggle('open');
+            
+            // Shrink the main filters container if the advanced filters are open
+            if (advancedFiltersContainer.classList.contains('open')) {
+                mainFiltersContainer.classList.add('shrink');
+            } else {
+                mainFiltersContainer.classList.remove('shrink');
+            }
         });
     }
 }
@@ -260,7 +265,6 @@ export function triggerDropdownChangeEvent() {
     console.log("Dispatching dropdownChange event");
     document.dispatchEvent(event);
 }
-
 export function updateFilters(page = 1) {
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
@@ -272,23 +276,18 @@ export function updateFilters(page = 1) {
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
-    // Get include/exclude status
-    const yearInclude = document.querySelector('.include-exclude-checkbox[data-filter="year"]').checked;
-    const genreInclude = document.querySelector('.include-exclude-checkbox[data-filter="genre"]').checked;
-    const countryInclude = document.querySelector('.include-exclude-checkbox[data-filter="country"]').checked;
-
     const params = new URLSearchParams();
     if (selectedYears.length) {
         params.append('years', selectedYears.join(','));
-        params.append('years_include', yearInclude ? '1' : '0');
+        params.append('years_include', '1'); // Fixed to always include
     }
     if (selectedGenres.length) {
         params.append('genres', selectedGenres.join(','));
-        params.append('genres_include', genreInclude ? '1' : '0');
+        // params.append('genres_include', genreInclude ? '1' : '0');
     }
     if (selectedCountries.length) {
         params.append('countries', selectedCountries.join(','));
-        params.append('countries_include', countryInclude ? '1' : '0');
+        // params.append('countries_include', countryInclude ? '1' : '0');
     }
     if (selectedStandorte.length) {
         params.append('standorte', selectedStandorte.join(','));
@@ -297,7 +296,9 @@ export function updateFilters(page = 1) {
         params.append('media', selectedMedia.join(','));
     }
     if (selectedSortBy.length) {
+        console.log("Selected Sort By:", selectedSortBy);
         params.append('sort_by', selectedSortBy[0]); // Only one sort option should be selected
+        console.log("selectedSortBy[0]", selectedSortBy[0])
     }    
 
     // Search logic: apply filters and shrink dropdowns based on search query
@@ -307,7 +308,6 @@ export function updateFilters(page = 1) {
 
     params.append('page', page);
 
-
     // Show the progress indicator before starting the fetch
     showProgressIndicator();
 
@@ -316,15 +316,13 @@ export function updateFilters(page = 1) {
         .then(data => {
             console.log("API Response Data:", data);
             const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
-
             // Populate dropdowns based on the filtered data from search query
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
             populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
             populateDropdown('medium-dropdown-list', media, selectedMedia);
-            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true); // Pass 'true' if single selection
-
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false); // Single-select, no counts
 
             updateMovieListings(movies); // Updates the displayed movie cards
             updatePagination(current_page, total_pages); // Updates the pagination controls
@@ -367,30 +365,37 @@ function checkType(variable) {
 /**
  * Function to populate dropdown lists with options
  * @param {string} dropdownListId - The ID of the dropdown list element
- * @param {Object} options - An object with option labels as keys and counts as values
+ * @param {Object|Array} options - An object with option labels as keys and counts as values or an array of labels
  * @param {Array} selectedValues - An array of currently selected option values
  * @param {boolean} singleSelect - If true, only one option can be selected
+ * @param {boolean} showCounts - If true, display counts alongside labels
  */
-export function populateDropdown(dropdownListId, options, selectedValues = [], singleSelect = false) {
+export function populateDropdown(dropdownListId, options, selectedValues = [], singleSelect = false, showCounts = true) {
     const dropdownList = document.getElementById(dropdownListId);
     if (!dropdownList) {
-        console.error(`populateDropdown: Element mit ID '${dropdownListId}' nicht gefunden.`);
+        console.error(`populateDropdown: Element with ID '${dropdownListId}' not found.`);
         return;
     }
 
     dropdownList.innerHTML = ""; // Clear existing options
+    
+    let optionsArray = [];
 
-    if (typeof options !== 'object' || Array.isArray(options)) {
-        console.log(options)
-        // checkType(options);
-        console.error(`populateDropdown: 'options' sollte ein Objekt sein. Erhalten:`, options);
+    if (typeof options === 'object' && !Array.isArray(options)) {
+        // Convert object to array of { label, count }
+        optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
+    } else if (Array.isArray(options)) {
+        // Convert array to array of { label }
+        optionsArray = options.map(label => ({ label }));
+    } else {
+        console.error(`populateDropdown: 'options' should be an object or array. Received:`, options);
         return;
     }
-    // Convert options object to array and sort
-    const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
 
-    // Sort options as needed (e.g., alphabetically)
-    optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+    // Conditionally sort the options alphabetically, but skip sorting for "sort-dropdown-list"
+    if (dropdownListId !== 'sort-dropdown-list') {
+        optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+    }
 
     // Create a container for the filter buttons
     const buttonsContainer = document.createElement('div');
@@ -401,7 +406,15 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         const button = document.createElement("button");
         button.type = "button";
         button.className = "filter-button";
-        button.textContent = `${option.label} (${option.count})`;
+
+        // Show either label with count or just label depending on `showCounts` flag
+        if (showCounts && option.count !== undefined) {
+            button.textContent = `${option.label} (${option.count})`;
+        } else {
+            button.textContent = option.label;
+        }
+
+        // Store the value as the dataset value (can be the label or actual value for sorting)
         button.dataset.value = option.label;
 
         if (selectedValues.includes(option.label)) {
@@ -418,11 +431,23 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
                         btn.classList.remove('selected');
                     }
                 });
+                // Select the clicked button (no toggle off)
+                button.classList.add('selected');
+                // Trigger filter update
+                triggerDropdownChangeEvent();
+            });
+        } else {
+            // For multi-select dropdowns, toggle selection
+            button.addEventListener('click', () => {
+                button.classList.toggle('selected');
+                // Trigger filter update
+                triggerDropdownChangeEvent();
             });
         }
 
         buttonsContainer.appendChild(button);
     });
+
     dropdownList.appendChild(buttonsContainer);
 
     // Update Selection Badge after populating
@@ -430,7 +455,32 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     const selectionBadge = parentDropdown.querySelector('.selection-badge');
     const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
     const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+
+    // For single-select dropdowns, ensure "Zufall" is selected by default if no selection has been made
+    if (singleSelect && selectedValuesUpdated.length === 0 && buttonsContainer.firstChild) {
+        const defaultOption = optionsArray.find(option => option.label.toLowerCase() === 'zufall');
+        if (defaultOption) {
+            const defaultButton = buttonsContainer.querySelector(`.filter-button[data-value="Zufall"]`);
+            if (defaultButton) {
+                defaultButton.classList.add('selected');
+                selectedValuesUpdated.push('Zufall');
+            }
+        } else {
+            buttonsContainer.firstChild.classList.add('selected');
+            selectedValuesUpdated.push(buttonsContainer.firstChild.dataset.value);
+        }
+    }
+
     updateSelectionBadge(selectedValuesUpdated, selectionBadge);
+
+    // Hide clear icon for single-select dropdowns like "Sort By"
+    if (singleSelect) {
+        const dropdownHeader = parentDropdown.querySelector('.dropdown-header');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+        if (clearButton) {
+            clearButton.style.display = 'none';
+        }
+    }
 }
 
 

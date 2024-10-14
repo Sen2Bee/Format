@@ -3,26 +3,14 @@
 /* Import Additional Fonts for Themes */
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
 
-/* Variables */
-:root {
-    --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
-    --secondary-bg-color: #333;
-    --accent-color: #e74c3c;
-    --text-color: #e0e0e0; /* Default text color */
-    --link-color: #f1c40f; /* Link color */
-    --scrollbar-bg: #333;
-    --scrollbar-thumb: #555;
-    --hover-bg: #444;
-    --placeholder-color: #aaa;
-    --transition-duration: 0.3s;
-}
+
 
 /* General Movie Card Container */
 .movie-card {
     display: flex;
     flex-direction: column;
     background-color: #1e1e1e;
-    color: var(--text-color);
+    color: var(--text-light);
     border-radius: 10px;
     margin: 20px auto;
     overflow: hidden;
@@ -114,7 +102,8 @@
     font-size: 1.8em;
     color: var(--link-color); /* Bright Yellow for headline */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
 }
 
 /* Metadata Section */
@@ -126,13 +115,13 @@
 
 .metadata p {
     margin: 5px 0;
-    color: var(--text-color); /* White text for metadata */
+    color: var(--text-light); /* White text for metadata */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .metadata p strong,
 .metadata p span {
-    color: var(--text-color); /* Ensure white color for strong and span elements */
+    color: var(--text-light); /* Ensure white color for strong and span elements */
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -140,14 +129,14 @@
 /* Inline Metadata */
 .inline-meta {
     font-size: 1.1em;
-    color: var(--text-color); /* Use white color for inline meta */
+    color: var(--text-light); /* Use white color for inline meta */
     padding-top: 10px;
     border-top: 1px solid #444;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .standort {
-    color: var(--text-color); /* Use white text for location */
+    color: var(--text-light); /* Use white text for location */
     margin-top: 10px;
     border-top: 1px solid #444;
     padding-top: 10px;
@@ -160,7 +149,7 @@
     padding: 15px;
     background-color: rgba(37, 43, 54, 0.8);
     border-radius: 8px;
-    color: var(--text-color); /* Use white color */
+    color: var(--text-light); /* Use white color */
     line-height: 1.4;
     z-index: 2;
     transition: font-weight 0.3s ease;
@@ -170,7 +159,7 @@
 /* Enhanced Text Visibility in Overview */
 .overview-section p {
     margin: 0;
-    color: var(--text-color); /* White text for overview */
+    color: var(--text-light); /* White text for overview */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 

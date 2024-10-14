@@ -17,17 +17,11 @@
     font-family: var(--font-body);  /* Use body font */
 }
 
-/* Centered Theme Title in Navbar */
-.nav-center-title {
-    position: absolute;  /* Position it absolutely to center within the nav */
-    left: 50%;
-    transform: translateX(-50%);  /* Center horizontally */
-    font-family: var(--font-heading);  /* Use heading font */
-}
+
 
 .theme-title {
-    font-size: 1.2rem;  /* Adjust font size for the theme title */
-    color: var(--accent-color);  /* Use defined accent color */
+    font-size: 1.0rem;  /* Adjust font size for the theme title */
+    color: var(--link-color);  /* Use defined accent color */
     text-transform: lowercase;
     transition: color var(--transition-duration);  /* Smooth color transition */
 }
@@ -157,11 +151,13 @@
         left: auto;
         transform: none;
         margin: 10px 0;  /* Add spacing */
-    }
+}
+    /* Centered Theme Title in Navbar */
+    .nav-center-title {
+        font-size: 1.0rem;  /* Adjust the title size for very small screens */
+    }  
 
-    .theme-title {
-        font-size: 1.3rem;
-    }
+
 }
 
 /* Shrinking & Hiding Behavior for Mobile */
@@ -196,6 +192,7 @@
     .theme-title {
         font-size: 1.2rem;  /* Adjust the title size for very small screens */
     }
+  
 }
 
 /* Animation for Navbar Visibility */

@@ -35,4 +35,5 @@ ul, ol {
 html, body {
     overflow-x: hidden; /* Restrict horizontal overflow */
     font-family: 'Open Sans', sans-serif; /* Set default font */
+    background-color: var(--background-dark);
 }

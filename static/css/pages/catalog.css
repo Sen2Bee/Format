@@ -11,7 +11,7 @@
     flex-direction: column;
     align-items: center;
     gap: 30px;
-    padding: 60px 20px;
+    padding: 10px 20px;
     background-color: var(--background-dark); /* Dark background for the movie listing */
 }
 
@@ -66,26 +66,4 @@
     }
 }
 
-/* Additional styles for autocomplete */
 
-.autocomplete-items {
-    position: absolute;
-    border: 1px solid #d4d4d4;
-    background-color: #fff;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 99;
-    top: 100%;
-    left: 0;
-    right: 0;
-}
-
-.autocomplete-item {
-    padding: 10px;
-    cursor: pointer;
-    background-color: #fff;
-}
-
-.autocomplete-item:hover {
-    background-color: #e9e9e9;
-}
