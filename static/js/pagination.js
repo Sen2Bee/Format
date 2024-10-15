@@ -56,7 +56,7 @@ export function attachPaginationEventListeners() {
                 return;  // Klicks auf deaktivierte Buttons ignorieren
             }
             const page = parseInt(this.getAttribute('data-page'));
-            if (!isNaN(page)) updateFilters(page);  // Filterung mit ausgewählter Seite auslösen
+            if (!isNaN(page)) updateFilters(page, "attachPaginationEventListeners");  // Filterung mit ausgewählter Seite auslösen
         });
     });
 }

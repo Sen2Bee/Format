@@ -284,12 +284,11 @@ def build_sort_expression(sort_option):
     """
     Builds the sort expression based on the sort_option.
     """
-
     sort_options = {
         "Zufall": "Rand()",
         "Title": "m.title asc",
         "Jahr": "m.release_date desc",
-        "Bewertung": 'CAST(m.imdb_rating AS DECIMAL(3,1))',
+        "Bewertung": 'CAST(m.imdb_rating AS DECIMAL(3,1)) desc',
         "Regisseur": "director asc",  # This assumes 'director' is retrieved elsewhere in the query
         "Länge": "m.runtime asc",
 
@@ -299,10 +298,7 @@ def build_sort_expression(sort_option):
     default_sort = 'm.release_date DESC'
     
     # Fetch the corresponding SQL expression
-    sort_expression = sort_options.get(sort_option.lower(), default_sort)
-
-    print("in build_sort_expression", sort_expression, sort_option)
-   
+    sort_expression = sort_options.get(sort_option, default_sort)
     return sort_expression, sort_options
 
 # Existing route with new parameters and logic integrated
@@ -322,12 +318,10 @@ def filter_movies():
         media = request.args.get('media', '')
 
         # Define available sorting options as a dictionary
-       print(sort_by)
         sort_by = request.args.get('sort_by', 'Title')  # Default sorting by title
-        print(sort_by)
         sort_by_expression, sort_options = build_sort_expression(sort_by)    
 
-        print("sort_by", sort_by)
+
 
         page = int(request.args.get('page', 1))  # Retrieve the current page
         per_page = 10
@@ -442,7 +436,7 @@ def filter_movies():
 
         # **Execute the Base Query to Get Filtered Movie Data**
         
-        print(base_query, base_query_params)
+        # print(base_query, base_query_params)
 
 
         cursor.execute(base_query, base_query_params)
@@ -472,7 +466,7 @@ def filter_movies():
         cursor.close()
         connection.close()
 
-
+        
 
 
         # **Return the JSON Response**

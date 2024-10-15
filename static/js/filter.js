@@ -1,5 +1,6 @@
 // File: static/js/filter.js
 
+// Import necessary elements and functions
 import {
     searchBox,
     clearSearchBtn,
@@ -18,6 +19,9 @@ import { updatePagination } from './pagination.js';
 
 let debounceTimer = null;
 
+/**
+ * Initialize the toggle functionality for the filter panel and advanced filters
+ */
 export function initializeFilterPanelToggle() {
     if (toggleFiltersButton && searchDropdownContainer) {
         toggleFiltersButton.addEventListener('click', () => {
@@ -44,6 +48,9 @@ export function initializeFilterPanelToggle() {
     }
 }
 
+/**
+ * Clear all filters and reset selections
+ */
 export function clearAllFilters() {
     // Clear selections in all dropdowns
     const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
@@ -55,10 +62,10 @@ export function clearAllFilters() {
         checkbox.checked = true; // Reset all checkboxes to 'include'
     });
 
-    // Hide clear icons
+    // Hide clear icons (except for single-select dropdowns, which have no clear icons)
     const clearIcons = document.querySelectorAll('.clear-icon');
     clearIcons.forEach(icon => {
-        icon.style.visibility = 'hidden'; // Hide all clear icons
+        icon.classList.remove('visible'); // Hide all clear icons
     });
 
     // Reset and hide selection badges
@@ -67,14 +74,37 @@ export function clearAllFilters() {
         badge.textContent = ''; // Clear the text in the badges
         badge.classList.remove('visible'); // Hide the badges
     });
+
+    // For single-select dropdowns, ensure "Zufall" is selected by default if applicable
+    const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
+    singleSelectDropdowns.forEach(dropdownList => {
+        const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
+        const optionsArray = Array.from(buttonsContainer.children).map(btn => btn.dataset.value);
+        const defaultOption = optionsArray.find(label => label.toLowerCase() === 'zufall');
+        const buttonToSelect = defaultOption 
+            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`) 
+            : buttonsContainer.firstElementChild;
+        
+        if (buttonToSelect) {
+            buttonToSelect.classList.add('selected');
+            const badge = dropdownList.parentElement.querySelector('.selection-badge');
+            updateSelectionBadge([buttonToSelect.dataset.value], badge);
+        }
+    });
+
+    // Trigger a filter update by dispatching the dropdownChange event
+    triggerDropdownChangeEvent();
 }
 
+/**
+ * Initialize event listeners for action buttons like "Clear All" and "Show All Results"
+ */
 export function initializeFilterActionButtons() {
     // Attach event listener to "Clear All" button
     if (clearAllFiltersButton) {
         clearAllFiltersButton.addEventListener('click', () => {
             clearAllFilters(); // Call clearAllFilters function
-            updateFilters();   // Update the filters after clearing
+            // No need to call updateFilters here since clearAllFilters triggers the event
         });
     }
 
@@ -82,14 +112,16 @@ export function initializeFilterActionButtons() {
     if (showAllResultsButton) {
         showAllResultsButton.addEventListener('click', () => {
             clearAllFilters(); // Call clearAllFilters function to clear the filters
-            searchBox.value = ''; // Clear the search box
-            updateFilters();   // Update the filters to show all results
+            if (searchBox) {
+                searchBox.value = ''; // Clear the search box
+            }
+            // No need to call updateFilters here since clearAllFilters triggers the event
         });
     }
 }
 
 /**
- * Function to initialize dropdowns and attach event listeners
+ * Function to initialize dropdowns and attach necessary event listeners
  */
 export function initializeFilterDropdowns() {   
     // Handle filter updates triggered by custom dropdowns
@@ -110,7 +142,7 @@ export function initializeFilterDropdowns() {
             if (searchBox.value.length > 3) {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
-                    updateFilters(); // Trigger filter update after user stops typing for 300ms
+                    triggerDropdownChangeEvent(); // Trigger filter update after user stops typing for 1000ms
                     handleAutocomplete(); // Handle autocomplete for cast and director
                 }, 1000);
             }
@@ -124,7 +156,7 @@ export function initializeFilterDropdowns() {
         clearSearchBtn.addEventListener('click', () => {
             searchBox.value = '';
             clearSearchBtn.classList.remove('visible');
-            updateFilters();
+            triggerDropdownChangeEvent(); // Trigger filter update
             hideAutocompleteSuggestions(); // Hide autocomplete suggestions
         });
     } else {
@@ -138,12 +170,12 @@ export function initializeFilterDropdowns() {
     const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
     includeExcludeCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            updateFilters(); // Update filters when include/exclude toggles change
+            triggerDropdownChangeEvent(); // Trigger filter update when include/exclude toggles change
         });
     });    
 
-    // Initial filter update
-    updateFilters();
+    // Initial filter update by dispatching the dropdownChange event
+    triggerDropdownChangeEvent();
 }
 
 /**
@@ -153,27 +185,43 @@ export function attachDropdownEventDelegation() {
     const dropdownLists = document.querySelectorAll('.dropdown-list');
 
     dropdownLists.forEach(dropdownList => {
-        // Handle button clicks within the dropdown
+        // Handle button clicks within the dropdown using event delegation
         dropdownList.addEventListener('click', (event) => {
             const target = event.target;
             if (target && target.classList.contains('filter-button')) {
                 event.preventDefault();
+                const isSingleSelect = dropdownList.classList.contains('single-select');
                 const value = target.dataset.value;
-                target.classList.toggle('selected');
 
-                // Update the selected values
+                if (isSingleSelect) {
+                    // For single-select dropdowns, deselect all and select the clicked button
+                    const allButtons = dropdownList.querySelectorAll('.filter-button');
+                    allButtons.forEach(btn => btn.classList.remove('selected'));
+                    target.classList.add('selected');
+                } else {
+                    // For multi-select dropdowns, toggle selection
+                    target.classList.toggle('selected');
+                }
+
+                // Update the selection badge
+                const dropdownHeader = dropdownList.previousElementSibling;
+                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
                 const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
-
-                // Update the selection badge and clear button
-                const dropdownHeader = dropdownList.previousElementSibling;
-                const clearButton = dropdownHeader.querySelector('.clear-icon');
-                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge(selectedValues, selectionBadge);
-                if (selectedValues.length > 0) {
-                    clearButton.classList.add('visible');
+
+                // Update the clear icon visibility for multi-select dropdowns
+                const clearButton = dropdownHeader.querySelector('.clear-icon');
+                if (isSingleSelect) {
+                    if (clearButton) {
+                        clearButton.style.display = 'none';
+                    }
                 } else {
-                    clearButton.classList.remove('visible');
+                    if (selectedValues.length > 0) {
+                        clearButton.classList.add('visible');
+                    } else {
+                        clearButton.classList.remove('visible');
+                    }
                 }
 
                 // Trigger filter update
@@ -181,7 +229,7 @@ export function attachDropdownEventDelegation() {
             }
         });
 
-        // Handle clear button
+        // Handle clear button (only for multi-select dropdowns)
         const clearButton = dropdownList.parentElement.querySelector('.clear-icon');
         if (clearButton) {
             clearButton.addEventListener('click', (event) => {
@@ -228,7 +276,6 @@ export function attachDropdownEventDelegation() {
     });
 }
 
-
 /**
  * Function to toggle dropdown visibility
  */
@@ -254,6 +301,7 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     } else {
         badgeElement.textContent = '';
         badgeElement.classList.remove('visible');
+        badgeElement.style.display = 'none'; // Hide the badge
     }
 }
 
@@ -265,14 +313,25 @@ export function triggerDropdownChangeEvent() {
     console.log("Dispatching dropdownChange event");
     document.dispatchEvent(event);
 }
+
+/**
+ * Function to update filters based on selected criteria and search query
+ * @param {number} page - The current page number for pagination
+ */
 export function updateFilters(page = 1) {
+    console.log("updateFilters called");
+
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
     const selectedCountries = getSelectedValues('country-dropdown-list');
     // Get selected values from advanced filters
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
-    const selectedSortBy = getSelectedValues('sort-dropdown-list'); // Should be only one value
+    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0 
+    ? getSelectedValues('sort-dropdown-list') 
+    : ["Zufall"];
+
+
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
@@ -296,10 +355,8 @@ export function updateFilters(page = 1) {
         params.append('media', selectedMedia.join(','));
     }
     if (selectedSortBy.length) {
-        console.log("Selected Sort By:", selectedSortBy);
         params.append('sort_by', selectedSortBy[0]); // Only one sort option should be selected
-        console.log("selectedSortBy[0]", selectedSortBy[0])
-    }    
+    }
 
     // Search logic: apply filters and shrink dropdowns based on search query
     if (searchQuery.length > 3) {
@@ -339,28 +396,92 @@ export function updateFilters(page = 1) {
 }
 
 /**
- * Helper to get selected values from a specific dropdown list
+ * Helper function to get selected values from a specific dropdown list
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @returns {Array} - An array of selected values
  */
 export function getSelectedValues(dropdownListId) {
     const buttons = document.querySelectorAll(`#${dropdownListId} .filter-button.selected`);
     return Array.from(buttons).map(btn => btn.dataset.value);
 }
 
-function checkType(variable) {
-    if (typeof variable === 'object') {
-        if (Array.isArray(variable)) {
-            console.log('The variable is an array.');
-        } else if (variable === null) {
-            console.log('The variable is null.');
-        } else {
-            console.log('The variable is an object.');
-        }
+/**
+ * Function to handle autocomplete for cast and director names
+ */
+function handleAutocomplete() {
+    const searchQuery = searchBox.value.trim();
+
+    // Only perform autocomplete if the search query length is sufficient
+    if (searchQuery.length >= 3) {
+        fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
+            .then(response => {
+                if (!response.ok) {
+                    // Handle 404 or other error responses
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();  // Attempt to parse JSON
+            })
+            .then(data => {
+                showAutocompleteSuggestions(data);
+            })
+            .catch(error => {
+                console.error('Error fetching autocomplete suggestions:', error);
+                hideAutocompleteSuggestions();  // Hide suggestions in case of error
+                // Optionally, show a user-friendly message (e.g., "No results found" or "Error fetching data")
+            });
     } else {
-        console.log(`The variable is of type: ${typeof variable}`);
+        hideAutocompleteSuggestions();
+    }
+}
+
+/**
+ * Function to show autocomplete suggestions
+ * @param {Array} suggestions - Array of suggestion objects
+ */
+function showAutocompleteSuggestions(suggestions) {
+    let autocompleteList = document.getElementById('autocomplete-list');
+    if (!autocompleteList) {
+        autocompleteList = document.createElement('div');
+        autocompleteList.id = 'autocomplete-list';
+        autocompleteList.className = 'autocomplete-items';
+        searchBox.parentNode.appendChild(autocompleteList);
     }
 
-    console.log(variable); // Print the actual value for inspection
+    autocompleteList.innerHTML = ''; // Clear existing suggestions
+
+    suggestions.forEach(item => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'autocomplete-item';
+        suggestionItem.textContent = `${item.name} (${item.type})`;
+        suggestionItem.dataset.name = item.name;
+        suggestionItem.dataset.type = item.type;
+
+        suggestionItem.addEventListener('click', () => {
+            searchBox.value = item.name;
+            hideAutocompleteSuggestions();
+            triggerDropdownChangeEvent(); // Trigger filter update after selecting autocomplete suggestion
+        });
+
+        autocompleteList.appendChild(suggestionItem);
+    });
 }
+
+/**
+ * Function to hide autocomplete suggestions
+ */
+function hideAutocompleteSuggestions() {
+    const autocompleteList = document.getElementById('autocomplete-list');
+    if (autocompleteList) {
+        autocompleteList.parentNode.removeChild(autocompleteList);
+    }
+}
+
+// Event listener to close autocomplete suggestions when clicking outside
+document.addEventListener('click', function (e) {
+    if (e.target !== searchBox) {
+        hideAutocompleteSuggestions();
+    }
+});
 
 /**
  * Function to populate dropdown lists with options
@@ -378,7 +499,14 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     }
 
     dropdownList.innerHTML = ""; // Clear existing options
-    
+
+    // Add 'single-select' class if applicable
+    if (singleSelect) {
+        dropdownList.classList.add('single-select');
+    } else {
+        dropdownList.classList.remove('single-select');
+    }
+
     let optionsArray = [];
 
     if (typeof options === 'object' && !Array.isArray(options)) {
@@ -421,29 +549,8 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
             button.classList.add('selected');
         }
 
-        // For single selection dropdowns
-        if (singleSelect) {
-            button.addEventListener('click', () => {
-                // Deselect other buttons
-                const otherButtons = buttonsContainer.querySelectorAll('.filter-button.selected');
-                otherButtons.forEach(btn => {
-                    if (btn !== button) {
-                        btn.classList.remove('selected');
-                    }
-                });
-                // Select the clicked button (no toggle off)
-                button.classList.add('selected');
-                // Trigger filter update
-                triggerDropdownChangeEvent();
-            });
-        } else {
-            // For multi-select dropdowns, toggle selection
-            button.addEventListener('click', () => {
-                button.classList.toggle('selected');
-                // Trigger filter update
-                triggerDropdownChangeEvent();
-            });
-        }
+        // Note: We no longer attach per-button event listeners here
+        // Event handling is done via event delegation in attachDropdownEventDelegation()
 
         buttonsContainer.appendChild(button);
     });
@@ -460,10 +567,10 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     if (singleSelect && selectedValuesUpdated.length === 0 && buttonsContainer.firstChild) {
         const defaultOption = optionsArray.find(option => option.label.toLowerCase() === 'zufall');
         if (defaultOption) {
-            const defaultButton = buttonsContainer.querySelector(`.filter-button[data-value="Zufall"]`);
+            const defaultButton = buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption.label}"]`);
             if (defaultButton) {
                 defaultButton.classList.add('selected');
-                selectedValuesUpdated.push('Zufall');
+                selectedValuesUpdated.push(defaultOption.label);
             }
         } else {
             buttonsContainer.firstChild.classList.add('selected');
@@ -474,91 +581,15 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     updateSelectionBadge(selectedValuesUpdated, selectionBadge);
 
     // Hide clear icon for single-select dropdowns like "Sort By"
+    const dropdownHeader = parentDropdown.querySelector('.dropdown-header');
+    const clearButton = dropdownHeader.querySelector('.clear-icon');
     if (singleSelect) {
-        const dropdownHeader = parentDropdown.querySelector('.dropdown-header');
-        const clearButton = dropdownHeader.querySelector('.clear-icon');
         if (clearButton) {
             clearButton.style.display = 'none';
         }
-    }
-}
-
-
-/**
- * Function to handle autocomplete for cast and director names
- */
-
-function handleAutocomplete() {
-    const searchQuery = searchBox.value.trim();
-
-    // Only perform autocomplete if the search query length is sufficient
-    if (searchQuery.length >= 3) {
-        fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
-            .then(response => {
-                if (!response.ok) {
-                    // Handle 404 or other error responses
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();  // Attempt to parse JSON
-            })
-            .then(data => {
-                showAutocompleteSuggestions(data);
-            })
-            .catch(error => {
-                console.error('Error fetching autocomplete suggestions:', error);
-                hideAutocompleteSuggestions();  // Hide suggestions in case of error
-                // Optionally, show a user-friendly message (e.g., "No results found" or "Error fetching data")
-            });
     } else {
-        hideAutocompleteSuggestions();
+        if (clearButton) {
+            clearButton.style.display = ''; // Reset display property
+        }
     }
 }
-
-
-/**
- * Function to show autocomplete suggestions
- */
-function showAutocompleteSuggestions(suggestions) {
-    let autocompleteList = document.getElementById('autocomplete-list');
-    if (!autocompleteList) {
-        autocompleteList = document.createElement('div');
-        autocompleteList.id = 'autocomplete-list';
-        autocompleteList.className = 'autocomplete-items';
-        searchBox.parentNode.appendChild(autocompleteList);
-    }
-
-    autocompleteList.innerHTML = ''; // Clear existing suggestions
-
-    suggestions.forEach(item => {
-        const suggestionItem = document.createElement('div');
-        suggestionItem.className = 'autocomplete-item';
-        suggestionItem.textContent = item.name + ' (' + item.type + ')';
-        suggestionItem.dataset.name = item.name;
-        suggestionItem.dataset.type = item.type;
-
-        suggestionItem.addEventListener('click', () => {
-            searchBox.value = item.name;
-            hideAutocompleteSuggestions();
-            updateFilters();
-        });
-
-        autocompleteList.appendChild(suggestionItem);
-    });
-}
-
-/**
- * Function to hide autocomplete suggestions
- */
-function hideAutocompleteSuggestions() {
-    const autocompleteList = document.getElementById('autocomplete-list');
-    if (autocompleteList) {
-        autocompleteList.parentNode.removeChild(autocompleteList);
-    }
-}
-
-// Event listener to close autocomplete suggestions when clicking outside
-document.addEventListener('click', function (e) {
-    if (e.target !== searchBox) {
-        hideAutocompleteSuggestions();
-    }
-});

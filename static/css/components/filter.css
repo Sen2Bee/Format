@@ -1,3 +1,5 @@
+/* File: static/css/components/filter.css */
+
 /* Container for Search and Dropdowns */
 .search-dropdown-container {
     display: flex;
@@ -334,7 +336,7 @@
     cursor: pointer;
     transition: background-color 0.3s, border-color 0.3s;
     font-size: 0.9em;
-    flex: 1 0 calc((100% - 20px) / 3); /* 3 buttons with 10px gaps */
+    flex: 1 0 calc(33.33% - 10px); /* 3 buttons per row with 10px gaps */
     text-align: center;
     box-sizing: border-box;
 }
@@ -375,7 +377,7 @@
 }
 
 /* Responsive Adjustments */
-@media (min-width: 768px) {
+@media (max-width: 768px) {
 
     /* Adjust toggle button position and size */
     #toggle-filters-button {
@@ -399,7 +401,7 @@
     .filter-button {
         font-size: 0.85em;
         padding: 6px 10px;
-        flex: 1 0 calc((100% - 20px) / 3); /* Maintain 3 buttons with 10px gaps */
+        flex: 1 0 100%; /* Stack buttons vertically */
     }
 
     .filter-action-button {
@@ -412,9 +414,6 @@
         max-width: 100%; /* Full width within the advanced filters container */
     }
 
-}
-
-@media (max-width: 768px) {
     #filter-form,
     #advanced-filters-container {
         flex-direction: column;
@@ -432,34 +431,6 @@
         max-width: 100%;
     }
 
-    #toggle-filters-button {
-        top: 5px;
-        right: 10px;
-        font-size: 1.3em;
-    }
-
-    .dropdown-header {
-        font-size: 1em;
-    }
-
-    .dropdown-header .header-label i {
-        font-size: 1.3em;
-    }
-
-    .include-exclude-toggle .toggle-label {
-        font-size: 0.75em;
-    }
-
-    .filter-button {
-        font-size: 0.85em;
-        padding: 6px 10px;
-        flex: 1 0 45%;
-    }
-
-    .filter-action-button {
-        font-size: 0.85em;
-        padding: 6px 10px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -470,7 +441,7 @@
     .filter-button {
         font-size: 0.8em;
         padding: 6px 8px;
-        flex: 1 0 100%;
+        flex: 1 0 100%; /* Stack buttons vertically */
     }
 }
 

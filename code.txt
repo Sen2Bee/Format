@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-12 23:59:17 ===
+=== Code Summary Generated at 2024-10-15 20:54:23 ===
 
 === Project Folder Structure ===
 
@@ -125,6 +125,7 @@ ul, ol {
 html, body {
     overflow-x: hidden; /* Restrict horizontal overflow */
     font-family: 'Open Sans', sans-serif; /* Set default font */
+    background-color: var(--background-dark);
 }
 
 --- File: static\css\base\typography.css ---
@@ -178,19 +179,28 @@ button {
     --accent-color: #e7b000; /* Yellow for highlights */
     --background-light: #ffffff; /* White for light backgrounds */
     --background-dark: #1a1a1a; /* Dark gray for sections */
+    --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
+    --secondary-bg-color: #333;    
     --text-light: #ffffff; /* White text for dark backgrounds */
     --text-dark: #000000; /* Black text for light backgrounds */
     --secondary-text-color: #bfbfbf; /* Muted Light Gray */
     --link-color: #e7b000; /* Yellow for links */
-    --link-hover-color: #ff6a00; /* Orange for link hover states */
+    --link-hover-color: #e7b000; /* Orange for link hover states */
     --button-bg: #e7b000; /* Yellow for buttons */
     --button-hover-bg: #ff6a00; /* Orange for button hover background */
+    --hover-bg: #444;
     --border-color: #333333; /* Darker Gray for borders */
     --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle shadow color */
     --font-heading: 'Segoe UI', 'sans-serif;' /* Elegant Serif for Headings */
     --font-body: 'Roboto', sans-serif; /* Clean Sans-Serif for Body */
     --transition-duration: 0.3s; /* Consistent transition duration */
+    --filter-width: 98%; 
+    --placeholder-color: #aaa;
+    --scrollbar-bg: #333;
+    --scrollbar-thumb: #555;    
 }
+
+
 
 --- File: static\css\components\buttons.css ---
 /* buttons.css */
@@ -238,26 +248,14 @@ button {
 /* Import Additional Fonts for Themes */
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
 
-/* Variables */
-:root {
-    --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
-    --secondary-bg-color: #333;
-    --accent-color: #e74c3c;
-    --text-color: #e0e0e0; /* Default text color */
-    --link-color: #f1c40f; /* Link color */
-    --scrollbar-bg: #333;
-    --scrollbar-thumb: #555;
-    --hover-bg: #444;
-    --placeholder-color: #aaa;
-    --transition-duration: 0.3s;
-}
+
 
 /* General Movie Card Container */
 .movie-card {
     display: flex;
     flex-direction: column;
     background-color: #1e1e1e;
-    color: var(--text-color);
+    color: var(--text-light);
     border-radius: 10px;
     margin: 20px auto;
     overflow: hidden;
@@ -349,7 +347,8 @@ button {
     font-size: 1.8em;
     color: var(--link-color); /* Bright Yellow for headline */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
+    text-transform: uppercase;
 }
 
 /* Metadata Section */
@@ -361,13 +360,13 @@ button {
 
 .metadata p {
     margin: 5px 0;
-    color: var(--text-color); /* White text for metadata */
+    color: var(--text-light); /* White text for metadata */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .metadata p strong,
 .metadata p span {
-    color: var(--text-color); /* Ensure white color for strong and span elements */
+    color: var(--text-light); /* Ensure white color for strong and span elements */
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -375,14 +374,14 @@ button {
 /* Inline Metadata */
 .inline-meta {
     font-size: 1.1em;
-    color: var(--text-color); /* Use white color for inline meta */
+    color: var(--text-light); /* Use white color for inline meta */
     padding-top: 10px;
     border-top: 1px solid #444;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .standort {
-    color: var(--text-color); /* Use white text for location */
+    color: var(--text-light); /* Use white text for location */
     margin-top: 10px;
     border-top: 1px solid #444;
     padding-top: 10px;
@@ -395,7 +394,7 @@ button {
     padding: 15px;
     background-color: rgba(37, 43, 54, 0.8);
     border-radius: 8px;
-    color: var(--text-color); /* Use white color */
+    color: var(--text-light); /* Use white color */
     line-height: 1.4;
     z-index: 2;
     transition: font-weight 0.3s ease;
@@ -405,7 +404,7 @@ button {
 /* Enhanced Text Visibility in Overview */
 .overview-section p {
     margin: 0;
-    color: var(--text-color); /* White text for overview */
+    color: var(--text-light); /* White text for overview */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
@@ -660,8 +659,6 @@ button {
 
 
 --- File: static\css\components\filter.css ---
-/* File: static/css/components/filter.css */
-
 /* Container for Search and Dropdowns */
 .search-dropdown-container {
     display: flex;
@@ -673,34 +670,57 @@ button {
     margin-top: 0;
 }
 
+/* Filter Form Layout */
 #filter-form {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px; /* Ensures 10px gap between main and advanced filters */
     width: 100%;
-    align-items: center;
+    max-width: var(--filter-width);
+    box-sizing: border-box; /* Include padding and borders in width */
 }
 
-/* Show/Hide Filter Button */
+/* Toggle Buttons */
+#toggle-filters-button,
+#toggle-advanced-filters-button {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.5em;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
 #toggle-filters-button {
     position: absolute;
     top: 10px;
     right: 20px;
-    background-color: transparent;
-    border: none;
-    color: #fff;
-    font-size: 1.5em;
-    cursor: pointer;
-    transition: transform 0.3s ease;
 }
 
 #toggle-filters-button.rotate {
     transform: rotate(180deg);
 }
 
+#toggle-advanced-filters-button {
+    background-color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between icon and text */
+    transition: background-color 0.3s ease;
+}
+
+#toggle-advanced-filters-button:hover {
+    background-color: #444;
+}
+
+/* Search Box */
 .search-container {
     position: relative;
     width: 100%;
-    max-width: 800px;
+    max-width: var(--filter-width);
     height: 50px;
     margin-bottom: 5px;
     border: 2px solid var(--border-color);
@@ -715,10 +735,10 @@ button {
     top: 50%;
     transform: translateY(-50%);
     color: var(--link-hover-color);
-    pointer-events: none;
     font-size: 1.5em;
-    visibility: hidden; /* Initially hidden */
-    opacity: 0; /* Hidden by default */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
     transition: visibility 0.3s, opacity 0.3s ease;
 }
 
@@ -738,23 +758,21 @@ button {
     outline: none;
 }
 
-/* When the search box contains text, show the icon */
 #search-box:not(:placeholder-shown) + .search-icon {
     visibility: visible;
-    opacity: 1; /* Fade in the icon when text is present */
+    opacity: 1;
 }
 
-/* Clear-Search Icon */
 #clear-search {
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    visibility: hidden;
-    opacity: 0;
     font-size: 1.4em;
     cursor: pointer;
     color: var(--accent-color);
+    visibility: hidden;
+    opacity: 0;
     transition: visibility 0.3s ease, opacity 0.3s ease;
 }
 
@@ -763,10 +781,54 @@ button {
     opacity: 1;
 }
 
+/* Main Filters Container */
+.main-filters-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* 10px horizontal space between main filter dropdowns */
+    width: 100%;
+    transition: width 0.5s ease;
+}
+
+.main-filters-container.shrink {
+    width: 40%; /* Shrink to 40% when advanced filters are open */
+}
+
+.main-filters-container .custom-dropdown {
+    flex: 1 1 calc((100% - 20px) / 3); /* 3 dropdowns with 10px gaps */
+    max-width: calc((100% - 20px) / 3);
+    transition: max-width 0.5s ease;
+}
+
+/* Advanced Filters Container */
+#advanced-filters-container {
+    width: 0;
+    height: auto;
+    max-height: 0;
+    overflow: hidden;
+    transition: width 0.5s ease, max-height 0.5s ease;
+    box-sizing: border-box;
+    display: flex; /* Enables flex layout */
+    flex-direction: column; /* Stack items vertically */
+    gap: 10px; /* 10px vertical space between advanced filter dropdowns */
+}
+
+#advanced-filters-container.open {
+    width: 60%;
+    max-height: 800px; /* Adjust as needed */
+}
+
+/* Advanced Filters' Custom Dropdowns */
+#advanced-filters-container .custom-dropdown {
+    flex: 1 1 100%; /* Take full width within the container */
+    max-width: 100%; /* Ensures full width */
+    transition: max-width 0.5s ease;
+}
+
 /* Custom Dropdowns */
 .custom-dropdown {
     width: 100%;
-    max-width: 800px;
+    max-width: calc((100% - 20px) / 3); /* 3 dropdowns with 10px gaps */
     margin-bottom: 10px;
 }
 
@@ -776,11 +838,10 @@ button {
     justify-content: space-between;
     background-color: #333;
     color: #fff;
-    padding: 10px 10px;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
-    width: 100%;
     transition: background-color 0.3s ease;
 }
 
@@ -809,8 +870,7 @@ button {
 
 /* Include/Exclude Toggle */
 .include-exclude-toggle {
-    /* display: flex; */
-    display: none;
+    display: none; /* Changed from 'none' to 'flex' to make it visible */
     align-items: center;
     margin-right: 10px;
 }
@@ -831,7 +891,6 @@ button {
 
 .include-exclude-toggle input[type="checkbox"]:checked + .toggle-label {
     outline-color: var(--accent-color);
-    /* background-color: var(--accent-color); */
     color: #fff;
 }
 
@@ -843,19 +902,20 @@ button {
     content: 'Exclude';
 }
 
+/* Selection Badge */
 .selection-badge {
     padding: 5px 10px;
     border-radius: 50px;
     background-color: var(--accent-color);
     color: #fff;
     font-size: 0.9em;
-    display: none; /* Hide initially */
-    height: auto;
-    line-height: normal;
+    display: none;
     white-space: nowrap;
 }
 
-
+.selection-badge.visible {
+    display: inline-block; /* Ensure visibility */
+}
 
 /* Clear Icon for Dropdowns */
 .dropdown-header .clear-icon {
@@ -873,18 +933,12 @@ button {
     opacity: 1;
 }
 
-/* Removed hover effect to make clear-icon visibility independent of hover */
-/* .dropdown-header:hover .clear-icon {
-    visibility: visible;
-    opacity: 1;
-} */
-
 /* Dropdown List */
 .dropdown-list {
     width: 100%;
-    max-height: 0; /* Initially collapsed */
+    max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease;
+    /* transition: max-height 0.3s ease, padding 0.3s ease; */
     background-color: #2c2c2c;
     padding: 0 10px;
     box-sizing: border-box;
@@ -893,34 +947,29 @@ button {
 }
 
 .dropdown-list.show {
-    max-height: 500px; /* Adjust as needed */
+    max-height: 1200px;
     padding: 10px;
 }
 
 /* Filter Buttons Container */
-.dropdown-list .filter-buttons-container {
+.filter-buttons-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 10px; /* Ensures 10px gap between filter buttons */
     width: 100%;
-    max-height: 300px; /* Ensure it fits within .dropdown-list */
-    overflow-y: auto; /* Enable vertical scrolling */
-    
-    /* Hide Scrollbar for Firefox */
-    scrollbar-width: none; /* Firefox */
-    
-    /* Hide Scrollbar for IE, Edge */
-    -ms-overflow-style: none; /* IE and Edge */
+    max-height: 500px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
 }
 
-/* Hide Scrollbar for WebKit Browsers (Chrome, Safari, Edge) */
-.dropdown-list .filter-buttons-container::-webkit-scrollbar {
-    width: 0; /* Removes scrollbar width */
-    height: 0; /* Removes horizontal scrollbar if any */
+.filter-buttons-container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
-/* Optional: Add a gradient to indicate more content */
-.dropdown-list .filter-buttons-container::after {
+.filter-buttons-container::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -929,15 +978,15 @@ button {
     height: 30px;
     background: linear-gradient(to top, #2c2c2c, rgba(44, 44, 44, 0));
     pointer-events: none;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
 .dropdown-list.show .filter-buttons-container::after {
-    display: block; /* Show when dropdown is open */
+    display: block;
 }
 
 /* Filter Buttons */
-.dropdown-list .filter-button {
+.filter-button {
     padding: 8px 12px;
     background-color: #444;
     color: #fff;
@@ -946,25 +995,24 @@ button {
     cursor: pointer;
     transition: background-color 0.3s, border-color 0.3s;
     font-size: 0.9em;
-    flex: 1 0 30%; /* Approximately three buttons per row */
+    flex: 1 0 calc(33.33% - 10px); /* 3 buttons per row with 10px gaps */
     text-align: center;
     box-sizing: border-box;
 }
 
-.dropdown-list .filter-button.selected {
+.filter-button.selected {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
-    color: #fff;
 }
 
-.dropdown-list .filter-button:hover {
+.filter-button:hover {
     background-color: #555;
     border-color: #666;
 }
 
 /* Filters Buttons Row */
 .filters-buttons-row {
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     margin-top: 10px;
@@ -988,7 +1036,9 @@ button {
 }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
+@media (min-width: 768px) {
+
+    /* Adjust toggle button position and size */
     #toggle-filters-button {
         top: 5px;
         right: 10px;
@@ -1010,7 +1060,73 @@ button {
     .filter-button {
         font-size: 0.85em;
         padding: 6px 10px;
-        flex: 1 0 45%; /* Two buttons per row on medium screens */
+        flex: 1 0 calc((100% - 20px) / 3); /* Maintain 3 buttons with 10px gaps */
+    }
+
+    .filter-action-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+    }
+
+    /* Ensure advanced-filters-container's custom-dropdowns align correctly */
+    #advanced-filters-container.open .custom-dropdown {
+        max-width: 100%; /* Full width within the advanced filters container */
+    }
+
+}
+
+@media (max-width: 768px) {
+    .filter-button {
+        flex: 1 0 48%; /* 2 buttons per row with gaps */
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-button {
+        flex: 1 0 100%; /* Stack buttons vertically */
+    }
+}
+
+@media (max-width: 768px) {
+    #filter-form,
+    #advanced-filters-container {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%; /* Ensure full width on mobile */
+    }
+
+    .main-filters-container,
+    #advanced-filters-container {
+        width: 100%;
+    }
+
+    .custom-dropdown,
+    #advanced-filters-container .custom-dropdown {
+        max-width: 100%;
+    }
+
+    #toggle-filters-button {
+        top: 5px;
+        right: 10px;
+        font-size: 1.3em;
+    }
+
+    .dropdown-header {
+        font-size: 1em;
+    }
+
+    .dropdown-header .header-label i {
+        font-size: 1.3em;
+    }
+
+    .include-exclude-toggle .toggle-label {
+        font-size: 0.75em;
+    }
+
+    .filter-button {
+        font-size: 0.85em;
+        padding: 6px 10px;
+        flex: 1 0 100%;
     }
 
     .filter-action-button {
@@ -1027,8 +1143,32 @@ button {
     .filter-button {
         font-size: 0.8em;
         padding: 6px 8px;
-        flex: 1 0 100%; /* Full width on very small screens */
+        flex: 1 0 100%;
     }
+}
+
+/* Additional styles for autocomplete */
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    background-color: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 99;
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.autocomplete-item:hover {
+    background-color: #e9e9e9;
 }
 
 --- File: static\css\components\forms.css ---
@@ -1084,7 +1224,7 @@ label span.required {
     background-color: var(--background-dark);
     padding: 15px 0; /* Added padding for spacing */
     color: var(--text-light);
-    border-bottom: 1px solid var(--link-hover-color); /* Add a 1px thick red border */
+    border-top: 1px solid var(--link-hover-color); /* Add a 1px thick red border */
 }
 
 
@@ -1399,17 +1539,11 @@ footer {
     font-family: var(--font-body);  /* Use body font */
 }
 
-/* Centered Theme Title in Navbar */
-.nav-center-title {
-    position: absolute;  /* Position it absolutely to center within the nav */
-    left: 50%;
-    transform: translateX(-50%);  /* Center horizontally */
-    font-family: var(--font-heading);  /* Use heading font */
-}
+
 
 .theme-title {
-    font-size: 1.2rem;  /* Adjust font size for the theme title */
-    color: var(--accent-color);  /* Use defined accent color */
+    font-size: 1.0rem;  /* Adjust font size for the theme title */
+    color: var(--link-color);  /* Use defined accent color */
     text-transform: lowercase;
     transition: color var(--transition-duration);  /* Smooth color transition */
 }
@@ -1539,11 +1673,13 @@ footer {
         left: auto;
         transform: none;
         margin: 10px 0;  /* Add spacing */
-    }
+}
+    /* Centered Theme Title in Navbar */
+    .nav-center-title {
+        font-size: 1.0rem;  /* Adjust the title size for very small screens */
+    }  
 
-    .theme-title {
-        font-size: 1.3rem;
-    }
+
 }
 
 /* Shrinking & Hiding Behavior for Mobile */
@@ -1578,6 +1714,7 @@ footer {
     .theme-title {
         font-size: 1.2rem;  /* Adjust the title size for very small screens */
     }
+  
 }
 
 /* Animation for Navbar Visibility */
@@ -1790,7 +1927,7 @@ footer {
     flex-direction: column;
     align-items: center;
     gap: 30px;
-    padding: 60px 20px;
+    padding: 10px 20px;
     background-color: var(--background-dark); /* Dark background for the movie listing */
 }
 
@@ -1845,29 +1982,7 @@ footer {
     }
 }
 
-/* Additional styles for autocomplete */
 
-.autocomplete-items {
-    position: absolute;
-    border: 1px solid #d4d4d4;
-    background-color: #fff;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 99;
-    top: 100%;
-    left: 0;
-    right: 0;
-}
-
-.autocomplete-item {
-    padding: 10px;
-    cursor: pointer;
-    background-color: #fff;
-}
-
-.autocomplete-item:hover {
-    background-color: #e9e9e9;
-}
 
 --- File: static\css\pages\contact.css ---
 /* contact.css */
@@ -2305,6 +2420,9 @@ export const toggleFiltersButton = document.getElementById('toggle-filters-butto
 export const searchDropdownContainer = document.querySelector('.search-dropdown-container');
 export const clearAllFiltersButton = document.getElementById('clear-all-filters-button');
 export const showAllResultsButton = document.getElementById('show-all-results-button');
+// New elements for advanced filters
+export const toggleAdvancedFiltersButton = document.getElementById('toggle-advanced-filters-button');
+export const advancedFiltersContainer = document.getElementById('advanced-filters-container');
 
 
 
@@ -2356,7 +2474,9 @@ import {
     searchDropdownContainer,
     clearAllFiltersButton,
     showAllResultsButton,
-    movieContainer
+    movieContainer,
+    toggleAdvancedFiltersButton,
+    advancedFiltersContainer    
 } from './entry.js';
 import { updateCarouselTitle } from './carousel.js';
 import { showProgressIndicator, hideProgressIndicator } from './entry.js';
@@ -2366,7 +2486,7 @@ import { updatePagination } from './pagination.js';
 let debounceTimer = null;
 
 /**
- * Function to initialize filter panel toggle
+ * Initialize the toggle functionality for the filter panel and advanced filters
  */
 export function initializeFilterPanelToggle() {
     if (toggleFiltersButton && searchDropdownContainer) {
@@ -2375,57 +2495,99 @@ export function initializeFilterPanelToggle() {
             toggleFiltersButton.classList.toggle('rotate');
         });
     }
-}
 
-/**
- * Function to initialize "Clear All" and "Show All Results" buttons
- */
-export function initializeFilterActionButtons() {
-    if (clearAllFiltersButton) {
-        clearAllFiltersButton.addEventListener('click', () => {
-            clearAllFilters();
-            updateFilters();
-        });
-    }
-
-    if (showAllResultsButton) {
-        showAllResultsButton.addEventListener('click', () => {
-            clearAllFilters();
-            searchBox.value = '';
-            updateFilters();
+    // Initialize Advanced Filters Toggle
+    if (toggleAdvancedFiltersButton && advancedFiltersContainer) {
+        toggleAdvancedFiltersButton.addEventListener('click', () => {
+            const mainFiltersContainer = document.querySelector('.main-filters-container');
+            
+            // Toggle the advanced filters container
+            advancedFiltersContainer.classList.toggle('open');
+            
+            // Shrink the main filters container if the advanced filters are open
+            if (advancedFiltersContainer.classList.contains('open')) {
+                mainFiltersContainer.classList.add('shrink');
+            } else {
+                mainFiltersContainer.classList.remove('shrink');
+            }
         });
     }
 }
 
 /**
- * Function to clear all filters
+ * Clear all filters and reset selections
  */
 export function clearAllFilters() {
     // Clear selections in all dropdowns
     const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
-    filterButtons.forEach(button => button.classList.remove('selected'));
+    filterButtons.forEach(button => button.classList.remove('selected')); // Remove 'selected' class from all buttons
 
     // Reset include/exclude toggles
     const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
     includeExcludeCheckboxes.forEach(checkbox => {
-        checkbox.checked = true; // Set to include
+        checkbox.checked = true; // Reset all checkboxes to 'include'
     });
 
-    // Hide clear icons and reset selection badges
+    // Hide clear icons (except for single-select dropdowns, which have no clear icons)
     const clearIcons = document.querySelectorAll('.clear-icon');
     clearIcons.forEach(icon => {
-        icon.style.visibility = 'hidden';
+        icon.classList.remove('visible'); // Hide all clear icons
     });
 
+    // Reset and hide selection badges
     const selectionBadges = document.querySelectorAll('.selection-badge');
     selectionBadges.forEach(badge => {
-        badge.textContent = '';
-        badge.classList.remove('visible');
+        badge.textContent = ''; // Clear the text in the badges
+        badge.classList.remove('visible'); // Hide the badges
     });
+
+    // For single-select dropdowns, ensure "Zufall" is selected by default if applicable
+    const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
+    singleSelectDropdowns.forEach(dropdownList => {
+        const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
+        const optionsArray = Array.from(buttonsContainer.children).map(btn => btn.dataset.value);
+        const defaultOption = optionsArray.find(label => label.toLowerCase() === 'zufall');
+        const buttonToSelect = defaultOption 
+            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`) 
+            : buttonsContainer.firstElementChild;
+        
+        if (buttonToSelect) {
+            buttonToSelect.classList.add('selected');
+            const badge = dropdownList.parentElement.querySelector('.selection-badge');
+            updateSelectionBadge([buttonToSelect.dataset.value], badge);
+        }
+    });
+
+    // Trigger a filter update by dispatching the dropdownChange event
+    triggerDropdownChangeEvent();
 }
 
 /**
- * Function to initialize dropdowns and attach event listeners
+ * Initialize event listeners for action buttons like "Clear All" and "Show All Results"
+ */
+export function initializeFilterActionButtons() {
+    // Attach event listener to "Clear All" button
+    if (clearAllFiltersButton) {
+        clearAllFiltersButton.addEventListener('click', () => {
+            clearAllFilters(); // Call clearAllFilters function
+            // No need to call updateFilters here since clearAllFilters triggers the event
+        });
+    }
+
+    // Attach event listener to "Show All Results" button
+    if (showAllResultsButton) {
+        showAllResultsButton.addEventListener('click', () => {
+            clearAllFilters(); // Call clearAllFilters function to clear the filters
+            if (searchBox) {
+                searchBox.value = ''; // Clear the search box
+            }
+            // No need to call updateFilters here since clearAllFilters triggers the event
+        });
+    }
+}
+
+/**
+ * Function to initialize dropdowns and attach necessary event listeners
  */
 export function initializeFilterDropdowns() {   
     // Handle filter updates triggered by custom dropdowns
@@ -2446,7 +2608,7 @@ export function initializeFilterDropdowns() {
             if (searchBox.value.length > 3) {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
-                    updateFilters(); // Trigger filter update after user stops typing for 300ms
+                    triggerDropdownChangeEvent(); // Trigger filter update after user stops typing for 1000ms
                     handleAutocomplete(); // Handle autocomplete for cast and director
                 }, 1000);
             }
@@ -2460,7 +2622,7 @@ export function initializeFilterDropdowns() {
         clearSearchBtn.addEventListener('click', () => {
             searchBox.value = '';
             clearSearchBtn.classList.remove('visible');
-            updateFilters();
+            triggerDropdownChangeEvent(); // Trigger filter update
             hideAutocompleteSuggestions(); // Hide autocomplete suggestions
         });
     } else {
@@ -2474,12 +2636,12 @@ export function initializeFilterDropdowns() {
     const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
     includeExcludeCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            updateFilters(); // Update filters when include/exclude toggles change
+            triggerDropdownChangeEvent(); // Trigger filter update when include/exclude toggles change
         });
     });    
 
-    // Initial filter update
-    updateFilters();
+    // Initial filter update by dispatching the dropdownChange event
+    triggerDropdownChangeEvent();
 }
 
 /**
@@ -2489,27 +2651,43 @@ export function attachDropdownEventDelegation() {
     const dropdownLists = document.querySelectorAll('.dropdown-list');
 
     dropdownLists.forEach(dropdownList => {
-        // Handle button clicks within the dropdown
+        // Handle button clicks within the dropdown using event delegation
         dropdownList.addEventListener('click', (event) => {
             const target = event.target;
             if (target && target.classList.contains('filter-button')) {
                 event.preventDefault();
+                const isSingleSelect = dropdownList.classList.contains('single-select');
                 const value = target.dataset.value;
-                target.classList.toggle('selected');
 
-                // Update the selected values
+                if (isSingleSelect) {
+                    // For single-select dropdowns, deselect all and select the clicked button
+                    const allButtons = dropdownList.querySelectorAll('.filter-button');
+                    allButtons.forEach(btn => btn.classList.remove('selected'));
+                    target.classList.add('selected');
+                } else {
+                    // For multi-select dropdowns, toggle selection
+                    target.classList.toggle('selected');
+                }
+
+                // Update the selection badge
+                const dropdownHeader = dropdownList.previousElementSibling;
+                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
                 const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
-
-                // Update the selection badge and clear button
-                const dropdownHeader = dropdownList.previousElementSibling;
-                const clearButton = dropdownHeader.querySelector('.clear-icon');
-                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge(selectedValues, selectionBadge);
-                if (selectedValues.length > 0) {
-                    clearButton.classList.add('visible');
+
+                // Update the clear icon visibility for multi-select dropdowns
+                const clearButton = dropdownHeader.querySelector('.clear-icon');
+                if (isSingleSelect) {
+                    if (clearButton) {
+                        clearButton.style.display = 'none';
+                    }
                 } else {
-                    clearButton.classList.remove('visible');
+                    if (selectedValues.length > 0) {
+                        clearButton.classList.add('visible');
+                    } else {
+                        clearButton.classList.remove('visible');
+                    }
                 }
 
                 // Trigger filter update
@@ -2517,7 +2695,7 @@ export function attachDropdownEventDelegation() {
             }
         });
 
-        // Handle clear button
+        // Handle clear button (only for multi-select dropdowns)
         const clearButton = dropdownList.parentElement.querySelector('.clear-icon');
         if (clearButton) {
             clearButton.addEventListener('click', (event) => {
@@ -2564,7 +2742,6 @@ export function attachDropdownEventDelegation() {
     });
 }
 
-
 /**
  * Function to toggle dropdown visibility
  */
@@ -2590,12 +2767,9 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     } else {
         badgeElement.textContent = '';
         badgeElement.classList.remove('visible');
-        badgeElement.style.display = 'none'; // hide the badge
+        badgeElement.style.display = 'none'; // Hide the badge
     }
 }
-
-
-
 
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes
@@ -2606,30 +2780,46 @@ export function triggerDropdownChangeEvent() {
     document.dispatchEvent(event);
 }
 
+/**
+ * Function to update filters based on selected criteria and search query
+ * @param {number} page - The current page number for pagination
+ */
 export function updateFilters(page = 1) {
+    console.log("updateFilters called");
+
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
     const selectedCountries = getSelectedValues('country-dropdown-list');
-    const searchQuery = searchBox ? searchBox.value.trim() : '';
+    // Get selected values from advanced filters
+    const selectedStandorte = getSelectedValues('standort-dropdown-list');
+    const selectedMedia = getSelectedValues('medium-dropdown-list');
+    const selectedSortBy = getSelectedValues('sort-dropdown-list'); // Should be only one value
 
-    // Get include/exclude status
-    const yearInclude = document.querySelector('.include-exclude-checkbox[data-filter="year"]').checked;
-    const genreInclude = document.querySelector('.include-exclude-checkbox[data-filter="genre"]').checked;
-    const countryInclude = document.querySelector('.include-exclude-checkbox[data-filter="country"]').checked;
-    console.log(yearInclude, genreInclude, countryInclude)
+    const searchQuery = searchBox ? searchBox.value.trim() : '';
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
         params.append('years', selectedYears.join(','));
-        params.append('years_include', yearInclude ? '1' : '0');
+        params.append('years_include', '1'); // Fixed to always include
     }
     if (selectedGenres.length) {
         params.append('genres', selectedGenres.join(','));
-        params.append('genres_include', genreInclude ? '1' : '0');
+        // params.append('genres_include', genreInclude ? '1' : '0');
     }
     if (selectedCountries.length) {
         params.append('countries', selectedCountries.join(','));
-        params.append('countries_include', countryInclude ? '1' : '0');
+        // params.append('countries_include', countryInclude ? '1' : '0');
+    }
+    if (selectedStandorte.length) {
+        params.append('standorte', selectedStandorte.join(','));
+    }
+    if (selectedMedia.length) {
+        params.append('media', selectedMedia.join(','));
+    }
+    if (selectedSortBy.length) {
+        console.log("Selected Sort By:", selectedSortBy);
+        params.append('sort_by', selectedSortBy[0]); // Only one sort option should be selected
+        console.log("selectedSortBy[0]", selectedSortBy[0]);
     }
 
     // Search logic: apply filters and shrink dropdowns based on search query
@@ -2639,8 +2829,6 @@ export function updateFilters(page = 1) {
 
     params.append('page', page);
 
-    console.log("Fetching updated filter data with params:", params.toString());
-
     // Show the progress indicator before starting the fetch
     showProgressIndicator();
 
@@ -2648,12 +2836,14 @@ export function updateFilters(page = 1) {
         .then(response => response.json())
         .then(data => {
             console.log("API Response Data:", data);
-            const { years, genres, countries, movies, current_page, total_pages } = data;
-
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
             // Populate dropdowns based on the filtered data from search query
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
+            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
+            populateDropdown('medium-dropdown-list', media, selectedMedia);
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false); // Single-select, no counts
 
             updateMovieListings(movies); // Updates the displayed movie cards
             updatePagination(current_page, total_pages); // Updates the pagination controls
@@ -2670,64 +2860,13 @@ export function updateFilters(page = 1) {
 }
 
 /**
- * Helper to get selected values from a specific dropdown list
+ * Helper function to get selected values from a specific dropdown list
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @returns {Array} - An array of selected values
  */
 export function getSelectedValues(dropdownListId) {
     const buttons = document.querySelectorAll(`#${dropdownListId} .filter-button.selected`);
     return Array.from(buttons).map(btn => btn.dataset.value);
-}
-
-/**
- * Function to populate dropdown lists with options
- * @param {string} dropdownListId - The ID of the dropdown list element
- * @param {Object} options - An object with option labels as keys and counts as values
- * @param {Array} selectedValues - An array of currently selected option values
- */
-export function populateDropdown(dropdownListId, options, selectedValues = []) {
-    const dropdownList = document.getElementById(dropdownListId);
-    if (!dropdownList) {
-        console.error(`populateDropdown: Element mit ID '${dropdownListId}' nicht gefunden.`);
-        return;
-    }
-
-    dropdownList.innerHTML = ""; // Clear existing options
-
-    if (typeof options !== 'object' || Array.isArray(options)) {
-        console.error(`populateDropdown: 'options' sollte ein Objekt sein. Erhalten:`, options);
-        return;
-    }
-    // Convert options object to array and sort
-    const optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
-
-    // Sort options as needed (e.g., alphabetically)
-    optionsArray.sort((a, b) => a.label.localeCompare(b.label));
-
-    // Create a container for the filter buttons
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'filter-buttons-container';
-
-    // Render buttons
-    optionsArray.forEach(option => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "filter-button";
-        button.textContent = `${option.label} (${option.count})`;
-        button.dataset.value = option.label;
-
-        if (selectedValues.includes(option.label)) {
-            button.classList.add('selected');
-        }
-
-        buttonsContainer.appendChild(button);
-    });
-    dropdownList.appendChild(buttonsContainer);
-
-    // Update Selection Badge after populating
-    const parentDropdown = dropdownList.parentElement;
-    const selectionBadge = parentDropdown.querySelector('.selection-badge');
-    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
-    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
-    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
 }
 
 /**
@@ -2759,9 +2898,9 @@ function handleAutocomplete() {
     }
 }
 
-
 /**
  * Function to show autocomplete suggestions
+ * @param {Array} suggestions - Array of suggestion objects
  */
 function showAutocompleteSuggestions(suggestions) {
     let autocompleteList = document.getElementById('autocomplete-list');
@@ -2777,14 +2916,14 @@ function showAutocompleteSuggestions(suggestions) {
     suggestions.forEach(item => {
         const suggestionItem = document.createElement('div');
         suggestionItem.className = 'autocomplete-item';
-        suggestionItem.textContent = item.name + ' (' + item.type + ')';
+        suggestionItem.textContent = `${item.name} (${item.type})`;
         suggestionItem.dataset.name = item.name;
         suggestionItem.dataset.type = item.type;
 
         suggestionItem.addEventListener('click', () => {
             searchBox.value = item.name;
             hideAutocompleteSuggestions();
-            updateFilters();
+            triggerDropdownChangeEvent(); // Trigger filter update after selecting autocomplete suggestion
         });
 
         autocompleteList.appendChild(suggestionItem);
@@ -2807,6 +2946,106 @@ document.addEventListener('click', function (e) {
         hideAutocompleteSuggestions();
     }
 });
+
+/**
+ * Function to populate dropdown lists with options
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @param {Object|Array} options - An object with option labels as keys and counts as values or an array of labels
+ * @param {Array} selectedValues - An array of currently selected option values
+ * @param {boolean} singleSelect - If true, only one option can be selected
+ * @param {boolean} showCounts - If true, display counts alongside labels
+ */
+export function populateDropdown(dropdownListId, options, selectedValues = [], singleSelect = false, showCounts = true) {
+    const dropdownList = document.getElementById(dropdownListId);
+    if (!dropdownList) {
+        console.error(`populateDropdown: Element with ID '${dropdownListId}' not found.`);
+        return;
+    }
+
+    dropdownList.innerHTML = ""; // Clear existing options
+
+    let optionsArray = [];
+
+    if (typeof options === 'object' && !Array.isArray(options)) {
+        // Convert object to array of { label, count }
+        optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
+    } else if (Array.isArray(options)) {
+        // Convert array to array of { label }
+        optionsArray = options.map(label => ({ label }));
+    } else {
+        console.error(`populateDropdown: 'options' should be an object or array. Received:`, options);
+        return;
+    }
+
+    // Conditionally sort the options alphabetically, but skip sorting for "sort-dropdown-list"
+    if (dropdownListId !== 'sort-dropdown-list') {
+        optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    // Create a container for the filter buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'filter-buttons-container';
+
+    // Render buttons
+    optionsArray.forEach(option => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "filter-button";
+
+        // Show either label with count or just label depending on `showCounts` flag
+        if (showCounts && option.count !== undefined) {
+            button.textContent = `${option.label} (${option.count})`;
+        } else {
+            button.textContent = option.label;
+        }
+
+        // Store the value as the dataset value (can be the label or actual value for sorting)
+        button.dataset.value = option.label;
+
+        if (selectedValues.includes(option.label)) {
+            button.classList.add('selected');
+        }
+
+        // Note: We no longer attach per-button event listeners here
+        // Event handling is done via event delegation in attachDropdownEventDelegation()
+
+        buttonsContainer.appendChild(button);
+    });
+
+    dropdownList.appendChild(buttonsContainer);
+
+    // Update Selection Badge after populating
+    const parentDropdown = dropdownList.parentElement;
+    const selectionBadge = parentDropdown.querySelector('.selection-badge');
+    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+
+    // For single-select dropdowns, ensure "Zufall" is selected by default if no selection has been made
+    if (singleSelect && selectedValuesUpdated.length === 0 && buttonsContainer.firstChild) {
+        const defaultOption = optionsArray.find(option => option.label.toLowerCase() === 'zufall');
+        if (defaultOption) {
+            const defaultButton = buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption.label}"]`);
+            if (defaultButton) {
+                defaultButton.classList.add('selected');
+                selectedValuesUpdated.push(defaultOption.label);
+            }
+        } else {
+            buttonsContainer.firstChild.classList.add('selected');
+            selectedValuesUpdated.push(buttonsContainer.firstChild.dataset.value);
+        }
+    }
+
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
+
+    // Hide clear icon for single-select dropdowns like "Sort By"
+    if (singleSelect) {
+        const dropdownHeader = parentDropdown.querySelector('.dropdown-header');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+        if (clearButton) {
+            clearButton.style.display = 'none';
+        }
+    }
+}
 
 --- File: static\js\hero.js ---
 document.addEventListener('DOMContentLoaded', function () {
@@ -3087,7 +3326,7 @@ export function attachPaginationEventListeners() {
                 return;  // Klicks auf deaktivierte Buttons ignorieren
             }
             const page = parseInt(this.getAttribute('data-page'));
-            if (!isNaN(page)) updateFilters(page);  // Filterung mit ausgewählter Seite auslösen
+            if (!isNaN(page)) updateFilters(page, "attachPaginationEventListeners");  // Filterung mit ausgewählter Seite auslösen
         });
     });
 }
@@ -3182,74 +3421,137 @@ export function attachPaginationEventListeners() {
                 <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
             </div>
 
-            <!-- Custom Dropdowns for Filters -->
             <form id="filter-form">
-                <div class="custom-dropdown">
-                    <div class="dropdown-header" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="header-label">
-                            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-                            <span>Jahre</span>
+                <!-- Main Filters Container for Year, Genre, Country -->
+                <div class="main-filters-container">
+                    <!-- Year Filter -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                <span>Jahre</span>
+                            </div>
+                            <div class="header-controls">
+                                <label class="include-exclude-toggle">
+                                    <input type="checkbox" class="include-exclude-checkbox" data-filter="year" checked>
+                                    <span class="toggle-label"></span>
+                                </label>
+                                <span class="selection-badge" aria-label="Ausgewählte Jahre"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                            </div>
                         </div>
-                        <div class="header-controls">
-                            <!-- Include/Exclude Toggle -->
-                            <label class="include-exclude-toggle">
-                                <input type="checkbox" class="include-exclude-checkbox" data-filter="year" checked>
-                                <span class="toggle-label"></span>
-                            </label>
-                            <span class="selection-badge" aria-label="Ausgewählte Jahre"></span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                        <div class="dropdown-list" id="year-dropdown-list">
+                            <!-- Buttons populated dynamically -->
                         </div>
                     </div>
-                    <div class="dropdown-list" id="year-dropdown-list">
-                        <!-- Buttons will be populated here dynamically -->
+            
+                    <!-- Genre Filter -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-film" aria-hidden="true"></i>
+                                <span>Genres</span>
+                            </div>
+                            <div class="header-controls">
+                                <label class="include-exclude-toggle">
+                                    <input type="checkbox" class="include-exclude-checkbox" data-filter="genre" checked>
+                                    <span class="toggle-label"></span>
+                                </label>
+                                <span class="selection-badge" aria-label="Ausgewählte Genres"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="genre-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
+                    </div>
+            
+                    <!-- Country Filter -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-globe" aria-hidden="true"></i>
+                                <span>Länder</span>
+                            </div>
+                            <div class="header-controls">
+                                <label class="include-exclude-toggle">
+                                    <input type="checkbox" class="include-exclude-checkbox" data-filter="country" checked>
+                                    <span class="toggle-label"></span>
+                                </label>
+                                <span class="selection-badge" aria-label="Ausgewählte Länder"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="country-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
                     </div>
                 </div>
-
-                <div class="custom-dropdown">
-                    <div class="dropdown-header" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="header-label">
-                            <i class="fas fa-film" aria-hidden="true"></i>
-                            <span>Genres</span>
+            
+                <!-- Toggle Button for Advanced Filters -->
+                <button id="toggle-advanced-filters-button" class="toggle-advanced-filters-button" type="button">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+            
+                <!-- Advanced Filters Section -->
+                <div id="advanced-filters-container" class="advanced-filters-container hidden">
+                    <!-- Advanced Filter: Standort -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                <span>Standort</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Standorte"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                            </div>
                         </div>
-                        <div class="header-controls">
-                            <!-- Include/Exclude Toggle -->
-                            <label class="include-exclude-toggle">
-                                <input type="checkbox" class="include-exclude-checkbox" data-filter="genre" checked>
-                                <span class="toggle-label"></span>
-                            </label>
-                            <span class="selection-badge" aria-label="Ausgewählte Genres"></span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
-                        </div>
-                    </div>
-                    <div class="dropdown-list" id="genre-dropdown-list">
-                        <!-- Buttons will be populated here dynamically -->
-                    </div>
-                </div>
-
-                <div class="custom-dropdown">
-                    <div class="dropdown-header" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="header-label">
-                            <i class="fas fa-globe" aria-hidden="true"></i>
-                            <span>Länder</span>
-                        </div>
-                        <div class="header-controls">
-                            <!-- Include/Exclude Toggle -->
-                            <label class="include-exclude-toggle">
-                                <input type="checkbox" class="include-exclude-checkbox" data-filter="country" checked>
-                                <span class="toggle-label"></span>
-                            </label>
-                            <span class="selection-badge" aria-label="Ausgewählte Länder"></span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                        <div class="dropdown-list" id="standort-dropdown-list">
+                            <!-- Buttons populated dynamically -->
                         </div>
                     </div>
-                    <div class="dropdown-list" id="country-dropdown-list">
-                        <!-- Buttons will be populated here dynamically -->
+            
+                    <!-- Advanced Filter: Medium -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-compact-disc" aria-hidden="true"></i>
+                                <span>Medium</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Medien"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="medium-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
                     </div>
-                </div>
+            
+                    <!-- Advanced Filter: Sortieren nach -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-sort" aria-hidden="true"></i>
+                                <span>Sortieren nach</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Aktuelle Sortierung"></span>
+                                <!-- No clear-icon for single-select dropdowns -->
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="sort-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
+                    </div>    
+                </div>          
             </form>
+            
+            
 
             <!-- Buttons Row -->
-            <div class="filters-buttons-row">
+            <div class="filters-buttons-row">   
                 <button id="clear-all-filters-button" class="filter-action-button">
                     <i class="fas fa-undo"></i> Zurücksetzen
                 </button>
