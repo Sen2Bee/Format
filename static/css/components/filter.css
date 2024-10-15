@@ -131,9 +131,7 @@
     transition: width 0.5s ease;
 }
 
-.main-filters-container.shrink {
-    width: 40%; /* Shrink to 40% when advanced filters are open */
-}
+
 
 .main-filters-container .custom-dropdown {
     flex: 1 1 calc((100% - 20px) / 3); /* 3 dropdowns with 10px gaps */
@@ -154,8 +152,12 @@
     gap: 10px; /* 10px vertical space between advanced filter dropdowns */
 }
 
+.main-filters-container.shrink {
+    width: 60%; /* Shrink to 40% when advanced filters are open */
+}
+
 #advanced-filters-container.open {
-    width: 60%;
+    width: 40%;
     max-height: 800px; /* Adjust as needed */
 }
 
@@ -211,7 +213,7 @@
 
 /* Include/Exclude Toggle */
 .include-exclude-toggle {
-    display: none; /* Changed from 'none' to 'flex' to make it visible */
+    display: none; /* Adjust display as needed */
     align-items: center;
     margin-right: 10px;
 }
@@ -279,7 +281,6 @@
     width: 100%;
     max-height: 0;
     overflow: hidden;
-    /* transition: max-height 0.3s ease, padding 0.3s ease; */
     background-color: #2c2c2c;
     padding: 0 10px;
     box-sizing: border-box;
@@ -398,10 +399,12 @@
         font-size: 0.75em;
     }
 
+    /* Adjust filter buttons to stack vertically */
     .filter-button {
         font-size: 0.85em;
         padding: 6px 10px;
         flex: 1 0 100%; /* Stack buttons vertically */
+       
     }
 
     .filter-action-button {
@@ -409,11 +412,7 @@
         padding: 6px 10px;
     }
 
-    /* Ensure advanced-filters-container's custom-dropdowns align correctly */
-    #advanced-filters-container.open .custom-dropdown {
-        max-width: 100%; /* Full width within the advanced filters container */
-    }
-
+    /* Ensure the filter form and advanced filters use column layout */
     #filter-form,
     #advanced-filters-container {
         flex-direction: column;
@@ -421,18 +420,35 @@
         width: 100%; /* Ensure full width on mobile */
     }
 
-    .main-filters-container,
-    #advanced-filters-container {
+    /* Set main-filters-container to column layout */
+    .main-filters-container {
+        flex-direction: column; /* Stack dropdowns vertically */
         width: 100%;
     }
 
+    /* Override shrink behavior on mobile */
+    .main-filters-container.shrink {
+        width: 100%; /* Ensure full width on mobile */
+    }
+
+    /* Ensure custom-dropdowns take full width */
     .custom-dropdown,
     #advanced-filters-container .custom-dropdown {
         max-width: 100%;
+        flex: 1 1 100%;
     }
+    #advanced-filters-container.open {
+        width: 100%;
+    }    
 
+  
+    .main-filters-container .custom-dropdown {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
 }
 
+/* Additional adjustments for very small screens */
 @media (max-width: 480px) {
     .search-container {
         margin-bottom: 10px;
