@@ -184,13 +184,14 @@
 .dropdown-header::after {
     content: '\25BC';
     font-size: 1em;
-    color: var(--accent-color);
+    color: var(--text-light);
     margin-left: 10px;
     transition: transform 0.3s ease;
 }
 
 .dropdown-header[aria-expanded="true"]::after {
     transform: rotate(180deg);
+    color: var(--accent-color);
 }
 
 /* Clear Icon for Dropdowns */
