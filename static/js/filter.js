@@ -7,7 +7,6 @@ import {
     toggleFiltersButton,
     searchDropdownContainer,
     clearAllFiltersButton,
-    showAllResultsButton,
     movieContainer,
     toggleAdvancedFiltersButton,
     advancedFiltersContainer    
@@ -56,12 +55,6 @@ export function clearAllFilters() {
     const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
     filterButtons.forEach(button => button.classList.remove('selected')); // Remove 'selected' class from all buttons
 
-    // Reset include/exclude toggles
-    const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
-    includeExcludeCheckboxes.forEach(checkbox => {
-        checkbox.checked = true; // Reset all checkboxes to 'include'
-    });
-
     // Hide clear icons (except for single-select dropdowns, which have no clear icons)
     const clearIcons = document.querySelectorAll('.clear-icon');
     clearIcons.forEach(icon => {
@@ -97,24 +90,13 @@ export function clearAllFilters() {
 }
 
 /**
- * Initialize event listeners for action buttons like "Clear All" and "Show All Results"
+ * Initialize event listeners for action buttons like "Clear All"
  */
 export function initializeFilterActionButtons() {
     // Attach event listener to "Clear All" button
     if (clearAllFiltersButton) {
         clearAllFiltersButton.addEventListener('click', () => {
             clearAllFilters(); // Call clearAllFilters function
-            // No need to call updateFilters here since clearAllFilters triggers the event
-        });
-    }
-
-    // Attach event listener to "Show All Results" button
-    if (showAllResultsButton) {
-        showAllResultsButton.addEventListener('click', () => {
-            clearAllFilters(); // Call clearAllFilters function to clear the filters
-            if (searchBox) {
-                searchBox.value = ''; // Clear the search box
-            }
             // No need to call updateFilters here since clearAllFilters triggers the event
         });
     }
@@ -165,14 +147,6 @@ export function initializeFilterDropdowns() {
 
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
-
-    // Attach event listeners to include/exclude checkboxes
-    const includeExcludeCheckboxes = document.querySelectorAll('.include-exclude-checkbox');
-    includeExcludeCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            triggerDropdownChangeEvent(); // Trigger filter update when include/exclude toggles change
-        });
-    });    
 
     // Initial filter update by dispatching the dropdownChange event
     triggerDropdownChangeEvent();
@@ -328,25 +302,20 @@ export function updateFilters(page = 1) {
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
     const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0 
-    ? getSelectedValues('sort-dropdown-list') 
-    : ["Zufall"];
-
-
+        ? getSelectedValues('sort-dropdown-list') 
+        : ["Zufall"];
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
         params.append('years', selectedYears.join(','));
-        params.append('years_include', '1'); // Fixed to always include
     }
     if (selectedGenres.length) {
         params.append('genres', selectedGenres.join(','));
-        // params.append('genres_include', genreInclude ? '1' : '0');
     }
     if (selectedCountries.length) {
         params.append('countries', selectedCountries.join(','));
-        // params.append('countries_include', countryInclude ? '1' : '0');
     }
     if (selectedStandorte.length) {
         params.append('standorte', selectedStandorte.join(','));

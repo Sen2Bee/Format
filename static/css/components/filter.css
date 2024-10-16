@@ -1,24 +1,68 @@
 /* File: static/css/components/filter.css */
 
+/* Import Elegant Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Playfair+Display:wght@400;700&display=swap');
+
+
 /* Container for Search and Dropdowns */
 .search-dropdown-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    background-color: #1e1e1e;
+    background-color: rgba(30, 30, 30, 1); /* Opaque dark background for better contrast */
+    background-image: var(--background-dark);
+    background-size: cover;
+    background-repeat: no-repeat;
     position: relative;
-    margin-top: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Subtle inner shadow for depth */
+    backdrop-filter: blur(5px); /* Slight blur for cinematic effect */
+}
+
+/* Film Strip Divider */
+.film-strip-divider {
+    width: 100%;
+    height: 2px;
+    background-image: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.5) 10%,
+        rgba(30, 30, 30, 0.85) 10%,
+        rgba(30, 30, 30, 0.85) 20%,
+        /* Repeat pattern */
+        rgba(255, 255, 255, 0.5) 20%,
+        rgba(255, 255, 255, 0.5) 30%,
+        rgba(30, 30, 30, 0.85) 30%,
+        rgba(30, 30, 30, 0.85) 40%,
+        rgba(255, 255, 255, 0.5) 40%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(30, 30, 30, 0.85) 50%,
+        rgba(30, 30, 30, 0.85) 60%,
+        rgba(255, 255, 255, 0.5) 60%,
+        rgba(255, 255, 255, 0.5) 70%,
+        rgba(30, 30, 30, 0.85) 70%,
+        rgba(30, 30, 30, 0.85) 80%,
+        rgba(255, 255, 255, 0.5) 80%,
+        rgba(255, 255, 255, 0.5) 90%,
+        rgba(30, 30, 30, 0.85) 90%,
+        rgba(30, 30, 30, 0.85) 100%
+    );
+    background-size: 20px 2px;
+    margin: 20px 0;
 }
 
 /* Filter Form Layout */
 #filter-form {
     display: flex;
     justify-content: space-between;
-    gap: 10px; /* Ensures 10px gap between main and advanced filters */
+    gap: 20px; /* Increased gap for better spacing */
     width: 100%;
     max-width: var(--filter-width);
     box-sizing: border-box; /* Include padding and borders in width */
+    font-family: 'Libre Baskerville', serif; /* Elegant serif font */
+    color: #f5f5f5; /* Light text for contrast */
 }
 
 /* Toggle Buttons */
@@ -26,16 +70,16 @@
 #toggle-advanced-filters-button {
     background-color: transparent;
     border: none;
-    color: #fff;
+    color: var(--accent-color);
     cursor: pointer;
     font-size: 1.5em;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
 #toggle-filters-button {
     position: absolute;
-    top: 10px;
-    right: 20px;
+    top: 20px;
+    right: 30px;
 }
 
 #toggle-filters-button.rotate {
@@ -43,78 +87,87 @@
 }
 
 #toggle-advanced-filters-button {
-    background-color: #333;
-    padding: 10px 15px;
+    background-color: rgba(51, 51, 51, 0.7); /* Semi-transparent background */
+    padding: 10px 20px;
     border-radius: 5px;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
-    gap: 5px; /* Space between icon and text */
-    transition: background-color 0.3s ease;
+    gap: 10px; /* Space between icon and text */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Playfair Display', serif; /* Artistic serif font */
+    color: #fff;
 }
 
 #toggle-advanced-filters-button:hover {
-    background-color: #444;
+    background-color: rgba(68, 68, 68, 0.8);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Soft shadow on hover */
 }
 
 /* Search Box */
 .search-container {
     position: relative;
     width: 100%;
-    max-width: var(--filter-width);
-    height: 50px;
-    margin-bottom: 5px;
-    border: 2px solid var(--border-color);
+    max-width: 100%; /* Full width within filter form */
+    height: 55px;
+    margin-bottom: 15px;
+    border: none; /* Removed border for minimalist design */
     border-radius: 10px;
-    background-color: #fff;
-    transition: border 0.3s ease, background-color 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+    backdrop-filter: blur(5px); /* Slight blur for depth */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* Inner shadow for texture */
+    font-family: 'Libre Baskerville', serif;
 }
 
 .search-container .search-icon {
     position: absolute;
-    left: 15px;
+    left: 20px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--link-hover-color);
-    font-size: 1.5em;
-    visibility: hidden;
-    opacity: 0;
+    color: var(--accent-color);
+    font-size: 1.2em;
+    visibility: visible;
+    opacity: 1;
     pointer-events: none;
-    transition: visibility 0.3s, opacity 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 #search-box {
     width: 100%;
     height: 100%;
-    padding: 0 50px;
-    font-size: 1.1em;
-    background: var(--secondary-text-color);
-    color: var(--text-dark);
+    padding: 0 50px; /* Equal padding for icons */
+    font-size: 1em;
+    background: transparent;
+    color: #f5f5f5;
     border: none;
     border-radius: 10px;
     box-sizing: border-box;
+    font-family: 'Libre Baskerville', serif;
+}
+
+#search-box::placeholder {
+    color: rgba(245, 245, 245, 0.7);
+    font-style: italic;
 }
 
 #search-box:focus {
     outline: none;
-}
-
-#search-box:not(:placeholder-shown) + .search-icon {
-    visibility: visible;
-    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.2); /* Slight background on focus */
+    transition: background-color 0.3s ease;
 }
 
 #clear-search {
     position: absolute;
-    right: 15px;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.4em;
+    font-size: 1.2em;
     cursor: pointer;
     color: var(--accent-color);
     visibility: hidden;
     opacity: 0;
     transition: visibility 0.3s ease, opacity 0.3s ease;
+    font-family: 'Libre Baskerville', serif;
 }
 
 #clear-search.visible {
@@ -126,17 +179,25 @@
 .main-filters-container {
     display: flex;
     justify-content: space-between;
-    gap: 10px; /* 10px horizontal space between main filter dropdowns */
+    gap: 20px; /* Increased gap for better spacing */
     width: 100%;
+    transition: width 0.5s ease;
+    font-family: 'Libre Baskerville', serif;
+}
+
+/* Shrink behavior when advanced filters are open */
+.main-filters-container.shrink {
+    width: 60%; /* Desktop: Shrink to 60% when advanced filters are open */
     transition: width 0.5s ease;
 }
 
-
-
+/* Custom Dropdowns */
 .main-filters-container .custom-dropdown {
-    flex: 1 1 calc((100% - 20px) / 3); /* 3 dropdowns with 10px gaps */
-    max-width: calc((100% - 20px) / 3);
+    flex: 1 1 calc((100% - 40px) / 3); /* 3 dropdowns with 20px gaps */
+    max-width: calc((100% - 40px) / 3);
     transition: max-width 0.5s ease;
+    position: relative;
+    font-family: 'Libre Baskerville', serif;
 }
 
 /* Advanced Filters Container */
@@ -147,128 +208,112 @@
     overflow: hidden;
     transition: width 0.5s ease, max-height 0.5s ease;
     box-sizing: border-box;
-    display: flex; /* Enables flex layout */
-    flex-direction: column; /* Stack items vertically */
-    gap: 10px; /* 10px vertical space between advanced filter dropdowns */
-}
-
-.main-filters-container.shrink {
-    width: 60%; /* Shrink to 40% when advanced filters are open */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font-family: 'Libre Baskerville', serif;
 }
 
 #advanced-filters-container.open {
-    width: 40%;
+    width: 40%; /* Desktop: Advanced filters take 40% when open */
     max-height: 800px; /* Adjust as needed */
+    transition: width 0.5s ease, max-height 0.5s ease;
 }
 
 /* Advanced Filters' Custom Dropdowns */
 #advanced-filters-container .custom-dropdown {
-    flex: 1 1 100%; /* Take full width within the container */
-    max-width: 100%; /* Ensures full width */
+    flex: 1 1 100%;
+    max-width: 100%;
     transition: max-width 0.5s ease;
+    position: relative;
 }
 
-/* Custom Dropdowns */
+/* General Custom Dropdown Styles */
 .custom-dropdown {
     width: 100%;
-    max-width: calc((100% - 20px) / 3); /* 3 dropdowns with 10px gaps */
-    margin-bottom: 10px;
+    max-width: calc((100% - 40px) / 3); /* 3 dropdowns with 20px gaps */
+    margin-bottom: 15px;
+    position: relative;
 }
 
+/* Dropdown Header */
 .dropdown-header {
     display: flex;
-    align-items: center;
+    align-items: center; /* Align items to the center */
     justify-content: space-between;
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
+    background-color: rgba(51, 51, 51, 0.9); /* Semi-transparent background */
+    color: #f5f5f5;
+    padding: 8px 12px; /* Reduced padding */
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Libre Baskerville', serif;
+    position: relative;
+    min-height: 45px; /* Adjusted minimum height */
 }
 
+/* Hover Effect for Dropdown Header */
 .dropdown-header:hover {
-    background-color: #444;
+    background-color: rgba(68, 68, 68, 0.9);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5); /* Soft shadow on hover */
 }
 
+/* Header Label (Icon and Text) */
 .dropdown-header .header-label {
     display: flex;
     align-items: center;
 }
 
 .dropdown-header .header-label i {
-    font-size: 1.5em;
-    margin-right: 10px;
+    font-size: 1.3em;
+    margin-right: 5px;
 }
 
 .dropdown-header .header-label span {
-    font-size: 1.1em;
+    font-size: 1.2em;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
+/* Header Controls */
 .dropdown-header .header-controls {
     display: flex;
     align-items: center;
-}
-
-/* Include/Exclude Toggle */
-.include-exclude-toggle {
-    display: none; /* Adjust display as needed */
-    align-items: center;
-    margin-right: 10px;
-}
-
-.include-exclude-toggle input[type="checkbox"] {
-    display: none;
-}
-
-.include-exclude-toggle .toggle-label {
-    background-color: #444;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.8em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.include-exclude-toggle input[type="checkbox"]:checked + .toggle-label {
-    outline-color: var(--accent-color);
-    color: #fff;
-}
-
-.include-exclude-toggle .toggle-label::before {
-    content: 'Include';
-}
-
-.include-exclude-toggle input[type="checkbox"]:not(:checked) + .toggle-label::before {
-    content: 'Exclude';
+    gap: 10px;
 }
 
 /* Selection Badge */
 .selection-badge {
-    padding: 5px 10px;
+    padding: 5px 15px;
     border-radius: 50px;
     background-color: var(--accent-color);
     color: #fff;
-    font-size: 0.9em;
+    font-size: 0.7em;
     display: none;
     white-space: nowrap;
+    font-family: 'Libre Baskerville', serif;
+    max-width: 150px; /* Limit badge width */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .selection-badge.visible {
-    display: inline-block; /* Ensure visibility */
+    display: inline-block;
 }
 
 /* Clear Icon for Dropdowns */
 .dropdown-header .clear-icon {
     visibility: hidden;
-    padding-left: 10px;
     opacity: 0;
-    font-size: 1.4em;
+    font-size: 1.7em;
     cursor: pointer;
     color: var(--accent-color);
     transition: visibility 0.3s ease, opacity 0.3s ease;
+    font-family: 'Libre Baskerville', serif;
 }
 
 .dropdown-header .clear-icon.visible {
@@ -276,34 +321,84 @@
     opacity: 1;
 }
 
+/* Expand Icon */
+.dropdown-header .expand-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 1em;
+    transition: transform 0.3s ease;
+    color: var(--accent-color);
+}
+
+/* Rotate Expand Icon when Dropdown is Open */
+.dropdown-header[aria-expanded="true"] .expand-icon {
+    transform: rotate(180deg);
+}
+
 /* Dropdown List */
 .dropdown-list {
     width: 100%;
     max-height: 0;
     overflow: hidden;
-    background-color: #2c2c2c;
-    padding: 0 10px;
+    background-color: rgba(44, 44, 44, 0.95); /* Slightly lighter for contrast */
+    padding: 0 15px;
     box-sizing: border-box;
     border-radius: 0 0 10px 10px;
     position: relative;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+    font-family: 'Libre Baskerville', serif;
 }
 
 .dropdown-list.show {
-    max-height: 1200px;
-    padding: 10px;
+    max-height: 300px; /* Adjust as needed */
+    padding: 15px;
+}
+
+/* Film Strip Divider within Dropdown */
+.film-strip-divider-dropdown {
+    width: 100%;
+    height: 1px;
+    background-image: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0.3) 10%,
+        rgba(44, 44, 44, 0.95) 10%,
+        rgba(44, 44, 44, 0.95) 20%,
+        /* Repeat pattern */
+        rgba(255, 255, 255, 0.3) 20%,
+        rgba(255, 255, 255, 0.3) 30%,
+        rgba(44, 44, 44, 0.95) 30%,
+        rgba(44, 44, 44, 0.95) 40%,
+        rgba(255, 255, 255, 0.3) 40%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(44, 44, 44, 0.95) 50%,
+        rgba(44, 44, 44, 0.95) 60%,
+        rgba(255, 255, 255, 0.3) 60%,
+        rgba(255, 255, 255, 0.3) 70%,
+        rgba(44, 44, 44, 0.95) 70%,
+        rgba(44, 44, 44, 0.95) 80%,
+        rgba(255, 255, 255, 0.3) 80%,
+        rgba(255, 255, 255, 0.3) 90%,
+        rgba(44, 44, 44, 0.95) 90%,
+        rgba(44, 44, 44, 0.95) 100%
+    );
+    background-size: 20px 1px;
+    margin: 15px 0;
 }
 
 /* Filter Buttons Container */
 .filter-buttons-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px; /* Ensures 10px gap between filter buttons */
+    gap: 15px; /* Ensures 15px gap between filter buttons */
     width: 100%;
-    max-height: 500px;
+    max-height: 300px;
     overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer */
     position: relative;
+    font-family: 'Libre Baskerville', serif;
 }
 
 .filter-buttons-container::-webkit-scrollbar {
@@ -318,7 +413,7 @@
     left: 0;
     width: 100%;
     height: 30px;
-    background: linear-gradient(to top, #2c2c2c, rgba(44, 44, 44, 0));
+    background: linear-gradient(to top, rgba(44, 44, 44, 0.95), rgba(44, 44, 44, 0));
     pointer-events: none;
     display: none;
 }
@@ -329,52 +424,54 @@
 
 /* Filter Buttons */
 .filter-button {
-    padding: 8px 12px;
-    background-color: #444;
-    color: #fff;
-    border: 1px solid #555;
-    border-radius: 20px;
+    padding: 10px 20px;
+    background-color: rgba(68, 68, 68, 0.9);
+    color: #f5f5f5;
+    border: none; /* Removed border for minimalist design */
+    border-radius: 25px;
     cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s;
     font-size: 0.9em;
-    flex: 1 0 calc(33.33% - 10px); /* 3 buttons per row with 10px gaps */
+    flex: 1 0 calc(33.33% - 15px); /* 3 buttons per row with 15px gaps */
     text-align: center;
     box-sizing: border-box;
+    font-family: 'Libre Baskerville', serif;
 }
 
 .filter-button.selected {
     background-color: var(--accent-color);
-    border-color: var(--accent-color);
 }
 
 .filter-button:hover {
-    background-color: #555;
-    border-color: #666;
+    background-color: rgba(85, 85, 85, 0.9);
 }
 
 /* Filters Buttons Row */
 .filters-buttons-row {
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 10px;
-    gap: 10px;
+    margin-top: 20px;
+    gap: 20px;
+    font-family: 'Libre Baskerville', serif;
 }
 
 .filter-action-button {
-    background-color: #444;
-    color: #fff;
-    padding: 8px 12px;
+    background-color: rgba(68, 68, 68, 0.9);
+    color: #f5f5f5;
+    padding: 10px 20px;
     margin: 5px;
     border: none;
     border-radius: 5px;
-    font-size: 0.9em;
+    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s ease;
+    font-family: 'Libre Baskerville', serif;
 }
 
 .filter-action-button:hover {
     background-color: var(--accent-color);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Soft shadow on hover */
 }
 
 /* Responsive Adjustments */
@@ -382,34 +479,31 @@
 
     /* Adjust toggle button position and size */
     #toggle-filters-button {
-        top: 5px;
-        right: 10px;
+        top: 10px;
+        right: 15px;
         font-size: 1.3em;
     }
 
     .dropdown-header {
         font-size: 1em;
+        padding: 8px 10px; /* Reduced padding on smaller screens */
+        min-height: 45px; /* Slightly smaller on smaller screens */
     }
 
     .dropdown-header .header-label i {
-        font-size: 1.3em;
-    }
-
-    .include-exclude-toggle .toggle-label {
-        font-size: 0.75em;
+        font-size: 1em;
     }
 
     /* Adjust filter buttons to stack vertically */
     .filter-button {
-        font-size: 0.85em;
-        padding: 6px 10px;
+        font-size: 0.6em;
+        padding: 10px 15px;
         flex: 1 0 100%; /* Stack buttons vertically */
-       
     }
 
     .filter-action-button {
-        font-size: 0.85em;
-        padding: 6px 10px;
+        font-size: 0.6em;
+        padding: 10px 15px;
     }
 
     /* Ensure the filter form and advanced filters use column layout */
@@ -437,32 +531,57 @@
         max-width: 100%;
         flex: 1 1 100%;
     }
-    #advanced-filters-container.open {
-        width: 100%;
-    }    
 
-  
-    .main-filters-container .custom-dropdown {
-        flex: 1 1 100%;
-        max-width: 100%;
+    #advanced-filters-container.open {
+        width: 100%; /* Ensure full width when advanced filters are open on mobile */
+    }
+
+    /* Film Strip Divider */
+    .film-strip-divider,
+    .film-strip-divider-dropdown {
+        display: none; /* Hide film strip dividers on mobile for cleaner look */
+    }
+
+    /* Adjust padding and margins for mobile */
+    .search-container {
+        margin-bottom: 15px;
+    }
+
+    /* Stack advanced filters vertically with spacing */
+    #advanced-filters-container {
+        gap: 15px;
     }
 }
 
 /* Additional adjustments for very small screens */
 @media (max-width: 480px) {
-    .search-container {
-        margin-bottom: 10px;
+    .filter-button {
+        font-size: 0.85em;
+        padding: 8px 12px;
     }
 
-    .filter-button {
-        font-size: 0.8em;
-        padding: 6px 8px;
-        flex: 1 0 100%; /* Stack buttons vertically */
+    .filter-action-button {
+        font-size: 0.85em;
+        padding: 8px 12px;
+    }
+
+    /* Further reduce font sizes in dropdown headers */
+    .dropdown-header .header-label span {
+        font-size: 1em;
+    }
+
+    .dropdown-header .header-label i {
+        font-size: 1em;
+    }
+
+    .dropdown-header .expand-icon {
+        font-size: 0.9em;
+        bottom: 8px;
+        right: 8px;
     }
 }
 
 /* Additional styles for autocomplete */
-
 .autocomplete-items {
     position: absolute;
     border: 1px solid #d4d4d4;
@@ -473,14 +592,19 @@
     top: 100%;
     left: 0;
     right: 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    font-family: 'Libre Baskerville', serif;
 }
 
 .autocomplete-item {
     padding: 10px;
     cursor: pointer;
     background-color: #fff;
+    transition: background-color 0.3s ease;
+    font-size: 1em;
 }
 
 .autocomplete-item:hover {
-    background-color: #e9e9e9;
+    background-color: rgba(139, 0, 0, 0.1); /* Light deep burgundy on hover */
 }
