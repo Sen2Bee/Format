@@ -9,7 +9,7 @@ import {
     clearAllFiltersButton,
     movieContainer,
     toggleAdvancedFiltersButton,
-    advancedFiltersContainer    
+    advancedFiltersContainer
 } from './entry.js';
 import { updateCarouselTitle } from './carousel.js';
 import { showProgressIndicator, hideProgressIndicator } from './entry.js';
@@ -22,33 +22,7 @@ let debounceTimer = null;
  * Initialize the toggle functionality for the filter panel and advanced filters
  */
 export function initializeFilterPanelToggle() {
-    if (toggleFiltersButton && searchDropdownContainer) {
-        toggleFiltersButton.addEventListener('click', () => {
-            searchDropdownContainer.classList.toggle('hidden');
-            toggleFiltersButton.classList.toggle('rotate');
-        });
-    }
-
-    // Initialize Advanced Filters Toggle
-    if (toggleAdvancedFiltersButton && advancedFiltersContainer) {
-        toggleAdvancedFiltersButton.addEventListener('click', () => {
-            const mainFiltersContainer = document.querySelector('.main-filters-container');
-            const filterForm = document.getElementById('filter-form');
-            
-            // Toggle the advanced filters container
-            advancedFiltersContainer.classList.toggle('open');
-            
-            // Add or remove the 'filters-expanded' class on the filter form
-            if (advancedFiltersContainer.classList.contains('open')) {
-                filterForm.classList.add('filters-expanded');
-                toggleAdvancedFiltersButton.classList.add('active');
-            } else {
-                filterForm.classList.remove('filters-expanded');
-                toggleAdvancedFiltersButton.classList.remove('active');
-            }
-        });
-    }
-
+    // Advanced Filters Toggle is now handled within the main filters
 }
 
 /**
@@ -78,10 +52,10 @@ export function clearAllFilters() {
         const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
         const optionsArray = Array.from(buttonsContainer.children).map(btn => btn.dataset.value);
         const defaultOption = optionsArray.find(label => label.toLowerCase() === 'zufall');
-        const buttonToSelect = defaultOption 
-            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`) 
+        const buttonToSelect = defaultOption
+            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`)
             : buttonsContainer.firstElementChild;
-        
+
         if (buttonToSelect) {
             buttonToSelect.classList.add('selected');
             const badge = dropdownList.parentElement.querySelector('.selection-badge');
@@ -115,7 +89,7 @@ export function initializeFilterActionButtons() {
 /**
  * Function to initialize dropdowns and attach necessary event listeners
  */
-export function initializeFilterDropdowns() {   
+export function initializeFilterDropdowns() {
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
         console.log("Filter.js: Detected dropdown change event");
@@ -164,10 +138,28 @@ export function initializeFilterDropdowns() {
  * Function to attach event listeners to dropdowns using event delegation
  */
 export function attachDropdownEventDelegation() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
     const dropdownLists = document.querySelectorAll('.dropdown-list');
 
+    dropdownHeaders.forEach(header => {
+        header.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const targetDropdown = document.getElementById(header.getAttribute('data-target'));
+            toggleDropdown(targetDropdown, header);
+        });
+
+        // Allow keyboard accessibility
+        header.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const targetDropdown = document.getElementById(header.getAttribute('data-target'));
+                toggleDropdown(targetDropdown, header);
+            }
+        });
+    });
+
+    // Handle button clicks within the dropdowns using event delegation
     dropdownLists.forEach(dropdownList => {
-        // Handle button clicks within the dropdown using event delegation
         dropdownList.addEventListener('click', (event) => {
             const target = event.target;
             if (target && target.classList.contains('filter-button')) {
@@ -186,7 +178,7 @@ export function attachDropdownEventDelegation() {
                 }
 
                 // Update the selection badge
-                const dropdownHeader = dropdownList.previousElementSibling;
+                const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
                 const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
@@ -201,7 +193,6 @@ export function attachDropdownEventDelegation() {
                     }
                 } else {
                     if (selectedValues.length > 0) {
-                        console.log("clearButton visible", clearButton)
                         clearButton.classList.add('visible');
                     } else {
                         clearButton.classList.remove('visible');
@@ -214,13 +205,13 @@ export function attachDropdownEventDelegation() {
         });
 
         // Handle clear button (only for multi-select dropdowns)
-        const clearButton = dropdownList.parentElement.querySelector('.clear-icon');
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
         if (clearButton) {
             clearButton.addEventListener('click', (event) => {
                 event.stopPropagation();
                 const buttons = dropdownList.querySelectorAll('.filter-button.selected');
                 buttons.forEach(button => button.classList.remove('selected'));
-                const dropdownHeader = dropdownList.previousElementSibling;
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge([], selectionBadge);
                 clearButton.classList.remove('visible');
@@ -229,29 +220,10 @@ export function attachDropdownEventDelegation() {
         }
     });
 
-    // Handle dropdown header clicks
-    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
-    dropdownHeaders.forEach(header => {
-        header.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const dropdownList = header.nextElementSibling;
-            toggleDropdown(dropdownList, header);
-        });
-
-        // Allow keyboard accessibility
-        header.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                const dropdownList = header.nextElementSibling;
-                toggleDropdown(dropdownList, header);
-            }
-        });
-    });
-
     // Close dropdowns when clicking outside
     document.addEventListener('click', (event) => {
         dropdownLists.forEach(dropdownList => {
-            const header = dropdownList.previousElementSibling;
+            const header = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
             if (!dropdownList.contains(event.target) && !header.contains(event.target)) {
                 dropdownList.classList.remove('show');
                 header.setAttribute('aria-expanded', 'false');
@@ -273,7 +245,10 @@ export function toggleDropdown(dropdownList, header) {
         const allDropdownLists = document.querySelectorAll('.dropdown-list.show');
         allDropdownLists.forEach(list => {
             list.classList.remove('show');
-            list.previousElementSibling.setAttribute('aria-expanded', 'false');
+            const otherHeader = document.querySelector(`.dropdown-header[data-target="${list.id}"]`);
+            if (otherHeader) {
+                otherHeader.setAttribute('aria-expanded', 'false');
+            }
         });
         dropdownList.classList.add('show');
         header.setAttribute('aria-expanded', 'true');
@@ -316,8 +291,8 @@ export function updateFilters(page = 1) {
     const selectedCountries = getSelectedValues('country-dropdown-list');
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
-    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0 
-        ? getSelectedValues('sort-dropdown-list') 
+    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0
+        ? getSelectedValues('sort-dropdown-list')
         : ["Zufall"];
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
@@ -517,11 +492,11 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
             } else {
                 // Add options with ascending and descending icons
                 extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`, 
+                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`,
                     value: `${option.label} asc`
                 });
                 extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`, 
+                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`,
                     value: `${option.label} desc`
                 });
             }
@@ -559,15 +534,15 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     // Update the Selection Badge for normal filters
     if (dropdownListId !== 'sort-dropdown-list') {
-        const parentDropdown = dropdownList.parentElement;
-        const selectionBadge = parentDropdown.querySelector('.selection-badge');
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
         const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
         const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
         updateSelectionBadge(selectedValuesUpdated, selectionBadge);
     }
 
     // Hide the clear icon for single-select dropdowns
-    const dropdownHeader = dropdownList.parentElement.querySelector('.dropdown-header');
+    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
     const clearButton = dropdownHeader.querySelector('.clear-icon');
     if (singleSelect) {
         if (clearButton) {
