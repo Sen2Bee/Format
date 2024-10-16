@@ -11,6 +11,9 @@
     --button-hover-background: rgba(85, 85, 85, 0.9);
     --button-active-background: var(--accent-color);
     --text-color: #f5f5f5;
+    --transition-duration: 0.3s;
+    --primary-color: #333;
+    --secondary-text-color: #ccc;
 }
 
 /* Screen-reader only text */
@@ -222,10 +225,9 @@
 /* Dropdown List */
 .dropdown-list {
     position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100vw;
+    /* top: 100%; */
+    left: 0;
+    width: 100%;
     max-height: 0;
     overflow: hidden;
     background-color: var(--dropdown-background);
@@ -234,6 +236,8 @@
     transition: max-height 0.5s ease, padding 0.5s ease;
     font-family: var(--font-body);
     z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    border-radius: 0 0 5px 5px;
 }
 
 .dropdown-list.show {

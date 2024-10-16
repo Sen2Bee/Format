@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Include filter.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/filter.css') }}">
 </head>
 <body>
     <header>
@@ -83,7 +85,7 @@
             </div>
 
             <form id="filter-form">
-                <!-- Main Filters Container for Year, Genre, Country -->
+                <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
                 <div class="main-filters-container">
                     <!-- Year Filter -->
                     <div class="custom-dropdown" data-dropdown="year-dropdown">
@@ -193,7 +195,7 @@
                     </div>
 
                     <!-- Clear All Filters Button -->
-                    <button id="clear-all-filters-button" class="filter-action-button">
+                    <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
                         <i class="fas fa-undo"></i>
                         <span class="sr-only">Alle Filter zurücksetzen</span>
                     </button>
@@ -201,7 +203,7 @@
             </form>
         </div>
 
-        <!-- Dropdown Lists -->
+        <!-- Dropdown Lists Container -->
         <div class="dropdown-lists-container">
             <!-- Year Dropdown List -->
             <div class="dropdown-list" id="year-dropdown-list">

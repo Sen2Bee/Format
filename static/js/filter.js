@@ -144,7 +144,8 @@ export function attachDropdownEventDelegation() {
     dropdownHeaders.forEach(header => {
         header.addEventListener('click', (event) => {
             event.stopPropagation();
-            const targetDropdown = document.getElementById(header.getAttribute('data-target'));
+            const targetDropdownId = header.getAttribute('data-target');
+            const targetDropdown = document.getElementById(targetDropdownId);
             toggleDropdown(targetDropdown, header);
         });
 
@@ -152,7 +153,8 @@ export function attachDropdownEventDelegation() {
         header.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                const targetDropdown = document.getElementById(header.getAttribute('data-target'));
+                const targetDropdownId = header.getAttribute('data-target');
+                const targetDropdown = document.getElementById(targetDropdownId);
                 toggleDropdown(targetDropdown, header);
             }
         });
@@ -408,7 +410,7 @@ function showAutocompleteSuggestions(suggestions) {
     suggestions.forEach(item => {
         const suggestionItem = document.createElement('div');
         suggestionItem.className = 'autocomplete-item';
-        suggestionItem.textContent = `${item.name} (${item.type})`;
+        suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
         suggestionItem.dataset.name = item.name;
         suggestionItem.dataset.type = item.type;
 
