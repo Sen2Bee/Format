@@ -33,20 +33,22 @@ export function initializeFilterPanelToggle() {
     if (toggleAdvancedFiltersButton && advancedFiltersContainer) {
         toggleAdvancedFiltersButton.addEventListener('click', () => {
             const mainFiltersContainer = document.querySelector('.main-filters-container');
+            const filterForm = document.getElementById('filter-form');
             
             // Toggle the advanced filters container
             advancedFiltersContainer.classList.toggle('open');
             
-            // Shrink the main filters container if the advanced filters are open
+            // Add or remove the 'filters-expanded' class on the filter form
             if (advancedFiltersContainer.classList.contains('open')) {
-                mainFiltersContainer.classList.add('shrink');
+                filterForm.classList.add('filters-expanded');
                 toggleAdvancedFiltersButton.classList.add('active');
             } else {
-                mainFiltersContainer.classList.remove('shrink');
+                filterForm.classList.remove('filters-expanded');
                 toggleAdvancedFiltersButton.classList.remove('active');
             }
         });
     }
+
 }
 
 /**
@@ -502,13 +504,29 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         optionsArray.sort((a, b) => a.label.localeCompare(b.label));
     }
 
-    // For "sort-dropdown-list", implement ascending and descending options
+    // For "sort-dropdown-list", implement ascending and descending options, excluding "Zufall"
     if (dropdownListId === 'sort-dropdown-list') {
         const extendedOptionsArray = [];
         optionsArray.forEach(option => {
-            extendedOptionsArray.push({ label: `${option.label} (aufsteigend)`, value: `${option.label}_asc` });
-            extendedOptionsArray.push({ label: `${option.label} (absteigend)`, value: `${option.label}_desc` });
+            if (option.label.toLowerCase() === 'zufall') {
+                // Add "Zufall" without icons
+                extendedOptionsArray.push({
+                    label: option.label,
+                    value: `${option.label}`
+                });
+            } else {
+                // Add options with ascending and descending icons
+                extendedOptionsArray.push({
+                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`, 
+                    value: `${option.label} asc`
+                });
+                extendedOptionsArray.push({
+                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`, 
+                    value: `${option.label} desc`
+                });
+            }
         });
+
         optionsArray = extendedOptionsArray;
     }
 
@@ -523,9 +541,9 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         button.className = "filter-button";
 
         if (showCounts && option.count !== undefined) {
-            button.textContent = `${option.label} (${option.count})`;
+            button.innerHTML = `${option.label} (${option.count})`;
         } else {
-            button.textContent = option.label;
+            button.innerHTML = option.label;
         }
 
         button.dataset.value = option.value || option.label;
@@ -539,31 +557,17 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     dropdownList.appendChild(buttonsContainer);
 
-    // Update Selection Badge after populating
-    const parentDropdown = dropdownList.parentElement;
-    const selectionBadge = parentDropdown.querySelector('.selection-badge');
-    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
-    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
-
-    // For single-select dropdowns, ensure "Zufall" is selected by default if no selection has been made
-    if (singleSelect && selectedValuesUpdated.length === 0 && buttonsContainer.firstChild) {
-        const defaultOption = optionsArray.find(option => option.label.toLowerCase().includes('zufall'));
-        if (defaultOption) {
-            const defaultButton = buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption.value || defaultOption.label}"]`);
-            if (defaultButton) {
-                defaultButton.classList.add('selected');
-                selectedValuesUpdated.push(defaultOption.value || defaultOption.label);
-            }
-        } else {
-            buttonsContainer.firstChild.classList.add('selected');
-            selectedValuesUpdated.push(buttonsContainer.firstChild.dataset.value);
-        }
+    // Update the Selection Badge for normal filters
+    if (dropdownListId !== 'sort-dropdown-list') {
+        const parentDropdown = dropdownList.parentElement;
+        const selectionBadge = parentDropdown.querySelector('.selection-badge');
+        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+        const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+        updateSelectionBadge(selectedValuesUpdated, selectionBadge);
     }
 
-    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
-
-    // Hide clear icon for single-select dropdowns
-    const dropdownHeader = parentDropdown.querySelector('.dropdown-header');
+    // Hide the clear icon for single-select dropdowns
+    const dropdownHeader = dropdownList.parentElement.querySelector('.dropdown-header');
     const clearButton = dropdownHeader.querySelector('.clear-icon');
     if (singleSelect) {
         if (clearButton) {

@@ -72,140 +72,142 @@
             <p>Loading movies...</p>
         </div>          
 
-        <!-- Catalog Search Section -->
-        <section class="catalog-search">
+    <!-- Catalog Search Section -->
+    <section class="catalog-search">
+        <div class="search-dropdown-container">
+            <!-- Search Box Container -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)">
+                <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
+            </div>
 
-            <div class="search-dropdown-container">
-                <!-- Search Box Container -->
-                <div class="search-container">
-                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
-                    <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)">
-                    <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
-                </div>
-
-                <form id="filter-form">
-                    <!-- Main Filters Container for Year, Genre, Country -->
-                    <div class="main-filters-container">
-                        <!-- Year Filter -->
-                        <div class="custom-dropdown">
-                            <div class="dropdown-header" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="header-label">
-                                    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-                                    <span>Jahre</span>
-                                </div>
-                                <div class="header-controls">
-                                    <span class="selection-badge" aria-label="Ausgewählte Jahre"></span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                            <div class="dropdown-list" id="year-dropdown-list">
-                                <!-- Buttons populated dynamically -->
-                            </div>
-                        </div>
-                
-                        <!-- Genre Filter -->
-                        <div class="custom-dropdown">
-                            <div class="dropdown-header" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="header-label">
-                                    <i class="fas fa-film" aria-hidden="true"></i>
-                                    <span>Genres</span>
-                                </div>
-                                <div class="header-controls">
-                                    <span class="selection-badge" aria-label="Ausgewählte Genres"></span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
-                                </div>
-                            </div>
-                            <div class="dropdown-list" id="genre-dropdown-list">
-                                <!-- Buttons populated dynamically -->
-                            </div>
-                        </div>
-                
-                        <!-- Country Filter -->
-                        <div class="custom-dropdown">
-                            <div class="dropdown-header" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="header-label">
-                                    <i class="fas fa-globe" aria-hidden="true"></i>
-                                    <span>Länder</span>
-                                </div>
-                                <div class="header-controls">
-                                    <span class="selection-badge" aria-label="Ausgewählte Länder"></span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                            <div class="dropdown-list" id="country-dropdown-list">
-                                <!-- Buttons populated dynamically -->
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Toggle Button for Advanced Filters -->
-                    <button id="toggle-advanced-filters-button" class="toggle-advanced-filters-button" type="button">
-                        <i class="fas fa-sliders-h"></i>
-                    </button>
-                
-                    <!-- Advanced Filters Section -->
-                    <div id="advanced-filters-container" class="advanced-filters-container hidden">
-                        <!-- Advanced Filter: Standort -->
-                        <div class="custom-dropdown">
-                            <div class="dropdown-header" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="header-label">
-                                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                    <span>Standort</span>
-                                </div>
-                                <div class="header-controls">
-                                    <span class="selection-badge" aria-label="Ausgewählte Standorte"></span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                            <div class="dropdown-list" id="standort-dropdown-list">
-                                <!-- Buttons populated dynamically -->
-                            </div>
-                        </div>
-                
-                        <!-- Advanced Filter: Medium -->
-                        <div class="custom-dropdown">
-                            <div class="dropdown-header" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="header-label">
-                                    <i class="fas fa-compact-disc" aria-hidden="true"></i>
-                                    <span>Medium</span>
-                                </div>
-                                <div class="header-controls">
-                                    <span class="selection-badge" aria-label="Ausgewählte Medien"></span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                            <div class="dropdown-list" id="medium-dropdown-list">
-                                <!-- Buttons populated dynamically -->
-                            </div>
-                        </div>   
-                    </div>          
-                </form>
-                
-                <!-- Buttons Row -->
-                <div class="filters-buttons-row">   
-                    <!-- Sort By Dropdown -->
+            <form id="filter-form" class="filters-expanded"> <!-- Added 'filters-expanded' class dynamically via JS when toggled -->
+                <!-- Main Filters Container for Year, Genre, Country -->
+                <div class="main-filters-container">
+                    <!-- Year Filter -->
                     <div class="custom-dropdown">
-                        <div class="dropdown-header" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <div class="header-label">
-                                <i class="fas fa-sort" aria-hidden="true"></i>
-                                <span>Sortieren nach</span>
+                                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                <span>Jahre</span>
                             </div>
                             <div class="header-controls">
-                                <span class="selection-badge" aria-label="Aktuelle Sortierung"></span>
-                                <!-- No clear-icon for single-select dropdowns -->
+                                <span class="selection-badge" aria-label="Ausgewählte Jahre"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
                             </div>
                         </div>
-                        <div class="dropdown-list" id="sort-dropdown-list">
+                        <div class="dropdown-list" id="year-dropdown-list">
                             <!-- Buttons populated dynamically -->
                         </div>
                     </div>
-                    
-                    <button id="clear-all-filters-button" class="filter-action-button">
-                        <i class="fas fa-undo"></i>
-                    </button>
+
+                    <!-- Genre Filter -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-film" aria-hidden="true"></i>
+                                <span>Genres</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Genres"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="genre-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Country Filter -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-globe" aria-hidden="true"></i>
+                                <span>Länder</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Länder"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="country-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Toggle Button for Advanced Filters -->
+                <button id="toggle-advanced-filters-button" class="toggle-advanced-filters-button" type="button" aria-expanded="false" aria-controls="advanced-filters-container">
+                    <i class="fas fa-sliders-h"></i>
+                    <span class="sr-only">Erweiterte Filter anzeigen</span> <!-- Screen-reader only text -->
+                </button>
+
+                <!-- Advanced Filters Section -->
+                <div id="advanced-filters-container" class="advanced-filters-container hidden">
+                    <!-- Advanced Filter: Standort -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                <span>Standort</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Standorte"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="standort-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Advanced Filter: Medium -->
+                    <div class="custom-dropdown">
+                        <div class="dropdown-header" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-compact-disc" aria-hidden="true"></i>
+                                <span>Medium</span>
+                            </div>
+                            <div class="header-controls">
+                                <span class="selection-badge" aria-label="Ausgewählte Medien"></span>
+                                <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-list" id="medium-dropdown-list">
+                            <!-- Buttons populated dynamically -->
+                        </div>
+                    </div>   
+                </div>          
+            </form>
+
+            <!-- Buttons Row -->
+            <div class="filters-buttons-row">   
+                <!-- Sort By Dropdown -->
+                <div class="custom-dropdown">
+                    <div class="dropdown-header" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="header-label">
+                            <i class="fas fa-sort" aria-hidden="true"></i>
+                            <span>Sortieren</span>
+                        </div>
+                        <div class="header-controls">
+                            <span class="selection-badge" aria-label="Aktuelle Sortierung"></span>
+                            <!-- No clear-icon for single-select dropdowns -->
+                        </div>
+                    </div>
+                    <div class="dropdown-list" id="sort-dropdown-list">
+                        <!-- Buttons populated dynamically -->
+                    </div>
+                </div>
+
+                <button id="clear-all-filters-button" class="filter-action-button">
+                    <i class="fas fa-undo"></i>
+                    <span class="sr-only">Alle Filter zurücksetzen</span> <!-- Screen-reader only text -->
+                </button>
             </div>
-        </section>
+        </div>
+    </section>
+tion>
 
 
         <!-- Top Pagination Section -->

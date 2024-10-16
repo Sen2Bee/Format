@@ -3,11 +3,24 @@
 /* Import Elegant Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Playfair+Display:wght@400;700&display=swap');
 
+/* Screen-reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /* Container for Search and Dropdowns */
 .search-dropdown-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch; /* Changed from center to stretch for better alignment */
     width: 100%;
     background-color: rgba(30, 30, 30, 1);
     background-image: var(--background-dark);
@@ -18,20 +31,32 @@
     box-sizing: border-box;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     backdrop-filter: blur(5px);
+    transition: all 0.3s ease; /* Smooth transitions for layout changes */
 }
 
 /* Filter Form Layout */
 #filter-form {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    align-items: center; /* Added to vertically center items */
+    align-items: flex-start; /* Changed from center to flex-start to accommodate stacked layout */
     gap: 20px;
     width: 100%;
     max-width: var(--filter-width);
     box-sizing: border-box;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
     color: #f5f5f5;
     flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    transition: max-width 0.3s ease, flex-direction 0.3s ease; /* Smooth transition for layout changes */
+}
+
+/* Styles when advanced filters are open */
+#filter-form.filters-expanded {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%; /* Override max-width to allow full expansion */
+    transition: max-width 0.3s ease, flex-direction 0.3s ease; /* Smooth transition */
 }
 
 /* Toggle Buttons */
@@ -43,6 +68,9 @@
     cursor: pointer;
     font-size: 1.5em;
     transition: transform 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #toggle-filters-button {
@@ -73,11 +101,11 @@
     background-color: rgba(68, 68, 68, 0.8);
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
+
 /* Change font color when advanced filters are visible */
 #toggle-advanced-filters-button.active {
     color: var(--accent-color); /* Replace with the desired font color */
 }
-
 
 /* Search Box */
 .search-container {
@@ -91,7 +119,7 @@
     background-color: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
     box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
 }
 
 .search-container .search-icon {
@@ -115,7 +143,7 @@
     border: none;
     border-radius: 10px;
     box-sizing: border-box;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
 }
 
 #search-box::placeholder {
@@ -147,27 +175,39 @@
     opacity: 1;
 }
 
+/* Main Filters Container */
 .main-filters-container {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    gap: 20px;
-    width: calc(95%); /* Adjust the width based on the button's width */
-    transition: width 0.5s ease;
-    font-family: 'Libre Baskerville', serif;
+    gap: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+    transition: all 0.3s ease; /* Smooth transition for layout changes */
 }
 
-/* Shrink behavior when advanced filters are open */
-.main-filters-container.shrink {
-    width: 60%;
-    transition: width 0.5s ease;
+/* When filters are expanded and stacked */
+#filter-form.filters-expanded .main-filters-container {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%; /* Ensure it can stretch fully */
 }
 
-/* Custom Dropdowns */
+/* Default Custom Dropdowns */
 .custom-dropdown {
     flex: 1 1 calc((100% - 40px) / 3);
     max-width: calc((100% - 40px) / 3);
     position: relative;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
+    transition: all 0.3s ease; /* Smooth transition for layout changes */
+}
+
+/* When filters are expanded and stacked */
+#filter-form.filters-expanded .custom-dropdown,
+#filter-form.filters-expanded #advanced-filters-container .custom-dropdown {
+    flex: 1 1 100%; /* Allow full width */
+    max-width: 100%; /* Override max-width */
 }
 
 /* Advanced Filters Container */
@@ -175,25 +215,21 @@
     width: 0;
     max-height: 0;
     overflow: hidden;
-    transition: width 0.5s ease, max-height 0.5s ease;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
+    opacity: 0;
+    visibility: hidden;
 }
 
+/* Show advanced filters */
 #advanced-filters-container.open {
-    width: 33%;
-    max-height: 800px;
-    transition: width 0.5s ease, max-height 0.5s ease;
-}
-
-/* Advanced Filters' Custom Dropdowns */
-#advanced-filters-container .custom-dropdown {
-    flex: 1 1 100%;
-    max-width: 100%;
-    position: relative;
+    max-height: 500px; /* Adjust as needed */
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Dropdown Header */
@@ -203,14 +239,14 @@
     justify-content: space-between;
     background-color: rgba(51, 51, 51, 0.9);
     color: #f5f5f5;
-    padding: 8px 12px;
+    padding: 10px 12px; /* Increased padding for better touch areas */
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
     position: relative;
-    min-height: 45px;
+    min-height: 40px; /* Increased min-height for better alignment */
 }
 
 .dropdown-header:hover {
@@ -231,11 +267,11 @@
 
 .dropdown-header .header-label span {
     font-size: 1.2em;
-    font-weight: bold;
+    font-weight: 100;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
+    max-width: 200px; /* Set a max-width to prevent overflow */
 }
 
 /* Down Arrow Icon */
@@ -268,9 +304,10 @@
     display: none;
     white-space: nowrap;
     font-family: 'Libre Baskerville', serif;
-    max-width: 150px;
+    flex-grow: 1; /* Allow it to stretch to fill available space */
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-left: 10px; /* Optional: Add a small margin if needed */
 }
 
 .selection-badge.visible {
@@ -288,6 +325,7 @@
 
 .clear-icon.visible {
     visibility: visible;
+    opacity: 1; /* Ensure opacity is set when visible */
 }
 
 /* Dropdown List */
@@ -301,7 +339,7 @@
     border-radius: 0 0 10px 10px;
     position: relative;
     transition: max-height 0.5s ease, padding 0.5s ease;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
 }
 
 .dropdown-list.show {
@@ -320,7 +358,7 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     position: relative;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
 }
 
 .filter-buttons-container::-webkit-scrollbar {
@@ -341,7 +379,7 @@
     flex: 1 0 calc(33.33% - 15px);
     text-align: center;
     box-sizing: border-box;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
 }
 
 .filter-button.selected {
@@ -355,16 +393,16 @@
 /* Filters Buttons Row */
 .filters-buttons-row {
     padding-top: 10px;
-    display: inline-flex;
-    justify-content: center;
+    display: flex; /* Changed from inline-flex to flex for better control */
+    justify-content: flex-start;
     align-items: center;
     gap: 10px;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
 }
 
 /* Filter Action Button */
 .filter-action-button {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     background-color: rgba(68, 68, 68, 0.9);
@@ -376,7 +414,7 @@
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s ease;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
     line-height: 1; /* Ensures line-height does not interfere */
 }
 
@@ -405,6 +443,13 @@
     max-width: 500px;
     display: inline-block;
     position: relative;
+}
+
+/* Ensure `.custom-dropdown` takes full width when filters are expanded */
+#filter-form.filters-expanded .custom-dropdown,
+#filter-form.filters-expanded #advanced-filters-container .custom-dropdown {
+    max-width: 100%;
+    flex: 1 1 100%; /* Allow full width */
 }
 
 /* Responsive Adjustments */
@@ -444,6 +489,7 @@
         flex-direction: column;
         align-items: stretch;
         width: 100%;
+        max-width: 100%; /* Override existing max-width */
     }
 
     /* Set main-filters-container to column layout */
@@ -477,6 +523,16 @@
     #advanced-filters-container {
         gap: 15px;
     }
+
+    /* Allow children to stretch within the container */
+    .search-dropdown-container {
+        align-items: stretch;
+    }
+
+    /* Override max-width for filter-form */
+    #filter-form {
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -502,6 +558,15 @@
     .dropdown-header::after {
         font-size: 0.9em;
     }
+
+    /* Ensure max-width is 100% */
+    #filter-form {
+        max-width: 100%;
+    }
+
+    .search-dropdown-container {
+        align-items: stretch;
+    }
 }
 
 /* Additional styles for autocomplete */
@@ -516,7 +581,7 @@
     right: 0;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     border-radius: 5px;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--font-body);
 }
 
 .autocomplete-item {
@@ -529,4 +594,37 @@
 
 .autocomplete-item:hover {
     background-color: rgba(139, 0, 0, 0.1);
+}
+
+/* Styles when advanced filters are open */
+#filter-form.filters-expanded {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%; /* Ensure full width */
+}
+
+#filter-form.filters-expanded .main-filters-container {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%; /* Ensure it can stretch fully */
+}
+
+#filter-form.filters-expanded #advanced-filters-container {
+    width: 100%;
+    max-width: 100%; /* Ensure it can stretch fully */
+    transition: none; /* Remove transitions for instant layout change */
+}
+
+#filter-form.filters-expanded .custom-dropdown,
+#filter-form.filters-expanded #advanced-filters-container .custom-dropdown {
+    max-width: 100%;
+    flex: 1 1 100%; /* Allow full width */
+}
+
+/* Optional: Ensure no other parent containers are limiting width */
+/* Example: If there's a parent wrapper with limited width, adjust it */
+.parent-wrapper { /* Replace with actual parent class or ID */
+    width: 100%;
+    max-width: none; /* Remove any width constraints */
 }
