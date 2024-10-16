@@ -40,8 +40,10 @@ export function initializeFilterPanelToggle() {
             // Shrink the main filters container if the advanced filters are open
             if (advancedFiltersContainer.classList.contains('open')) {
                 mainFiltersContainer.classList.add('shrink');
+                toggleAdvancedFiltersButton.classList.add('active');
             } else {
                 mainFiltersContainer.classList.remove('shrink');
+                toggleAdvancedFiltersButton.classList.remove('active');
             }
         });
     }
@@ -53,22 +55,22 @@ export function initializeFilterPanelToggle() {
 export function clearAllFilters() {
     // Clear selections in all dropdowns
     const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
-    filterButtons.forEach(button => button.classList.remove('selected')); // Remove 'selected' class from all buttons
+    filterButtons.forEach(button => button.classList.remove('selected'));
 
-    // Hide clear icons (except for single-select dropdowns, which have no clear icons)
+    // Hide clear icons
     const clearIcons = document.querySelectorAll('.clear-icon');
     clearIcons.forEach(icon => {
-        icon.classList.remove('visible'); // Hide all clear icons
+        icon.classList.remove('visible');
     });
 
     // Reset and hide selection badges
     const selectionBadges = document.querySelectorAll('.selection-badge');
     selectionBadges.forEach(badge => {
-        badge.textContent = ''; // Clear the text in the badges
-        badge.classList.remove('visible'); // Hide the badges
+        badge.textContent = '';
+        badge.classList.remove('visible');
     });
 
-    // For single-select dropdowns, ensure "Zufall" is selected by default if applicable
+    // For single-select dropdowns, ensure "Zufall" or first option is selected
     const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
     singleSelectDropdowns.forEach(dropdownList => {
         const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
@@ -85,7 +87,14 @@ export function clearAllFilters() {
         }
     });
 
-    // Trigger a filter update by dispatching the dropdownChange event
+    // Clear search box
+    if (searchBox) {
+        searchBox.value = '';
+        clearSearchBtn.classList.remove('visible');
+        hideAutocompleteSuggestions();
+    }
+
+    // Trigger a filter update
     triggerDropdownChangeEvent();
 }
 
@@ -96,8 +105,7 @@ export function initializeFilterActionButtons() {
     // Attach event listener to "Clear All" button
     if (clearAllFiltersButton) {
         clearAllFiltersButton.addEventListener('click', () => {
-            clearAllFilters(); // Call clearAllFilters function
-            // No need to call updateFilters here since clearAllFilters triggers the event
+            clearAllFilters();
         });
     }
 }
@@ -109,11 +117,11 @@ export function initializeFilterDropdowns() {
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
         console.log("Filter.js: Detected dropdown change event");
-        updateFilters(); // Trigger filter update on dropdown change
+        updateFilters();
     });
 
     // Search box input event with debouncing
-    if (searchBox) { // Check if searchBox exists
+    if (searchBox) {
         searchBox.addEventListener('input', () => {
             // Toggle visibility of the clear icon
             if (searchBox.value.length > 0) {
@@ -121,25 +129,23 @@ export function initializeFilterDropdowns() {
             } else {
                 clearSearchBtn.classList.remove('visible');
             }
-            if (searchBox.value.length > 3) {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    triggerDropdownChangeEvent(); // Trigger filter update after user stops typing for 1000ms
-                    handleAutocomplete(); // Handle autocomplete for cast and director
-                }, 1000);
-            }
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                triggerDropdownChangeEvent();
+                handleAutocomplete();
+            }, 500); // Reduced debounce time for better responsiveness
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
     }
 
     // Clear search box and trigger update
-    if (clearSearchBtn && searchBox) { // Ensure both elements exist
+    if (clearSearchBtn && searchBox) {
         clearSearchBtn.addEventListener('click', () => {
             searchBox.value = '';
             clearSearchBtn.classList.remove('visible');
-            triggerDropdownChangeEvent(); // Trigger filter update
-            hideAutocompleteSuggestions(); // Hide autocomplete suggestions
+            triggerDropdownChangeEvent();
+            hideAutocompleteSuggestions();
         });
     } else {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
@@ -148,7 +154,7 @@ export function initializeFilterDropdowns() {
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
 
-    // Initial filter update by dispatching the dropdownChange event
+    // Initial filter update
     triggerDropdownChangeEvent();
 }
 
@@ -186,12 +192,14 @@ export function attachDropdownEventDelegation() {
 
                 // Update the clear icon visibility for multi-select dropdowns
                 const clearButton = dropdownHeader.querySelector('.clear-icon');
+
                 if (isSingleSelect) {
                     if (clearButton) {
                         clearButton.style.display = 'none';
                     }
                 } else {
                     if (selectedValues.length > 0) {
+                        console.log("clearButton visible", clearButton)
                         clearButton.classList.add('visible');
                     } else {
                         clearButton.classList.remove('visible');
@@ -259,6 +267,12 @@ export function toggleDropdown(dropdownList, header) {
         dropdownList.classList.remove('show');
         header.setAttribute('aria-expanded', 'false');
     } else {
+        // Close other dropdowns
+        const allDropdownLists = document.querySelectorAll('.dropdown-list.show');
+        allDropdownLists.forEach(list => {
+            list.classList.remove('show');
+            list.previousElementSibling.setAttribute('aria-expanded', 'false');
+        });
         dropdownList.classList.add('show');
         header.setAttribute('aria-expanded', 'true');
     }
@@ -271,11 +285,11 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     if (selectedValues.length > 0) {
         badgeElement.textContent = selectedValues.join(', ');
         badgeElement.classList.add('visible');
-        badgeElement.style.display = 'inline-block'; // Show the badge
+        badgeElement.style.display = 'inline-block';
     } else {
         badgeElement.textContent = '';
         badgeElement.classList.remove('visible');
-        badgeElement.style.display = 'none'; // Hide the badge
+        badgeElement.style.display = 'none';
     }
 }
 
@@ -298,7 +312,6 @@ export function updateFilters(page = 1) {
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
     const selectedCountries = getSelectedValues('country-dropdown-list');
-    // Get selected values from advanced filters
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
     const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0 
@@ -324,11 +337,11 @@ export function updateFilters(page = 1) {
         params.append('media', selectedMedia.join(','));
     }
     if (selectedSortBy.length) {
-        params.append('sort_by', selectedSortBy[0]); // Only one sort option should be selected
+        params.append('sort_by', selectedSortBy[0]);
     }
 
-    // Search logic: apply filters and shrink dropdowns based on search query
-    if (searchQuery.length > 3) {
+    // Include search query regardless of length
+    if (searchQuery.length > 0) {
         params.append('search', searchQuery);
     }
 
@@ -342,16 +355,16 @@ export function updateFilters(page = 1) {
         .then(data => {
             console.log("API Response Data:", data);
             const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
-            // Populate dropdowns based on the filtered data from search query
+            // Populate dropdowns based on the filtered data
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
             populateDropdown('country-dropdown-list', countries, selectedCountries);
             populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
             populateDropdown('medium-dropdown-list', media, selectedMedia);
-            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false); // Single-select, no counts
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
 
-            updateMovieListings(movies); // Updates the displayed movie cards
-            updatePagination(current_page, total_pages); // Updates the pagination controls
+            updateMovieListings(movies);
+            updatePagination(current_page, total_pages);
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
@@ -360,7 +373,7 @@ export function updateFilters(page = 1) {
             }
         })
         .finally(() => {
-            hideProgressIndicator(); // Hide the progress indicator after the fetch completes
+            hideProgressIndicator();
         });
 }
 
@@ -380,23 +393,20 @@ export function getSelectedValues(dropdownListId) {
 function handleAutocomplete() {
     const searchQuery = searchBox.value.trim();
 
-    // Only perform autocomplete if the search query length is sufficient
     if (searchQuery.length >= 3) {
         fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
             .then(response => {
                 if (!response.ok) {
-                    // Handle 404 or other error responses
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();  // Attempt to parse JSON
+                return response.json();
             })
             .then(data => {
                 showAutocompleteSuggestions(data);
             })
             .catch(error => {
                 console.error('Error fetching autocomplete suggestions:', error);
-                hideAutocompleteSuggestions();  // Hide suggestions in case of error
-                // Optionally, show a user-friendly message (e.g., "No results found" or "Error fetching data")
+                hideAutocompleteSuggestions();
             });
     } else {
         hideAutocompleteSuggestions();
@@ -416,7 +426,7 @@ function showAutocompleteSuggestions(suggestions) {
         searchBox.parentNode.appendChild(autocompleteList);
     }
 
-    autocompleteList.innerHTML = ''; // Clear existing suggestions
+    autocompleteList.innerHTML = '';
 
     suggestions.forEach(item => {
         const suggestionItem = document.createElement('div');
@@ -428,7 +438,7 @@ function showAutocompleteSuggestions(suggestions) {
         suggestionItem.addEventListener('click', () => {
             searchBox.value = item.name;
             hideAutocompleteSuggestions();
-            triggerDropdownChangeEvent(); // Trigger filter update after selecting autocomplete suggestion
+            triggerDropdownChangeEvent();
         });
 
         autocompleteList.appendChild(suggestionItem);
@@ -467,7 +477,7 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         return;
     }
 
-    dropdownList.innerHTML = ""; // Clear existing options
+    dropdownList.innerHTML = "";
 
     // Add 'single-select' class if applicable
     if (singleSelect) {
@@ -479,10 +489,8 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     let optionsArray = [];
 
     if (typeof options === 'object' && !Array.isArray(options)) {
-        // Convert object to array of { label, count }
         optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
     } else if (Array.isArray(options)) {
-        // Convert array to array of { label }
         optionsArray = options.map(label => ({ label }));
     } else {
         console.error(`populateDropdown: 'options' should be an object or array. Received:`, options);
@@ -492,6 +500,16 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     // Conditionally sort the options alphabetically, but skip sorting for "sort-dropdown-list"
     if (dropdownListId !== 'sort-dropdown-list') {
         optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    // For "sort-dropdown-list", implement ascending and descending options
+    if (dropdownListId === 'sort-dropdown-list') {
+        const extendedOptionsArray = [];
+        optionsArray.forEach(option => {
+            extendedOptionsArray.push({ label: `${option.label} (aufsteigend)`, value: `${option.label}_asc` });
+            extendedOptionsArray.push({ label: `${option.label} (absteigend)`, value: `${option.label}_desc` });
+        });
+        optionsArray = extendedOptionsArray;
     }
 
     // Create a container for the filter buttons
@@ -504,22 +522,17 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         button.type = "button";
         button.className = "filter-button";
 
-        // Show either label with count or just label depending on `showCounts` flag
         if (showCounts && option.count !== undefined) {
             button.textContent = `${option.label} (${option.count})`;
         } else {
             button.textContent = option.label;
         }
 
-        // Store the value as the dataset value (can be the label or actual value for sorting)
-        button.dataset.value = option.label;
+        button.dataset.value = option.value || option.label;
 
-        if (selectedValues.includes(option.label)) {
+        if (selectedValues.includes(option.value || option.label)) {
             button.classList.add('selected');
         }
-
-        // Note: We no longer attach per-button event listeners here
-        // Event handling is done via event delegation in attachDropdownEventDelegation()
 
         buttonsContainer.appendChild(button);
     });
@@ -534,12 +547,12 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     // For single-select dropdowns, ensure "Zufall" is selected by default if no selection has been made
     if (singleSelect && selectedValuesUpdated.length === 0 && buttonsContainer.firstChild) {
-        const defaultOption = optionsArray.find(option => option.label.toLowerCase() === 'zufall');
+        const defaultOption = optionsArray.find(option => option.label.toLowerCase().includes('zufall'));
         if (defaultOption) {
-            const defaultButton = buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption.label}"]`);
+            const defaultButton = buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption.value || defaultOption.label}"]`);
             if (defaultButton) {
                 defaultButton.classList.add('selected');
-                selectedValuesUpdated.push(defaultOption.label);
+                selectedValuesUpdated.push(defaultOption.value || defaultOption.label);
             }
         } else {
             buttonsContainer.firstChild.classList.add('selected');
@@ -549,7 +562,7 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     updateSelectionBadge(selectedValuesUpdated, selectionBadge);
 
-    // Hide clear icon for single-select dropdowns like "Sort By"
+    // Hide clear icon for single-select dropdowns
     const dropdownHeader = parentDropdown.querySelector('.dropdown-header');
     const clearButton = dropdownHeader.querySelector('.clear-icon');
     if (singleSelect) {
@@ -558,7 +571,7 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         }
     } else {
         if (clearButton) {
-            clearButton.style.display = ''; // Reset display property
+            clearButton.style.display = '';
         }
     }
 }
