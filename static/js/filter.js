@@ -102,7 +102,6 @@ export function initializeFilterActionButtons() {
 export function initializeFilterDropdowns() {
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
-        console.log("Filter.js: Detected dropdown change event");
         updateFilters();
     });
 
@@ -292,6 +291,7 @@ export function toggleDropdown(dropdownList, header) {
 }
 
 export function updateSelectionBadge(selectedValues, badgeElement) {
+    console.log("updateSelectionBadge", selectedValues, badgeElement)
     if (selectedValues.length > 0) {
         badgeElement.textContent = selectedValues.join(', ');
         badgeElement.classList.add('visible');
@@ -303,13 +303,11 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     }
 }
 
-
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes
  */
 export function triggerDropdownChangeEvent() {
     const event = new CustomEvent('dropdownChange');
-    console.log("Dispatching dropdownChange event");
     document.dispatchEvent(event);
 }
 
@@ -435,7 +433,6 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     if (dropdownListId === 'sort-dropdown-list') {
         const extendedOptionsArray = [];
         optionsArray.forEach(option => {
-            console.log(option.label)
             if (option.label.toLowerCase() === 'zufall') {
                 // Add "Zufall" without icons
                 extendedOptionsArray.push({
@@ -482,16 +479,13 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     dropdownList.appendChild(buttonsContainer);
 
     // Update the Selection Badge for normal filters
-    if (dropdownListId !== 'sort-dropdown-list') {
-        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
-        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
-        const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
-        updateSelectionBadge(selectedValuesUpdated, selectionBadge);
-    }
-
-    // Hide the clear icon for single-select dropdowns
     const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
+    
+    // Hide the clear icon for single-select dropdowns
     const clearButton = dropdownHeader.querySelector('.clear-icon');
     if (singleSelect) {
         if (clearButton) {
@@ -509,7 +503,6 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
  * @param {number} page - The current page number for pagination
  */
 export function updateFilters(page = 1) {
-    console.log("updateFilters called");
 
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
@@ -540,7 +533,6 @@ export function updateFilters(page = 1) {
     if (selectedSortBy.length) {
         params.append('sort_by', selectedSortBy[0]);
     }
-    console.log("SortBy[0]", selectedSortBy[0])
 
     // Include search query regardless of length
     if (searchQuery.length > 0) {
@@ -555,7 +547,7 @@ export function updateFilters(page = 1) {
     fetch(`/filter_movies?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            console.log("API Response Data:", data);
+            // console.log("API Response Data:", data);
             const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
 
             // Define sort_options here if not provided by the server
