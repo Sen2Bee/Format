@@ -344,8 +344,6 @@
 /* Filter Action Button */
 .filter-action-button {
     display: flex;
-
-
     background-color: var(--button-background);
     color: var(--text-color);
     padding: 10px 20px;
