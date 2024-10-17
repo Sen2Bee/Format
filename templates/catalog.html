@@ -75,162 +75,183 @@
         </div>          
 
     <!-- Catalog Search Section -->
-    <section class="catalog-search">
-        <div class="search-dropdown-container">
-            <!-- Search Box Container -->
-            <div class="search-container">
-                <i class="fas fa-search search-icon" aria-hidden="true"></i>
-                <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
-                <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
-            </div>
+<!-- File: templates/catalog.html -->
+<section class="catalog-search"> 
+    <div class="search-dropdown-container">
+        <!-- Search Box Container -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+            <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
+            <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
+        </div>
 
-            <form id="filter-form">
-                <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
-                <div class="main-filters-container">
-                    <!-- Year Filter -->
-                    <div class="custom-dropdown" data-dropdown="year-dropdown">
-                        <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+        <form id="filter-form">
+            <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
+            <div class="main-filters-container">
+                <!-- Year Filter -->
+                <div class="custom-dropdown" data-dropdown="year-dropdown">
+                    <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                                 <span>Jahre</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Genre Filter -->
-                    <div class="custom-dropdown" data-dropdown="genre-dropdown">
-                        <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Genre Filter -->
+                <div class="custom-dropdown" data-dropdown="genre-dropdown">
+                    <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-film" aria-hidden="true"></i>
                                 <span>Genres</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Country Filter -->
-                    <div class="custom-dropdown" data-dropdown="country-dropdown">
-                        <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Country Filter -->
+                <div class="custom-dropdown" data-dropdown="country-dropdown">
+                    <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-globe" aria-hidden="true"></i>
                                 <span>Länder</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Standort Filter -->
-                    <div class="custom-dropdown" data-dropdown="standort-dropdown">
-                        <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Standort Filter -->
+                <div class="custom-dropdown" data-dropdown="standort-dropdown">
+                    <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                                 <span>Standort</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Medium Filter -->
-                    <div class="custom-dropdown" data-dropdown="medium-dropdown">
-                        <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Medium Filter -->
+                <div class="custom-dropdown" data-dropdown="medium-dropdown">
+                    <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-compact-disc" aria-hidden="true"></i>
                                 <span>Medium</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Sort By Dropdown -->
-                    <div class="custom-dropdown" data-dropdown="sort-dropdown">
-                        <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Sort By Dropdown -->
+                <div class="custom-dropdown" data-dropdown="sort-dropdown">
+                    <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-sort" aria-hidden="true"></i>
                                 <span>Sortieren</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- No individual selection badge -->
-                                <!-- No clear-icon for single-select dropdowns -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <!-- No clear icon for single-select dropdowns -->
+                        </div>
                     </div>
-
-                    <!-- Clear All Filters Button -->
-                    <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
-                        <i class="fas fa-undo"></i>
-                        <span class="sr-only">Alle Filter zurücksetzen</span>
-                    </button>
                 </div>
-            </form>
-        </div>
 
-        <!-- Dropdown Lists Container -->
-        <div class="dropdown-lists-container">
-            <!-- Year Dropdown List -->
-            <div class="dropdown-list" id="year-dropdown-list">
-                <!-- Buttons populated dynamically -->
+                <!-- Clear All Filters Button -->
+                <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
+                    <i class="fas fa-undo"></i>
+                    <span class="sr-only">Alle Filter zurücksetzen</span>
+                </button>
             </div>
-            <!-- Genre Dropdown List -->
-            <div class="dropdown-list" id="genre-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Country Dropdown List -->
-            <div class="dropdown-list" id="country-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Standort Dropdown List -->
-            <div class="dropdown-list" id="standort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Medium Dropdown List -->
-            <div class="dropdown-list" id="medium-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Sort Dropdown List -->
-            <div class="dropdown-list" id="sort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
+        </form>
+    </div>
+
+    <!-- Dropdown Lists Container -->
+    <div class="dropdown-lists-container">
+        <!-- Year Dropdown List -->
+        <div class="dropdown-list" id="year-dropdown-list">
+            <!-- Buttons populated dynamically -->
         </div>
-    </section>
+        <!-- Genre Dropdown List -->
+        <div class="dropdown-list" id="genre-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Country Dropdown List -->
+        <div class="dropdown-list" id="country-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Standort Dropdown List -->
+        <div class="dropdown-list" id="standort-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Medium Dropdown List -->
+        <div class="dropdown-list" id="medium-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Sort Dropdown List -->
+        <div class="dropdown-list" id="sort-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+    </div>
+</section>
+
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">

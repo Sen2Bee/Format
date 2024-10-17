@@ -14,6 +14,7 @@
     --transition-duration: 0.3s;
     --primary-color: #333;
     --secondary-text-color: #ccc;
+    --text-light: #f5f5f5; /* Added missing variable */
 }
 
 /* Screen-reader only text */
@@ -137,33 +138,36 @@
     position: relative;
     font-family: var(--font-body);
 }
-
 /* Dropdown Header */
 .dropdown-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column; /* For two-row layout */
     background-color: var(--button-background);
     color: var(--text-color);
-    padding: 10px 12px;
+    padding: 5px 12px; /* Adjusted padding */
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     font-family: var(--font-body);
     position: relative;
-    min-height: 40px;
+    height: 80px; /* Let height adjust based on content */
 }
 
+
+/* Hover Effect for Dropdown Header */
 .dropdown-header:hover {
     background-color: var(--button-hover-background);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* Header Label (Icon and Text) */
 .dropdown-header .header-label {
     display: flex;
     align-items: center;
+    margin-bottom: 2px; /* Reduce margin for more compact layout */
 }
 
 .dropdown-header .header-label i {
@@ -180,27 +184,56 @@
     max-width: 150px;
 }
 
-/* Down Arrow Icon */
+/* Position Down Arrow in Top Right Corner */
 .dropdown-header::after {
-    content: '\25BC';
+    content: '\25BC'; /* Unicode for down arrow */
     font-size: 1em;
     color: var(--text-light);
-    margin-left: 10px;
-    transition: transform 0.3s ease;
+    position: absolute;
+    top: 5px; /* Position near top edge */
+    right: 12px; /* Position near right edge */
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
+/* When Expanded, Rotate Arrow */
 .dropdown-header[aria-expanded="true"]::after {
     transform: rotate(180deg);
     color: var(--accent-color);
+    font-size: 1.6em;
+}
+
+/* Selection Badge */
+.selection-badge {
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    max-width: 100px;
+    margin-right: 8px; /* Add spacing between the badge and the clear icon */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block; /* Ensure it aligns with other inline elements */
 }
 
 /* Clear Icon for Dropdowns */
 .clear-icon {
-    visibility: hidden;
-    font-size: 1.7em;
+    font-size: 1.4em;
     cursor: pointer;
     color: var(--accent-color);
-    transition: visibility 0.3s ease, opacity 0.3s ease;
+    align-self: center; /* Vertically align with the badge */
+    margin-left: auto; /* Push it to the right side of the container */
+    transition: opacity 0.3s ease;
+    visibility: hidden;
+}
+
+.selection-clear-container {
+    display: flex;
+    align-items: right;
+    justify-content: space-between;
+    margin-top: 5px;
+    width: 100%;
 }
 
 .clear-icon.visible {
@@ -208,20 +241,28 @@
     opacity: 1;
 }
 
-/* Selection Badge */
-.selection-badge {
-    display: none;
-    background-color: var(--accent-color);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 50px;
-    font-size: 0.8em;
-    margin-left: 10px;
-    max-width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+/* Show Clear Icon and Badge When Items Are Selected */
+.dropdown-header.has-selection .clear-icon {
+    visibility: visible;
+    opacity: 1;
 }
+
+.dropdown-header.has-selection .selection-badge {
+    display: block;
+}
+
+
+/* Show Clear Icon and Badge When Items Are Selected */
+.dropdown-header.has-selection .clear-icon {
+    visibility: visible;
+    opacity: 1;
+}
+
+.dropdown-header.has-selection .selection-badge {
+    display: block;
+}
+
+
 
 /* Dropdown List */
 .dropdown-list {
@@ -303,8 +344,8 @@
 /* Filter Action Button */
 .filter-action-button {
     display: flex;
-    align-items: center;
-    justify-content: center;
+
+
     background-color: var(--button-background);
     color: var(--text-color);
     padding: 10px 20px;

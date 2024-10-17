@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-16 23:58:59 ===
+=== Code Summary Generated at 2024-10-17 12:31:38 ===
 
 === Project Folder Structure ===
 
@@ -661,20 +661,21 @@ button {
 --- File: static\css\components\filter.css ---
 /* File: static/css/components/filter.css */
 
-/* Import Elegant Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Playfair+Display:wght@400;700&display=swap');
-
-/* CSS Variablen */
+/* CSS Variables */
 :root {
-    --filter-width: 1200px; /* Maximale Breite der Filter-Sektion */
+    --filter-width: 1200px;
     --font-body: 'Libre Baskerville', serif;
-    --accent-color: #8B0000; /* Beispiel Akzentfarbe */
-    --background-dark: #1E1E1E; /* Beispiel Hintergrundfarbe */
+    --accent-color: #8B0000;
+    --background-dark: #1E1E1E;
     --dropdown-background: rgba(44, 44, 44, 0.95);
     --button-background: rgba(68, 68, 68, 0.9);
     --button-hover-background: rgba(85, 85, 85, 0.9);
     --button-active-background: var(--accent-color);
     --text-color: #f5f5f5;
+    --transition-duration: 0.3s;
+    --primary-color: #333;
+    --secondary-text-color: #ccc;
+    --text-light: #f5f5f5; /* Added missing variable */
 }
 
 /* Screen-reader only text */
@@ -692,94 +693,23 @@ button {
 
 /* Container for Search and Dropdowns */
 .search-dropdown-container {
+    position: relative;
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* Ensures children stretch horizontally */
+    align-items: stretch;
     width: 100%;
     background-color: var(--background-dark);
     padding: 20px;
     box-sizing: border-box;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     backdrop-filter: blur(5px);
-    transition: all 0.3s ease; /* Smooth transitions for layout changes */
-}
-
-/* Filter Form Layout */
-#filter-form {
-    display: flex;
-    flex-direction: row; /* Horizontal alignment on large screens */
-    justify-content: space-between;
-    align-items: flex-start; /* Align items to the top */
-    gap: 20px;
-    width: 100%;
-    max-width: var(--filter-width);
-    box-sizing: border-box;
-    font-family: var(--font-body);
-    color: var(--text-color);
-    flex-wrap: wrap; /* Allows wrapping if needed */
-    transition: max-width 0.3s ease, flex-direction 0.3s ease; /* Smooth transition for layout changes */
-}
-
-/* Styles when advanced filters are open */
-#filter-form.filters-expanded {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    max-width: 100%; /* Override max-width to allow full expansion */
-    transition: max-width 0.3s ease, flex-direction 0.3s ease; /* Smooth transition */
-}
-
-/* Toggle Buttons */
-#toggle-filters-button,
-#toggle-advanced-filters-button {
-    background-color: transparent;
-    border: none;
-    color: var(--accent-color);
-    cursor: pointer;
-    font-size: 1.5em;
-    transition: transform 0.3s ease, color 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#toggle-filters-button {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-}
-
-#toggle-filters-button.rotate {
-    transform: rotate(180deg);
-}
-
-#toggle-advanced-filters-button {
-    background-color: rgba(51, 51, 51, 0.7);
-    padding: 10px 20px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    font-family: 'Playfair Display', serif;
-    color: #fff;
-}
-
-#toggle-advanced-filters-button:hover {
-    background-color: rgba(68, 68, 68, 0.8);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-/* Change font color when advanced filters are visible */
-#toggle-advanced-filters-button.active {
-    color: var(--accent-color); /* Replace with the desired font color */
+    transition: all 0.3s ease;
 }
 
 /* Search Box */
 .search-container {
     position: relative;
     width: 100%;
-    max-width: 100%;
     height: 55px;
     margin-bottom: 15px;
     border: none;
@@ -843,88 +773,31 @@ button {
     opacity: 1;
 }
 
-/* Selection Badges Container */
-.selection-badges-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-    font-family: var(--font-body);
-}
-
-/* Individual Selection Badge */
-.selection-badge {
-    padding: 5px 15px;
-    border-radius: 50px;
-    background-color: var(--accent-color);
-    color: #fff;
-    font-size: 0.9em;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.selection-badge .badge-label {
-    flex: 1;
-}
-
 /* Main Filters Container */
 .main-filters-container {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    gap: 5px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
     width: 100%;
     box-sizing: border-box;
     font-family: var(--font-body);
-    transition: all 0.3s ease; /* Smooth transition for layout changes */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
-/* When filters are expanded and stacked */
-#filter-form.filters-expanded .main-filters-container {
-    flex-direction: column;
-    width: 100%;
-    max-width: 100%; /* Ensure it can stretch fully */
+.main-filters-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in WebKit browsers */
 }
 
-/* Default Custom Dropdowns */
+/* Custom Dropdowns */
 .custom-dropdown {
-    flex: 1 1 calc((100% - 40px) / 3);
-    max-width: calc((100% - 40px) / 3);
+    flex: 0 0 200px;
+    max-width: 200px;
     position: relative;
     font-family: var(--font-body);
-    transition: all 0.3s ease; /* Smooth transition for layout changes */
-}
-
-/* When filters are expanded and stacked */
-#filter-form.filters-expanded .custom-dropdown,
-#filter-form.filters-expanded #advanced-filters-container .custom-dropdown {
-    flex: 1 1 100%; /* Allow full width */
-    max-width: 100%; /* Override max-width */
-}
-
-/* Advanced Filters Container */
-#advanced-filters-container {
-    width: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease, opacity 0.5s ease;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    font-family: var(--font-body);
-    opacity: 0;
-    visibility: hidden;
-}
-
-#advanced-filters-container.open {
-    max-height: 500px; /* Adjust as needed */
-    opacity: 1;
-    visibility: visible;
 }
 
 /* Dropdown Header */
@@ -934,92 +807,116 @@ button {
     justify-content: space-between;
     background-color: var(--button-background);
     color: var(--text-color);
-    padding: 10px 12px; /* Increased padding for better touch areas */
+    padding: 5px 12px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     font-family: var(--font-body);
     position: relative;
-    min-height: 40px; /* Increased min-height for better alignment */
+    height: auto;
 }
 
+/* Hover Effect for Dropdown Header */
 .dropdown-header:hover {
     background-color: var(--button-hover-background);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Header Label (Icon and Text) */
+/* Header Label */
 .dropdown-header .header-label {
     display: flex;
     align-items: center;
 }
 
+/* Header Label Icon */
 .dropdown-header .header-label i {
     font-size: 1.3em;
     margin-right: 5px;
 }
 
+/* Header Label Text */
 .dropdown-header .header-label span {
     font-size: 1.2em;
     font-weight: 100;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 200px; /* Set a max-width to prevent overflow */
+    max-width: 150px;
 }
 
-/* Down Arrow Icon */
+/* Position Down Arrow */
 .dropdown-header::after {
-    content: '\25BC';
+    content: '\25BC'; /* Unicode for down arrow */
     font-size: 1em;
-    color: var(--accent-color);
-    margin-left: 10px;
-    transition: transform 0.3s ease;
+    color: var(--text-light);
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
+/* When Expanded, Rotate Arrow */
 .dropdown-header[aria-expanded="true"]::after {
     transform: rotate(180deg);
+    color: var(--accent-color);
+    font-size: 1.6em;
 }
 
-/* Header Controls */
-.dropdown-header .header-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* Selection Badge */
+.selection-badge {
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    max-width: 100px;
+    margin-right: 8px; /* Space between badge and clear icon */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: none; /* Hidden by default */
 }
 
-/* Clear Icon for Dropdowns */
+/* Clear Icon */
 .clear-icon {
-    visibility: hidden;
-    font-size: 1.7em;
+    font-size: 1.2em;
     cursor: pointer;
     color: var(--accent-color);
-    transition: visibility 0.3s ease, opacity 0.3s ease;
+    margin-left: 10px; /* Space between badge and clear icon */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-.clear-icon.visible {
+/* Show Clear Icon and Badge When Items Are Selected */
+.dropdown-header.has-selection .clear-icon {
     visibility: visible;
-    opacity: 1; /* Ensure opacity is set when visible */
+    opacity: 1;
+}
+
+.dropdown-header.has-selection .selection-badge {
+    display: inline-block;
 }
 
 /* Dropdown List */
 .dropdown-list {
+    position: absolute;
+    left: 0;
     width: 100%;
     max-height: 0;
     overflow: hidden;
     background-color: var(--dropdown-background);
     padding: 0 15px;
     box-sizing: border-box;
-    border-radius: 0 0 10px 10px;
-    position: relative;
     transition: max-height 0.5s ease, padding 0.5s ease;
     font-family: var(--font-body);
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    border-radius: 0 0 5px 5px;
 }
 
 .dropdown-list.show {
-    max-height: 300px;
+    max-height: 500px;
     padding: 15px;
+    overflow-y: auto;
 }
 
 /* Filter Buttons Container */
@@ -1028,7 +925,7 @@ button {
     flex-wrap: wrap;
     gap: 15px;
     width: 100%;
-    max-height: 300px;
+    max-height: 500px;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -1041,8 +938,9 @@ button {
     height: 0;
 }
 
-/* Filter Buttons */
-.filter-button {
+/* Unified Button Styles */
+.filter-button,
+.filter-action-button {
     padding: 10px 20px;
     background-color: var(--button-background);
     color: var(--text-color);
@@ -1051,311 +949,88 @@ button {
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
     font-size: 0.9em;
-    flex: 1 0 calc(33.33% - 15px);
     text-align: center;
     box-sizing: border-box;
     font-family: var(--font-body);
 }
 
-.filter-button.selected {
+/* Flex Properties for Filter Buttons */
+.filter-button {
+    flex: 1 0 calc(33.33% - 15px);
+}
+
+/* Additional Styles for Filter Action Buttons */
+.filter-action-button {
+    margin: 5px;
+    /* Removed display: flex; and line-height: 1; for consistency */
+}
+
+/* Selected State */
+.filter-button.selected,
+.filter-action-button.selected {
     background-color: var(--accent-color);
 }
 
-.filter-button:hover {
+/* Hover Effects */
+.filter-button:hover,
+.filter-action-button:hover {
     background-color: var(--button-hover-background);
+    transform: scale(1.05); /* Optional: Add subtle scaling on hover */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* Filters Buttons Row */
 .filters-buttons-row {
     padding-top: 10px;
-    display: flex; /* Changed from inline-flex to flex for better control */
+    display: flex;
     justify-content: flex-start;
-    align-items: flex-start; /* Align items to the top */
+    align-items: flex-start;
     gap: 10px;
     font-family: var(--font-body);
 }
 
 /* Filter Action Button */
 .filter-action-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background-color: var(--button-background);
     color: var(--text-color);
     padding: 10px 20px;
     margin: 5px;
     border: none;
-    border-radius: 5px;
-    font-size: 1em;
+    border-radius: 25px; /* Updated to match .filter-button */
+    font-size: 0.9em; /* Updated to match .filter-button */
     cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s ease;
+    transition: background-color 0.3s, transform 0.3s;
     font-family: var(--font-body);
-    line-height: 1; /* Ensures line-height does not interfere */
+    text-align: center;
+    box-sizing: border-box;
 }
 
-.filter-action-button:hover {
-    background-color: var(--accent-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Custom Dropdown Header */
-.filters-buttons-row .custom-dropdown .dropdown-header {
-    min-height: 40px;
-    padding: 5px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-/* Dropdown and Button Alignment */
-.filters-buttons-row .custom-dropdown,
-.filters-buttons-row .filter-action-button {
-    vertical-align: middle;
-}
-
-/* Custom Dropdown Container */
-.filters-buttons-row .custom-dropdown {
-    max-width: 500px;
-    display: inline-block;
-    position: relative;
-}
-
-/* Ensure `.custom-dropdown` takes full width when filters are expanded */
-#filter-form.filters-expanded .custom-dropdown,
-#filter-form.filters-expanded #advanced-filters-container .custom-dropdown {
-    max-width: 100%;
-    flex: 1 1 100%; /* Allow full width */
-}
-
-/* Selection Badges Styling */
-.selection-badges-container .selection-badge {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background-color: var(--accent-color);
-    color: #fff;
-    padding: 5px 15px;
-    border-radius: 50px;
-    font-size: 0.9em;
-    max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.selection-badge .badge-label {
-    flex: 1;
-}
-
-/* Responsive Anpassungen */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-    /* Adjust toggle button position and size */
-    #toggle-filters-button {
-        top: 10px;
-        right: 15px;
-        font-size: 1.3em;
-    }
-
-    .dropdown-header {
-        font-size: 1em;
-        padding: 8px 10px;
-        min-height: 45px;
-    }
-
-    .dropdown-header .header-label i {
-        font-size: 1em;
-    }
-
-    /* Adjust filter buttons to stack vertically */
-    .filter-button {
-        font-size: 0.8em;
-        padding: 10px 15px;
-        flex: 1 0 100%;
-    }
-
-    .filter-action-button {
-        font-size: 0.8em;
-        padding: 10px 15px;
-    }
-
-    /* Ensure the filter form and advanced filters use column layout */
-    #filter-form,
-    #advanced-filters-container {
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
-        max-width: 100%; /* Override existing max-width */
-    }
-
-    /* Set main-filters-container to column layout */
     .main-filters-container {
-        flex-direction: column;
-        width: 100%;
+        overflow-x: auto;
     }
 
-    /* Override shrink behavior on mobile */
-    .main-filters-container.shrink {
-        width: 100%;
+    .custom-dropdown {
+        flex: 0 0 180px;
+        max-width: 180px;
     }
 
-    /* Ensure custom-dropdowns take full width */
-    .custom-dropdown,
-    #advanced-filters-container .custom-dropdown {
-        max-width: 100%;
-        flex: 1 1 100%;
-    }
-
-    #advanced-filters-container.open {
-        width: 100%;
-    }
-
-    /* Adjust padding and margins for mobile */
-    .search-container {
-        margin-bottom: 15px;
-    }
-
-    /* Stack advanced filters vertically with spacing */
-    #advanced-filters-container {
-        gap: 15px;
-    }
-
-    /* Allow children to stretch within the container */
-    .search-dropdown-container {
-        align-items: stretch;
-    }
-
-    /* Override max-width for filter-form */
-    #filter-form {
-        max-width: 100%;
-    }
-
-    /* Adjust Filters Buttons Row for Mobile */
-    .filters-buttons-row {
-        flex-direction: column; /* Stack sort dropdown and reset button vertically */
-        align-items: stretch; /* Allow elements to take full width */
-    }
-
-    /* Make Sort Dropdown Full Width on Mobile */
-    .filters-buttons-row .custom-dropdown {
-        flex: 1 1 100%;
-    }
-
-    /* Selection Badges Container */
-    .selection-badges-container {
-        gap: 8px;
-    }
-
-    /* Individual Selection Badge */
-    .selection-badge {
-        font-size: 0.85em;
-        padding: 4px 12px;
+    .dropdown-header .header-label span {
+        max-width: 120px;
     }
 }
 
 @media (max-width: 480px) {
-    .filter-button {
-        font-size: 0.85em;
-        padding: 8px 12px;
+    .custom-dropdown {
+        flex: 0 0 150px;
+        max-width: 150px;
     }
 
-    .filter-action-button {
-        font-size: 0.85em;
-        padding: 8px 12px;
-    }
-
-    /* Further reduce font sizes in dropdown headers */
     .dropdown-header .header-label span {
-        font-size: 1em;
-    }
-
-    .dropdown-header .header-label i {
-        font-size: 1em;
-    }
-
-    .dropdown-header::after {
-        font-size: 0.9em;
-    }
-
-    /* Ensure max-width is 100% */
-    #filter-form {
-        max-width: 100%;
-    }
-
-    .search-dropdown-container {
-        align-items: stretch;
-    }
-
-    /* Selection Badges Container */
-    .selection-badges-container {
-        gap: 5px;
-    }
-
-    /* Individual Selection Badge */
-    .selection-badge {
-        font-size: 0.8em;
-        padding: 3px 10px;
+        max-width: 100px;
     }
 }
-
-/* Additional styles for autocomplete */
-.autocomplete-items {
-    position: absolute;
-    background-color: #fff;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 99;
-    top: 100%;
-    left: 0;
-    right: 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    border-radius: 5px;
-    font-family: var(--font-body);
-}
-
-.autocomplete-item {
-    padding: 10px;
-    cursor: pointer;
-    background-color: #fff;
-    transition: background-color 0.3s ease;
-    font-size: 1em;
-}
-
-.autocomplete-item:hover {
-    background-color: rgba(139, 0, 0, 0.1);
-}
-
-/* Styles when advanced filters are open */
-#filter-form.filters-expanded {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    max-width: 100%; /* Ensure full width */
-}
-
-#filter-form.filters-expanded .main-filters-container {
-    flex-direction: column;
-    width: 100%;
-    max-width: 100%; /* Ensure it can stretch fully */
-}
-
-#filter-form.filters-expanded #advanced-filters-container {
-    width: 100%;
-    max-width: 100%; /* Ensure it can stretch fully */
-    transition: none; /* Remove transitions for instant layout change */
-}
-
-#filter-form.filters-expanded .custom-dropdown,
-#filter-form.filters-expanded #advanced-filters-container .custom-dropdown {
-    max-width: 100%;
-    flex: 1 1 100%; /* Allow full width */
-}
-
-/* Optional: Ensure no other parent containers are limiting width */
-/* Example: If there's a parent wrapper with limited width, adjust it */
-/* .parent-wrapper { Replace with actual parent class or ID */
-    /* width: 100%; */
-    /* max-width: none; Remove any width constraints */
-/* } */
 
 --- File: static\css\components\forms.css ---
 /* forms.css */
@@ -2662,7 +2337,7 @@ import {
     clearAllFiltersButton,
     movieContainer,
     toggleAdvancedFiltersButton,
-    advancedFiltersContainer    
+    advancedFiltersContainer
 } from './entry.js';
 import { updateCarouselTitle } from './carousel.js';
 import { showProgressIndicator, hideProgressIndicator } from './entry.js';
@@ -2675,33 +2350,7 @@ let debounceTimer = null;
  * Initialize the toggle functionality for the filter panel and advanced filters
  */
 export function initializeFilterPanelToggle() {
-    if (toggleFiltersButton && searchDropdownContainer) {
-        toggleFiltersButton.addEventListener('click', () => {
-            searchDropdownContainer.classList.toggle('hidden');
-            toggleFiltersButton.classList.toggle('rotate');
-        });
-    }
-
-    // Initialize Advanced Filters Toggle
-    if (toggleAdvancedFiltersButton && advancedFiltersContainer) {
-        toggleAdvancedFiltersButton.addEventListener('click', () => {
-            const mainFiltersContainer = document.querySelector('.main-filters-container');
-            const filterForm = document.getElementById('filter-form');
-            
-            // Toggle the advanced filters container
-            advancedFiltersContainer.classList.toggle('open');
-            
-            // Add or remove the 'filters-expanded' class on the filter form
-            if (advancedFiltersContainer.classList.contains('open')) {
-                filterForm.classList.add('filters-expanded');
-                toggleAdvancedFiltersButton.classList.add('active');
-            } else {
-                filterForm.classList.remove('filters-expanded');
-                toggleAdvancedFiltersButton.classList.remove('active');
-            }
-        });
-    }
-
+    // Advanced Filters Toggle is now handled within the main filters
 }
 
 /**
@@ -2731,10 +2380,10 @@ export function clearAllFilters() {
         const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
         const optionsArray = Array.from(buttonsContainer.children).map(btn => btn.dataset.value);
         const defaultOption = optionsArray.find(label => label.toLowerCase() === 'zufall');
-        const buttonToSelect = defaultOption 
-            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`) 
+        const buttonToSelect = defaultOption
+            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`)
             : buttonsContainer.firstElementChild;
-        
+
         if (buttonToSelect) {
             buttonToSelect.classList.add('selected');
             const badge = dropdownList.parentElement.querySelector('.selection-badge');
@@ -2768,7 +2417,7 @@ export function initializeFilterActionButtons() {
 /**
  * Function to initialize dropdowns and attach necessary event listeners
  */
-export function initializeFilterDropdowns() {   
+export function initializeFilterDropdowns() {
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
         console.log("Filter.js: Detected dropdown change event");
@@ -2817,10 +2466,30 @@ export function initializeFilterDropdowns() {
  * Function to attach event listeners to dropdowns using event delegation
  */
 export function attachDropdownEventDelegation() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
     const dropdownLists = document.querySelectorAll('.dropdown-list');
 
+    dropdownHeaders.forEach(header => {
+        header.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const targetDropdownId = header.getAttribute('data-target');
+            const targetDropdown = document.getElementById(targetDropdownId);
+            toggleDropdown(targetDropdown, header);
+        });
+
+        // Allow keyboard accessibility
+        header.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const targetDropdownId = header.getAttribute('data-target');
+                const targetDropdown = document.getElementById(targetDropdownId);
+                toggleDropdown(targetDropdown, header);
+            }
+        });
+    });
+
+    // Handle button clicks within the dropdowns using event delegation
     dropdownLists.forEach(dropdownList => {
-        // Handle button clicks within the dropdown using event delegation
         dropdownList.addEventListener('click', (event) => {
             const target = event.target;
             if (target && target.classList.contains('filter-button')) {
@@ -2839,7 +2508,7 @@ export function attachDropdownEventDelegation() {
                 }
 
                 // Update the selection badge
-                const dropdownHeader = dropdownList.previousElementSibling;
+                const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
                 const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
@@ -2854,7 +2523,6 @@ export function attachDropdownEventDelegation() {
                     }
                 } else {
                     if (selectedValues.length > 0) {
-                        console.log("clearButton visible", clearButton)
                         clearButton.classList.add('visible');
                     } else {
                         clearButton.classList.remove('visible');
@@ -2867,13 +2535,13 @@ export function attachDropdownEventDelegation() {
         });
 
         // Handle clear button (only for multi-select dropdowns)
-        const clearButton = dropdownList.parentElement.querySelector('.clear-icon');
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
         if (clearButton) {
             clearButton.addEventListener('click', (event) => {
                 event.stopPropagation();
                 const buttons = dropdownList.querySelectorAll('.filter-button.selected');
                 buttons.forEach(button => button.classList.remove('selected'));
-                const dropdownHeader = dropdownList.previousElementSibling;
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 updateSelectionBadge([], selectionBadge);
                 clearButton.classList.remove('visible');
@@ -2882,29 +2550,10 @@ export function attachDropdownEventDelegation() {
         }
     });
 
-    // Handle dropdown header clicks
-    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
-    dropdownHeaders.forEach(header => {
-        header.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const dropdownList = header.nextElementSibling;
-            toggleDropdown(dropdownList, header);
-        });
-
-        // Allow keyboard accessibility
-        header.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                const dropdownList = header.nextElementSibling;
-                toggleDropdown(dropdownList, header);
-            }
-        });
-    });
-
     // Close dropdowns when clicking outside
     document.addEventListener('click', (event) => {
         dropdownLists.forEach(dropdownList => {
-            const header = dropdownList.previousElementSibling;
+            const header = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
             if (!dropdownList.contains(event.target) && !header.contains(event.target)) {
                 dropdownList.classList.remove('show');
                 header.setAttribute('aria-expanded', 'false');
@@ -2926,7 +2575,10 @@ export function toggleDropdown(dropdownList, header) {
         const allDropdownLists = document.querySelectorAll('.dropdown-list.show');
         allDropdownLists.forEach(list => {
             list.classList.remove('show');
-            list.previousElementSibling.setAttribute('aria-expanded', 'false');
+            const otherHeader = document.querySelector(`.dropdown-header[data-target="${list.id}"]`);
+            if (otherHeader) {
+                otherHeader.setAttribute('aria-expanded', 'false');
+            }
         });
         dropdownList.classList.add('show');
         header.setAttribute('aria-expanded', 'true');
@@ -2969,8 +2621,8 @@ export function updateFilters(page = 1) {
     const selectedCountries = getSelectedValues('country-dropdown-list');
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
-    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0 
-        ? getSelectedValues('sort-dropdown-list') 
+    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0
+        ? getSelectedValues('sort-dropdown-list')
         : ["Zufall"];
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
@@ -3086,7 +2738,7 @@ function showAutocompleteSuggestions(suggestions) {
     suggestions.forEach(item => {
         const suggestionItem = document.createElement('div');
         suggestionItem.className = 'autocomplete-item';
-        suggestionItem.textContent = `${item.name} (${item.type})`;
+        suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
         suggestionItem.dataset.name = item.name;
         suggestionItem.dataset.type = item.type;
 
@@ -3170,11 +2822,11 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
             } else {
                 // Add options with ascending and descending icons
                 extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`, 
+                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`,
                     value: `${option.label} asc`
                 });
                 extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`, 
+                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`,
                     value: `${option.label} desc`
                 });
             }
@@ -3212,15 +2864,15 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     // Update the Selection Badge for normal filters
     if (dropdownListId !== 'sort-dropdown-list') {
-        const parentDropdown = dropdownList.parentElement;
-        const selectionBadge = parentDropdown.querySelector('.selection-badge');
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
         const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
         const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
         updateSelectionBadge(selectedValuesUpdated, selectionBadge);
     }
 
     // Hide the clear icon for single-select dropdowns
-    const dropdownHeader = dropdownList.parentElement.querySelector('.dropdown-header');
+    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
     const clearButton = dropdownHeader.querySelector('.clear-icon');
     if (singleSelect) {
         if (clearButton) {
@@ -3529,6 +3181,8 @@ export function attachPaginationEventListeners() {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Include filter.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/filter.css') }}">
 </head>
 <body>
     <header>
@@ -3603,11 +3257,11 @@ export function attachPaginationEventListeners() {
             </div>
 
             <form id="filter-form">
-                <!-- Main Filters Container for Year, Genre, Country -->
+                <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
                 <div class="main-filters-container">
                     <!-- Year Filter -->
                     <div class="custom-dropdown" data-dropdown="year-dropdown">
-                        <div class="dropdown-header" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <div class="header-label">
                                 <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                                 <span>Jahre</span>
@@ -3615,20 +3269,17 @@ export function attachPaginationEventListeners() {
                             <div class="header-controls">
                                 <!-- Clear Filter Button -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                                <!-- Selection Badge -->
+                                <span class="selection-badge">
+                                    <span class="badge-label"></span>
+                                </span>
                             </div>
-                            <!-- Selection Badge -->
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                        </div>
-                        <div class="dropdown-list" id="year-dropdown-list">
-                            <!-- Buttons populated dynamically -->
                         </div>
                     </div>
 
                     <!-- Genre Filter -->
                     <div class="custom-dropdown" data-dropdown="genre-dropdown">
-                        <div class="dropdown-header" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <div class="header-label">
                                 <i class="fas fa-film" aria-hidden="true"></i>
                                 <span>Genres</span>
@@ -3636,20 +3287,17 @@ export function attachPaginationEventListeners() {
                             <div class="header-controls">
                                 <!-- Clear Filter Button -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                                <!-- Selection Badge -->
+                                <span class="selection-badge">
+                                    <span class="badge-label"></span>
+                                </span>
                             </div>
-                            <!-- Selection Badge -->
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                        </div>
-                        <div class="dropdown-list" id="genre-dropdown-list">
-                            <!-- Buttons populated dynamically -->
                         </div>
                     </div>
 
                     <!-- Country Filter -->
                     <div class="custom-dropdown" data-dropdown="country-dropdown">
-                        <div class="dropdown-header" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <div class="header-label">
                                 <i class="fas fa-globe" aria-hidden="true"></i>
                                 <span>Länder</span>
@@ -3657,29 +3305,17 @@ export function attachPaginationEventListeners() {
                             <div class="header-controls">
                                 <!-- Clear Filter Button -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                                <!-- Selection Badge -->
+                                <span class="selection-badge">
+                                    <span class="badge-label"></span>
+                                </span>
                             </div>
-                            <!-- Selection Badge -->
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                        </div>
-                        <div class="dropdown-list" id="country-dropdown-list">
-                            <!-- Buttons populated dynamically -->
                         </div>
                     </div>
 
-                    <!-- Toggle Button for Advanced Filters -->
-                    <button id="toggle-advanced-filters-button" class="toggle-advanced-filters-button" type="button" aria-expanded="false" aria-controls="advanced-filters-container">
-                        <i class="fas fa-sliders-h"></i>
-                        <span class="sr-only">Erweiterte Filter anzeigen</span> <!-- Screen-reader only text -->
-                    </button>
-                </div>
-
-                <!-- Advanced Filters Section -->
-                <div id="advanced-filters-container" class="advanced-filters-container hidden">
-                    <!-- Advanced Filter: Standort -->
+                    <!-- Standort Filter -->
                     <div class="custom-dropdown" data-dropdown="standort-dropdown">
-                        <div class="dropdown-header" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <div class="header-label">
                                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                                 <span>Standort</span>
@@ -3687,20 +3323,17 @@ export function attachPaginationEventListeners() {
                             <div class="header-controls">
                                 <!-- Clear Filter Button -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                                <!-- Selection Badge -->
+                                <span class="selection-badge">
+                                    <span class="badge-label"></span>
+                                </span>
                             </div>
-                            <!-- Selection Badge -->
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                        </div>
-                        <div class="dropdown-list" id="standort-dropdown-list">
-                            <!-- Buttons populated dynamically -->
                         </div>
                     </div>
 
-                    <!-- Advanced Filter: Medium -->
+                    <!-- Medium Filter -->
                     <div class="custom-dropdown" data-dropdown="medium-dropdown">
-                        <div class="dropdown-header" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                             <div class="header-label">
                                 <i class="fas fa-compact-disc" aria-hidden="true"></i>
                                 <span>Medium</span>
@@ -3708,52 +3341,65 @@ export function attachPaginationEventListeners() {
                             <div class="header-controls">
                                 <!-- Clear Filter Button -->
                                 <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                                <!-- Selection Badge -->
+                                <span class="selection-badge">
+                                    <span class="badge-label"></span>
+                                </span>
                             </div>
-                            <!-- Selection Badge -->
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                        </div>
-                        <div class="dropdown-list" id="medium-dropdown-list">
-                            <!-- Buttons populated dynamically -->
                         </div>
                     </div>
+
+                    <!-- Sort By Dropdown -->
+                    <div class="custom-dropdown" data-dropdown="sort-dropdown">
+                        <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                            <div class="header-label">
+                                <i class="fas fa-sort" aria-hidden="true"></i>
+                                <span>Sortieren</span>
+                            </div>
+                            <div class="header-controls">
+                                <!-- No individual selection badge -->
+                                <!-- No clear-icon for single-select dropdowns -->
+                                <span class="selection-badge">
+                                    <span class="badge-label"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clear All Filters Button -->
+                    <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
+                        <i class="fas fa-undo"></i>
+                        <span class="sr-only">Alle Filter zurücksetzen</span>
+                    </button>
                 </div>
             </form>
+        </div>
 
-            <!-- Selection Badges Container (Optional) -->
-            <div class="selection-badges-container">
-                <!-- Dynamically populated selected badges will appear here if needed -->
-                <!-- If selection badges are handled within each dropdown, this can be removed or used for additional displays -->
+        <!-- Dropdown Lists Container -->
+        <div class="dropdown-lists-container">
+            <!-- Year Dropdown List -->
+            <div class="dropdown-list" id="year-dropdown-list">
+                <!-- Buttons populated dynamically -->
             </div>
-
-            <!-- Buttons Row -->
-            <div class="filters-buttons-row">   
-                <!-- Sort By Dropdown -->
-                <div class="custom-dropdown" data-dropdown="sort-dropdown">
-                    <div class="dropdown-header" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="header-label">
-                            <i class="fas fa-sort" aria-hidden="true"></i>
-                            <span>Sortieren</span>
-                        </div>
-                        <div class="header-controls">
-                            <!-- No individual selection badge -->
-                            <!-- No clear-icon for single-select dropdowns -->
-                        </div>
-                        <!-- Selection Badge -->
-                        <span class="selection-badge">
-                            <span class="badge-label"></span>
-                        </span>
-                    </div>
-                    <div class="dropdown-list" id="sort-dropdown-list">
-                        <!-- Buttons populated dynamically -->
-                    </div>
-                </div>
-
-                <button id="clear-all-filters-button" class="filter-action-button">
-                    <i class="fas fa-undo"></i>
-                    <span class="sr-only">Alle Filter zurücksetzen</span> <!-- Screen-reader only text -->
-                </button>
+            <!-- Genre Dropdown List -->
+            <div class="dropdown-list" id="genre-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Country Dropdown List -->
+            <div class="dropdown-list" id="country-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Standort Dropdown List -->
+            <div class="dropdown-list" id="standort-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Medium Dropdown List -->
+            <div class="dropdown-list" id="medium-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Sort Dropdown List -->
+            <div class="dropdown-list" id="sort-dropdown-list">
+                <!-- Buttons populated dynamically -->
             </div>
         </div>
     </section>
