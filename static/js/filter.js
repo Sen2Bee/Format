@@ -59,7 +59,7 @@ export function clearAllFilters() {
         if (buttonToSelect) {
             buttonToSelect.classList.add('selected');
             const badge = dropdownList.parentElement.querySelector('.selection-badge');
-            updateSelectionBadge([buttonToSelect.dataset.value], badge);
+            updateSelectionBadge([buttonToSelect.dataset.value], badge, dropdownList.id);
         }
     });
 
@@ -83,6 +83,16 @@ export function initializeFilterActionButtons() {
         clearAllFiltersButton.addEventListener('click', () => {
             clearAllFilters();
         });
+
+        // Ensure the button is accessible via keyboard
+        clearAllFiltersButton.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                clearAllFilters();
+            }
+        });
+    } else {
+        console.error("initializeFilterActionButtons: clearAllFiltersButton element not found.");
     }
 }
 
@@ -122,6 +132,17 @@ export function initializeFilterDropdowns() {
             clearSearchBtn.classList.remove('visible');
             triggerDropdownChangeEvent();
             hideAutocompleteSuggestions();
+        });
+
+        // Ensure the clear button is accessible via keyboard
+        clearSearchBtn.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                searchBox.value = '';
+                clearSearchBtn.classList.remove('visible');
+                triggerDropdownChangeEvent();
+                hideAutocompleteSuggestions();
+            }
         });
     } else {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
@@ -184,7 +205,7 @@ export function attachDropdownEventDelegation() {
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
                 const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
-                updateSelectionBadge(selectedValues, selectionBadge);
+                updateSelectionBadge(selectedValues, selectionBadge, dropdownList.id);
 
                 // Update the clear icon visibility for multi-select dropdowns
                 const clearButton = dropdownHeader.querySelector('.clear-icon');
@@ -215,9 +236,22 @@ export function attachDropdownEventDelegation() {
                 const buttons = dropdownList.querySelectorAll('.filter-button.selected');
                 buttons.forEach(button => button.classList.remove('selected'));
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-                updateSelectionBadge([], selectionBadge);
+                updateSelectionBadge([], selectionBadge, dropdownList.id);
                 clearButton.classList.remove('visible');
                 triggerDropdownChangeEvent();
+            });
+
+            // Ensure the clear button is accessible via keyboard
+            clearButton.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    const buttons = dropdownList.querySelectorAll('.filter-button.selected');
+                    buttons.forEach(button => button.classList.remove('selected'));
+                    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+                    updateSelectionBadge([], selectionBadge, dropdownList.id);
+                    clearButton.classList.remove('visible');
+                    triggerDropdownChangeEvent();
+                }
             });
         }
     });
@@ -257,9 +291,6 @@ export function toggleDropdown(dropdownList, header) {
     }
 }
 
-/**
- * Function to update the Selection Badge based on current selections
- */
 export function updateSelectionBadge(selectedValues, badgeElement) {
     if (selectedValues.length > 0) {
         badgeElement.textContent = selectedValues.join(', ');
@@ -272,6 +303,7 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     }
 }
 
+
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes
  */
@@ -279,81 +311,6 @@ export function triggerDropdownChangeEvent() {
     const event = new CustomEvent('dropdownChange');
     console.log("Dispatching dropdownChange event");
     document.dispatchEvent(event);
-}
-
-/**
- * Function to update filters based on selected criteria and search query
- * @param {number} page - The current page number for pagination
- */
-export function updateFilters(page = 1) {
-    console.log("updateFilters called");
-
-    const selectedYears = getSelectedValues('year-dropdown-list');
-    const selectedGenres = getSelectedValues('genre-dropdown-list');
-    const selectedCountries = getSelectedValues('country-dropdown-list');
-    const selectedStandorte = getSelectedValues('standort-dropdown-list');
-    const selectedMedia = getSelectedValues('medium-dropdown-list');
-    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0
-        ? getSelectedValues('sort-dropdown-list')
-        : ["Zufall"];
-
-    const searchQuery = searchBox ? searchBox.value.trim() : '';
-
-    const params = new URLSearchParams();
-    if (selectedYears.length) {
-        params.append('years', selectedYears.join(','));
-    }
-    if (selectedGenres.length) {
-        params.append('genres', selectedGenres.join(','));
-    }
-    if (selectedCountries.length) {
-        params.append('countries', selectedCountries.join(','));
-    }
-    if (selectedStandorte.length) {
-        params.append('standorte', selectedStandorte.join(','));
-    }
-    if (selectedMedia.length) {
-        params.append('media', selectedMedia.join(','));
-    }
-    if (selectedSortBy.length) {
-        params.append('sort_by', selectedSortBy[0]);
-    }
-
-    // Include search query regardless of length
-    if (searchQuery.length > 0) {
-        params.append('search', searchQuery);
-    }
-
-    params.append('page', page);
-
-    // Show the progress indicator before starting the fetch
-    showProgressIndicator();
-
-    fetch(`/filter_movies?${params.toString()}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log("API Response Data:", data);
-            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
-            // Populate dropdowns based on the filtered data
-            populateDropdown('year-dropdown-list', years, selectedYears);
-            populateDropdown('genre-dropdown-list', genres, selectedGenres);
-            populateDropdown('country-dropdown-list', countries, selectedCountries);
-            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
-            populateDropdown('medium-dropdown-list', media, selectedMedia);
-            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
-
-            updateMovieListings(movies);
-            updatePagination(current_page, total_pages);
-        })
-        .catch(error => {
-            console.error('Error fetching filter data:', error);
-            if (movieContainer) {
-                movieContainer.innerHTML = `<p class="no-movies-message">An error occurred. Please try again later.</p>`;
-            }
-        })
-        .finally(() => {
-            hideProgressIndicator();
-        });
 }
 
 /**
@@ -434,13 +391,6 @@ function hideAutocompleteSuggestions() {
     }
 }
 
-// Event listener to close autocomplete suggestions when clicking outside
-document.addEventListener('click', function (e) {
-    if (e.target !== searchBox) {
-        hideAutocompleteSuggestions();
-    }
-});
-
 /**
  * Function to populate dropdown lists with options
  * @param {string} dropdownListId - The ID of the dropdown list element
@@ -485,6 +435,7 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     if (dropdownListId === 'sort-dropdown-list') {
         const extendedOptionsArray = [];
         optionsArray.forEach(option => {
+            console.log(option.label)
             if (option.label.toLowerCase() === 'zufall') {
                 // Add "Zufall" without icons
                 extendedOptionsArray.push({
@@ -494,12 +445,8 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
             } else {
                 // Add options with ascending and descending icons
                 extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`,
-                    value: `${option.label} asc`
-                });
-                extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`,
-                    value: `${option.label} desc`
+                    value: option.label,
+                    label: option.label.includes("asc") ? `${option.label} <i class="fa fa-sort-amount-up"></i>` : `${option.label} <i class="fa fa-sort-amount-down"></i>`,
                 });
             }
         });
@@ -555,4 +502,83 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
             clearButton.style.display = '';
         }
     }
+}
+
+/**
+ * Function to update filters based on selected criteria and search query
+ * @param {number} page - The current page number for pagination
+ */
+export function updateFilters(page = 1) {
+    console.log("updateFilters called");
+
+    const selectedYears = getSelectedValues('year-dropdown-list');
+    const selectedGenres = getSelectedValues('genre-dropdown-list');
+    const selectedCountries = getSelectedValues('country-dropdown-list');
+    const selectedStandorte = getSelectedValues('standort-dropdown-list');
+    const selectedMedia = getSelectedValues('medium-dropdown-list');
+    const selectedSortByValues = getSelectedValues('sort-dropdown-list');
+    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
+
+    const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+    const params = new URLSearchParams();
+    if (selectedYears.length) {
+        params.append('years', selectedYears.join(','));
+    }
+    if (selectedGenres.length) {
+        params.append('genres', selectedGenres.join(','));
+    }
+    if (selectedCountries.length) {
+        params.append('countries', selectedCountries.join(','));
+    }
+    if (selectedStandorte.length) {
+        params.append('standorte', selectedStandorte.join(','));
+    }
+    if (selectedMedia.length) {
+        params.append('media', selectedMedia.join(','));
+    }
+    if (selectedSortBy.length) {
+        params.append('sort_by', selectedSortBy[0]);
+    }
+    console.log("SortBy[0]", selectedSortBy[0])
+
+    // Include search query regardless of length
+    if (searchQuery.length > 0) {
+        params.append('search', searchQuery);
+    }
+
+    params.append('page', page);
+
+    // Show the progress indicator before starting the fetch
+    showProgressIndicator();
+
+    fetch(`/filter_movies?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("API Response Data:", data);
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
+
+            // Define sort_options here if not provided by the server
+            // const sort_options = ['Zufall', 'Titel', 'Jahr', 'Bewertung'];
+
+            // Populate dropdowns based on the filtered data
+            populateDropdown('year-dropdown-list', years, selectedYears);
+            populateDropdown('genre-dropdown-list', genres, selectedGenres);
+            populateDropdown('country-dropdown-list', countries, selectedCountries);
+            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
+            populateDropdown('medium-dropdown-list', media, selectedMedia);
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
+
+            updateMovieListings(movies);
+            updatePagination(current_page, total_pages);
+        })
+        .catch(error => {
+            console.error('Error fetching filter data:', error);
+            if (movieContainer) {
+                movieContainer.innerHTML = `<p class="no-movies-message">An error occurred. Please try again later.</p>`;
+            }
+        })
+        .finally(() => {
+            hideProgressIndicator();
+        });
 }

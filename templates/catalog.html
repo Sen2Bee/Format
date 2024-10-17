@@ -199,7 +199,7 @@
                         <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-sort" aria-hidden="true"></i>
-                                <span>Sortieren</span>
+                                <span>Sortierung</span>
                             </div>
                             <div class="dropdown-arrow">
                                 <!-- Arrow Icon -->
@@ -213,7 +213,11 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- Clear All Filters Button -->
+                <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
+                    <i class="fas fa-undo"></i>
+                    <span class="sr-only">Alle Filter zurücksetzen</span>
+                </button>  
 
             </div>
         </form>
@@ -251,11 +255,7 @@
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
-                <!-- Clear All Filters Button -->
-                <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
-                    <i class="fas fa-undo"></i>
-                    <span class="sr-only">Alle Filter zurücksetzen</span>
-                </button>            
+         
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->

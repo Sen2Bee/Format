@@ -1,10 +1,7 @@
-/* carousel.css */
-
 /* Movie Carousel Section */
 .movie-carousel-section {
     padding-top: 70px;
-
-    background-color: var(--background-dark); /* Use defined primary background */
+    background-color: var(--background-dark);
     text-align: center;
     position: relative;
 }
@@ -12,19 +9,18 @@
 .movie-carousel-section h2 {
     font-size: 1.2em;
     font-weight: 100;
-    color: var(--text-light); /* Use defined light text color */
-
+    color: var(--text-light);
     z-index: 1;
     position: relative;
-    font-family: var(--font-heading); /* Use defined heading font */
+    font-family: var(--font-heading);
 }
 
 /* Swiper Container */
 .swiper-container {
     width: 100%;
-    padding-bottom: 10px; /* Space for pagination bullets */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */    
+    padding-bottom: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .swiper-wrapper {
@@ -37,26 +33,27 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 5px; /* Half of the desired gap (10px total) */
+    padding: 0 5px;
 }
 
+/* Featured Movie Card */
 .featured-movie-card {
     position: relative;
-    width: 180px; /* Adjust based on desired poster size */
-
+    width: 180px; /* Default size for larger screens */
     overflow: hidden;
     border-radius: 8px;
+    transition: width 0.3s ease-in-out; /* Smooth resizing */
 }
 
 .featured-movie-card img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Maintains aspect ratio */
+    object-fit: cover;
     transition: transform var(--transition-duration);
 }
 
 .featured-movie-card:hover img {
-    transform: scale(1.05); /* Zoom-in effect on hover */
+    transform: scale(1.05);
 }
 
 .featured-movie-overlay {
@@ -64,7 +61,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    background: rgba(0, 0, 0, 0.6);
     color: var(--text-light);
     padding: 10px;
     box-sizing: border-box;
@@ -78,22 +75,22 @@
 
 .featured-movie-overlay h3 {
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1em;
 }
 
 .featured-movie-overlay .btn-secondary {
     display: inline-block;
     padding: 5px 10px;
-    background-color: var(--accent-color); /* Use accent color */
+    background-color: var(--accent-color);
     color: var(--text-light);
     border-radius: 4px;
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: 0.8em;
     transition: background-color var(--transition-duration);
 }
 
 .featured-movie-overlay .btn-secondary:hover {
-    background-color: var(--link-hover-color); /* Use hover color */
+    background-color: var(--link-hover-color);
 }
 
 /* Swiper Pagination Adjustment */
@@ -104,6 +101,54 @@
     width: 100%;
     text-align: center;
     z-index: 10;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .featured-movie-card {
+        width: 150px; /* Slightly smaller size on medium screens */
+    }
+
+    .movie-carousel-section h2 {
+        font-size: 1.1em;
+    }
+}
+
+@media (max-width: 768px) {
+    .featured-movie-card {
+        width: 120px; /* Smaller size on tablets */
+    }
+
+    .movie-carousel-section h2 {
+        font-size: 1em;
+    }
+
+    .featured-movie-overlay h3 {
+        font-size: 0.9em;
+    }
+
+    .featured-movie-overlay .btn-secondary {
+        font-size: 0.75em;
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-movie-card {
+        width: 100px; /* Smallest size for mobile screens */
+    }
+
+    .movie-carousel-section h2 {
+        font-size: 0.9em;
+    }
+
+    .featured-movie-overlay h3 {
+        font-size: 0.8em;
+    }
+
+    .featured-movie-overlay .btn-secondary {
+        font-size: 0.7em;
+        padding: 4px 8px; /* Reduce padding for small screens */
+    }
 }
 
 /* theme-fonts.css */

@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-17 12:31:38 ===
+=== Code Summary Generated at 2024-10-17 18:14:12 ===
 
 === Project Folder Structure ===
 
@@ -527,13 +527,10 @@ button {
 }
 
 --- File: static\css\components\carousel.css ---
-/* carousel.css */
-
 /* Movie Carousel Section */
 .movie-carousel-section {
     padding-top: 70px;
-
-    background-color: var(--background-dark); /* Use defined primary background */
+    background-color: var(--background-dark);
     text-align: center;
     position: relative;
 }
@@ -541,19 +538,18 @@ button {
 .movie-carousel-section h2 {
     font-size: 1.2em;
     font-weight: 100;
-    color: var(--text-light); /* Use defined light text color */
-
+    color: var(--text-light);
     z-index: 1;
     position: relative;
-    font-family: var(--font-heading); /* Use defined heading font */
+    font-family: var(--font-heading);
 }
 
 /* Swiper Container */
 .swiper-container {
     width: 100%;
-    padding-bottom: 10px; /* Space for pagination bullets */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */    
+    padding-bottom: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .swiper-wrapper {
@@ -566,26 +562,27 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 5px; /* Half of the desired gap (10px total) */
+    padding: 0 5px;
 }
 
+/* Featured Movie Card */
 .featured-movie-card {
     position: relative;
-    width: 180px; /* Adjust based on desired poster size */
-
+    width: 180px; /* Default size for larger screens */
     overflow: hidden;
     border-radius: 8px;
+    transition: width 0.3s ease-in-out; /* Smooth resizing */
 }
 
 .featured-movie-card img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Maintains aspect ratio */
+    object-fit: cover;
     transition: transform var(--transition-duration);
 }
 
 .featured-movie-card:hover img {
-    transform: scale(1.05); /* Zoom-in effect on hover */
+    transform: scale(1.05);
 }
 
 .featured-movie-overlay {
@@ -593,7 +590,7 @@ button {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    background: rgba(0, 0, 0, 0.6);
     color: var(--text-light);
     padding: 10px;
     box-sizing: border-box;
@@ -607,22 +604,22 @@ button {
 
 .featured-movie-overlay h3 {
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1em;
 }
 
 .featured-movie-overlay .btn-secondary {
     display: inline-block;
     padding: 5px 10px;
-    background-color: var(--accent-color); /* Use accent color */
+    background-color: var(--accent-color);
     color: var(--text-light);
     border-radius: 4px;
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: 0.8em;
     transition: background-color var(--transition-duration);
 }
 
 .featured-movie-overlay .btn-secondary:hover {
-    background-color: var(--link-hover-color); /* Use hover color */
+    background-color: var(--link-hover-color);
 }
 
 /* Swiper Pagination Adjustment */
@@ -633,6 +630,54 @@ button {
     width: 100%;
     text-align: center;
     z-index: 10;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .featured-movie-card {
+        width: 150px; /* Slightly smaller size on medium screens */
+    }
+
+    .movie-carousel-section h2 {
+        font-size: 1.1em;
+    }
+}
+
+@media (max-width: 768px) {
+    .featured-movie-card {
+        width: 120px; /* Smaller size on tablets */
+    }
+
+    .movie-carousel-section h2 {
+        font-size: 1em;
+    }
+
+    .featured-movie-overlay h3 {
+        font-size: 0.9em;
+    }
+
+    .featured-movie-overlay .btn-secondary {
+        font-size: 0.75em;
+    }
+}
+
+@media (max-width: 480px) {
+    .featured-movie-card {
+        width: 100px; /* Smallest size for mobile screens */
+    }
+
+    .movie-carousel-section h2 {
+        font-size: 0.9em;
+    }
+
+    .featured-movie-overlay h3 {
+        font-size: 0.8em;
+    }
+
+    .featured-movie-overlay .btn-secondary {
+        font-size: 0.7em;
+        padding: 4px 8px; /* Reduce padding for small screens */
+    }
 }
 
 /* theme-fonts.css */
@@ -665,7 +710,6 @@ button {
 :root {
     --filter-width: 1200px;
     --font-body: 'Libre Baskerville', serif;
-    --accent-color: #8B0000;
     --background-dark: #1E1E1E;
     --dropdown-background: rgba(44, 44, 44, 0.95);
     --button-background: rgba(68, 68, 68, 0.9);
@@ -794,28 +838,30 @@ button {
 
 /* Custom Dropdowns */
 .custom-dropdown {
-    flex: 0 0 200px;
-    max-width: 200px;
+    flex: 1 1 180px; /* Allow flex-grow and flex-shrink for responsiveness */
+    min-width: 150px; /* Minimum width */
+    max-width: 800px; /* Maximum width */
     position: relative;
     font-family: var(--font-body);
 }
-
 /* Dropdown Header */
 .dropdown-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column; /* For two-row layout */
     background-color: var(--button-background);
     color: var(--text-color);
-    padding: 5px 12px;
+    padding: 5px 12px; /* Adjusted padding */
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.1em;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     font-family: var(--font-body);
     position: relative;
-    height: auto;
+    height: 80px; /* Let height adjust based on content */
 }
+
 
 /* Hover Effect for Dropdown Header */
 .dropdown-header:hover {
@@ -823,19 +869,18 @@ button {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Header Label */
+/* Header Label (Icon and Text) */
 .dropdown-header .header-label {
     display: flex;
     align-items: center;
+    margin-bottom: 2px; /* Reduce margin for more compact layout */
 }
 
-/* Header Label Icon */
 .dropdown-header .header-label i {
     font-size: 1.3em;
     margin-right: 5px;
 }
 
-/* Header Label Text */
 .dropdown-header .header-label span {
     font-size: 1.2em;
     font-weight: 100;
@@ -845,11 +890,14 @@ button {
     max-width: 150px;
 }
 
-/* Position Down Arrow */
+/* Position Down Arrow in Top Right Corner */
 .dropdown-header::after {
     content: '\25BC'; /* Unicode for down arrow */
     font-size: 1em;
     color: var(--text-light);
+    position: absolute;
+    top: 5px; /* Position near top edge */
+    right: 12px; /* Position near right edge */
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
@@ -862,28 +910,42 @@ button {
 
 /* Selection Badge */
 .selection-badge {
-    background-color: var(--accent-color);
-    color: #fff;
+    background-color: var(--background-dark);
+    color: var(--accent-color);
     padding: 3px 8px;
     border-radius: 12px;
     font-size: 0.8em;
-    max-width: 100px;
-    margin-right: 8px; /* Space between badge and clear icon */
+    
+    
+    margin-right: 8px; /* Spacing between the badge and the clear icon */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: none; /* Hidden by default */
+    display: inline-block; /* Align with other inline elements */
 }
 
-/* Clear Icon */
+/* Clear Icon for Dropdowns */
 .clear-icon {
-    font-size: 1.2em;
+    font-size: 1.4em;
     cursor: pointer;
     color: var(--accent-color);
-    margin-left: 10px; /* Space between badge and clear icon */
-    visibility: hidden;
-    opacity: 0;
+    align-self: center; /* Vertically align with the badge */
+
     transition: opacity 0.3s ease;
+    visibility: hidden;
+}
+
+.selection-clear-container {
+    display: flex;
+
+    justify-content: space-between;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.clear-icon.visible {
+    visibility: visible;
+    opacity: 1;
 }
 
 /* Show Clear Icon and Badge When Items Are Selected */
@@ -893,12 +955,20 @@ button {
 }
 
 .dropdown-header.has-selection .selection-badge {
-    display: inline-block;
+    background-color: var(--accent-color);
+    /* display: block; */
+
 }
+
+
+
+
+
 
 /* Dropdown List */
 .dropdown-list {
     position: absolute;
+    /* top: 100%; */
     left: 0;
     width: 100%;
     max-height: 0;
@@ -938,9 +1008,8 @@ button {
     height: 0;
 }
 
-/* Unified Button Styles */
-.filter-button,
-.filter-action-button {
+/* Filter Buttons */
+.filter-button {
     padding: 10px 20px;
     background-color: var(--button-background);
     color: var(--text-color);
@@ -949,34 +1018,18 @@ button {
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
     font-size: 0.9em;
+    flex: 1 0 calc(33.33% - 15px);
     text-align: center;
     box-sizing: border-box;
     font-family: var(--font-body);
 }
 
-/* Flex Properties for Filter Buttons */
-.filter-button {
-    flex: 1 0 calc(33.33% - 15px);
-}
-
-/* Additional Styles for Filter Action Buttons */
-.filter-action-button {
-    margin: 5px;
-    /* Removed display: flex; and line-height: 1; for consistency */
-}
-
-/* Selected State */
-.filter-button.selected,
-.filter-action-button.selected {
+.filter-button.selected {
     background-color: var(--accent-color);
 }
 
-/* Hover Effects */
-.filter-button:hover,
-.filter-action-button:hover {
+.filter-button:hover {
     background-color: var(--button-hover-background);
-    transform: scale(1.05); /* Optional: Add subtle scaling on hover */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 /* Filters Buttons Row */
@@ -991,18 +1044,26 @@ button {
 
 /* Filter Action Button */
 .filter-action-button {
+    display: flex;
     background-color: var(--button-background);
-    color: var(--text-color);
+    color: var(--accent-color);
     padding: 10px 20px;
     margin: 5px;
     border: none;
-    border-radius: 25px; /* Updated to match .filter-button */
-    font-size: 0.9em; /* Updated to match .filter-button */
+    border-radius: 5px;
+    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s ease;
     font-family: var(--font-body);
-    text-align: center;
-    box-sizing: border-box;
+    line-height: 1;
+    min-height: 80px;
+    align-self: center; 
+}
+
+.filter-action-button:hover {
+    background-color: var(--accent-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
 }
 
 /* Responsive Adjustments */
@@ -2411,6 +2472,16 @@ export function initializeFilterActionButtons() {
         clearAllFiltersButton.addEventListener('click', () => {
             clearAllFilters();
         });
+
+        // Ensure the button is accessible via keyboard
+        clearAllFiltersButton.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                clearAllFilters();
+            }
+        });
+    } else {
+        console.error("initializeFilterActionButtons: clearAllFiltersButton element not found.");
     }
 }
 
@@ -2450,6 +2521,17 @@ export function initializeFilterDropdowns() {
             clearSearchBtn.classList.remove('visible');
             triggerDropdownChangeEvent();
             hideAutocompleteSuggestions();
+        });
+
+        // Ensure the clear button is accessible via keyboard
+        clearSearchBtn.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                searchBox.value = '';
+                clearSearchBtn.classList.remove('visible');
+                triggerDropdownChangeEvent();
+                hideAutocompleteSuggestions();
+            }
         });
     } else {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
@@ -2547,6 +2629,19 @@ export function attachDropdownEventDelegation() {
                 clearButton.classList.remove('visible');
                 triggerDropdownChangeEvent();
             });
+
+            // Ensure the clear button is accessible via keyboard
+            clearButton.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    const buttons = dropdownList.querySelectorAll('.filter-button.selected');
+                    buttons.forEach(button => button.classList.remove('selected'));
+                    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+                    updateSelectionBadge([], selectionBadge);
+                    clearButton.classList.remove('visible');
+                    triggerDropdownChangeEvent();
+                }
+            });
         }
     });
 
@@ -2589,14 +2684,17 @@ export function toggleDropdown(dropdownList, header) {
  * Function to update the Selection Badge based on current selections
  */
 export function updateSelectionBadge(selectedValues, badgeElement) {
-    if (selectedValues.length > 0) {
-        badgeElement.textContent = selectedValues.join(', ');
-        badgeElement.classList.add('visible');
-        badgeElement.style.display = 'inline-block';
-    } else {
-        badgeElement.textContent = '';
-        badgeElement.classList.remove('visible');
-        badgeElement.style.display = 'none';
+    if(badgeElement){
+
+        if (selectedValues.length > 0) {
+            badgeElement.textContent = selectedValues.join(', ');
+            badgeElement.classList.add('visible');
+            badgeElement.style.display = 'inline-block';
+        } else {
+            badgeElement.textContent = '';
+            badgeElement.classList.remove('visible');
+            badgeElement.style.display = 'none';
+        }
     }
 }
 
@@ -2609,80 +2707,7 @@ export function triggerDropdownChangeEvent() {
     document.dispatchEvent(event);
 }
 
-/**
- * Function to update filters based on selected criteria and search query
- * @param {number} page - The current page number for pagination
- */
-export function updateFilters(page = 1) {
-    console.log("updateFilters called");
 
-    const selectedYears = getSelectedValues('year-dropdown-list');
-    const selectedGenres = getSelectedValues('genre-dropdown-list');
-    const selectedCountries = getSelectedValues('country-dropdown-list');
-    const selectedStandorte = getSelectedValues('standort-dropdown-list');
-    const selectedMedia = getSelectedValues('medium-dropdown-list');
-    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0
-        ? getSelectedValues('sort-dropdown-list')
-        : ["Zufall"];
-
-    const searchQuery = searchBox ? searchBox.value.trim() : '';
-
-    const params = new URLSearchParams();
-    if (selectedYears.length) {
-        params.append('years', selectedYears.join(','));
-    }
-    if (selectedGenres.length) {
-        params.append('genres', selectedGenres.join(','));
-    }
-    if (selectedCountries.length) {
-        params.append('countries', selectedCountries.join(','));
-    }
-    if (selectedStandorte.length) {
-        params.append('standorte', selectedStandorte.join(','));
-    }
-    if (selectedMedia.length) {
-        params.append('media', selectedMedia.join(','));
-    }
-    if (selectedSortBy.length) {
-        params.append('sort_by', selectedSortBy[0]);
-    }
-
-    // Include search query regardless of length
-    if (searchQuery.length > 0) {
-        params.append('search', searchQuery);
-    }
-
-    params.append('page', page);
-
-    // Show the progress indicator before starting the fetch
-    showProgressIndicator();
-
-    fetch(`/filter_movies?${params.toString()}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log("API Response Data:", data);
-            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
-            // Populate dropdowns based on the filtered data
-            populateDropdown('year-dropdown-list', years, selectedYears);
-            populateDropdown('genre-dropdown-list', genres, selectedGenres);
-            populateDropdown('country-dropdown-list', countries, selectedCountries);
-            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
-            populateDropdown('medium-dropdown-list', media, selectedMedia);
-            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
-
-            updateMovieListings(movies);
-            updatePagination(current_page, total_pages);
-        })
-        .catch(error => {
-            console.error('Error fetching filter data:', error);
-            if (movieContainer) {
-                movieContainer.innerHTML = `<p class="no-movies-message">An error occurred. Please try again later.</p>`;
-            }
-        })
-        .finally(() => {
-            hideProgressIndicator();
-        });
-}
 
 /**
  * Helper function to get selected values from a specific dropdown list
@@ -2762,13 +2787,6 @@ function hideAutocompleteSuggestions() {
     }
 }
 
-// Event listener to close autocomplete suggestions when clicking outside
-document.addEventListener('click', function (e) {
-    if (e.target !== searchBox) {
-        hideAutocompleteSuggestions();
-    }
-});
-
 /**
  * Function to populate dropdown lists with options
  * @param {string} dropdownListId - The ID of the dropdown list element
@@ -2804,6 +2822,8 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         return;
     }
 
+    console.log(`populateDropdown: Initial options for '${dropdownListId}':`, optionsArray);
+
     // Conditionally sort the options alphabetically, but skip sorting for "sort-dropdown-list"
     if (dropdownListId !== 'sort-dropdown-list') {
         optionsArray.sort((a, b) => a.label.localeCompare(b.label));
@@ -2811,28 +2831,38 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     // For "sort-dropdown-list", implement ascending and descending options, excluding "Zufall"
     if (dropdownListId === 'sort-dropdown-list') {
-        const extendedOptionsArray = [];
+        const extendedOptions = [];
+
         optionsArray.forEach(option => {
-            if (option.label.toLowerCase() === 'zufall') {
+            const labelLower = option.label.toLowerCase();
+
+            if (labelLower === 'zufall') {
                 // Add "Zufall" without icons
-                extendedOptionsArray.push({
+                extendedOptions.push({
                     label: option.label,
-                    value: `${option.label}`
+                    value: option.value || option.label
                 });
             } else {
-                // Add options with ascending and descending icons
-                extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`,
-                    value: `${option.label} asc`
+                // Use label as base value if option.value is undefined
+                const baseValue = option.value || option.label;
+
+                // Ascending option
+                extendedOptions.push({
+                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`,  // Ascending icon
+                    value: `${baseValue} asc`
                 });
-                extendedOptionsArray.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`,
-                    value: `${option.label} desc`
+
+                // Descending option
+                extendedOptions.push({
+                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`,  // Descending icon
+                    value: `${baseValue} desc`
                 });
             }
         });
 
-        optionsArray = extendedOptionsArray;
+        optionsArray = extendedOptions;
+
+        console.log(`populateDropdown: Extended options for 'sort-dropdown-list':`, optionsArray);
     }
 
     // Create a container for the filter buttons
@@ -2862,27 +2892,109 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     dropdownList.appendChild(buttonsContainer);
 
-    // Update the Selection Badge for normal filters
-    if (dropdownListId !== 'sort-dropdown-list') {
-        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+    // Update the Selection Badge for all dropdowns, including "sort-dropdown-list"
+    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+    if (dropdownHeader) {
         const selectionBadge = dropdownHeader.querySelector('.selection-badge');
         const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
         const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
         updateSelectionBadge(selectedValuesUpdated, selectionBadge);
+    } else {
+        console.error(`populateDropdown: Dropdown header for '${dropdownListId}' not found.`);
     }
 
     // Hide the clear icon for single-select dropdowns
-    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
-    const clearButton = dropdownHeader.querySelector('.clear-icon');
-    if (singleSelect) {
-        if (clearButton) {
-            clearButton.style.display = 'none';
+    const header = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+    if (header) {
+        const clearBtn = header.querySelector('.clear-icon');
+        if (singleSelect) {
+            if (clearBtn) {
+                clearBtn.style.display = 'none';
+            }
+        } else {
+            if (clearBtn) {
+                clearBtn.style.display = '';
+            }
         }
     } else {
-        if (clearButton) {
-            clearButton.style.display = '';
-        }
+        console.error(`populateDropdown: Dropdown header for '${dropdownListId}' not found.`);
     }
+}
+
+/**
+ * Function to update filters based on selected criteria and search query
+ * @param {number} page - The current page number for pagination
+ */
+export function updateFilters(page = 1) {
+    console.log("updateFilters called");
+
+    const selectedYears = getSelectedValues('year-dropdown-list');
+    const selectedGenres = getSelectedValues('genre-dropdown-list');
+    const selectedCountries = getSelectedValues('country-dropdown-list');
+    const selectedStandorte = getSelectedValues('standort-dropdown-list');
+    const selectedMedia = getSelectedValues('medium-dropdown-list');
+    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0
+        ? getSelectedValues('sort-dropdown-list')
+        : ["Zufall"];
+
+    const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+    const params = new URLSearchParams();
+    if (selectedYears.length) {
+        params.append('years', selectedYears.join(','));
+    }
+    if (selectedGenres.length) {
+        params.append('genres', selectedGenres.join(','));
+    }
+    if (selectedCountries.length) {
+        params.append('countries', selectedCountries.join(','));
+    }
+    if (selectedStandorte.length) {
+        params.append('standorte', selectedStandorte.join(','));
+    }
+    if (selectedMedia.length) {
+        params.append('media', selectedMedia.join(','));
+    }
+    if (selectedSortBy.length) {
+        params.append('sort_by', selectedSortBy[0]);
+    }
+    console.log("SortBy[0]", selectedSortBy[0])
+
+    // Include search query regardless of length
+    if (searchQuery.length > 0) {
+        params.append('search', searchQuery);
+    }
+
+    params.append('page', page);
+
+    // Show the progress indicator before starting the fetch
+    showProgressIndicator();
+
+    fetch(`/filter_movies?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("API Response Data:", data);
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
+            // Populate dropdowns based on the filtered data
+            populateDropdown('year-dropdown-list', years, selectedYears);
+            populateDropdown('genre-dropdown-list', genres, selectedGenres);
+            populateDropdown('country-dropdown-list', countries, selectedCountries);
+            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
+            populateDropdown('medium-dropdown-list', media, selectedMedia);
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
+
+            updateMovieListings(movies);
+            updatePagination(current_page, total_pages);
+        })
+        .catch(error => {
+            console.error('Error fetching filter data:', error);
+            if (movieContainer) {
+                movieContainer.innerHTML = `<p class="no-movies-message">An error occurred. Please try again later.</p>`;
+            }
+        })
+        .finally(() => {
+            hideProgressIndicator();
+        });
 }
 
 --- File: static\js\hero.js ---
@@ -3247,165 +3359,187 @@ export function attachPaginationEventListeners() {
         </div>          
 
     <!-- Catalog Search Section -->
-    <section class="catalog-search">
-        <div class="search-dropdown-container">
-            <!-- Search Box Container -->
-            <div class="search-container">
-                <i class="fas fa-search search-icon" aria-hidden="true"></i>
-                <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
-                <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
-            </div>
+<!-- File: templates/catalog.html -->
+<section class="catalog-search"> 
+    <div class="search-dropdown-container">
+        <!-- Search Box Container -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+            <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
+            <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
+        </div>
 
-            <form id="filter-form">
-                <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
-                <div class="main-filters-container">
-                    <!-- Year Filter -->
-                    <div class="custom-dropdown" data-dropdown="year-dropdown">
-                        <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+        <form id="filter-form">
+            <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
+            <div class="main-filters-container">
+                <!-- Year Filter -->
+                <div class="custom-dropdown" data-dropdown="year-dropdown">
+                    <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                                 <span>Jahre</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Genre Filter -->
-                    <div class="custom-dropdown" data-dropdown="genre-dropdown">
-                        <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Genre Filter -->
+                <div class="custom-dropdown" data-dropdown="genre-dropdown">
+                    <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-film" aria-hidden="true"></i>
                                 <span>Genres</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Country Filter -->
-                    <div class="custom-dropdown" data-dropdown="country-dropdown">
-                        <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Country Filter -->
+                <div class="custom-dropdown" data-dropdown="country-dropdown">
+                    <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-globe" aria-hidden="true"></i>
                                 <span>Länder</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Standort Filter -->
-                    <div class="custom-dropdown" data-dropdown="standort-dropdown">
-                        <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Standort Filter -->
+                <div class="custom-dropdown" data-dropdown="standort-dropdown">
+                    <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                                 <span>Standort</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Medium Filter -->
-                    <div class="custom-dropdown" data-dropdown="medium-dropdown">
-                        <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Medium Filter -->
+                <div class="custom-dropdown" data-dropdown="medium-dropdown">
+                    <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-compact-disc" aria-hidden="true"></i>
                                 <span>Medium</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- Clear Filter Button -->
-                                <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
-                                <!-- Selection Badge -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Sort By Dropdown -->
-                    <div class="custom-dropdown" data-dropdown="sort-dropdown">
-                        <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <!-- Sort By Dropdown -->
+                <div class="custom-dropdown" data-dropdown="sort-dropdown">
+                    <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-header-top">
                             <div class="header-label">
                                 <i class="fas fa-sort" aria-hidden="true"></i>
-                                <span>Sortieren</span>
+                                <span>Sortierung</span>
                             </div>
-                            <div class="header-controls">
-                                <!-- No individual selection badge -->
-                                <!-- No clear-icon for single-select dropdowns -->
-                                <span class="selection-badge">
-                                    <span class="badge-label"></span>
-                                </span>
+                            <div class="dropdown-arrow">
+                                <!-- Arrow Icon -->
                             </div>
                         </div>
+                        <div class="dropdown-header-bottom">
+                            <span class="selection-badge">
+                                <span class="badge-label"></span>
+                            </span>
+                            <!-- No clear icon for single-select dropdowns -->
+                        </div>
                     </div>
-
-                    <!-- Clear All Filters Button -->
-                    <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
-                        <i class="fas fa-undo"></i>
-                        <span class="sr-only">Alle Filter zurücksetzen</span>
-                    </button>
                 </div>
-            </form>
-        </div>
+                <!-- Clear All Filters Button -->
+                <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
+                    <i class="fas fa-undo"></i>
+                    <span class="sr-only">Alle Filter zurücksetzen</span>
+                </button>  
 
-        <!-- Dropdown Lists Container -->
-        <div class="dropdown-lists-container">
-            <!-- Year Dropdown List -->
-            <div class="dropdown-list" id="year-dropdown-list">
-                <!-- Buttons populated dynamically -->
             </div>
-            <!-- Genre Dropdown List -->
-            <div class="dropdown-list" id="genre-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Country Dropdown List -->
-            <div class="dropdown-list" id="country-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Standort Dropdown List -->
-            <div class="dropdown-list" id="standort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Medium Dropdown List -->
-            <div class="dropdown-list" id="medium-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Sort Dropdown List -->
-            <div class="dropdown-list" id="sort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
+        </form>
+    </div>
+
+    <!-- Dropdown Lists Container -->
+    <div class="dropdown-lists-container">
+        <!-- Year Dropdown List -->
+        <div class="dropdown-list" id="year-dropdown-list">
+            <!-- Buttons populated dynamically -->
         </div>
-    </section>
+        <!-- Genre Dropdown List -->
+        <div class="dropdown-list" id="genre-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Country Dropdown List -->
+        <div class="dropdown-list" id="country-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Standort Dropdown List -->
+        <div class="dropdown-list" id="standort-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Medium Dropdown List -->
+        <div class="dropdown-list" id="medium-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+        <!-- Sort Dropdown List -->
+        <div class="dropdown-list" id="sort-dropdown-list">
+            <!-- Buttons populated dynamically -->
+        </div>
+    </div>
+</section>
+
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
+         
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->

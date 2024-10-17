@@ -285,20 +285,26 @@ def build_sort_expression(sort_option):
     Builds the sort expression based on the sort_option.
     """
     sort_options = {
-        "Zufall": "Rand()",
-        "Title": "m.title asc",
-        "Jahr": "m.release_date desc",
-        "Bewertung": 'CAST(m.imdb_rating AS DECIMAL(3,1)) desc',
-        "Regisseur": "director asc",  # This assumes 'director' is retrieved elsewhere in the query
-        "Länge": "m.runtime asc",
-
-    }     
+        "Zufall": "RAND()",  # Zufall remains random, no asc or desc needed
+        "Title asc": "m.title ASC",  # Ascending order by movie title
+        "Title desc": "m.title DESC",  # Descending order by movie title
+        "Jahr asc": "m.release_date ASC",  # Ascending order by release date
+        "Jahr desc": "m.release_date DESC",  # Descending order by release date
+        "Bewertung asc": "CAST(m.imdb_rating AS DECIMAL(3,1)) ASC",  # Ascending order by IMDb rating
+        "Bewertung desc": "CAST(m.imdb_rating AS DECIMAL(3,1)) DESC",  # Descending order by IMDb rating
+        "Regisseur asc": "director ASC",  # Ascending order by director's name
+        "Regisseur desc": "director DESC",  # Descending order by director's name
+        "Länge asc": "m.runtime ASC",  # Ascending order by runtime
+        "Länge desc": "m.runtime DESC",  # Descending order by runtime
+    }
+   
     
     # Default sort option
     default_sort = 'm.release_date DESC'
-    
+    print(sort_option)
     # Fetch the corresponding SQL expression
     sort_expression = sort_options.get(sort_option, default_sort)
+
     return sort_expression, sort_options
 
 # Existing route with new parameters and logic integrated

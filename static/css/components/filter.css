@@ -4,7 +4,6 @@
 :root {
     --filter-width: 1200px;
     --font-body: 'Libre Baskerville', serif;
-    --accent-color: #8B0000;
     --background-dark: #1E1E1E;
     --dropdown-background: rgba(44, 44, 44, 0.95);
     --button-background: rgba(68, 68, 68, 0.9);
@@ -205,17 +204,18 @@
 
 /* Selection Badge */
 .selection-badge {
-    background-color: var(--accent-color);
-    color: #fff;
+    background-color: var(--background-dark);
+    color: var(--accent-color);
     padding: 3px 8px;
     border-radius: 12px;
     font-size: 0.8em;
-    max-width: 100px;
-    margin-right: 8px; /* Add spacing between the badge and the clear icon */
+    
+    
+    margin-right: 8px; /* Spacing between the badge and the clear icon */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: inline-block; /* Ensure it aligns with other inline elements */
+    display: inline-block; /* Align with other inline elements */
 }
 
 /* Clear Icon for Dropdowns */
@@ -224,14 +224,14 @@
     cursor: pointer;
     color: var(--accent-color);
     align-self: center; /* Vertically align with the badge */
-    margin-left: auto; /* Push it to the right side of the container */
+
     transition: opacity 0.3s ease;
     visibility: hidden;
 }
 
 .selection-clear-container {
     display: flex;
-    align-items: right;
+
     justify-content: space-between;
     margin-top: 5px;
     width: 100%;
@@ -249,19 +249,13 @@
 }
 
 .dropdown-header.has-selection .selection-badge {
-    display: block;
+    background-color: var(--accent-color);
+    /* display: block; */
+
 }
 
 
-/* Show Clear Icon and Badge When Items Are Selected */
-.dropdown-header.has-selection .clear-icon {
-    visibility: visible;
-    opacity: 1;
-}
 
-.dropdown-header.has-selection .selection-badge {
-    display: block;
-}
 
 
 
@@ -356,6 +350,8 @@
     transition: background-color 0.3s, box-shadow 0.3s ease;
     font-family: var(--font-body);
     line-height: 1;
+    min-height: 80px;
+    align-self: center; 
 }
 
 .filter-action-button:hover {
