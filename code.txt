@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-17 18:14:12 ===
+=== Code Summary Generated at 2024-10-18 20:03:18 ===
 
 === Project Folder Structure ===
 
@@ -735,9 +735,9 @@ button {
     border: 0;
 }
 
-/* Container for Search and Dropdowns */
 .search-dropdown-container {
     position: relative;
+    z-index: 2000; /* Added to bring autocomplete list above other elements */
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -748,6 +748,8 @@ button {
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     backdrop-filter: blur(5px);
     transition: all 0.3s ease;
+    font-family: var(--font-body);
+    border-bottom: 0.1px solid var(--link-hover-color); /* Add a 1px thick red border */d
 }
 
 /* Search Box */
@@ -989,6 +991,17 @@ button {
     overflow-y: auto;
 }
 
+/* Hide scrollbar for all browsers */
+.dropdown-list {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.dropdown-list::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+
 /* Filter Buttons Container */
 .filter-buttons-container {
     display: flex;
@@ -1093,6 +1106,108 @@ button {
     }
 }
 
+
+/* Adjusted #autocomplete-list */
+#autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--dropdown-background);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    max-height: 450px;
+    overflow-y: auto;
+    z-index: 12000; /* Increased z-index to be above other elements */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 5px 5px;
+    font-family: var(--font-body);
+    padding: 5px 0;
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
+}
+
+/* Autocomplete Items */
+.autocomplete-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--background-dark);
+    z-index: 1000; /* Ensure it's above other elements */
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.autocomplete-item {
+    padding: 10px;
+    color: #f5f5f5;
+    cursor: pointer;
+}
+
+.autocomplete-item:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+
+/* Highlighted text in suggestions */
+.autocomplete-item strong {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+/* Smaller, grayish text for the type */
+.autocomplete-item small {
+    color: var(--secondary-text-color);
+    font-size: 0.9em;
+}
+
+/* Hover effect for items */
+.autocomplete-item:hover {
+    background-color: var(--button-hover-background);
+}
+
+/* Autocomplete List Scrollbar */
+#autocomplete-list::-webkit-scrollbar {
+    width: 5px;
+    background-color: var(--dropdown-background);
+}
+
+#autocomplete-list::-webkit-scrollbar-thumb {
+    background-color: var(--button-hover-background);
+    border-radius: 5px;
+}
+
+#autocomplete-list::-webkit-scrollbar-track {
+    background-color: var(--dropdown-background);
+}
+
+/* Prevent scrollbar appearance in modern browsers */
+#autocomplete-list {
+    scrollbar-width: thin; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar in Webkit browsers */
+#autocomplete-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Responsive Autocomplete */
+@media (max-width: 768px) {
+    #autocomplete-list {
+        max-height: 200px;
+    }
+
+    .autocomplete-item {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+}
+
 --- File: static\css\components\forms.css ---
 /* forms.css */
 
@@ -1146,7 +1261,7 @@ label span.required {
     background-color: var(--background-dark);
     padding: 15px 0; /* Added padding for spacing */
     color: var(--text-light);
-    border-top: 1px solid var(--link-hover-color); /* Add a 1px thick red border */
+    border-top: 0.5px solid var(--link-hover-color);
 }
 
 
@@ -2448,7 +2563,7 @@ export function clearAllFilters() {
         if (buttonToSelect) {
             buttonToSelect.classList.add('selected');
             const badge = dropdownList.parentElement.querySelector('.selection-badge');
-            updateSelectionBadge([buttonToSelect.dataset.value], badge);
+            updateSelectionBadge([buttonToSelect.dataset.value], badge, dropdownList.id);
         }
     });
 
@@ -2491,7 +2606,6 @@ export function initializeFilterActionButtons() {
 export function initializeFilterDropdowns() {
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
-        console.log("Filter.js: Detected dropdown change event");
         updateFilters();
     });
 
@@ -2594,7 +2708,7 @@ export function attachDropdownEventDelegation() {
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
                 const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
                 const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
-                updateSelectionBadge(selectedValues, selectionBadge);
+                updateSelectionBadge(selectedValues, selectionBadge, dropdownList.id);
 
                 // Update the clear icon visibility for multi-select dropdowns
                 const clearButton = dropdownHeader.querySelector('.clear-icon');
@@ -2625,7 +2739,7 @@ export function attachDropdownEventDelegation() {
                 const buttons = dropdownList.querySelectorAll('.filter-button.selected');
                 buttons.forEach(button => button.classList.remove('selected'));
                 const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-                updateSelectionBadge([], selectionBadge);
+                updateSelectionBadge([], selectionBadge, dropdownList.id);
                 clearButton.classList.remove('visible');
                 triggerDropdownChangeEvent();
             });
@@ -2637,7 +2751,7 @@ export function attachDropdownEventDelegation() {
                     const buttons = dropdownList.querySelectorAll('.filter-button.selected');
                     buttons.forEach(button => button.classList.remove('selected'));
                     const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-                    updateSelectionBadge([], selectionBadge);
+                    updateSelectionBadge([], selectionBadge, dropdownList.id);
                     clearButton.classList.remove('visible');
                     triggerDropdownChangeEvent();
                 }
@@ -2680,21 +2794,15 @@ export function toggleDropdown(dropdownList, header) {
     }
 }
 
-/**
- * Function to update the Selection Badge based on current selections
- */
 export function updateSelectionBadge(selectedValues, badgeElement) {
-    if(badgeElement){
-
-        if (selectedValues.length > 0) {
-            badgeElement.textContent = selectedValues.join(', ');
-            badgeElement.classList.add('visible');
-            badgeElement.style.display = 'inline-block';
-        } else {
-            badgeElement.textContent = '';
-            badgeElement.classList.remove('visible');
-            badgeElement.style.display = 'none';
-        }
+    if (selectedValues.length > 0) {
+        badgeElement.textContent = selectedValues.join(', ');
+        badgeElement.classList.add('visible');
+        badgeElement.style.display = 'inline-block';
+    } else {
+        badgeElement.textContent = '';
+        badgeElement.classList.remove('visible');
+        badgeElement.style.display = 'none';
     }
 }
 
@@ -2703,11 +2811,8 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
  */
 export function triggerDropdownChangeEvent() {
     const event = new CustomEvent('dropdownChange');
-    console.log("Dispatching dropdownChange event");
     document.dispatchEvent(event);
 }
-
-
 
 /**
  * Helper function to get selected values from a specific dropdown list
@@ -2822,8 +2927,6 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         return;
     }
 
-    console.log(`populateDropdown: Initial options for '${dropdownListId}':`, optionsArray);
-
     // Conditionally sort the options alphabetically, but skip sorting for "sort-dropdown-list"
     if (dropdownListId !== 'sort-dropdown-list') {
         optionsArray.sort((a, b) => a.label.localeCompare(b.label));
@@ -2831,38 +2934,24 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     // For "sort-dropdown-list", implement ascending and descending options, excluding "Zufall"
     if (dropdownListId === 'sort-dropdown-list') {
-        const extendedOptions = [];
-
+        const extendedOptionsArray = [];
         optionsArray.forEach(option => {
-            const labelLower = option.label.toLowerCase();
-
-            if (labelLower === 'zufall') {
+            if (option.label.toLowerCase() === 'zufall') {
                 // Add "Zufall" without icons
-                extendedOptions.push({
+                extendedOptionsArray.push({
                     label: option.label,
-                    value: option.value || option.label
+                    value: `${option.label}`
                 });
             } else {
-                // Use label as base value if option.value is undefined
-                const baseValue = option.value || option.label;
-
-                // Ascending option
-                extendedOptions.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-up"></i>`,  // Ascending icon
-                    value: `${baseValue} asc`
-                });
-
-                // Descending option
-                extendedOptions.push({
-                    label: `${option.label} <i class="fa fa-sort-amount-down"></i>`,  // Descending icon
-                    value: `${baseValue} desc`
+                // Add options with ascending and descending icons
+                extendedOptionsArray.push({
+                    value: option.label,
+                    label: option.label.includes("asc") ? `${option.label} <i class="fa fa-sort-amount-up"></i>` : `${option.label} <i class="fa fa-sort-amount-down"></i>`,
                 });
             }
         });
 
-        optionsArray = extendedOptions;
-
-        console.log(`populateDropdown: Extended options for 'sort-dropdown-list':`, optionsArray);
+        optionsArray = extendedOptionsArray;
     }
 
     // Create a container for the filter buttons
@@ -2886,38 +2975,28 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         if (selectedValues.includes(option.value || option.label)) {
             button.classList.add('selected');
         }
-
         buttonsContainer.appendChild(button);
     });
 
     dropdownList.appendChild(buttonsContainer);
 
-    // Update the Selection Badge for all dropdowns, including "sort-dropdown-list"
+    // Update the Selection Badge for normal filters
     const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
-    if (dropdownHeader) {
-        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
-        const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
-        updateSelectionBadge(selectedValuesUpdated, selectionBadge);
-    } else {
-        console.error(`populateDropdown: Dropdown header for '${dropdownListId}' not found.`);
-    }
-
+    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
+    
     // Hide the clear icon for single-select dropdowns
-    const header = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
-    if (header) {
-        const clearBtn = header.querySelector('.clear-icon');
-        if (singleSelect) {
-            if (clearBtn) {
-                clearBtn.style.display = 'none';
-            }
-        } else {
-            if (clearBtn) {
-                clearBtn.style.display = '';
-            }
+    const clearButton = dropdownHeader.querySelector('.clear-icon');
+    if (singleSelect) {
+        if (clearButton) {
+            clearButton.style.display = 'none';
         }
     } else {
-        console.error(`populateDropdown: Dropdown header for '${dropdownListId}' not found.`);
+        if (clearButton) {
+            clearButton.style.display = '';
+        }
     }
 }
 
@@ -2926,16 +3005,14 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
  * @param {number} page - The current page number for pagination
  */
 export function updateFilters(page = 1) {
-    console.log("updateFilters called");
 
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
     const selectedCountries = getSelectedValues('country-dropdown-list');
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
-    const selectedSortBy = getSelectedValues('sort-dropdown-list').length > 0
-        ? getSelectedValues('sort-dropdown-list')
-        : ["Zufall"];
+    const selectedSortByValues = getSelectedValues('sort-dropdown-list');
+    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
@@ -2958,7 +3035,6 @@ export function updateFilters(page = 1) {
     if (selectedSortBy.length) {
         params.append('sort_by', selectedSortBy[0]);
     }
-    console.log("SortBy[0]", selectedSortBy[0])
 
     // Include search query regardless of length
     if (searchQuery.length > 0) {
@@ -2973,8 +3049,12 @@ export function updateFilters(page = 1) {
     fetch(`/filter_movies?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            console.log("API Response Data:", data);
+            // console.log("API Response Data:", data);
             const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
+
+            // Define sort_options here if not provided by the server
+            // const sort_options = ['Zufall', 'Titel', 'Jahr', 'Bewertung'];
+
             // Populate dropdowns based on the filtered data
             populateDropdown('year-dropdown-list', years, selectedYears);
             populateDropdown('genre-dropdown-list', genres, selectedGenres);
@@ -3353,11 +3433,24 @@ export function attachPaginationEventListeners() {
         </div>
     </section>
 
-        <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
-            <div class="spinner" aria-hidden="true"></div>
-            <p>Loading movies...</p>
-        </div>          
 
+    <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading movies...</p>
+    </div> 
+        <!-- Top Pagination Section -->
+        <section class="pagination top-pagination">
+         
+            <nav>
+                <ul>
+                    <!-- Pagination will be populated dynamically here -->
+                </ul>
+            </nav>
+        </section>
+
+         
+
+        
     <!-- Catalog Search Section -->
 <!-- File: templates/catalog.html -->
 <section class="catalog-search"> 
@@ -3537,15 +3630,7 @@ export function attachPaginationEventListeners() {
 </section>
 
 
-        <!-- Top Pagination Section -->
-        <section class="pagination top-pagination">
-         
-            <nav>
-                <ul>
-                    <!-- Pagination will be populated dynamically here -->
-                </ul>
-            </nav>
-        </section>
+
 
         <!-- Movie Listings Container -->
         <section class="movie-listings-container" style="position: relative; background-color: var(--primary-bg-color);">

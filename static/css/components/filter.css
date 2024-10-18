@@ -1,20 +1,20 @@
 /* File: static/css/components/filter.css */
 
+
 /* CSS Variables */
+
 :root {
     --filter-width: 1200px;
-    --font-body: 'Libre Baskerville', serif;
     --background-dark: #1E1E1E;
     --dropdown-background: rgba(44, 44, 44, 0.95);
     --button-background: rgba(68, 68, 68, 0.9);
     --button-hover-background: rgba(85, 85, 85, 0.9);
     --button-active-background: var(--accent-color);
-    --text-color: #f5f5f5;
     --transition-duration: 0.3s;
-    --primary-color: #333;
-    --secondary-text-color: #ccc;
-    --text-light: #f5f5f5; /* Added missing variable */
+
 }
+
+
 
 /* Screen-reader only text */
 .sr-only {
@@ -29,9 +29,9 @@
     border: 0;
 }
 
-/* Container for Search and Dropdowns */
 .search-dropdown-container {
     position: relative;
+    z-index: 2000; /* Added to bring autocomplete list above other elements */
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -42,6 +42,8 @@
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     backdrop-filter: blur(5px);
     transition: all 0.3s ease;
+    font-family: var(--font-body);
+    border-bottom: 0.px solid var(--link-hover-color); /* Add a 1px thick red border */d
 }
 
 /* Search Box */
@@ -130,6 +132,45 @@
     display: none; /* Hide scrollbar in WebKit browsers */
 }
 
+
+/* Navigation Arrows */
+.filter-nav-arrow {
+    position: absolute;
+    top: 65%;
+    transform: translateY(-50%);
+    width: var(--arrow-button-size);
+    height: var(--arrow-button-size);
+    background-color: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: var(--accent-color);
+    font-size: 1.5em;
+    cursor: pointer;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.filter-nav-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.filter-nav-arrow.left {
+    left: 0;
+}
+
+.filter-nav-arrow.right {
+    right: 0;
+}
+
+/* Hide arrows when not needed */
+.filter-nav-arrow.hidden {
+    display: none;
+}
+
+
 /* Custom Dropdowns */
 .custom-dropdown {
     flex: 1 1 180px; /* Allow flex-grow and flex-shrink for responsiveness */
@@ -137,46 +178,61 @@
     max-width: 800px; /* Maximum width */
     position: relative;
     font-family: var(--font-body);
+    background-color: var(--background-dark); /* Ensure background is consistent */
+    border-radius: 3px;
+    border: 1px solid var(--accent-color); /* Add a slight border for emphasis */
 }
+
 /* Dropdown Header */
 .dropdown-header {
     display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Aligns the clear icon and badge to the left */
     flex-direction: column; /* For two-row layout */
-    background-color: var(--button-background);
-    color: var(--text-color);
-    padding: 5px 12px; /* Adjusted padding */
-    border-radius: 5px;
+    background-color: var(--background-dark); /* Adjust background color */
+    color: var(--text-light); /* Use lighter text for better contrast */
     cursor: pointer;
-    font-size: 1.1em;
+    font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     font-family: var(--font-body);
     position: relative;
-    height: 80px; /* Let height adjust based on content */
+    height: 70px; /* Let height adjust based on content */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    white-space: nowrap; /* Prevents wrapping inside the header */
+    overflow: hidden; /* Prevents content from overflowing */
 }
-
+/* Adjusted Dropdown Header for Label Positioning */
+.dropdown-header {
+    padding: 5px 10px; /* Reduced padding to bring text closer to the borders */
+    border: 1px solid transparent;
+}
 
 /* Hover Effect for Dropdown Header */
 .dropdown-header:hover {
-    background-color: var(--button-hover-background);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--link-color); /* Add a slight border for emphasis */
 }
 
-/* Header Label (Icon and Text) */
+/* Add yellow border when dropdown is open */
+.custom-dropdown.dropdown-open .dropdown-header {
+    border-color: var(--accent-color); /* Yellow border */
+}
+
+
+
+/* Dropdown Header Icon and Text */
 .dropdown-header .header-label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 2px; /* Reduce margin for more compact layout */
+    display:inline;
+    align-items: left;
+    margin-bottom: 2px;
+    font-size: clamp(0.8em, 1.5vw, 1.1em); /* Responsive size for label */
 }
 
 .dropdown-header .header-label i {
-    font-size: 1.3em;
+    font-size: clamp(1.2em, 2vw, 1.5em); /* Icon size responsive */
     margin-right: 5px;
 }
 
 .dropdown-header .header-label span {
-    font-size: 1.2em;
+    font-size: clamp(1em, 2vw, 1.2em); /* Span text size responsive */
     font-weight: 100;
     white-space: nowrap;
     overflow: hidden;
@@ -184,10 +240,11 @@
     max-width: 150px;
 }
 
+
 /* Position Down Arrow in Top Right Corner */
 .dropdown-header::after {
     content: '\25BC'; /* Unicode for down arrow */
-    font-size: 1em;
+    font-size: clamp(0.8em, 1.2vw, 1em); /* Responsive down arrow */
     color: var(--text-light);
     position: absolute;
     top: 5px; /* Position near top edge */
@@ -195,43 +252,45 @@
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
+
 /* When Expanded, Rotate Arrow */
 .dropdown-header[aria-expanded="true"]::after {
     transform: rotate(180deg);
-    color: var(--accent-color);
-    font-size: 1.6em;
+    color: var(--link-color);
+    font-size: clamp(1.2em, 1.5vw, 1.6em); /* Larger arrow when expanded */
 }
 
 /* Selection Badge */
 .selection-badge {
     background-color: var(--background-dark);
     color: var(--accent-color);
-    padding: 3px 8px;
-    border-radius: 12px;
+
     font-size: 0.8em;
-    
-    
-    margin-right: 8px; /* Spacing between the badge and the clear icon */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block; /* Align with other inline elements */
+    left: 15px;
+    padding-bottom: 5px;
+    white-space: nowrap; /* Prevents text wrapping */
+    overflow: hidden; /* Ensures content stays inside the badge */
+    text-overflow: ellipsis; /* Adds ellipsis for overflowing text */
+    display: inline-block;
+    max-width: 75%; /* Set to 75% to leave space for the clear icon */
 }
 
-/* Clear Icon for Dropdowns */
+
+/* Clear Icon */
 .clear-icon {
     font-size: 1.4em;
     cursor: pointer;
     color: var(--accent-color);
-    align-self: center; /* Vertically align with the badge */
-
-    transition: opacity 0.3s ease;
+    margin-right: 8px; /* Adds space between the clear icon and the badge */
+    flex-shrink: 0; /* Ensures the clear icon does not shrink */
+    align-self: center; /* Vertically centers the clear icon */
     visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    margin-bottom: 5px;
 }
 
 .selection-clear-container {
     display: flex;
-
     justify-content: space-between;
     margin-top: 5px;
     width: 100%;
@@ -253,10 +312,6 @@
     /* display: block; */
 
 }
-
-
-
-
 
 
 /* Dropdown List */
@@ -282,6 +337,17 @@
     padding: 15px;
     overflow-y: auto;
 }
+
+/* Hide scrollbar for all browsers */
+.dropdown-list {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.dropdown-list::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
 
 /* Filter Buttons Container */
 .filter-buttons-container {
@@ -323,7 +389,7 @@
 }
 
 .filter-button:hover {
-    background-color: var(--button-hover-background);
+    background-color: var(--accent-color);
 }
 
 /* Filters Buttons Row */
@@ -344,7 +410,7 @@
     padding: 10px 20px;
     margin: 5px;
     border: none;
-    border-radius: 5px;
+    border-radius: 3px;
     font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s ease;
@@ -352,6 +418,7 @@
     line-height: 1;
     min-height: 80px;
     align-self: center; 
+    border: 1px solid var(--accent-color); /* Add a slight border for emphasis */
 }
 
 .filter-action-button:hover {
@@ -384,5 +451,99 @@
 
     .dropdown-header .header-label span {
         max-width: 100px;
+    }
+}
+
+
+/* Autocomplete Styles */
+#autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--background-dark);
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 12000; /* Ensure it's above other elements */
+}
+
+.autocomplete-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--background-dark);
+    z-index: 1000; /* Ensure it's above other elements */
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.autocomplete-item {
+    padding: 10px;
+    color: #f5f5f5;
+    cursor: pointer;
+}
+
+.autocomplete-item:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.autocomplete-item strong {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.autocomplete-item small {
+    color: var(--secondary-text-color);
+    font-size: 0.9em;
+}
+
+/* Hover effect for items */
+.autocomplete-item:hover {
+    background-color: var(--button-hover-background);
+}
+
+/* Autocomplete List Scrollbar */
+#autocomplete-list::-webkit-scrollbar {
+    width: 5px;
+    background-color: var(--dropdown-background);
+}
+
+#autocomplete-list::-webkit-scrollbar-thumb {
+    background-color: var(--button-hover-background);
+    border-radius: 5px;
+}
+
+#autocomplete-list::-webkit-scrollbar-track {
+    background-color: var(--dropdown-background);
+}
+
+/* Prevent scrollbar appearance in modern browsers */
+#autocomplete-list {
+    scrollbar-width: thin; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar in Webkit browsers */
+#autocomplete-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Responsive Autocomplete */
+@media (max-width: 768px) {
+    #autocomplete-list {
+        max-height: 200px;
+    }
+
+    .autocomplete-item {
+        padding: 8px 10px;
+        font-size: 0.9em;
     }
 }
