@@ -1,0 +1,105 @@
+/* responsive.css */
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* Adjustments for elements */
+    .main-filters-container {
+        overflow-x: auto;
+    }
+
+    .custom-dropdown {
+        flex: 0 0 180px;
+        max-width: 180px;
+    }
+
+    .dropdown-header .header-label span {
+        max-width: 120px;
+    }
+
+    .selection-clear-container {
+        gap: 6px;
+    }
+
+    .selection-badge {
+        max-width: 60%;
+        font-size: 0.7em;
+    }
+
+    .clear-icon {
+        font-size: 1.2em;
+    }
+
+    #autocomplete-list {
+        max-height: 200px;
+    }
+
+    .autocomplete-item {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+
+    /* Navbar adjustments */
+    .navbar {
+        height: 50px;
+    }
+
+    .navbar.shrunk {
+        height: 35px;
+    }
+
+    .navbar.hidden {
+        top: -50px;
+    }
+
+    .logo span {
+        font-size: 2rem;
+    }
+
+    .sub-logo span {
+        font-size: 1.4rem;
+    }
+
+    .nav-center-title {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-dropdown {
+        flex: 0 0 150px;
+        max-width: 150px;
+    }
+
+    .dropdown-header .header-label span {
+        max-width: 100px;
+    }
+
+    .selection-clear-container {
+        gap: 4px;
+    }
+
+    .selection-badge {
+        max-width: 50%;
+        font-size: 0.6em;
+    }
+
+    .clear-icon {
+        font-size: 1em;
+    }
+
+    .logo span {
+        font-size: 1.6rem;
+    }
+
+    .sub-logo span {
+        font-size: 1.2rem;
+    }
+
+    .nav-links li a {
+        font-size: 1.2rem;
+    }
+
+    .theme-title {
+        font-size: 1.2rem;
+    }
+}

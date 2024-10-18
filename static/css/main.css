@@ -4,6 +4,7 @@
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
+@import url('./base/responsive.css');
 
 /* Import Layout Styles */
 @import url('./layout/navbar.css');
@@ -13,11 +14,13 @@
 /* Import Component Styles */
 @import url('./components/progress_indicator.css');
 @import url('./components/carousel.css');
-@import url('./components/filter.css');
 @import url('./components/cards.css');
 @import url('./components/buttons.css');
 @import url('./components/forms.css');
 @import url('./components/pagination.css');
+@import url('./components/search.css');
+@import url('./components/dropdown.css');
+@import url('./components/autocomplete.css');
 
 /* Import Page-Specific Styles */
 @import url('./pages/catalog.css');

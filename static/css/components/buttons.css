@@ -1,38 +1,75 @@
 /* buttons.css */
 
-/* General Button Styles */
-.btn {
-    background-color: var(--primary-color);
-    color: #fff;
+/* Filter Buttons Container */
+.filter-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+    max-height: 500px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
+    font-family: var(--font-body);
+}
+
+.filter-buttons-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Filter Buttons */
+.filter-button {
     padding: 10px 20px;
+    background-color: var(--button-background);
+    color: var(--text-color);
     border: none;
+    border-radius: 25px;
     cursor: pointer;
-    font-weight: 600;
-    border-radius: 8px; /* Increased border-radius for elegance */
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    font-family: 'Open Sans', sans-serif;
+    transition: background-color var(--transition-duration), transform var(--transition-duration);
+    font-size: 0.9em;
+    flex: 1 0 calc(33.33% - 15px);
+    text-align: center;
+    box-sizing: border-box;
+    font-family: var(--font-body);
 }
 
-.btn:hover {
-    background-color: var(--button-hover-color);
-    transform: translateY(-2px); /* Subtle lift on hover */
-}
-
-/* Primary Button Styling */
-.btn-primary {
+.filter-button.selected,
+.filter-button:hover {
     background-color: var(--accent-color);
-    color: var(--primary-color);
-    padding: 12px 24px;
-    border-radius: 10px;
-    border: none;
-    font-size: 1.2em;
-    text-transform: uppercase;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: #a98b03;
-    transform: translateY(-3px);
+/* Filters Buttons Row */
+.filters-buttons-row {
+    padding-top: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-body);
+}
+
+/* Filter Action Button */
+.filter-action-button {
+    display: flex;
+    align-items: center;
+    background-color: var(--background-dark);
+    color: var(--accent-color);
+    padding: 10px 20px;
+    margin: 5px;
+    border: 1px solid var(--accent-color);
+    border-radius: 3px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color var(--transition-duration), box-shadow var(--transition-duration) ease;
+    font-family: var(--font-body);
+    line-height: 1;
+    min-height: 80px;
+    align-self: center;
+}
+
+.filter-action-button:hover {
+    background-color: var(--accent-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
 }

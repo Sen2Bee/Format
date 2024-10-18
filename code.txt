@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-18 20:03:18 ===
+=== Code Summary Generated at 2024-10-19 00:32:54 ===
 
 === Project Folder Structure ===
 
@@ -11,16 +11,20 @@ Format/
             main.css
             base/
                 reset.css
+                responsive.css
                 typography.css
                 variables.css
             components/
+                autocomplete.css
                 buttons.css
                 cards.css
                 carousel.css
+                dropdown.css
                 filter.css
                 forms.css
                 pagination.css
                 progress_indicator.css
+                search.css
             layout/
                 footer.css
                 hero.css
@@ -66,6 +70,7 @@ Format/
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
+@import url('./base/responsive.css');
 
 /* Import Layout Styles */
 @import url('./layout/navbar.css');
@@ -75,11 +80,13 @@ Format/
 /* Import Component Styles */
 @import url('./components/progress_indicator.css');
 @import url('./components/carousel.css');
-@import url('./components/filter.css');
 @import url('./components/cards.css');
 @import url('./components/buttons.css');
 @import url('./components/forms.css');
 @import url('./components/pagination.css');
+@import url('./components/search.css');
+@import url('./components/dropdown.css');
+@import url('./components/autocomplete.css');
 
 /* Import Page-Specific Styles */
 @import url('./pages/catalog.css');
@@ -91,11 +98,10 @@ Format/
 /* reset.css */
 
 /* Refined Reset */
-
 *, *::before, *::after {
     margin: 0;
     padding: 0;
-    box-sizing: inherit; /* Use inherit to control from a higher element */
+    box-sizing: inherit;
 }
 
 /* Apply box-sizing globally */
@@ -106,13 +112,13 @@ html {
 /* Normalize link styles but allow color */
 a {
     text-decoration: none;
-    color: inherit; /* Allow for custom link colors */
+    color: inherit;
 }
 
 /* Images should not exceed their container */
 img {
     max-width: 100%;
-    height: auto; /* Maintain aspect ratio */
+    height: auto;
 }
 
 /* Lists should not have default styles */
@@ -123,9 +129,129 @@ ul, ol {
 
 /* Prevent overflow issues */
 html, body {
-    overflow-x: hidden; /* Restrict horizontal overflow */
-    font-family: 'Open Sans', sans-serif; /* Set default font */
+    overflow-x: hidden;
+    font-family: 'Open Sans', sans-serif;
     background-color: var(--background-dark);
+}
+
+/* Screen-reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
+--- File: static\css\base\responsive.css ---
+/* responsive.css */
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* Adjustments for elements */
+    .main-filters-container {
+        overflow-x: auto;
+    }
+
+    .custom-dropdown {
+        flex: 0 0 180px;
+        max-width: 180px;
+    }
+
+    .dropdown-header .header-label span {
+        max-width: 120px;
+    }
+
+    .selection-clear-container {
+        gap: 6px;
+    }
+
+    .selection-badge {
+        max-width: 60%;
+        font-size: 0.7em;
+    }
+
+    .clear-icon {
+        font-size: 1.2em;
+    }
+
+    #autocomplete-list {
+        max-height: 200px;
+    }
+
+    .autocomplete-item {
+        padding: 8px 10px;
+        font-size: 0.9em;
+    }
+
+    /* Navbar adjustments */
+    .navbar {
+        height: 50px;
+    }
+
+    .navbar.shrunk {
+        height: 35px;
+    }
+
+    .navbar.hidden {
+        top: -50px;
+    }
+
+    .logo span {
+        font-size: 2rem;
+    }
+
+    .sub-logo span {
+        font-size: 1.4rem;
+    }
+
+    .nav-center-title {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-dropdown {
+        flex: 0 0 150px;
+        max-width: 150px;
+    }
+
+    .dropdown-header .header-label span {
+        max-width: 100px;
+    }
+
+    .selection-clear-container {
+        gap: 4px;
+    }
+
+    .selection-badge {
+        max-width: 50%;
+        font-size: 0.6em;
+    }
+
+    .clear-icon {
+        font-size: 1em;
+    }
+
+    .logo span {
+        font-size: 1.6rem;
+    }
+
+    .sub-logo span {
+        font-size: 1.2rem;
+    }
+
+    .nav-links li a {
+        font-size: 1.2rem;
+    }
+
+    .theme-title {
+        font-size: 1.2rem;
+    }
 }
 
 --- File: static\css\base\typography.css ---
@@ -137,15 +263,15 @@ html, body {
 /* Typography Styles */
 body {
     font-family: var(--font-body);
-    color: var(--text-dark);
-    background-color: var(--background-light);
+    color: var(--text-light);
+    background-color: var(--background-dark);
     line-height: 1.6;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    color: var(--primary-color);
+    color: var(--text-light);
     margin-bottom: 15px;
 }
 
@@ -172,74 +298,161 @@ button {
 }
 
 --- File: static\css\base\variables.css ---
+/* variables.css */
+
 :root {
     /* Color Variables */
-    --primary-color: #000000; /* Solid Black for main backgrounds */
-    --secondary-color: #1a1a1a; /* Dark Gray for secondary sections */
-    --accent-color: #e7b000; /* Yellow for highlights */
+    --primary-color: #1a1a1a; /* Dark Gray for primary elements */
+    --secondary-color: #333333; /* Darker Gray for secondary elements */
+    --accent-color: #e74c3c; /* Accent color (e.g., buttons, highlights) */
     --background-light: #ffffff; /* White for light backgrounds */
-    --background-dark: #1a1a1a; /* Dark gray for sections */
-    --primary-bg-color: #252b36; /* Background color for carousel-section same as movie-listings */
-    --secondary-bg-color: #333;    
+    --background-dark: #1e1e1e; /* Dark gray for backgrounds */
+    --text-color: #f5f5f5; /* Light text color */
     --text-light: #ffffff; /* White text for dark backgrounds */
     --text-dark: #000000; /* Black text for light backgrounds */
     --secondary-text-color: #bfbfbf; /* Muted Light Gray */
     --link-color: #e7b000; /* Yellow for links */
-    --link-hover-color: #e7b000; /* Orange for link hover states */
-    --button-bg: #e7b000; /* Yellow for buttons */
-    --button-hover-bg: #ff6a00; /* Orange for button hover background */
-    --hover-bg: #444;
+    --link-hover-color: #ff6347; /* Link hover color */
+    --button-background: rgba(68, 68, 68, 0.9); /* Button background */
+    --button-hover-background: rgba(85, 85, 85, 0.9); /* Button hover background */
     --border-color: #333333; /* Darker Gray for borders */
     --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle shadow color */
-    --font-heading: 'Segoe UI', 'sans-serif;' /* Elegant Serif for Headings */
-    --font-body: 'Roboto', sans-serif; /* Clean Sans-Serif for Body */
+    --font-heading: 'Segoe UI', sans-serif; /* Font for headings */
+    --font-body: 'Roboto', sans-serif; /* Font for body text */
     --transition-duration: 0.3s; /* Consistent transition duration */
-    --filter-width: 98%; 
-    --placeholder-color: #aaa;
+    --filter-width: 98%; /* Width for filters */
+    --placeholder-color: #aaa; /* Placeholder text color */
     --scrollbar-bg: #333;
-    --scrollbar-thumb: #555;    
+    --scrollbar-thumb: #555;
+    --dropdown-background: rgba(44, 44, 44, 0.95); /* Dropdown background */
+    --button-active-background: var(--accent-color); /* Active button background */
+    --arrow-button-size: 40px; /* Size for navigation arrows */
 }
 
+--- File: static\css\components\autocomplete.css ---
+/* autocomplete.css */
 
+/* Autocomplete Styles */
+#autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--background-dark);
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 5000; /* Increased z-index to be above other elements */
+    scrollbar-width: thin; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+#autocomplete-list::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in WebKit browsers */
+}
+
+/* Rest of your autocomplete styles */
+
+
+.autocomplete-item {
+    padding: 10px;
+    color: #f5f5f5;
+    cursor: pointer;
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+}
+
+.autocomplete-item:hover {
+    background-color: var(--button-hover-background);
+    color: #fff;
+}
+
+.autocomplete-item strong {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.autocomplete-item small {
+    color: var(--secondary-text-color);
+    font-size: 0.9em;
+}
 
 --- File: static\css\components\buttons.css ---
 /* buttons.css */
 
-/* General Button Styles */
-.btn {
-    background-color: var(--primary-color);
-    color: #fff;
+/* Filter Buttons Container */
+.filter-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+    max-height: 500px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
+    font-family: var(--font-body);
+}
+
+.filter-buttons-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Filter Buttons */
+.filter-button {
     padding: 10px 20px;
+    background-color: var(--button-background);
+    color: var(--text-color);
     border: none;
+    border-radius: 25px;
     cursor: pointer;
-    font-weight: 600;
-    border-radius: 8px; /* Increased border-radius for elegance */
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    font-family: 'Open Sans', sans-serif;
+    transition: background-color var(--transition-duration), transform var(--transition-duration);
+    font-size: 0.9em;
+    flex: 1 0 calc(33.33% - 15px);
+    text-align: center;
+    box-sizing: border-box;
+    font-family: var(--font-body);
 }
 
-.btn:hover {
-    background-color: var(--button-hover-color);
-    transform: translateY(-2px); /* Subtle lift on hover */
-}
-
-/* Primary Button Styling */
-.btn-primary {
+.filter-button.selected,
+.filter-button:hover {
     background-color: var(--accent-color);
-    color: var(--primary-color);
-    padding: 12px 24px;
-    border-radius: 10px;
-    border: none;
-    font-size: 1.2em;
-    text-transform: uppercase;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: #a98b03;
-    transform: translateY(-3px);
+/* Filters Buttons Row */
+.filters-buttons-row {
+    padding-top: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-body);
+}
+
+/* Filter Action Button */
+.filter-action-button {
+    display: flex;
+    align-items: center;
+    background-color: var(--button-background);
+    color: var(--accent-color);
+    padding: 10px 20px;
+    margin: 5px;
+    border: 1px solid var(--accent-color);
+    border-radius: 3px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color var(--transition-duration), box-shadow var(--transition-duration) ease;
+    font-family: var(--font-body);
+    line-height: 1;
+    min-height: 80px;
+    align-self: center;
+}
+
+.filter-action-button:hover {
+    background-color: var(--accent-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: var(--text-color);
 }
 
 --- File: static\css\components\cards.css ---
@@ -703,121 +916,8 @@ button {
 .theme-history { font-family: 'Baskerville', serif; color: #660000; }
 
 
---- File: static\css\components\filter.css ---
-/* File: static/css/components/filter.css */
-
-/* CSS Variables */
-:root {
-    --filter-width: 1200px;
-    --font-body: 'Libre Baskerville', serif;
-    --background-dark: #1E1E1E;
-    --dropdown-background: rgba(44, 44, 44, 0.95);
-    --button-background: rgba(68, 68, 68, 0.9);
-    --button-hover-background: rgba(85, 85, 85, 0.9);
-    --button-active-background: var(--accent-color);
-    --text-color: #f5f5f5;
-    --transition-duration: 0.3s;
-    --primary-color: #333;
-    --secondary-text-color: #ccc;
-    --text-light: #f5f5f5; /* Added missing variable */
-}
-
-/* Screen-reader only text */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    white-space: nowrap;
-    border: 0;
-}
-
-.search-dropdown-container {
-    position: relative;
-    z-index: 2000; /* Added to bring autocomplete list above other elements */
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    background-color: var(--background-dark);
-    padding: 20px;
-    box-sizing: border-box;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-    font-family: var(--font-body);
-    border-bottom: 0.1px solid var(--link-hover-color); /* Add a 1px thick red border */d
-}
-
-/* Search Box */
-.search-container {
-    position: relative;
-    width: 100%;
-    height: 55px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-    font-family: var(--font-body);
-}
-
-.search-container .search-icon {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--accent-color);
-    font-size: 1.2em;
-    pointer-events: none;
-    transition: color 0.3s ease;
-}
-
-#search-box {
-    width: 100%;
-    height: 100%;
-    padding: 0 50px;
-    font-size: 1em;
-    background: transparent;
-    color: #f5f5f5;
-    border: none;
-    border-radius: 10px;
-    box-sizing: border-box;
-    font-family: var(--font-body);
-}
-
-#search-box::placeholder {
-    color: rgba(245, 245, 245, 0.7);
-    font-style: italic;
-}
-
-#search-box:focus {
-    outline: none;
-    background-color: rgba(255, 255, 255, 0.2);
-    transition: background-color 0.3s ease;
-}
-
-#clear-search {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.2em;
-    cursor: pointer;
-    color: var(--accent-color);
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0.3s ease, opacity 0.3s ease;
-}
-
-#clear-search.visible {
-    visibility: visible;
-    opacity: 1;
-}
+--- File: static\css\components\dropdown.css ---
+/* dropdown.css */
 
 /* Main Filters Container */
 .main-filters-container {
@@ -830,61 +930,70 @@ button {
     width: 100%;
     box-sizing: border-box;
     font-family: var(--font-body);
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .main-filters-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar in WebKit browsers */
+    display: none;
 }
 
 /* Custom Dropdowns */
 .custom-dropdown {
-    flex: 1 1 180px; /* Allow flex-grow and flex-shrink for responsiveness */
-    min-width: 150px; /* Minimum width */
-    max-width: 800px; /* Maximum width */
+    flex: 1 1 180px;
+    min-width: 150px;
+    max-width: 800px;
     position: relative;
     font-family: var(--font-body);
+    background-color: var(--background-dark);
+    border-radius: 3px;
+    border: 1px solid var(--accent-color);
 }
+
 /* Dropdown Header */
 .dropdown-header {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
     justify-content: flex-start;
-    flex-direction: column; /* For two-row layout */
-    background-color: var(--button-background);
-    color: var(--text-color);
-    padding: 5px 12px; /* Adjusted padding */
-    border-radius: 5px;
+    align-items: flex-start;
+    padding: 5px 10px;
+    background-color: var(--background-dark);
+    color: var(--text-light);
     cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: clamp(0.9em, 1.5vw, 1.3em);
+    transition: background-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease, border-color var(--transition-duration) ease;
     font-family: var(--font-body);
     position: relative;
-    height: 80px; /* Let height adjust based on content */
+    height: 70px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    overflow: hidden;
+    border: 1px solid transparent;
 }
 
-
-/* Hover Effect for Dropdown Header */
 .dropdown-header:hover {
-    background-color: var(--button-hover-background);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--link-color);
 }
 
-/* Header Label (Icon and Text) */
+.custom-dropdown.dropdown-open .dropdown-header {
+    border-color: var(--accent-color);
+}
+
+/* Dropdown Header Icon and Text */
 .dropdown-header .header-label {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    margin-bottom: 2px; /* Reduce margin for more compact layout */
+    margin-bottom: 2px;
+    font-size: clamp(0.8em, 1.5vw, 1.1em);
 }
 
 .dropdown-header .header-label i {
-    font-size: 1.3em;
+    font-size: clamp(1.2em, 2vw, 1.5em);
     margin-right: 5px;
 }
 
 .dropdown-header .header-label span {
-    font-size: 1.2em;
+    font-size: clamp(1em, 2vw, 1.2em);
     font-weight: 100;
     white-space: nowrap;
     overflow: hidden;
@@ -892,57 +1001,41 @@ button {
     max-width: 150px;
 }
 
-/* Position Down Arrow in Top Right Corner */
+/* Dropdown Arrow */
 .dropdown-header::after {
-    content: '\25BC'; /* Unicode for down arrow */
-    font-size: 1em;
+    content: '\25BC';
+    font-size: clamp(0.8em, 1.2vw, 1em);
     color: var(--text-light);
     position: absolute;
-    top: 5px; /* Position near top edge */
-    right: 12px; /* Position near right edge */
-    transition: transform 0.3s ease, color 0.3s ease;
+    top: 5px;
+    right: 12px;
+    transition: transform var(--transition-duration) ease, color var(--transition-duration) ease;
 }
 
-/* When Expanded, Rotate Arrow */
 .dropdown-header[aria-expanded="true"]::after {
     transform: rotate(180deg);
-    color: var(--accent-color);
-    font-size: 1.6em;
+    color: var(--link-color);
+    font-size: clamp(1.2em, 1.5vw, 1.6em);
 }
 
-/* Selection Badge */
-.selection-badge {
-    background-color: var(--background-dark);
-    color: var(--accent-color);
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    
-    
-    margin-right: 8px; /* Spacing between the badge and the clear icon */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: inline-block; /* Align with other inline elements */
+/* Selection Clear Container */
+.selection-clear-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    width: 100%;
 }
 
-/* Clear Icon for Dropdowns */
+/* Clear Icon */
 .clear-icon {
     font-size: 1.4em;
     cursor: pointer;
     color: var(--accent-color);
-    align-self: center; /* Vertically align with the badge */
-
-    transition: opacity 0.3s ease;
+    flex-shrink: 0;
     visibility: hidden;
-}
-
-.selection-clear-container {
-    display: flex;
-
-    justify-content: space-between;
-    margin-top: 5px;
-    width: 100%;
+    opacity: 0;
+    transition: opacity var(--transition-duration) ease, visibility var(--transition-duration) ease;
 }
 
 .clear-icon.visible {
@@ -950,27 +1043,35 @@ button {
     opacity: 1;
 }
 
+/* Selection Badge */
+.selection-badge {
+    background-color: var(--background-dark);
+    color: var(--accent-color);
+    font-size: 0.8em;
+    padding: 5px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 75%;
+}
+
 /* Show Clear Icon and Badge When Items Are Selected */
-.dropdown-header.has-selection .clear-icon {
+.dropdown-header.has-selection .clear-icon,
+.dropdown-header.has-selection .selection-badge {
     visibility: visible;
     opacity: 1;
 }
 
 .dropdown-header.has-selection .selection-badge {
     background-color: var(--accent-color);
-    /* display: block; */
-
+    color: var(--text-color);
 }
-
-
-
-
-
 
 /* Dropdown List */
 .dropdown-list {
     position: absolute;
-    /* top: 100%; */
     left: 0;
     width: 100%;
     max-height: 0;
@@ -980,9 +1081,11 @@ button {
     box-sizing: border-box;
     transition: max-height 0.5s ease, padding 0.5s ease;
     font-family: var(--font-body);
-    z-index: 10;
+    z-index: 4000; /* Ensure this is lower than the autocomplete list */
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     border-radius: 0 0 5px 5px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
 .dropdown-list.show {
@@ -991,222 +1094,28 @@ button {
     overflow-y: auto;
 }
 
-/* Hide scrollbar for all browsers */
-.dropdown-list {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-}
-
-.dropdown-list::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
-}
-
-
-/* Filter Buttons Container */
-.filter-buttons-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    width: 100%;
-    max-height: 500px;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    position: relative;
-    font-family: var(--font-body);
-}
-
-.filter-buttons-container::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-}
-
-/* Filter Buttons */
-.filter-button {
-    padding: 10px 20px;
-    background-color: var(--button-background);
-    color: var(--text-color);
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-    font-size: 0.9em;
-    flex: 1 0 calc(33.33% - 15px);
-    text-align: center;
-    box-sizing: border-box;
-    font-family: var(--font-body);
-}
-
-.filter-button.selected {
-    background-color: var(--accent-color);
-}
-
-.filter-button:hover {
-    background-color: var(--button-hover-background);
-}
-
-/* Filters Buttons Row */
-.filters-buttons-row {
-    padding-top: 10px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 10px;
-    font-family: var(--font-body);
-}
-
-/* Filter Action Button */
-.filter-action-button {
-    display: flex;
-    background-color: var(--button-background);
-    color: var(--accent-color);
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s ease;
-    font-family: var(--font-body);
-    line-height: 1;
-    min-height: 80px;
-    align-self: center; 
-}
-
-.filter-action-button:hover {
-    background-color: var(--accent-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    color: var(--text-color);
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .main-filters-container {
-        overflow-x: auto;
-    }
-
-    .custom-dropdown {
-        flex: 0 0 180px;
-        max-width: 180px;
-    }
-
-    .dropdown-header .header-label span {
-        max-width: 120px;
-    }
-}
-
-@media (max-width: 480px) {
-    .custom-dropdown {
-        flex: 0 0 150px;
-        max-width: 150px;
-    }
-
-    .dropdown-header .header-label span {
-        max-width: 100px;
-    }
-}
-
-
-/* Adjusted #autocomplete-list */
-#autocomplete-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: var(--dropdown-background);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    max-height: 450px;
-    overflow-y: auto;
-    z-index: 12000; /* Increased z-index to be above other elements */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    border-radius: 0 0 5px 5px;
-    font-family: var(--font-body);
-    padding: 5px 0;
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
-}
-
-/* Autocomplete Items */
-.autocomplete-items {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background-color: var(--background-dark);
-    z-index: 1000; /* Ensure it's above other elements */
-    border: 1px solid #ccc;
-    border-radius: 0 0 5px 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.autocomplete-item {
-    padding: 10px;
-    color: #f5f5f5;
-    cursor: pointer;
-}
-
-.autocomplete-item:hover {
-    background-color: var(--accent-color);
-    color: #fff;
-}
-
-
-/* Highlighted text in suggestions */
-.autocomplete-item strong {
-    font-weight: bold;
-    color: var(--accent-color);
-}
-
-/* Smaller, grayish text for the type */
-.autocomplete-item small {
-    color: var(--secondary-text-color);
-    font-size: 0.9em;
-}
-
-/* Hover effect for items */
-.autocomplete-item:hover {
-    background-color: var(--button-hover-background);
-}
-
-/* Autocomplete List Scrollbar */
-#autocomplete-list::-webkit-scrollbar {
-    width: 5px;
-    background-color: var(--dropdown-background);
-}
-
-#autocomplete-list::-webkit-scrollbar-thumb {
-    background-color: var(--button-hover-background);
-    border-radius: 5px;
-}
-
-#autocomplete-list::-webkit-scrollbar-track {
-    background-color: var(--dropdown-background);
-}
-
-/* Prevent scrollbar appearance in modern browsers */
-#autocomplete-list {
-    scrollbar-width: thin; /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-}
-
-/* Hide scrollbar in Webkit browsers */
-#autocomplete-list::-webkit-scrollbar {
+.dropdown-list::-webkit-scrollbar {
     display: none;
 }
 
-/* Responsive Autocomplete */
-@media (max-width: 768px) {
-    #autocomplete-list {
-        max-height: 200px;
-    }
+--- File: static\css\components\filter.css ---
+/* filter.css */
 
-    .autocomplete-item {
-        padding: 8px 10px;
-        font-size: 0.9em;
-    }
-}
+/* Import CSS Variables */
+@import url('../base/variables.css');
+
+/* Import Base Styles */
+@import url('../base/reset.css');
+@import url('../base/typography.css');
+
+/* Import Component Styles */
+@import url('./search.css');
+@import url('./dropdown.css');
+@import url('./buttons.css');
+@import url('./autocomplete.css');
+
+/* Import Responsive Styles */
+@import url('../base/responsive.css');
 
 --- File: static\css\components\forms.css ---
 /* forms.css */
@@ -1394,6 +1303,94 @@ label span.required {
     color: var(--text-light); /* Use defined text color */
     font-size: 1.2em;
     text-align: center;
+}
+
+--- File: static\css\components\search.css ---
+/* search.css */
+
+/* Search Dropdown Container */
+.search-dropdown-container {
+    position: relative;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    background-color: var(--background-dark);
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    transition: all var(--transition-duration) ease;
+    font-family: var(--font-body);
+    border-bottom: 1px solid var(--link-hover-color);
+}
+
+/* Search Box */
+.search-container {
+    position: relative;
+    width: 100%;
+    height: 55px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+    font-family: var(--font-body);
+}
+
+.search-container .search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent-color);
+    font-size: 1.2em;
+    pointer-events: none;
+    transition: color var(--transition-duration) ease;
+}
+
+#search-box {
+    width: 100%;
+    height: 100%;
+    padding: 0 50px;
+    font-size: 1em;
+    background: transparent;
+    color: #f5f5f5;
+    border: none;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-family: var(--font-body);
+}
+
+#search-box::placeholder {
+    color: rgba(245, 245, 245, 0.7);
+    font-style: italic;
+}
+
+#search-box:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: background-color var(--transition-duration) ease;
+}
+
+#clear-search {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    cursor: pointer;
+    color: var(--accent-color);
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility var(--transition-duration) ease, opacity var(--transition-duration) ease;
+}
+
+#clear-search.visible {
+    visibility: visible;
+    opacity: 1;
 }
 
 --- File: static\css\layout\footer.css ---
@@ -2654,6 +2651,10 @@ export function initializeFilterDropdowns() {
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
 
+
+    // Initialize filter navigation arrows
+    initializeFilterNavigationArrows();
+
     // Initial filter update
     triggerDropdownChangeEvent();
 }
@@ -3065,6 +3066,7 @@ export function updateFilters(page = 1) {
 
             updateMovieListings(movies);
             updatePagination(current_page, total_pages);
+            updateFilterNavigationArrowsVisibility();
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
@@ -3076,6 +3078,76 @@ export function updateFilters(page = 1) {
             hideProgressIndicator();
         });
 }
+
+/**
+ * Initialize filter navigation arrows
+ */
+function initializeFilterNavigationArrows() {
+    const leftArrow = document.querySelector('.filter-nav-arrow.left');
+    const rightArrow = document.querySelector('.filter-nav-arrow.right');
+    const mainFiltersContainer = document.querySelector('.main-filters-container');
+
+    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
+        console.error("Filter navigation arrows or main filters container not found.");
+        return;
+    }
+
+    leftArrow.addEventListener('click', () => {
+        mainFiltersContainer.scrollBy({
+            left: -200,
+            behavior: 'smooth'
+        });
+    });
+
+    rightArrow.addEventListener('click', () => {
+        mainFiltersContainer.scrollBy({
+            left: 200,
+            behavior: 'smooth'
+        });
+    });
+
+    // Update arrow visibility on scroll
+    mainFiltersContainer.addEventListener('scroll', () => {
+        updateFilterNavigationArrowsVisibility();
+    });
+
+    // Update arrow visibility on window resize
+    window.addEventListener('resize', () => {
+        updateFilterNavigationArrowsVisibility();
+    });
+
+    // Initial check
+    updateFilterNavigationArrowsVisibility();
+}
+
+/**
+ * Update visibility of filter navigation arrows based on scroll position
+ */
+function updateFilterNavigationArrowsVisibility() {
+    const leftArrow = document.querySelector('.filter-nav-arrow.left');
+    const rightArrow = document.querySelector('.filter-nav-arrow.right');
+    const mainFiltersContainer = document.querySelector('.main-filters-container');
+
+    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
+        return;
+    }
+
+    const scrollLeft = mainFiltersContainer.scrollLeft;
+    const maxScrollLeft = mainFiltersContainer.scrollWidth - mainFiltersContainer.clientWidth;
+
+    if (scrollLeft <= 0) {
+        leftArrow.classList.add('hidden');
+    } else {
+        leftArrow.classList.remove('hidden');
+    }
+
+    if (scrollLeft >= maxScrollLeft - 1) {
+        rightArrow.classList.add('hidden');
+    } else {
+        rightArrow.classList.remove('hidden');
+    }
+}
+
 
 --- File: static\js\hero.js ---
 document.addEventListener('DOMContentLoaded', function () {
@@ -3368,13 +3440,14 @@ export function attachPaginationEventListeners() {
 <head>
     <meta charset="UTF-8">
     <title>Katalog - FORMAT Filmkunst-Verleih</title>
+    <!-- Responsive Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fonts and Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-    <!-- Include filter.css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/filter.css') }}">
 </head>
 <body>
     <header>
@@ -3452,182 +3525,192 @@ export function attachPaginationEventListeners() {
 
         
     <!-- Catalog Search Section -->
-<!-- File: templates/catalog.html -->
-<section class="catalog-search"> 
-    <div class="search-dropdown-container">
-        <!-- Search Box Container -->
-        <div class="search-container">
-            <i class="fas fa-search search-icon" aria-hidden="true"></i>
-            <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
-            <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
-        </div>
-
-        <form id="filter-form">
-            <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
-            <div class="main-filters-container">
-                <!-- Year Filter -->
-                <div class="custom-dropdown" data-dropdown="year-dropdown">
-                    <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-header-top">
-                            <div class="header-label">
-                                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-                                <span>Jahre</span>
-                            </div>
-                            <div class="dropdown-arrow">
-                                <!-- Arrow Icon -->
-                            </div>
-                        </div>
-                        <div class="dropdown-header-bottom">
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Genre Filter -->
-                <div class="custom-dropdown" data-dropdown="genre-dropdown">
-                    <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-header-top">
-                            <div class="header-label">
-                                <i class="fas fa-film" aria-hidden="true"></i>
-                                <span>Genres</span>
-                            </div>
-                            <div class="dropdown-arrow">
-                                <!-- Arrow Icon -->
-                            </div>
-                        </div>
-                        <div class="dropdown-header-bottom">
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Country Filter -->
-                <div class="custom-dropdown" data-dropdown="country-dropdown">
-                    <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-header-top">
-                            <div class="header-label">
-                                <i class="fas fa-globe" aria-hidden="true"></i>
-                                <span>Länder</span>
-                            </div>
-                            <div class="dropdown-arrow">
-                                <!-- Arrow Icon -->
-                            </div>
-                        </div>
-                        <div class="dropdown-header-bottom">
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Standort Filter -->
-                <div class="custom-dropdown" data-dropdown="standort-dropdown">
-                    <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-header-top">
-                            <div class="header-label">
-                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                <span>Standort</span>
-                            </div>
-                            <div class="dropdown-arrow">
-                                <!-- Arrow Icon -->
-                            </div>
-                        </div>
-                        <div class="dropdown-header-bottom">
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Medium Filter -->
-                <div class="custom-dropdown" data-dropdown="medium-dropdown">
-                    <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-header-top">
-                            <div class="header-label">
-                                <i class="fas fa-compact-disc" aria-hidden="true"></i>
-                                <span>Medium</span>
-                            </div>
-                            <div class="dropdown-arrow">
-                                <!-- Arrow Icon -->
-                            </div>
-                        </div>
-                        <div class="dropdown-header-bottom">
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                            <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sort By Dropdown -->
-                <div class="custom-dropdown" data-dropdown="sort-dropdown">
-                    <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                        <div class="dropdown-header-top">
-                            <div class="header-label">
-                                <i class="fas fa-sort" aria-hidden="true"></i>
-                                <span>Sortierung</span>
-                            </div>
-                            <div class="dropdown-arrow">
-                                <!-- Arrow Icon -->
-                            </div>
-                        </div>
-                        <div class="dropdown-header-bottom">
-                            <span class="selection-badge">
-                                <span class="badge-label"></span>
-                            </span>
-                            <!-- No clear icon for single-select dropdowns -->
-                        </div>
-                    </div>
-                </div>
-                <!-- Clear All Filters Button -->
-                <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen">
-                    <i class="fas fa-undo"></i>
-                    <span class="sr-only">Alle Filter zurücksetzen</span>
-                </button>  
-
+    <section class="catalog-search"> 
+        <div class="search-dropdown-container">
+            <!-- Search Box Container -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
+                <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
             </div>
-        </form>
-    </div>
 
-    <!-- Dropdown Lists Container -->
-    <div class="dropdown-lists-container">
-        <!-- Year Dropdown List -->
-        <div class="dropdown-list" id="year-dropdown-list">
-            <!-- Buttons populated dynamically -->
+            <form id="filter-form">
+                <!-- Main Filters Container Wrapper -->
+                <div class="main-filters-container-wrapper">
+                    <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
+                    <div class="main-filters-container">
+                        <!-- Left Navigation Arrow -->
+                        <button class="filter-nav-arrow left hidden" aria-label="Scroll Left">
+                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <!-- Year Filter -->
+                        <div class="custom-dropdown" data-dropdown="year-dropdown">
+                            <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                <div class="dropdown-header-top">
+                                    <div class="header-label">
+                                        <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                        <span>Jahre</span>
+                                    </div>
+                                    <div class="dropdown-arrow">
+                                        <!-- Arrow Icon -->
+                                    </div>
+                                </div>
+                                <div class="dropdown-header-bottom">
+                                    <span class="selection-badge">
+                                        <span class="badge-label"></span>
+                                    </span>
+                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Genre Filter -->
+                        <div class="custom-dropdown" data-dropdown="genre-dropdown">
+                            <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                <div class="dropdown-header-top">
+                                    <div class="header-label">
+                                        <i class="fas fa-film" aria-hidden="true"></i>
+                                        <span>Genres</span>
+                                    </div>
+                                    <div class="dropdown-arrow">
+                                        <!-- Arrow Icon -->
+                                    </div>
+                                </div>
+                                <div class="dropdown-header-bottom">
+                                    <span class="selection-badge">
+                                        <span class="badge-label"></span>
+                                    </span>
+                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Country Filter -->
+                        <div class="custom-dropdown" data-dropdown="country-dropdown">
+                            <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                <div class="dropdown-header-top">
+                                    <div class="header-label">
+                                        <i class="fas fa-globe" aria-hidden="true"></i>
+                                        <span>Länder</span>
+                                    </div>
+                                    <div class="dropdown-arrow">
+                                        <!-- Arrow Icon -->
+                                    </div>
+                                </div>
+                                <div class="dropdown-header-bottom">
+                                    <span class="selection-badge">
+                                        <span class="badge-label"></span>
+                                    </span>
+                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Standort Filter -->
+                        <div class="custom-dropdown" data-dropdown="standort-dropdown">
+                            <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                <div class="dropdown-header-top">
+                                    <div class="header-label">
+                                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                        <span>Standort</span>
+                                    </div>
+                                    <div class="dropdown-arrow">
+                                        <!-- Arrow Icon -->
+                                    </div>
+                                </div>
+                                <div class="dropdown-header-bottom">
+                                    <span class="selection-badge">
+                                        <span class="badge-label"></span>
+                                    </span>
+                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medium Filter -->
+                        <div class="custom-dropdown" data-dropdown="medium-dropdown">
+                            <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                <div class="dropdown-header-top">
+                                    <div class="header-label">
+                                        <i class="fas fa-compact-disc" aria-hidden="true"></i>
+                                        <span>Medium</span>
+                                    </div>
+                                    <div class="dropdown-arrow">
+                                        <!-- Arrow Icon -->
+                                    </div>
+                                </div>
+                                <div class="dropdown-header-bottom">
+                                    <span class="selection-badge">
+                                        <span class="badge-label"></span>
+                                    </span>
+                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sort By Dropdown -->
+                        <div class="custom-dropdown" data-dropdown="sort-dropdown">
+                            <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                <div class="dropdown-header-top">
+                                    <div class="header-label">
+                                        <i class="fas fa-sort" aria-hidden="true"></i>
+                                        <span>Sortierung</span>
+                                    </div>
+                                    <div class="dropdown-arrow">
+                                        <!-- Arrow Icon -->
+                                    </div>
+                                </div>
+                                <div class="dropdown-header-bottom">
+                                    <span class="selection-badge">
+                                        <span class="badge-label"></span>
+                                    </span>
+                                    <!-- No clear icon for single-select dropdowns -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Clear All Filters Button -->
+                        <button id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
+                            <i class="fas fa-undo" aria-hidden="true"></i>
+                            <span class="sr-only">Alle Filter zurücksetzen</span>
+                        </button>  
+
+                    </div>
+                    <!-- Right Navigation Arrow -->
+                    <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </form>
         </div>
-        <!-- Genre Dropdown List -->
-        <div class="dropdown-list" id="genre-dropdown-list">
-            <!-- Buttons populated dynamically -->
+
+        <!-- Dropdown Lists Container -->
+        <div class="dropdown-lists-container">
+            <!-- Year Dropdown List -->
+            <div class="dropdown-list" id="year-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Genre Dropdown List -->
+            <div class="dropdown-list" id="genre-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Country Dropdown List -->
+            <div class="dropdown-list" id="country-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Standort Dropdown List -->
+            <div class="dropdown-list" id="standort-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Medium Dropdown List -->
+            <div class="dropdown-list" id="medium-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
+            <!-- Sort Dropdown List -->
+            <div class="dropdown-list" id="sort-dropdown-list">
+                <!-- Buttons populated dynamically -->
+            </div>
         </div>
-        <!-- Country Dropdown List -->
-        <div class="dropdown-list" id="country-dropdown-list">
-            <!-- Buttons populated dynamically -->
-        </div>
-        <!-- Standort Dropdown List -->
-        <div class="dropdown-list" id="standort-dropdown-list">
-            <!-- Buttons populated dynamically -->
-        </div>
-        <!-- Medium Dropdown List -->
-        <div class="dropdown-list" id="medium-dropdown-list">
-            <!-- Buttons populated dynamically -->
-        </div>
-        <!-- Sort Dropdown List -->
-        <div class="dropdown-list" id="sort-dropdown-list">
-            <!-- Buttons populated dynamically -->
-        </div>
-    </div>
-</section>
+    </section>
 
 
 

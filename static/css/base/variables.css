@@ -1,31 +1,30 @@
+/* variables.css */
+
 :root {
     /* Color Variables */
-    --primary-color: #000000; /* Solid Black for main backgrounds */
-    --secondary-color: #1a1a1a; /* Dark Gray for secondary sections */
-    --accent-color: #e74c3c; /* Define accent color */
+    --primary-color: #1a1a1a; /* Dark Gray for primary elements */
+    --secondary-color: #333333; /* Darker Gray for secondary elements */
+    --accent-color: #e74c3c; /* Accent color (e.g., buttons, highlights) */
     --background-light: #ffffff; /* White for light backgrounds */
-    --background-dark: #1a1a1a; /* Dark gray for sections */
-    --primary-color: #333;
-    --primary-bg-color: #1e1e1e; /* Define primary background color */
-    --secondary-bg-color: #333;    
-    --text-color: #f5f5f5;
+    --background-dark: #1e1e1e; /* Dark gray for backgrounds */
+    --text-color: #f5f5f5; /* Light text color */
     --text-light: #ffffff; /* White text for dark backgrounds */
     --text-dark: #000000; /* Black text for light backgrounds */
     --secondary-text-color: #bfbfbf; /* Muted Light Gray */
     --link-color: #e7b000; /* Yellow for links */
-    --link-hover-color: #ff6347; /* Define link hover color */
-    --button-bg: #e7b000; /* Yellow for buttons */
-    --button-hover-bg: #ff6a00; /* Orange for button hover background */
-    --hover-bg: #444;
+    --link-hover-color: #ff6347; /* Link hover color */
+    --button-background: rgba(68, 68, 68, 0.9); /* Button background */
+    --button-hover-background: rgba(85, 85, 85, 0.9); /* Button hover background */
     --border-color: #333333; /* Darker Gray for borders */
     --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle shadow color */
-    --font-heading: 'Segoe UI', 'sans-serif;' /* Elegant Serif for Headings */
-    --font-body: 'Roboto', sans-serif; /* Clean Sans-Serif for Body */
+    --font-heading: 'Segoe UI', sans-serif; /* Font for headings */
+    --font-body: 'Roboto', sans-serif; /* Font for body text */
     --transition-duration: 0.3s; /* Consistent transition duration */
-    --filter-width: 98%; 
-    --placeholder-color: #aaa;
+    --filter-width: 98%; /* Width for filters */
+    --placeholder-color: #aaa; /* Placeholder text color */
     --scrollbar-bg: #333;
-    --scrollbar-thumb: #555;    
+    --scrollbar-thumb: #555;
+    --dropdown-background: rgba(44, 44, 44, 0.95); /* Dropdown background */
+    --button-active-background: var(--accent-color); /* Active button background */
+    --arrow-button-size: 40px; /* Size for navigation arrows */
 }
-
-

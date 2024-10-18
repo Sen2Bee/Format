@@ -1,11 +1,10 @@
 /* reset.css */
 
 /* Refined Reset */
-
 *, *::before, *::after {
     margin: 0;
     padding: 0;
-    box-sizing: inherit; /* Use inherit to control from a higher element */
+    box-sizing: inherit;
 }
 
 /* Apply box-sizing globally */
@@ -16,13 +15,13 @@ html {
 /* Normalize link styles but allow color */
 a {
     text-decoration: none;
-    color: inherit; /* Allow for custom link colors */
+    color: inherit;
 }
 
 /* Images should not exceed their container */
 img {
     max-width: 100%;
-    height: auto; /* Maintain aspect ratio */
+    height: auto;
 }
 
 /* Lists should not have default styles */
@@ -33,8 +32,8 @@ ul, ol {
 
 /* Prevent overflow issues */
 html, body {
-    overflow-x: hidden; /* Restrict horizontal overflow */
-    font-family: 'Open Sans', sans-serif; /* Set default font */
+    overflow-x: hidden;
+    font-family: 'Open Sans', sans-serif;
     background-color: var(--background-dark);
 }
 

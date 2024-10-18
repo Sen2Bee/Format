@@ -6,15 +6,15 @@
 /* Typography Styles */
 body {
     font-family: var(--font-body);
-    color: var(--text-dark);
-    background-color: var(--background-light);
+    color: var(--text-light);
+    background-color: var(--background-dark);
     line-height: 1.6;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    color: var(--primary-color);
+    color: var(--text-light);
     margin-bottom: 15px;
 }
 
