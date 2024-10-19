@@ -19,42 +19,7 @@
     display: none;
 }
 
-/* Navigation Arrows */
-.filter-nav-arrow {
-    position: absolute;
-    top: 65%;
-    transform: translateY(-50%);
-    width: var(--arrow-button-size);
-    height: var(--arrow-button-size);
-    background-color: rgba(108, 107, 107, 0.3);
-    border: none;
-    color: var(--accent-color);
-    font-size: 1.5em;
-    cursor: pointer;
-    z-index: 5000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
-}
 
-.filter-nav-arrow:hover {
-    background-color: rgba(108, 107, 107, 0.8);
-}
-
-.filter-nav-arrow.left {
-    left: 0;
-}
-
-.filter-nav-arrow.right {
-    right: 0;
-}
-
-/* Hide arrows when not needed */
-.filter-nav-arrow.hidden {
-    display: none;
-}
 
 
 /* Custom Dropdowns */
