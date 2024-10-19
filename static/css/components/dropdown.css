@@ -164,8 +164,8 @@
 /* Selection Badge */
 .selection-badge {
     position: absolute;
-    bottom: -5px; /* Overlaps 5px below the header */
-    right: 10px; /* Adjust as needed */
+    bottom: 5px; /* Moves the badge 10px below the bottom of the header. Adjust as needed */
+    right: 5px; /* Adjust as needed */
     /* background-color: var(--accent-color); */
     color: var(--accent-color);
     font-size: 0.8em;
@@ -179,6 +179,8 @@
     /* Removed margin-right to prevent conflict with absolute positioning */
     z-index: 4500; /* Ensure it appears above other elements */
 }
+
+
 
 
 /* Show Clear Icon and Badge When Items Are Selected */

@@ -32,7 +32,7 @@
     text-align: center;
     box-sizing: border-box;
     font-family: var(--font-body);
-    height: var(--big-button-height); /* Example height */
+    height: 40px; /* Example height */
 }
 
 .filter-button.selected,
