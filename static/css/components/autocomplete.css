@@ -15,6 +15,12 @@
     z-index: 10000; /* Ensure it's above other elements within the same stacking context */
     scrollbar-width: thin; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
+
+    /* Hide scrollbar for Firefox */
+    scrollbar-width: none;
+    
+    /* Hide scrollbar for Internet Explorer and Edge Legacy */
+    -ms-overflow-style: none;    
 }
 
 #autocomplete-list::-webkit-scrollbar {

@@ -370,6 +370,7 @@ function showAutocompleteSuggestions(suggestions) {
     autocompleteList.style.left = `${searchBoxRect.left + window.scrollX}px`;
     autocompleteList.style.width = `${searchBoxRect.width}px`;
     autocompleteList.style.zIndex = '10000'; // Ensure it's on top
+    
 
     autocompleteList.innerHTML = '';
 
