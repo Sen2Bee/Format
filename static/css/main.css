@@ -27,3 +27,131 @@
 @import url('./pages/about.css');
 @import url('./pages/contact.css');
 @import url('./pages/events.css');
+
+
+/* Add these styles to your main CSS file */
+
+/* Movie Listings Grid Layout */
+.movie-listings {
+    display: grid;
+    grid-gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Default to 1 column */
+.movie-listings.columns-1 {
+    grid-template-columns: 1fr;
+}
+
+/* 3 columns for 21-60 movies */
+.movie-listings.columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* 4 columns for 61-100 movies */
+.movie-listings.columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* 5 columns for more than 100 movies */
+.movie-listings.columns-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* Movie Card Styles */
+.movie-card {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.movie-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 150%; /* 2:3 aspect ratio */
+    overflow: hidden;
+}
+
+.image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.info-section {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.header-section h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-family: var(--font-heading);
+}
+
+.metadata p {
+    font-size: 0.9em;
+    color: var(--secondary-text-color);
+    margin: 5px 0;
+}
+
+.overview-section p {
+    font-size: 0.9em;
+    color: var(--text-color);
+    margin-top: 10px;
+}
+
+.more-link {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.more-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .movie-listings.columns-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .movie-listings.columns-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-listings.columns-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-listings.columns-2 {
+        grid-template-columns: 1fr;
+    }
+}

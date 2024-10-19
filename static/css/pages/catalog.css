@@ -1,69 +1,108 @@
 /* File: static/css/pages/catalog.css */
-/* catalog.css */
-
-
-
-/* No longer needed as search-container and custom-dropdown are handled in their respective CSS */
 
 /* Movie Listings Section */
 .movie-listings {
+    padding: 20px;
+    background-color: var(--background-dark);
+    display: grid;
+    grid-template-columns: 1fr; /* Default to one column */
+    gap: 20px;
+}
+
+.movie-listings.columns-1 {
+    grid-template-columns: 1fr;
+}
+
+.movie-listings.columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.movie-listings.columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.movie-listings.columns-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* Movie Card Styles */
+.movie-card {
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    overflow: hidden;
+    color: var(--text-light);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    padding: 10px 20px;
-    background-color: var(--background-dark); /* Dark background for the movie listing */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.movie-listings .no-movies-message {
-    color: #fff;
-    font-size: 1.2rem;
-    margin-top: 20px;
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Swiper Container */
-.swiper-container {
+/* Adjust the content within the movie card */
+.movie-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.image-container img {
     width: 100%;
-    padding-bottom: 20px; /* Space for pagination bullets */
+    height: auto;
+    object-fit: cover;
 }
 
-.swiper-wrapper {
-    display: flex;
-    align-items: center;
+.info-section {
+    padding: 15px;
+    flex-grow: 1;
 }
 
-.swiper-slide {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 2px; /* Reduced padding for closer slides */
+.info-section h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
 }
 
-/* Responsive Styles for Notebook Resolution */
-@media (max-width: 1440px) {
-    .movie-listings {
-        gap: 25px; /* Adjust gap slightly for larger screens */
-    }
+.metadata {
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
 }
 
-/* Single Column Layout for Tablet */
+.overview-section {
+    padding: 15px;
+    background-color: var(--secondary-color);
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.overview-section p {
+    margin: 0;
+}
+
+.overview-section .more-link {
+    color: var(--link-color);
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.overview-section .more-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 1024px) {
-    .movie-listings {
-        gap: 20px; /* Smaller gap for tablet display */
-        padding: 40px 40px;
+    .movie-listings.columns-3,
+    .movie-listings.columns-4,
+    .movie-listings.columns-5 {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* Full Column Layout for Mobile */
 @media (max-width: 768px) {
-    .movie-listings {
-        gap: 15px; /* Reduced gap for mobile */
-        padding: 40px 20px;
-    }
-
-    .movie-card {
-        width: 90%; /* Make the movie cards narrower on mobile */
+    .movie-listings.columns-3,
+    .movie-listings.columns-4,
+    .movie-listings.columns-5 {
+        grid-template-columns: 1fr;
     }
 }
-
-

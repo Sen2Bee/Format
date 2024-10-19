@@ -7,7 +7,7 @@
 
 /* General Movie Card Container */
 .movie-card {
-    display: flex;
+    display: grid;
     flex-direction: column;
     background-color: #1e1e1e;
     color: var(--text-light);

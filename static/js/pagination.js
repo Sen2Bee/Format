@@ -1,22 +1,28 @@
-import { topPaginationContainer, bottomPaginationContainer } from './entry.js';  // Example import
-import { updateFilters } from './filter.js';  // Example import
+// File: static/js/pagination.js
+
+import { topPaginationContainer, bottomPaginationContainer } from './entry.js';  // Import pagination containers
+import { updateFilters } from './filter.js';  // Import the updateFilters function
 
 /**
  * Function to handle pagination updates for both top and bottom paginations
  */
-export function updatePagination(currentPage, totalPages) {
+export function updatePagination(currentPage, totalPages, totalMovies, columnsPerRow) {
     [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
         if (!paginationContainer) return;
 
-        paginationContainer.innerHTML = "";  // Bestehende Pagination-Buttons löschen
+        paginationContainer.innerHTML = "";  // Clear existing pagination buttons
 
         // Create the "Previous" Button
         let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
         let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
         paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
 
+        // Determine if ellipsis is needed
+        const showStartEllipsis = currentPage > 3;
+        const showEndEllipsis = currentPage < totalPages - 2;
+
         // Add first page and ellipsis if needed
-        if (currentPage > 3) {
+        if (showStartEllipsis) {
             paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
             paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
         }
@@ -30,7 +36,7 @@ export function updatePagination(currentPage, totalPages) {
         }
 
         // Add ellipsis and last page if needed
-        if (currentPage < totalPages - 2) {
+        if (showEndEllipsis) {
             paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
             paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
         }
@@ -41,22 +47,22 @@ export function updatePagination(currentPage, totalPages) {
         paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
     });
 
-    attachPaginationEventListeners();
+    attachPaginationEventListeners(columnsPerRow);
 }
 
 /**
  * Function to attach click event listeners for pagination buttons
  */
-export function attachPaginationEventListeners() {
+export function attachPaginationEventListeners(columnsPerRow) {
     const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
     paginationLinks.forEach(link => {
         link.addEventListener('click', function (event) {
             event.preventDefault();
             if (this.parentElement.classList.contains('disabled')) {
-                return;  // Klicks auf deaktivierte Buttons ignorieren
+                return;  // Ignore clicks on disabled buttons
             }
             const page = parseInt(this.getAttribute('data-page'));
-            if (!isNaN(page)) updateFilters(page, "attachPaginationEventListeners");  // Filterung mit ausgewählter Seite auslösen
+            if (!isNaN(page)) updateFilters(page);  // Trigger filter update with selected page
         });
     });
 }

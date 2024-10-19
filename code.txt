@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-19 18:38:49 ===
+=== Code Summary Generated at 2024-10-19 19:03:05 ===
 
 === Project Folder Structure ===
 
@@ -93,6 +93,134 @@ Format/
 @import url('./pages/about.css');
 @import url('./pages/contact.css');
 @import url('./pages/events.css');
+
+
+/* Add these styles to your main CSS file */
+
+/* Movie Listings Grid Layout */
+.movie-listings {
+    display: grid;
+    grid-gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Default to 1 column */
+.movie-listings.columns-1 {
+    grid-template-columns: 1fr;
+}
+
+/* 3 columns for 21-60 movies */
+.movie-listings.columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* 4 columns for 61-100 movies */
+.movie-listings.columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* 5 columns for more than 100 movies */
+.movie-listings.columns-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* Movie Card Styles */
+.movie-card {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.movie-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 150%; /* 2:3 aspect ratio */
+    overflow: hidden;
+}
+
+.image-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.info-section {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.header-section h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-family: var(--font-heading);
+}
+
+.metadata p {
+    font-size: 0.9em;
+    color: var(--secondary-text-color);
+    margin: 5px 0;
+}
+
+.overview-section p {
+    font-size: 0.9em;
+    color: var(--text-color);
+    margin-top: 10px;
+}
+
+.more-link {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.more-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .movie-listings.columns-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .movie-listings.columns-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .movie-listings.columns-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-listings.columns-2 {
+        grid-template-columns: 1fr;
+    }
+}
 
 --- File: static\css\base\reset.css ---
 /* reset.css */
@@ -510,286 +638,726 @@ button {
     display: none;
 }
 --- File: static\css\components\cards.css ---
-/* static/css/components/cards.css */
+// File: static/js/filter.js
 
-/* Import Additional Fonts for Themes */
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
+// Import necessary elements and functions
+import {
+    searchBox,
+    clearSearchBtn,
+    toggleFiltersButton,
+    searchDropdownContainer,
+    clearAllFiltersButton,
+    movieContainer,
+    toggleAdvancedFiltersButton,
+    advancedFiltersContainer
+} from './entry.js';
+import { updateCarouselTitle } from './carousel.js';
+import { showProgressIndicator, hideProgressIndicator } from './entry.js';
+import { updateMovieListings } from './catalog.js';
+import { updatePagination } from './pagination.js';
 
+let debounceTimer = null;
+const AUTOCOMPLETE_DEBOUNCE_DELAY = 500; // milliseconds
+const AUTOCOMPLETE_MIN_DIGITS = 2;
 
-
-/* General Movie Card Container */
-.movie-card {
-    display: flex;
-    flex-direction: column;
-    background-color: #1e1e1e;
-    color: var(--text-light);
-    border-radius: 10px;
-    margin: 20px auto;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 1100px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-    background-size: cover;
-    background-position: center;
+/**
+ * Initialize the toggle functionality for the filter panel and advanced filters
+ */
+export function initializeFilterPanelToggle() {
+    // Advanced Filters Toggle is now handled within the main filters
 }
 
-/* Movie Card Background Image */
-.movie-card.poster-background {
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
+/**
+ * Clear all filters and reset selections
+ */
+export function clearAllFilters() {
+    // Clear selections in all dropdowns
 
-/* Overlay for Improved Text Visibility */
-.movie-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay */
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1;
-}
+    const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
+    filterButtons.forEach(button => button.classList.remove('selected'));
 
-.movie-card:hover::before {
-    opacity: 1;
-}
+    // Hide clear icons
+    const clearIcons = document.querySelectorAll('.clear-icon');
+    clearIcons.forEach(icon => {
+        icon.classList.remove('visible');
+    });
 
-/* Movie Content Wrapper */
-.movie-content-wrapper {
-    display: grid;
-    grid-template-columns: 250px 1fr; /* Poster and content */
-    grid-template-areas: 
-        "poster metadata"
-        "overview overview"; /* Overview spans below */
-    gap: 20px;
-    background: rgba(30, 30, 30, 0.85);
-    z-index: 2;
-    border-radius: 10px;
-    position: relative;
-}
+    // Reset and hide selection badges
+    const selectionBadges = document.querySelectorAll('.selection-badge');
+    selectionBadges.forEach(badge => {
+        badge.textContent = '';
+        badge.classList.remove('visible');
+    });
 
-/* Image Container */
-.image-container {
-    grid-area: poster;
-    position: relative;
-    align-self: start;
-    transition: transform 0.3s ease;
-}
+    // For single-select dropdowns, ensure "Random" or first option is selected
+    const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
+    singleSelectDropdowns.forEach(dropdownList => {
+        const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
+        const optionsArray = Array.from(buttonsContainer.children).map(btn => btn.dataset.value);
+        const defaultOption = optionsArray.find(label => label.toLowerCase() === 'zufall');
+        const buttonToSelect = defaultOption
+            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`)
+            : buttonsContainer.firstElementChild;
 
-.image-container img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
+        if (buttonToSelect) {
+            buttonToSelect.classList.add('selected');
+            const badge = dropdownList.parentElement.querySelector('.selection-badge');
+            updateSelectionBadge([buttonToSelect.dataset.value], badge, dropdownList.id);
+        }
+    });
 
-.movie-card:hover .image-container img {
-    transform: scale(1.05); /* Zoom-in effect on hover */
-}
-
-/* Info Section */
-.info-section {
-    grid-area: metadata;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    z-index: 2;
-}
-
-/* Main Title Styling */
-.header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.header-section h2 {
-    margin: 0;
-    font-size: 1.8em;
-    color: var(--link-color); /* Bright Yellow for headline */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    font-family: var(--font-heading);
-    text-transform: uppercase;
-}
-
-/* Metadata Section */
-.metadata {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.metadata p {
-    margin: 5px 0;
-    color: var(--text-light); /* White text for metadata */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.metadata p strong,
-.metadata p span {
-    color: var(--text-light); /* Ensure white color for strong and span elements */
-    font-size: 1.1em;
-    font-weight: bold;
-}
-
-/* Inline Metadata */
-.inline-meta {
-    font-size: 1.1em;
-    color: var(--text-light); /* Use white color for inline meta */
-    padding-top: 10px;
-    border-top: 1px solid #444;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.standort {
-    color: var(--text-light); /* Use white text for location */
-    margin-top: 10px;
-    border-top: 1px solid #444;
-    padding-top: 10px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-/* Overview Section */
-.overview-section {
-    grid-area: overview;
-    padding: 15px;
-    background-color: rgba(37, 43, 54, 0.8);
-    border-radius: 8px;
-    color: var(--text-light); /* Use white color */
-    line-height: 1.4;
-    z-index: 2;
-    transition: font-weight 0.3s ease;
-    position: relative;
-}
-
-/* Enhanced Text Visibility in Overview */
-.overview-section p {
-    margin: 0;
-    color: var(--text-light); /* White text for overview */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-}
-
-.overview-section a {
-    color: var(--link-color); /* Bright yellow for links */
-    text-decoration: none;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-}
-
-.overview-section a:hover {
-    text-decoration: underline;
-}
-
-/* Responsive Styles for Tablet and Mobile */
-@media (max-width: 1024px) {
-    .movie-card {
-        width: 95%;
+    // Clear search box
+    if (searchBox) {
+        searchBox.value = '';
+        clearSearchBtn.classList.remove('visible');
+        hideAutocompleteSuggestions();
     }
 
-    .movie-content-wrapper {
-        grid-template-columns: 180px 1fr;
-        grid-template-areas: 
-            "poster metadata"
-            "overview overview";
-        gap: 15px;
-    }
+    // Trigger a filter update
+    triggerDropdownChangeEvent();
+}
 
-    .info-section {
-        padding: 15px;
-    }
+/**
+ * Initialize event listeners for action buttons like "Clear All"
+ */
+export function initializeFilterActionButtons() {
+    // Attach event listener to "Clear All" button
+    if (clearAllFiltersButton) {
+        clearAllFiltersButton.addEventListener('click', () => {
+            clearAllFilters();
+        });
 
-    .inline-meta,
-    .standort {
-        font-size: 0.95em;
+        // Ensure the button is accessible via keyboard
+        clearAllFiltersButton.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                clearAllFilters();
+            }
+        });
+    } else {
+        console.error("initializeFilterActionButtons: clearAllFiltersButton element not found.");
     }
 }
 
-@media (max-width: 768px) {
-    .movie-card {
-        width: 100%;
-        margin: 10px auto;
+/**
+ * Function to initialize dropdowns and attach necessary event listeners
+ */
+export function initializeFilterDropdowns() {
+    // Handle filter updates triggered by custom dropdowns
+    document.addEventListener('dropdownChange', () => {
+        updateFilters();
+    });
+
+    // Search box input event with debouncing
+    if (searchBox) {
+        searchBox.addEventListener('input', () => {
+            // Toggle visibility of the clear icon
+            if (searchBox.value.length > 0) {
+                clearSearchBtn.classList.add('visible');
+            } else {
+                clearSearchBtn.classList.remove('visible');
+            }
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                if (searchBox.value.length >= AUTOCOMPLETE_MIN_DIGITS) {
+                    handleAutocomplete();
+                } else {
+                    hideAutocompleteSuggestions();
+                }
+            }, AUTOCOMPLETE_DEBOUNCE_DELAY);
+        });
+    } else {
+        console.error("initializeFilterDropdowns: searchBox element not found.");
     }
 
-    .movie-content-wrapper {
-        grid-template-columns: 1fr;
-        grid-template-areas: 
-            "metadata"
-            "overview";
-        gap: 10px;
-        background: none;
+    // Clear search box and trigger update
+    if (clearSearchBtn && searchBox) {
+        clearSearchBtn.addEventListener('click', () => {
+            searchBox.value = '';
+            clearSearchBtn.classList.remove('visible');
+            triggerDropdownChangeEvent();
+            hideAutocompleteSuggestions();
+        });
+
+        // Ensure the clear button is accessible via keyboard
+        clearSearchBtn.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                searchBox.value = '';
+                clearSearchBtn.classList.remove('visible');
+                triggerDropdownChangeEvent();
+                hideAutocompleteSuggestions();
+            }
+        });
+    } else {
+        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
     }
 
-    .image-container {
-        display: none;
+    // Attach event listeners to dropdowns using event delegation
+    attachDropdownEventDelegation();
+
+    // Initialize filter navigation arrows
+    initializeFilterNavigationArrows();
+
+    // Initial filter update
+    triggerDropdownChangeEvent();
+}
+
+/**
+ * Function to attach event listeners to dropdowns using event delegation
+ */
+export function attachDropdownEventDelegation() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+    const dropdownLists = document.querySelectorAll('.dropdown-list');
+
+    // Function to handle dropdown toggling
+    function toggleDropdown(targetDropdown, header) {
+        const isVisible = targetDropdown.classList.contains('show');
+        if (isVisible) {
+            targetDropdown.classList.remove('show');
+            header.setAttribute('aria-expanded', 'false');
+        } else {
+            // Close other open dropdowns
+            document.querySelectorAll('.dropdown-list.show').forEach(list => {
+                list.classList.remove('show');
+                document.querySelector(`.dropdown-header[data-target="${list.id}"]`)?.setAttribute('aria-expanded', 'false');
+            });
+            targetDropdown.classList.add('show');
+            header.setAttribute('aria-expanded', 'true');
+        }
     }
 
-    .info-section,
-    .overview-section {
-        background: rgba(0, 0, 0, 0.6);
+    // Function to handle selection of dropdown items
+    function handleDropdownSelection(dropdownList, target) {
+        const isSingleSelect = dropdownList.classList.contains('single-select');
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+
+        if (isSingleSelect) {
+            dropdownList.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('selected'));
+            target.classList.add('selected');
+        } else {
+            target.classList.toggle('selected');
+        }
+
+        // Update the selection badge
+        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+        const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
+        updateSelectionBadge(selectedValues, selectionBadge, dropdownList.id);
+
+        // Update the visibility of the clear button
+        if (isSingleSelect) {
+            if (clearButton) clearButton.style.display = 'none';
+        } else {
+            if (selectedValues.length > 0) {
+                clearButton.classList.add('visible');
+            } else {
+                clearButton.classList.remove('visible');
+            }
+        }
+
+        // Trigger filter update
+        triggerDropdownChangeEvent();
+    }
+
+    // Function to clear selected items in a dropdown
+    function clearDropdownSelection(dropdownList) {
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+
+        // Deselect all buttons
+        dropdownList.querySelectorAll('.filter-button.selected').forEach(button => button.classList.remove('selected'));
+
+        // Clear the badge and hide clear button
+        updateSelectionBadge([], selectionBadge, dropdownList.id);
+        if (clearButton) clearButton.classList.remove('visible');
+
+        // Trigger filter update
+        triggerDropdownChangeEvent();
+    }
+
+    // Attach event listeners to dropdown headers
+    dropdownHeaders.forEach(header => {
+        header.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const targetDropdownId = header.getAttribute('data-target');
+            const targetDropdown = document.getElementById(targetDropdownId);
+            toggleDropdown(targetDropdown, header);
+        });
+
+        // Allow keyboard accessibility
+        header.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const targetDropdownId = header.getAttribute('data-target');
+                const targetDropdown = document.getElementById(targetDropdownId);
+                toggleDropdown(targetDropdown, header);
+            }
+        });
+    });
+
+    // Handle button clicks within the dropdowns using event delegation
+    dropdownLists.forEach(dropdownList => {
+        dropdownList.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target && target.classList.contains('filter-button')) {
+                event.preventDefault();
+                handleDropdownSelection(dropdownList, target);
+            }
+        });
+
+        // Handle clear button (only for multi-select dropdowns)
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const clearButton = dropdownHeader?.querySelector('.clear-icon');
+
+        if (clearButton) {
+            clearButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                clearDropdownSelection(dropdownList);
+            });
+
+            // Ensure the clear button is accessible via keyboard
+            clearButton.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    clearDropdownSelection(dropdownList);
+                }
+            });
+        }
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (event) => {
+        dropdownLists.forEach(dropdownList => {
+            const header = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+            if (!dropdownList.contains(event.target) && !header.contains(event.target)) {
+                dropdownList.classList.remove('show');
+                header.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+}
+
+/**
+ * Function to update selection badges based on selected values
+ * @param {Array} selectedValues - Array of selected values
+ * @param {HTMLElement} badgeElement - The badge element to update
+ * @param {string} dropdownListId - ID of the dropdown list
+ */
+export function updateSelectionBadge(selectedValues, badgeElement, dropdownListId) {
+    if (!badgeElement) return; // Early return if badgeElement is not provided
+
+    if (selectedValues.length > 0) {
+        badgeElement.textContent = selectedValues.join(', ');
+        badgeElement.classList.add('visible');
+        badgeElement.style.display = 'inline-block';
+    } else {
+        badgeElement.textContent = '';
+        badgeElement.classList.remove('visible');
+        badgeElement.style.display = 'none';
+    }
+    checkSelections();
+}
+
+/**
+ * Function to check if any selections exist and enable/disable the "Clear All" button
+ */
+function checkSelections() {
+    const selectedButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
+    
+    if (selectedButtons.length > 0) {
+        clearAllFiltersButton.removeAttribute('disabled');  // Enable the button
+    } else {
+        clearAllFiltersButton.setAttribute('disabled', 'true');  // Disable the button
     }
 }
 
-@media (max-width: 480px) {
-    .movie-card {
-        width: 100%;
-    }
+/**
+ * Helper function to get selected values from a specific dropdown list
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @returns {Array} - An array of selected values
+ */
+export function getSelectedValues(dropdownListId) {
+    const buttons = document.querySelectorAll(`#${dropdownListId} .filter-button.selected`);
+    return Array.from(buttons).map(btn => btn.dataset.value);
+}
 
-    .movie-content-wrapper {
-        grid-template-columns: 1fr;
-        grid-template-areas: 
-            "metadata"
-            "overview";
-        gap: 10px;
+/**
+ * Function to handle autocomplete for cast and director names
+ */
+function handleAutocomplete() {
+    const searchQuery = searchBox.value.trim();
+
+    if (searchQuery.length >= AUTOCOMPLETE_MIN_DIGITS) {
+        showProgressIndicator(); // Show the progress indicator before starting the fetch
+
+        fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                showAutocompleteSuggestions(data); // Populate autocomplete suggestions
+            })
+            .catch(error => {
+                console.error('Error fetching autocomplete suggestions:', error);
+                hideAutocompleteSuggestions(); // Hide suggestions on error
+            })
+            .finally(() => {
+                hideProgressIndicator(); // Always hide the progress indicator
+            });
+    } else {
+        hideAutocompleteSuggestions(); // Hide suggestions if query is too short
     }
 }
 
-/* Missing Poster Styling */
-.missing-poster {
-    border: 2px dashed red;
-    opacity: 0.6;
+/**
+ * Function to show autocomplete suggestions
+ * @param {Array} suggestions - Array of suggestion objects
+ */
+function showAutocompleteSuggestions(suggestions) {
+    let autocompleteList = document.getElementById('autocomplete-list');
+    if (!autocompleteList) {
+        autocompleteList = document.createElement('div');
+        autocompleteList.id = 'autocomplete-list';
+        autocompleteList.className = 'autocomplete-items';
+        document.body.appendChild(autocompleteList);
+    }
+
+    // Position the autocompleteList under the searchBox
+    const searchBoxRect = searchBox.getBoundingClientRect();
+    autocompleteList.style.position = 'absolute';
+    autocompleteList.style.top = `${searchBoxRect.bottom + window.scrollY}px`;
+    autocompleteList.style.left = `${searchBoxRect.left + window.scrollX}px`;
+    autocompleteList.style.width = `${searchBoxRect.width}px`;
+    autocompleteList.style.zIndex = '10000'; // Ensure it's on top
+
+    autocompleteList.innerHTML = '';
+
+    suggestions.forEach(item => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'autocomplete-item';
+        suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
+        suggestionItem.dataset.name = item.name;
+        suggestionItem.dataset.type = item.type;
+
+        suggestionItem.addEventListener('click', () => {
+            searchBox.value = item.name;
+            hideAutocompleteSuggestions();
+            triggerDropdownChangeEvent();
+        });
+
+        autocompleteList.appendChild(suggestionItem);
+    });
 }
 
-/* Desktop Styles */
-.desktop-layout {
-    display: grid; /* Default structure for desktop */
+/**
+ * Function to hide autocomplete suggestions
+ */
+function hideAutocompleteSuggestions() {
+    const autocompleteList = document.getElementById('autocomplete-list');
+    if (autocompleteList) {
+        autocompleteList.parentNode.removeChild(autocompleteList);
+    }
+    hideProgressIndicator();
 }
 
-.mobile-layout {
-    display: none; /* Hide mobile structure by default */
+/**
+ * Function to populate dropdown lists with options
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @param {Object|Array} options - An object with option labels as keys and counts as values or an array of labels
+ * @param {Array} selectedValues - An array of currently selected option values
+ * @param {boolean} singleSelect - If true, only one option can be selected
+ * @param {boolean} showCounts - If true, display counts alongside labels
+ */
+export function populateDropdown(dropdownListId, options, selectedValues = [], singleSelect = false, showCounts = true) {
+    const dropdownList = document.getElementById(dropdownListId);
+    if (!dropdownList) {
+        console.error(`populateDropdown: Element with ID '${dropdownListId}' not found.`);
+        return;
+    }
+
+    dropdownList.innerHTML = "";
+
+    // Add 'single-select' class if applicable
+    if (singleSelect) {
+        dropdownList.classList.add('single-select');
+    } else {
+        dropdownList.classList.remove('single-select');
+    }
+
+    let optionsArray = [];
+
+    if (typeof options === 'object' && !Array.isArray(options)) {
+        optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
+    } else if (Array.isArray(options)) {
+        optionsArray = options.map(label => ({ label }));
+    } else {
+        console.error(`populateDropdown: 'options' should be an object or array. Received:`, options);
+        return;
+    }
+
+    // Conditionally sort the options alphabetically, but skip sorting for "sort-dropdown-list"
+    if (dropdownListId !== 'sort-dropdown-list') {
+        optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    // For "sort-dropdown-list", implement ascending and descending options, excluding "Random"
+    if (dropdownListId === 'sort-dropdown-list') {
+        const extendedOptionsArray = [];
+        optionsArray.forEach(option => {
+            if (option.label.toLowerCase() === 'zufall') { // 'zufall' means 'random' in German
+                // Add "Random" without icons
+                extendedOptionsArray.push({
+                    label: option.label,
+                    value: `${option.label}`
+                });
+            } else {
+                // Add options with ascending and descending icons
+                extendedOptionsArray.push({
+                    value: option.label,
+                    label: option.label.includes("asc") ? `${option.label} <i class="fa fa-sort-amount-up"></i>` : `${option.label} <i class="fa fa-sort-amount-down"></i>`,
+                });
+            }
+        });
+
+        optionsArray = extendedOptionsArray;
+    }
+
+    // Create a container for the filter buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'filter-buttons-container';
+
+    // Render buttons
+    optionsArray.forEach(option => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "filter-button";
+
+        if (showCounts && option.count !== undefined) {
+            button.innerHTML = `${option.label} (${option.count})`;
+        } else {
+            button.innerHTML = option.label;
+        }
+
+        button.dataset.value = option.value || option.label;
+
+        if (selectedValues.includes(option.value || option.label)) {
+            button.classList.add('selected');
+        }
+        buttonsContainer.appendChild(button);
+    });
+
+    dropdownList.appendChild(buttonsContainer);
+
+    // Update the Selection Badge for normal filters
+    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge, dropdownList.id);
+    
+    // Hide the clear icon for single-select dropdowns
+    const clearButton = dropdownHeader.querySelector('.clear-icon');
+    if (singleSelect) {
+        if (clearButton) {
+            clearButton.style.display = 'none';
+        }
+    } else {
+        if (clearButton) {
+            clearButton.style.display = '';
+        }
+    }
 }
 
-/* Mobile Styles */
-@media (max-width: 768px) {
-    .desktop-layout {
-        display: none; /* Hide desktop layout on mobile */
+/**
+ * Function to update filters based on selected criteria and search query
+ * @param {number} page - The current page number for pagination
+ */
+export function updateFilters(page = 1) {
+    const selectedYears = getSelectedValues('year-dropdown-list');
+    const selectedGenres = getSelectedValues('genre-dropdown-list');
+    const selectedCountries = getSelectedValues('country-dropdown-list');
+    const selectedStandorte = getSelectedValues('standort-dropdown-list');
+    const selectedMedia = getSelectedValues('medium-dropdown-list');
+    const selectedSortByValues = getSelectedValues('sort-dropdown-list');
+    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"]; // 'Zufall' means 'Random'
+
+    const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+    const params = new URLSearchParams();
+    if (selectedYears.length) {
+        params.append('years', selectedYears.join(','));
+    }
+    if (selectedGenres.length) {
+        params.append('genres', selectedGenres.join(','));
+    }
+    if (selectedCountries.length) {
+        params.append('countries', selectedCountries.join(','));
+    }
+    if (selectedStandorte.length) {
+        params.append('standorte', selectedStandorte.join(','));
+    }
+    if (selectedMedia.length) {
+        params.append('media', selectedMedia.join(','));
+    }
+    if (selectedSortBy.length) {
+        params.append('sort_by', selectedSortBy[0]);
     }
 
-    .mobile-layout {
-        display: grid; /* Show mobile layout on small screens */
+    // Include search query regardless of length
+    if (searchQuery.length > 0) {
+        params.append('search', searchQuery);
     }
 
-    .mobile-layout .info-section,
-    .mobile-layout .overview-section {
-        padding: 10px;
-        margin: 10px;
+    params.append('page', page);
+
+    // Show the progress indicator before starting the fetch
+    showProgressIndicator();
+
+    fetch(`/filter_movies?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages, total_movies } = data;
+
+            // Determine number of columns per row based on total_movies
+            let columnsPerRow = 1; // Default to 1 column
+
+            if (total_movies > 100) {
+                columnsPerRow = 5;
+            } else if (total_movies > 60) {
+                columnsPerRow = 4;
+            } else if (total_movies > 20) {
+                columnsPerRow = 3;
+            } else {
+                columnsPerRow = 1;
+            }
+
+            // Populate dropdowns based on the filtered data
+            populateDropdown('year-dropdown-list', years, selectedYears);
+            populateDropdown('genre-dropdown-list', genres, selectedGenres);
+            populateDropdown('country-dropdown-list', countries, selectedCountries);
+            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
+            populateDropdown('medium-dropdown-list', media, selectedMedia);
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
+
+            // Update the movie listings with the current number of movies
+            updateMovieListings(movies);
+
+            // Update the layout by adding a class based on columnsPerRow
+            setGridLayout(columnsPerRow);
+
+            // Update pagination
+            updatePagination(current_page, total_pages, total_movies, columnsPerRow);
+        })
+        .catch(error => {
+            console.error('Error fetching filter data:', error);
+            if (movieContainer) {
+                movieContainer.innerHTML = `<p class="no-movies-message">An error occurred. Please try again later.</p>`;
+            }
+        })
+        .finally(() => {
+            hideProgressIndicator();
+        });
+}
+
+/**
+ * Function to set the grid layout based on the number of columns
+ * @param {number} columns - Number of columns per row
+ */
+function setGridLayout(columns) {
+    if (!movieContainer) return;
+
+    // Remove existing column classes
+    movieContainer.classList.remove('columns-1', 'columns-3', 'columns-4', 'columns-5');
+
+    // Add the appropriate column class
+    switch (columns) {
+        case 3:
+            movieContainer.classList.add('columns-3');
+            break;
+        case 4:
+            movieContainer.classList.add('columns-4');
+            break;
+        case 5:
+            movieContainer.classList.add('columns-5');
+            break;
+        default:
+            movieContainer.classList.add('columns-1');
+            break;
+    }
+}
+
+/**
+ * Initialize filter navigation arrows
+ */
+function initializeFilterNavigationArrows() {
+    const leftArrow = document.querySelector('.filter-nav-arrow.left');
+    const rightArrow = document.querySelector('.filter-nav-arrow.right');
+    const mainFiltersContainer = document.querySelector('.main-filters-container');
+
+    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
+        console.error("Filter navigation arrows or main filters container not found.");
+        return;
     }
 
-    .mobile-layout .header-section h2 {
-        font-size: 1.2em;
+    leftArrow.addEventListener('click', () => {
+        mainFiltersContainer.scrollBy({
+            left: -200,
+            behavior: 'smooth'
+        });
+    });
+
+    rightArrow.addEventListener('click', () => {
+        mainFiltersContainer.scrollBy({
+            left: 200,
+            behavior: 'smooth'
+        });
+    });
+
+    // Update arrow visibility on scroll
+    mainFiltersContainer.addEventListener('scroll', () => {
+        updateFilterNavigationArrowsVisibility();
+    });
+
+    // Update arrow visibility on window resize
+    window.addEventListener('resize', () => {
+        updateFilterNavigationArrowsVisibility();
+    });
+
+    // Initial check
+    updateFilterNavigationArrowsVisibility();
+}
+
+/**
+ * Update visibility of filter navigation arrows based on scroll position
+ */
+function updateFilterNavigationArrowsVisibility() {
+    const leftArrow = document.querySelector('.filter-nav-arrow.left');
+    const rightArrow = document.querySelector('.filter-nav-arrow.right');
+    const mainFiltersContainer = document.querySelector('.main-filters-container');
+
+    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
+        return;
     }
 
-    .mobile-layout .metadata {
-        padding: 0;
+    const scrollLeft = mainFiltersContainer.scrollLeft;
+    const maxScrollLeft = mainFiltersContainer.scrollWidth - mainFiltersContainer.clientWidth;
+
+    if (scrollLeft <= 0) {
+        leftArrow.classList.add('hidden');
+    } else {
+        leftArrow.classList.remove('hidden');
     }
 
-    .mobile-layout .overview-section {
-        font-size: 0.9em;
+    if (scrollLeft >= maxScrollLeft - 1) {
+        rightArrow.classList.add('hidden');
+    } else {
+        rightArrow.classList.remove('hidden');
     }
 }
 
@@ -2446,19 +3014,21 @@ export function updateCarouselTitle() {
 }
 
 --- File: static\js\catalog.js ---
+// File: static/js/catalog.js
+
 // Import any dependencies (if necessary)
-import { movieContainer } from './entry.js';  // Example import
+import { movieContainer } from './entry.js';  // Import the movie container element
 
 /**
- * Funktion zur Aktualisierung der Movie Listings basierend auf den Filterergebnissen
+ * Function to update the movie listings based on the filter results
  */
 export function updateMovieListings(movies) {
     if (!movieContainer) {
-        console.error("updateMovieListings: movieContainer Element nicht gefunden.");
+        console.error("updateMovieListings: movieContainer element not found.");
         return;
     }
 
-    movieContainer.innerHTML = "";  // Bestehende Einträge löschen
+    movieContainer.innerHTML = "";  // Clear existing entries
 
     if (movies.length > 0) {
         movies.forEach(movie => {
@@ -2467,9 +3037,8 @@ export function updateMovieListings(movies) {
 
             const movieCard = document.createElement('div');
             movieCard.className = 'movie-card poster-background';
-            movieCard.style.backgroundImage = `url('${imagePath}')`;
 
-            const maxOverviewLength = window.innerWidth <= 768 ? 150 : 350;
+            // Adjust the movieCard to be flexible for grid layout
             movieCard.innerHTML = `
                 <div class="movie-content-wrapper">
                     <div class="image-container">
@@ -2478,20 +3047,20 @@ export function updateMovieListings(movies) {
                     <div class="info-section">
                         <div class="header-section">
                             <h2>${movie.main_title}</h2>
-                            <!-- Weitere Elemente wie Buttons oder Icons -->
+                            <!-- Additional elements like buttons or icons -->
                         </div>
                         <div class="metadata">
-                            <p><strong>Regie:</strong> ${movie.director}</p>
-                            <p><strong>Schauspieler:</strong> ${movie.actors}</p>
+                            <p><strong>Director:</strong> ${movie.director}</p>
+                            <p><strong>Actors:</strong> ${movie.actors}</p>
                             <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
-                            <p class="standort"><strong>Standort:</strong> ${movie.format_standort || 'N/A'}</p>
-                            <p class="countries"><strong>Länder:</strong> ${movie.countries}</p> <!-- Länderinformationen -->
+                            <p class="standort"><strong>Location:</strong> ${movie.format_standort || 'N/A'}</p>
+                            <p class="countries"><strong>Countries:</strong> ${movie.countries}</p>
                         </div>
                     </div>
                     <div class="overview-section">
-                        ${movie.overview.length > maxOverviewLength
-                            ? `<p>${movie.overview.substring(0, maxOverviewLength)}... <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>`
-                            : `<p>${movie.overview} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>`}
+                        ${movie.overview.length > 350
+                            ? `<p>${movie.overview.substring(0, 350)}... <a href="/movie/${movie.movie_id}" class="more-link">more</a></p>`
+                            : `<p>${movie.overview} <a href="/movie/${movie.movie_id}" class="more-link">more</a></p>`}
                     </div>
                 </div>
             `;
@@ -2499,15 +3068,12 @@ export function updateMovieListings(movies) {
             movieContainer.appendChild(movieCard);
         });
     } else {
-        movieContainer.innerHTML = `<p class="no-movies-message">Keine Filme entsprechen den ausgewählten Filtern.</p>`;
+        movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
     }
 }
 
 --- File: static\js\entry.js ---
 // File: static/js/entry.js
-
-import { initializeSwiper } from './carousel.js';  // Example import
-import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js';  // Example imports
 
 /** Cache Elements and Buttons */
 export const clearSearchBtn = document.getElementById('clear-search');
@@ -2520,12 +3086,9 @@ export const carouselTitle = document.getElementById('carousel-title');
 export const toggleFiltersButton = document.getElementById('toggle-filters-button');
 export const searchDropdownContainer = document.querySelector('.search-dropdown-container');
 export const clearAllFiltersButton = document.getElementById('clear-all-filters-button');
-export const showAllResultsButton = document.getElementById('show-all-results-button');
 // New elements for advanced filters
 export const toggleAdvancedFiltersButton = document.getElementById('toggle-advanced-filters-button');
 export const advancedFiltersContainer = document.getElementById('advanced-filters-container');
-
-
 
 /** Genre to Font Mapping */
 export const genreFontMapping = {
@@ -2585,7 +3148,8 @@ import { updateMovieListings } from './catalog.js';
 import { updatePagination } from './pagination.js';
 
 let debounceTimer = null;
-let autocomplete_min_digits = 2;
+const AUTOCOMPLETE_DEBOUNCE_DELAY = 500; // milliseconds
+const AUTOCOMPLETE_MIN_DIGITS = 2;
 
 /**
  * Initialize the toggle functionality for the filter panel and advanced filters
@@ -2616,7 +3180,7 @@ export function clearAllFilters() {
         badge.classList.remove('visible');
     });
 
-    // For single-select dropdowns, ensure "Zufall" or first option is selected
+    // For single-select dropdowns, ensure "Random" or first option is selected
     const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
     singleSelectDropdowns.forEach(dropdownList => {
         const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
@@ -2643,8 +3207,6 @@ export function clearAllFilters() {
     // Trigger a filter update
     triggerDropdownChangeEvent();
 }
-
-
 
 /**
  * Initialize event listeners for action buttons like "Clear All"
@@ -2688,12 +3250,12 @@ export function initializeFilterDropdowns() {
             }
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                if (searchBox.value.length > autocomplete_min_digits) {
-                    // triggerDropdownChangeEvent();
+                if (searchBox.value.length >= AUTOCOMPLETE_MIN_DIGITS) {
                     handleAutocomplete();
+                } else {
+                    hideAutocompleteSuggestions();
                 }
-
-            }, 2000); // Reduced debounce time for better responsiveness
+            }, AUTOCOMPLETE_DEBOUNCE_DELAY);
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
@@ -2724,7 +3286,6 @@ export function initializeFilterDropdowns() {
 
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
-
 
     // Initialize filter navigation arrows
     initializeFilterNavigationArrows();
@@ -2870,31 +3431,13 @@ export function attachDropdownEventDelegation() {
     });
 }
 
-
 /**
- * Function to toggle dropdown visibility
+ * Function to update selection badges based on selected values
+ * @param {Array} selectedValues - Array of selected values
+ * @param {HTMLElement} badgeElement - The badge element to update
+ * @param {string} dropdownListId - ID of the dropdown list
  */
-export function toggleDropdown(dropdownList, header) {
-    const isVisible = dropdownList.classList.contains('show');
-    if (isVisible) {
-        dropdownList.classList.remove('show');
-        header.setAttribute('aria-expanded', 'false');
-    } else {
-        // Close other dropdowns
-        const allDropdownLists = document.querySelectorAll('.dropdown-list.show');
-        allDropdownLists.forEach(list => {
-            list.classList.remove('show');
-            const otherHeader = document.querySelector(`.dropdown-header[data-target="${list.id}"]`);
-            if (otherHeader) {
-                otherHeader.setAttribute('aria-expanded', 'false');
-            }
-        });
-        dropdownList.classList.add('show');
-        header.setAttribute('aria-expanded', 'true');
-    }
-}
-
-export function updateSelectionBadge(selectedValues, badgeElement) {
+export function updateSelectionBadge(selectedValues, badgeElement, dropdownListId) {
     if (!badgeElement) return; // Early return if badgeElement is not provided
 
     if (selectedValues.length > 0) {
@@ -2909,7 +3452,9 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     checkSelections();
 }
 
-// Function to check if any selections exist and enable/disable the "Clear All" button
+/**
+ * Function to check if any selections exist and enable/disable the "Clear All" button
+ */
 function checkSelections() {
     const selectedButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
     
@@ -2918,15 +3463,6 @@ function checkSelections() {
     } else {
         clearAllFiltersButton.setAttribute('disabled', 'true');  // Disable the button
     }
-}
-
-
-/**
- * Function to trigger a custom event to notify filter.js of dropdown changes
- */
-export function triggerDropdownChangeEvent() {
-    const event = new CustomEvent('dropdownChange');
-    document.dispatchEvent(event);
 }
 
 /**
@@ -2942,13 +3478,10 @@ export function getSelectedValues(dropdownListId) {
 /**
  * Function to handle autocomplete for cast and director names
  */
-/**
- * Function to handle autocomplete for cast and director names
- */
 function handleAutocomplete() {
     const searchQuery = searchBox.value.trim();
 
-    if (searchQuery.length >= autocomplete_min_digits) {
+    if (searchQuery.length >= AUTOCOMPLETE_MIN_DIGITS) {
         showProgressIndicator(); // Show the progress indicator before starting the fetch
 
         fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
@@ -2973,7 +3506,6 @@ function handleAutocomplete() {
     }
 }
 
-
 /**
  * Function to show autocomplete suggestions
  * @param {Array} suggestions - Array of suggestion objects
@@ -2994,7 +3526,6 @@ function showAutocompleteSuggestions(suggestions) {
     autocompleteList.style.left = `${searchBoxRect.left + window.scrollX}px`;
     autocompleteList.style.width = `${searchBoxRect.width}px`;
     autocompleteList.style.zIndex = '10000'; // Ensure it's on top
-    
 
     autocompleteList.innerHTML = '';
 
@@ -3066,12 +3597,12 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         optionsArray.sort((a, b) => a.label.localeCompare(b.label));
     }
 
-    // For "sort-dropdown-list", implement ascending and descending options, excluding "Zufall"
+    // For "sort-dropdown-list", implement ascending and descending options, excluding "Random"
     if (dropdownListId === 'sort-dropdown-list') {
         const extendedOptionsArray = [];
         optionsArray.forEach(option => {
-            if (option.label.toLowerCase() === 'zufall') {
-                // Add "Zufall" without icons
+            if (option.label.toLowerCase() === 'zufall') { // 'zufall' means 'random' in German
+                // Add "Random" without icons
                 extendedOptionsArray.push({
                     label: option.label,
                     value: `${option.label}`
@@ -3119,7 +3650,7 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     const selectionBadge = dropdownHeader.querySelector('.selection-badge');
     const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
     const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
-    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge, dropdownList.id);
     
     // Hide the clear icon for single-select dropdowns
     const clearButton = dropdownHeader.querySelector('.clear-icon');
@@ -3145,10 +3676,9 @@ export function updateFilters(page = 1) {
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
     const selectedSortByValues = getSelectedValues('sort-dropdown-list');
-    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
+    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"]; // 'Zufall' means 'Random'
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
-    console.log("updateFilters", searchQuery)
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
@@ -3183,11 +3713,20 @@ export function updateFilters(page = 1) {
     fetch(`/filter_movies?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            // console.log("API Response Data:", data);
-            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages, total_movies } = data;
 
-            // Define sort_options here if not provided by the server
-            // const sort_options = ['Zufall', 'Titel', 'Jahr', 'Bewertung'];
+            // Determine number of columns per row based on total_movies
+            let columnsPerRow = 1; // Default to 1 column
+
+            if (total_movies > 100) {
+                columnsPerRow = 5;
+            } else if (total_movies > 60) {
+                columnsPerRow = 4;
+            } else if (total_movies > 20) {
+                columnsPerRow = 3;
+            } else {
+                columnsPerRow = 1;
+            }
 
             // Populate dropdowns based on the filtered data
             populateDropdown('year-dropdown-list', years, selectedYears);
@@ -3197,9 +3736,14 @@ export function updateFilters(page = 1) {
             populateDropdown('medium-dropdown-list', media, selectedMedia);
             populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
 
+            // Update the movie listings with the current number of movies
             updateMovieListings(movies);
-            updatePagination(current_page, total_pages);
-            updateFilterNavigationArrowsVisibility();
+
+            // Update the layout by adding a class based on columnsPerRow
+            setGridLayout(columnsPerRow);
+
+            // Update pagination
+            updatePagination(current_page, total_pages, total_movies, columnsPerRow);
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
@@ -3210,6 +3754,33 @@ export function updateFilters(page = 1) {
         .finally(() => {
             hideProgressIndicator();
         });
+}
+
+/**
+ * Function to set the grid layout based on the number of columns
+ * @param {number} columns - Number of columns per row
+ */
+function setGridLayout(columns) {
+    if (!movieContainer) return;
+
+    // Remove existing column classes
+    movieContainer.classList.remove('columns-1', 'columns-3', 'columns-4', 'columns-5');
+
+    // Add the appropriate column class
+    switch (columns) {
+        case 3:
+            movieContainer.classList.add('columns-3');
+            break;
+        case 4:
+            movieContainer.classList.add('columns-4');
+            break;
+        case 5:
+            movieContainer.classList.add('columns-5');
+            break;
+        default:
+            movieContainer.classList.add('columns-1');
+            break;
+    }
 }
 
 /**
@@ -3280,7 +3851,6 @@ function updateFilterNavigationArrowsVisibility() {
         rightArrow.classList.remove('hidden');
     }
 }
-
 
 --- File: static\js\hero.js ---
 document.addEventListener('DOMContentLoaded', function () {
@@ -3503,25 +4073,31 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 --- File: static\js\pagination.js ---
-import { topPaginationContainer, bottomPaginationContainer } from './entry.js';  // Example import
-import { updateFilters } from './filter.js';  // Example import
+// File: static/js/pagination.js
+
+import { topPaginationContainer, bottomPaginationContainer } from './entry.js';  // Import pagination containers
+import { updateFilters } from './filter.js';  // Import the updateFilters function
 
 /**
  * Function to handle pagination updates for both top and bottom paginations
  */
-export function updatePagination(currentPage, totalPages) {
+export function updatePagination(currentPage, totalPages, totalMovies, columnsPerRow) {
     [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
         if (!paginationContainer) return;
 
-        paginationContainer.innerHTML = "";  // Bestehende Pagination-Buttons löschen
+        paginationContainer.innerHTML = "";  // Clear existing pagination buttons
 
         // Create the "Previous" Button
         let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
         let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
         paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
 
+        // Determine if ellipsis is needed
+        const showStartEllipsis = currentPage > 3;
+        const showEndEllipsis = currentPage < totalPages - 2;
+
         // Add first page and ellipsis if needed
-        if (currentPage > 3) {
+        if (showStartEllipsis) {
             paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
             paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
         }
@@ -3535,7 +4111,7 @@ export function updatePagination(currentPage, totalPages) {
         }
 
         // Add ellipsis and last page if needed
-        if (currentPage < totalPages - 2) {
+        if (showEndEllipsis) {
             paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
             paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
         }
@@ -3546,22 +4122,22 @@ export function updatePagination(currentPage, totalPages) {
         paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
     });
 
-    attachPaginationEventListeners();
+    attachPaginationEventListeners(columnsPerRow);
 }
 
 /**
  * Function to attach click event listeners for pagination buttons
  */
-export function attachPaginationEventListeners() {
+export function attachPaginationEventListeners(columnsPerRow) {
     const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
     paginationLinks.forEach(link => {
         link.addEventListener('click', function (event) {
             event.preventDefault();
             if (this.parentElement.classList.contains('disabled')) {
-                return;  // Klicks auf deaktivierte Buttons ignorieren
+                return;  // Ignore clicks on disabled buttons
             }
             const page = parseInt(this.getAttribute('data-page'));
-            if (!isNaN(page)) updateFilters(page, "attachPaginationEventListeners");  // Filterung mit ausgewählter Seite auslösen
+            if (!isNaN(page)) updateFilters(page);  // Trigger filter update with selected page
         });
     });
 }
@@ -3645,6 +4221,7 @@ export function attachPaginationEventListeners() {
         <p>Loading movies...</p>
     </div> 
         
+
     <!-- Catalog Search Section -->
     <section class="catalog-search"> 
         <div class="search-dropdown-container">
@@ -3790,7 +4367,7 @@ export function attachPaginationEventListeners() {
                             </div>
                         </div>
                         <!-- Clear All Filters Button -->
-                        <button type="button"  id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
+                        <button type="button" id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
                             <i class="fas fa-undo" aria-hidden="true"></i>
                             <span class="sr-only">Alle Filter zurücksetzen</span>
                         </button>  
@@ -3849,7 +4426,7 @@ export function attachPaginationEventListeners() {
         <section class="movie-listings-container" style="position: relative; background-color: var(--primary-bg-color);">
 
             <!-- Movie Listings Section -->
-            <section class="movie-listings">
+            <section class="movie-listings columns-1">
                 <!-- Movie cards will be dynamically populated here -->
             </section>
         </section>

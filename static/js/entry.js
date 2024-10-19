@@ -1,8 +1,5 @@
 // File: static/js/entry.js
 
-import { initializeSwiper } from './carousel.js';  // Example import
-import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js';  // Example imports
-
 /** Cache Elements and Buttons */
 export const clearSearchBtn = document.getElementById('clear-search');
 export const searchBox = document.getElementById('search-box');
@@ -14,12 +11,9 @@ export const carouselTitle = document.getElementById('carousel-title');
 export const toggleFiltersButton = document.getElementById('toggle-filters-button');
 export const searchDropdownContainer = document.querySelector('.search-dropdown-container');
 export const clearAllFiltersButton = document.getElementById('clear-all-filters-button');
-export const showAllResultsButton = document.getElementById('show-all-results-button');
 // New elements for advanced filters
 export const toggleAdvancedFiltersButton = document.getElementById('toggle-advanced-filters-button');
 export const advancedFiltersContainer = document.getElementById('advanced-filters-container');
-
-
 
 /** Genre to Font Mapping */
 export const genreFontMapping = {

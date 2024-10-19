@@ -17,7 +17,8 @@ import { updateMovieListings } from './catalog.js';
 import { updatePagination } from './pagination.js';
 
 let debounceTimer = null;
-let autocomplete_min_digits = 2;
+const AUTOCOMPLETE_DEBOUNCE_DELAY = 500; // milliseconds
+const AUTOCOMPLETE_MIN_DIGITS = 2;
 
 /**
  * Initialize the toggle functionality for the filter panel and advanced filters
@@ -48,7 +49,7 @@ export function clearAllFilters() {
         badge.classList.remove('visible');
     });
 
-    // For single-select dropdowns, ensure "Zufall" or first option is selected
+    // For single-select dropdowns, ensure "Random" or first option is selected
     const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
     singleSelectDropdowns.forEach(dropdownList => {
         const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
@@ -75,8 +76,6 @@ export function clearAllFilters() {
     // Trigger a filter update
     triggerDropdownChangeEvent();
 }
-
-
 
 /**
  * Initialize event listeners for action buttons like "Clear All"
@@ -120,12 +119,12 @@ export function initializeFilterDropdowns() {
             }
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                if (searchBox.value.length > autocomplete_min_digits) {
-                    // triggerDropdownChangeEvent();
+                if (searchBox.value.length >= AUTOCOMPLETE_MIN_DIGITS) {
                     handleAutocomplete();
+                } else {
+                    hideAutocompleteSuggestions();
                 }
-
-            }, 2000); // Reduced debounce time for better responsiveness
+            }, AUTOCOMPLETE_DEBOUNCE_DELAY);
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
@@ -156,7 +155,6 @@ export function initializeFilterDropdowns() {
 
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
-
 
     // Initialize filter navigation arrows
     initializeFilterNavigationArrows();
@@ -302,31 +300,13 @@ export function attachDropdownEventDelegation() {
     });
 }
 
-
 /**
- * Function to toggle dropdown visibility
+ * Function to update selection badges based on selected values
+ * @param {Array} selectedValues - Array of selected values
+ * @param {HTMLElement} badgeElement - The badge element to update
+ * @param {string} dropdownListId - ID of the dropdown list
  */
-export function toggleDropdown(dropdownList, header) {
-    const isVisible = dropdownList.classList.contains('show');
-    if (isVisible) {
-        dropdownList.classList.remove('show');
-        header.setAttribute('aria-expanded', 'false');
-    } else {
-        // Close other dropdowns
-        const allDropdownLists = document.querySelectorAll('.dropdown-list.show');
-        allDropdownLists.forEach(list => {
-            list.classList.remove('show');
-            const otherHeader = document.querySelector(`.dropdown-header[data-target="${list.id}"]`);
-            if (otherHeader) {
-                otherHeader.setAttribute('aria-expanded', 'false');
-            }
-        });
-        dropdownList.classList.add('show');
-        header.setAttribute('aria-expanded', 'true');
-    }
-}
-
-export function updateSelectionBadge(selectedValues, badgeElement) {
+export function updateSelectionBadge(selectedValues, badgeElement, dropdownListId) {
     if (!badgeElement) return; // Early return if badgeElement is not provided
 
     if (selectedValues.length > 0) {
@@ -341,7 +321,9 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
     checkSelections();
 }
 
-// Function to check if any selections exist and enable/disable the "Clear All" button
+/**
+ * Function to check if any selections exist and enable/disable the "Clear All" button
+ */
 function checkSelections() {
     const selectedButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
     
@@ -350,15 +332,6 @@ function checkSelections() {
     } else {
         clearAllFiltersButton.setAttribute('disabled', 'true');  // Disable the button
     }
-}
-
-
-/**
- * Function to trigger a custom event to notify filter.js of dropdown changes
- */
-export function triggerDropdownChangeEvent() {
-    const event = new CustomEvent('dropdownChange');
-    document.dispatchEvent(event);
 }
 
 /**
@@ -374,13 +347,10 @@ export function getSelectedValues(dropdownListId) {
 /**
  * Function to handle autocomplete for cast and director names
  */
-/**
- * Function to handle autocomplete for cast and director names
- */
 function handleAutocomplete() {
     const searchQuery = searchBox.value.trim();
 
-    if (searchQuery.length >= autocomplete_min_digits) {
+    if (searchQuery.length >= AUTOCOMPLETE_MIN_DIGITS) {
         showProgressIndicator(); // Show the progress indicator before starting the fetch
 
         fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
@@ -405,7 +375,6 @@ function handleAutocomplete() {
     }
 }
 
-
 /**
  * Function to show autocomplete suggestions
  * @param {Array} suggestions - Array of suggestion objects
@@ -426,7 +395,6 @@ function showAutocompleteSuggestions(suggestions) {
     autocompleteList.style.left = `${searchBoxRect.left + window.scrollX}px`;
     autocompleteList.style.width = `${searchBoxRect.width}px`;
     autocompleteList.style.zIndex = '10000'; // Ensure it's on top
-    
 
     autocompleteList.innerHTML = '';
 
@@ -498,12 +466,12 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         optionsArray.sort((a, b) => a.label.localeCompare(b.label));
     }
 
-    // For "sort-dropdown-list", implement ascending and descending options, excluding "Zufall"
+    // For "sort-dropdown-list", implement ascending and descending options, excluding "Random"
     if (dropdownListId === 'sort-dropdown-list') {
         const extendedOptionsArray = [];
         optionsArray.forEach(option => {
-            if (option.label.toLowerCase() === 'zufall') {
-                // Add "Zufall" without icons
+            if (option.label.toLowerCase() === 'zufall') { // 'zufall' means 'random' in German
+                // Add "Random" without icons
                 extendedOptionsArray.push({
                     label: option.label,
                     value: `${option.label}`
@@ -551,7 +519,7 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     const selectionBadge = dropdownHeader.querySelector('.selection-badge');
     const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
     const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
-    updateSelectionBadge(selectedValuesUpdated, selectionBadge);
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge, dropdownList.id);
     
     // Hide the clear icon for single-select dropdowns
     const clearButton = dropdownHeader.querySelector('.clear-icon');
@@ -577,10 +545,9 @@ export function updateFilters(page = 1) {
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
     const selectedSortByValues = getSelectedValues('sort-dropdown-list');
-    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
+    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"]; // 'Zufall' means 'Random'
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
-    console.log("updateFilters", searchQuery)
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
@@ -615,11 +582,20 @@ export function updateFilters(page = 1) {
     fetch(`/filter_movies?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            // console.log("API Response Data:", data);
-            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages } = data;
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages, total_movies } = data;
 
-            // Define sort_options here if not provided by the server
-            // const sort_options = ['Zufall', 'Titel', 'Jahr', 'Bewertung'];
+            // Determine number of columns per row based on total_movies
+            let columnsPerRow = 1; // Default to 1 column
+
+            if (total_movies > 100) {
+                columnsPerRow = 5;
+            } else if (total_movies > 60) {
+                columnsPerRow = 4;
+            } else if (total_movies > 20) {
+                columnsPerRow = 3;
+            } else {
+                columnsPerRow = 1;
+            }
 
             // Populate dropdowns based on the filtered data
             populateDropdown('year-dropdown-list', years, selectedYears);
@@ -629,9 +605,14 @@ export function updateFilters(page = 1) {
             populateDropdown('medium-dropdown-list', media, selectedMedia);
             populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
 
+            // Update the movie listings with the current number of movies
             updateMovieListings(movies);
-            updatePagination(current_page, total_pages);
-            updateFilterNavigationArrowsVisibility();
+
+            // Update the layout by adding a class based on columnsPerRow
+            setGridLayout(columnsPerRow);
+
+            // Update pagination
+            updatePagination(current_page, total_pages, total_movies, columnsPerRow);
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
@@ -642,6 +623,33 @@ export function updateFilters(page = 1) {
         .finally(() => {
             hideProgressIndicator();
         });
+}
+
+/**
+ * Function to set the grid layout based on the number of columns
+ * @param {number} columns - Number of columns per row
+ */
+function setGridLayout(columns) {
+    if (!movieContainer) return;
+
+    // Remove existing column classes
+    movieContainer.classList.remove('columns-1', 'columns-3', 'columns-4', 'columns-5');
+
+    // Add the appropriate column class
+    switch (columns) {
+        case 3:
+            movieContainer.classList.add('columns-3');
+            break;
+        case 4:
+            movieContainer.classList.add('columns-4');
+            break;
+        case 5:
+            movieContainer.classList.add('columns-5');
+            break;
+        default:
+            movieContainer.classList.add('columns-1');
+            break;
+    }
 }
 
 /**
@@ -713,3 +721,11 @@ function updateFilterNavigationArrowsVisibility() {
     }
 }
 
+/**
+ * Function to trigger a custom event to notify filter.js of dropdown changes
+ */
+export function triggerDropdownChangeEvent() {
+    const event = new CustomEvent('dropdownChange');
+    console.log("Dispatching dropdownChange event");
+    document.dispatchEvent(event);
+}
