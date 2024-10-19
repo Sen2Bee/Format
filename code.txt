@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-19 00:32:54 ===
+=== Code Summary Generated at 2024-10-19 10:05:33 ===
 
 === Project Folder Structure ===
 
@@ -21,6 +21,7 @@ Format/
                 carousel.css
                 dropdown.css
                 filter.css
+                filter_7ed8f601.css
                 forms.css
                 pagination.css
                 progress_indicator.css
@@ -53,12 +54,14 @@ Format/
             catalog.js
             entry.js
             filter.js
+            filter_7ed8f601.js
             hero.js
             main.js
             navbar.js
             pagination.js
     templates/
         catalog.html
+        catalog_7ed8f601.html
         index.html
 
 === File Contents ===
@@ -344,7 +347,7 @@ button {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     max-height: 300px;
     overflow-y: auto;
-    z-index: 5000; /* Increased z-index to be above other elements */
+    z-index: 5000; /* Ensure it's above other elements within the same stacking context */
     scrollbar-width: thin; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
 }
@@ -354,7 +357,6 @@ button {
 }
 
 /* Rest of your autocomplete styles */
-
 
 .autocomplete-item {
     padding: 10px;
@@ -434,7 +436,7 @@ button {
 .filter-action-button {
     display: flex;
     align-items: center;
-    background-color: var(--button-background);
+    background-color: var(--background-dark);
     color: var(--accent-color);
     padding: 10px 20px;
     margin: 5px;
@@ -938,6 +940,44 @@ button {
     display: none;
 }
 
+/* Navigation Arrows */
+.filter-nav-arrow {
+    position: absolute;
+    top: 65%;
+    transform: translateY(-50%);
+    width: var(--arrow-button-size);
+    height: var(--arrow-button-size);
+    background-color: rgba(108, 107, 107, 0.3);
+    border: none;
+    color: var(--accent-color);
+    font-size: 1.5em;
+    cursor: pointer;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.filter-nav-arrow:hover {
+    background-color: rgba(108, 107, 107, 0.8);
+}
+
+.filter-nav-arrow.left {
+    left: 0;
+}
+
+.filter-nav-arrow.right {
+    right: 0;
+}
+
+/* Hide arrows when not needed */
+.filter-nav-arrow.hidden {
+    display: none;
+}
+
+
 /* Custom Dropdowns */
 .custom-dropdown {
     flex: 1 1 180px;
@@ -945,34 +985,32 @@ button {
     max-width: 800px;
     position: relative;
     font-family: var(--font-body);
-    background-color: var(--background-dark);
+    background-color: var(--button-background);
     border-radius: 3px;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--button-background);
 }
 
 /* Dropdown Header */
 .dropdown-header {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 5px 10px;
-    background-color: var(--background-dark);
-    color: var(--text-light);
+    justify-content: flex-start; /* Aligns the clear icon and badge to the left */
+    flex-direction: column; /* For two-row layout */
+    background-color: var(--background-dark); /* Adjust background color */
+    color: var(--secondary-text-color); /* Use lighter text for better contrast */
     cursor: pointer;
-    font-size: clamp(0.9em, 1.5vw, 1.3em);
-    transition: background-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease, border-color var(--transition-duration) ease;
+    font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     font-family: var(--font-body);
     position: relative;
-    height: 70px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    white-space: nowrap;
-    overflow: hidden;
-    border: 1px solid transparent;
+    height: 70px; /* Let height adjust based on content */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    white-space: nowrap; /* Prevents wrapping inside the header */
+    overflow: hidden; /* Prevents content from overflowing */
+    z-index: 4000; /* Ensure this is lower than the autocomplete list */
 }
 
 .dropdown-header:hover {
-    border: 1px solid var(--link-color);
+    border: 1px solid var(--accent-color);
 }
 
 .custom-dropdown.dropdown-open .dropdown-header {
@@ -988,12 +1026,14 @@ button {
 }
 
 .dropdown-header .header-label i {
-    font-size: clamp(1.2em, 2vw, 1.5em);
+    padding-left: 5px;
+    font-size: clamp(1em, 1vw, 1.2em);
     margin-right: 5px;
 }
 
 .dropdown-header .header-label span {
-    font-size: clamp(1em, 2vw, 1.2em);
+    
+    font-size: clamp(1.2em, 1vw, 1.5em);
     font-weight: 100;
     white-space: nowrap;
     overflow: hidden;
@@ -1004,8 +1044,8 @@ button {
 /* Dropdown Arrow */
 .dropdown-header::after {
     content: '\25BC';
-    font-size: clamp(0.8em, 1.2vw, 1em);
-    color: var(--text-light);
+    font-size: clamp(1.1em, 1vw, 1.3em);
+    color: var(--secondary-text-color);
     position: absolute;
     top: 5px;
     right: 12px;
@@ -1014,15 +1054,12 @@ button {
 
 .dropdown-header[aria-expanded="true"]::after {
     transform: rotate(180deg);
-    color: var(--link-color);
-    font-size: clamp(1.2em, 1.5vw, 1.6em);
+    color: var(--accent-color);
 }
 
-/* Selection Clear Container */
 .selection-clear-container {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     margin-top: 5px;
     width: 100%;
 }
@@ -1032,10 +1069,10 @@ button {
     font-size: 1.4em;
     cursor: pointer;
     color: var(--accent-color);
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent shrinking */
     visibility: hidden;
     opacity: 0;
-    transition: opacity var(--transition-duration) ease, visibility var(--transition-duration) ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .clear-icon.visible {
@@ -1045,7 +1082,7 @@ button {
 
 /* Selection Badge */
 .selection-badge {
-    background-color: var(--background-dark);
+    background-color: var(--button-background);
     color: var(--accent-color);
     font-size: 0.8em;
     padding: 5px 10px;
@@ -1053,8 +1090,8 @@ button {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: inline-block;
-    max-width: 75%;
+    max-width: 75%; /* Adjust based on desired space */
+    margin-right: 10px; /* Space between badge and clear icon */
 }
 
 /* Show Clear Icon and Badge When Items Are Selected */
@@ -1068,30 +1105,42 @@ button {
     background-color: var(--accent-color);
     color: var(--text-color);
 }
+/* Dropdown Lists Container */
+.dropdown-lists-container {
+    position: absolute; /* Position absolutely within the container */
+    top: 100%; /* Align below the search and filter form */
+    left: 0;
+    width: 100%;
+    /* Optional: Add a background if needed */
+    background-color: var(--dropdown-background);
+    /* Ensure it appears above other elements within the container */
+    z-index: 7000;
+    /* Additional styling as needed */
+}
 
 /* Dropdown List */
 .dropdown-list {
     position: absolute;
+    top: 0; /* Adjust based on layout */
     left: 0;
     width: 100%;
-    max-height: 0;
-    overflow: hidden;
+    max-height: 300px; /* Example max height */
+    overflow-y: auto;
     background-color: var(--dropdown-background);
-    padding: 0 15px;
-    box-sizing: border-box;
-    transition: max-height 0.5s ease, padding 0.5s ease;
-    font-family: var(--font-body);
-    z-index: 4000; /* Ensure this is lower than the autocomplete list */
+    border: 1px solid #ccc;
+    border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    border-radius: 0 0 5px 5px;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    z-index: 8000; /* Ensure it's above .search-dropdown-container */
+    display: none; /* Hidden by default */
+    /* Transition for smooth appearance */
+    transition: max-height 0.3s ease, opacity 0.3s ease;
 }
 
+/* Show the dropdown list when active */
 .dropdown-list.show {
-    max-height: 500px;
-    padding: 15px;
-    overflow-y: auto;
+    display: block;
+    max-height: 500px; /* Adjust as needed */
+    opacity: 1;
 }
 
 .dropdown-list::-webkit-scrollbar {
@@ -1117,6 +1166,8 @@ button {
 /* Import Responsive Styles */
 @import url('../base/responsive.css');
 
+--- File: static\css\components\filter_7ed8f601.css ---
+Error reading file: static\css\components\filter_7ed8f601.css
 --- File: static\css\components\forms.css ---
 /* forms.css */
 
@@ -1307,11 +1358,12 @@ label span.required {
 
 --- File: static\css\components\search.css ---
 /* search.css */
+/* File: static/css/components/search.css */
 
 /* Search Dropdown Container */
 .search-dropdown-container {
-    position: relative;
-    z-index: 2000;
+    position: relative; /* Ensure it's positioned */
+    z-index: 9000; /* High z-index to overlay other elements */
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -1324,6 +1376,8 @@ label span.required {
     transition: all var(--transition-duration) ease;
     font-family: var(--font-body);
     border-bottom: 1px solid var(--link-hover-color);
+    /* Ensure overflow is visible to allow dropdowns to appear */
+    overflow: visible;
 }
 
 /* Search Box */
@@ -3149,6 +3203,8 @@ function updateFilterNavigationArrowsVisibility() {
 }
 
 
+--- File: static\js\filter_7ed8f601.js ---
+Error reading file: static\js\filter_7ed8f601.js
 --- File: static\js\hero.js ---
 document.addEventListener('DOMContentLoaded', function () {
  
@@ -3681,35 +3737,36 @@ export function attachPaginationEventListeners() {
                     </button>
                 </div>
             </form>
+            <!-- Dropdown Lists Container -->
+            <div class="dropdown-lists-container">
+                <!-- Year Dropdown List -->
+                <div class="dropdown-list" id="year-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Genre Dropdown List -->
+                <div class="dropdown-list" id="genre-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Country Dropdown List -->
+                <div class="dropdown-list" id="country-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Standort Dropdown List -->
+                <div class="dropdown-list" id="standort-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Medium Dropdown List -->
+                <div class="dropdown-list" id="medium-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Sort Dropdown List -->
+                <div class="dropdown-list" id="sort-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+            </div>            
         </div>
 
-        <!-- Dropdown Lists Container -->
-        <div class="dropdown-lists-container">
-            <!-- Year Dropdown List -->
-            <div class="dropdown-list" id="year-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Genre Dropdown List -->
-            <div class="dropdown-list" id="genre-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Country Dropdown List -->
-            <div class="dropdown-list" id="country-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Standort Dropdown List -->
-            <div class="dropdown-list" id="standort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Medium Dropdown List -->
-            <div class="dropdown-list" id="medium-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Sort Dropdown List -->
-            <div class="dropdown-list" id="sort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-        </div>
+
     </section>
 
 
@@ -3749,6 +3806,8 @@ export function attachPaginationEventListeners() {
 </body>
 </html>
 
+--- File: templates\catalog_7ed8f601.html ---
+Error reading file: templates\catalog_7ed8f601.html
 --- File: templates\index.html ---
 <!DOCTYPE html>
 <html lang="de">

@@ -3,8 +3,7 @@
 
 /* Search Dropdown Container */
 .search-dropdown-container {
-    position: relative;
-    z-index: 6000; /* Increased from 2000 to 6000 */
+    position: relative; /* Ensure it's positioned */
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -17,8 +16,9 @@
     transition: all var(--transition-duration) ease;
     font-family: var(--font-body);
     border-bottom: 1px solid var(--link-hover-color);
+    /* Ensure overflow is visible to allow dropdowns to appear */
+    overflow: visible;
 }
-
 
 /* Search Box */
 .search-container {

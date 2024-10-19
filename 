@@ -1,0 +1,407 @@
+[33mcommit d6545336045bc08efe52727c80f02d24370b10eb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 19 01:34:53 2024 +0200
+
+    filter - reiter - struktur 11
+
+[33mcommit 59ba10122160eeec46994382a9cd132f6a062a83[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 19 01:29:57 2024 +0200
+
+    filter - reiter - struktur 10
+
+[33mcommit 21282379b112235165fc20094acff44b0ddbe7b5[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 19 00:06:24 2024 +0200
+
+    filter - reiter - struktur 9
+
+[33mcommit 50cafd49af086abbd88d99559d160070f61b02e5[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 19:35:45 2024 +0200
+
+    filter - reiter - struktur 8 - repaired sort badge on start
+
+[33mcommit 2015cf3a785e7aa46d538b9745fc3505e53cc0f9[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 19:18:17 2024 +0200
+
+    filter - reiter - struktur 7
+
+[33mcommit 9ace8254e74efc385dadf5d3e53bfd9e85240d18[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 13:04:55 2024 +0200
+
+    filter - reiter - struktur 6 - scale button sizes
+
+[33mcommit 21adbe3780efaf45c83a2317d6b8768cca6306f6[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 12:53:22 2024 +0200
+
+    filter - reiter - struktur 5 - relado button in pagination section
+
+[33mcommit 52eb82320ef336c05293908493ca2c7250f56180[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 12:48:47 2024 +0200
+
+    filter - reiter - struktur 4
+
+[33mcommit 1792963d3245201ea91191c32fa1f61bce5309fd[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 00:29:34 2024 +0200
+
+    filter - reiter - struktur 3
+
+[33mcommit ea37818a5a05ccdf776791876eba88bf75c8e465[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 00:22:37 2024 +0200
+
+    filter - reiter - struktur 2
+
+[33mcommit 361ed3375cacaad8f7cd2b589fe5d7485728f2ad[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 17 00:16:09 2024 +0200
+
+    filter - reiter - struktur 1
+
+[33mcommit b7c703851776b5c4fdf1b93233b9b1b1e8b8bbd6[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Wed Oct 16 22:52:06 2024 +0200
+
+    advanced filter 9
+
+[33mcommit 34048ca78407bc01a107df408e79a6e9d3c88f7a[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Wed Oct 16 22:32:55 2024 +0200
+
+    advanced filter 8
+
+[33mcommit 4a6b3e3c5f4a190e5dfdd51c2b8a2ce153b3cb9b[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Wed Oct 16 19:32:24 2024 +0200
+
+    advanced filter 7
+
+[33mcommit 1a15fe6272ff4f722a584791f5dba2b096d557fe[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Wed Oct 16 11:13:07 2024 +0200
+
+    advanced filter 6 - sort by in 3rd row
+
+[33mcommit 093b89d9a8c5033334ee0b6cc60aa6eab5aa6c80[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Tue Oct 15 22:34:03 2024 +0200
+
+    advanced filter 5 - mobile issue solved - filters stacked now
+
+[33mcommit 55c33f895e51ddbf9a7d9426ea53a74bf2f03e4b[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Tue Oct 15 22:00:34 2024 +0200
+
+    advanced filter 4 - sort by repaired
+
+[33mcommit 3d10a4298a1750d663a6fc3956d86ae2dba5bb5d[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Mon Oct 14 19:26:27 2024 +0200
+
+    advanced filter 3 - still a bit messy
+
+[33mcommit a6803b1e4d502c1fc90919d50a67e6f0bb0f50fd[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 13 13:49:45 2024 +0200
+
+    advanced filter 2
+
+[33mcommit 6d93aa596688ae205708d8dac5fff966f113c8c5[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 13 09:39:54 2024 +0200
+
+    advanced filter 1
+
+[33mcommit c1d7284eba15c757e1c746c7dabd4839059fe118[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 13 00:51:17 2024 +0200
+
+    removed filter row
+
+[33mcommit f91b3551ae8489a9fa1b2864bf6d942dbb3e0698[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 13 00:17:56 2024 +0200
+
+    Filter side by side 2
+
+[33mcommit 2cfa01fca5b17a030124bb4a192c9abbd415e40b[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 13 00:16:01 2024 +0200
+
+    Filter side by side 1
+
+[33mcommit f3053fcc916848308f32072b7502ecc9cbc1f1a3[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 23:58:45 2024 +0200
+
+    autocomplete in progress 7
+
+[33mcommit fdb3ea713311002bdfc2624573eb156ccc28c298[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 16:12:54 2024 +0200
+
+    autocomplete in progress 6
+
+[33mcommit b7e0b614f15a136136b02ff97be832c40bcb4fee[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 14:43:25 2024 +0200
+
+    autocomplete in progress 5
+
+[33mcommit 56564c827f3abfe278321fbcc443dcb2c9b9f28e[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 13:56:42 2024 +0200
+
+    autocomplete in progress 4
+
+[33mcommit 3e2c4994913b21bd5e5c39a8b5992c1c376c9875[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 13:41:54 2024 +0200
+
+    autocomplete in progress 3
+
+[33mcommit 792371d93980195b680c4107f14d80e427169f83[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 13:05:30 2024 +0200
+
+    autocomplete in progress 2
+
+[33mcommit 571b628269c30a56d54a9fe81b25840552a3b56f[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 12:56:41 2024 +0200
+
+    autocomplete in progress 1
+
+[33mcommit b829abe623923ae8a6d1fedf987abef845b989e9[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 09:10:45 2024 +0200
+
+    search min 4 signs - debounce 3000ms
+
+[33mcommit e18acd5b568276955c70045ca5a33b957f2b06ba[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 08:33:18 2024 +0200
+
+    search min 4 signs
+
+[33mcommit 9ed32e9ca5d939d033234367e670f25454f3c50f[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 07:39:43 2024 +0200
+
+    carousel part 3
+
+[33mcommit 7dff673da2947d1359dd276a3757d89aff4e49d1[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 07:24:05 2024 +0200
+
+    carousel part1
+
+[33mcommit cb715e1c8a85937a273fb8d7de731163df10beb4[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 12 06:22:53 2024 +0200
+
+    dropdownList scroll working
+
+[33mcommit 04844bafa598500b0df3570b33288c38cded28c3[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 10 21:00:58 2024 +0200
+
+    modularization
+
+[33mcommit 98410b5f9ed951090dc8c978c1b1bf04a43ab591[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 10 10:22:40 2024 +0200
+
+    md venv 2
+
+[33mcommit ad0c06ad175f6f559d33d8e630ecd5841bae6b0d[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 10 10:18:49 2024 +0200
+
+    md venv
+
+[33mcommit 5c095e662316946cf7a9852182e1ecb294fe594d[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Wed Oct 9 11:11:54 2024 +0200
+
+    carousel title in nav
+
+[33mcommit 71e2ba47eeeb830ddaa50176abf2fcdd282d8000[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Wed Oct 9 01:44:01 2024 +0200
+
+    carousel themes, format fonts and colors
+
+[33mcommit 7ed8f601dd2dc872be64f84a019c153cce2e0e6f[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Tue Oct 8 21:40:23 2024 +0200
+
+    carousel themes
+
+[33mcommit 696ad3865d674ec8f59c6d437dfe5669c18a92c3[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Tue Oct 8 19:34:29 2024 +0200
+
+    filter dropdown badges part 2
+
+[33mcommit dfbefa8658f9e2fe60747eaea88e68e83873999b[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Tue Oct 8 18:36:45 2024 +0200
+
+    filter dropdown badges part 1
+
+[33mcommit 5ca97bafe82b06562981547f181828db8c929d11[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Tue Oct 8 17:50:46 2024 +0200
+
+    filter buttons solved
+
+[33mcommit 06bbea0c1440fa26137e30a4700170b9c611fd37[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Mon Oct 7 18:48:32 2024 +0200
+
+    colors and fonts arthouse style adaption part 2
+
+[33mcommit e0dcbea22cf0733c42e2472e46f33e5acac75524[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Mon Oct 7 16:48:15 2024 +0200
+
+    colors and fonts arthouse style adaption part 1
+
+[33mcommit 35eb516d97220d48970cf5bbb79c92de8b48059c[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 6 22:44:04 2024 +0200
+
+    filter-container- part15 - dropdown sizing solved
+
+[33mcommit 22706a9efe3e9f8c5376aa651ebc60a31beb79a1[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 6 22:10:48 2024 +0200
+
+    filter-container- part14 - carousel headline solved
+
+[33mcommit fbdafe3f83a5483d311c9db808c48143cb9e2e40[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 6 20:03:22 2024 +0200
+
+    filter-container- part13 - carousel headline solved
+
+[33mcommit 3f1ce85afb7ecc70a59ee8772daf8175c9991787[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 6 18:39:29 2024 +0200
+
+    filter-container- part12 - filter badge implementation
+
+[33mcommit 9af1655e8f6093d1794ad93fc94145e1fd234c74[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 6 17:31:05 2024 +0200
+
+    filter-container- part11 - carousel densified, progressindicator working
+
+[33mcommit 7a800a34f975453abd1564c895a49e06ad9c78a3[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 6 15:10:36 2024 +0200
+
+    filter-container- part10
+
+[33mcommit 21e80602e850ad08ef40956ae3d5bb80f8710dca[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sun Oct 6 13:32:10 2024 +0200
+
+    filter-container- part9 - moive caroussel
+
+[33mcommit 8b3f90f2b13d35a2d3947c27eea92449d0f77381[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 5 14:36:20 2024 +0200
+
+    filter-container- part8 - Pagination background solved
+
+[33mcommit 2fa9a7470dc14d368c15f7e0d3847cf74080d7c4[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 5 09:48:51 2024 +0200
+
+    filter-container- part7 - Searchbox logo overlap corrected
+
+[33mcommit 9fd07b674cd0b51ab6e83acf59ec325ad5a9163f[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 5 09:42:44 2024 +0200
+
+    filter-container- part6 - progressindicator woring, checkboxes working
+
+[33mcommit 82f853dedb7e1e2bb8933dd643125681c36aed0a[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Sat Oct 5 01:29:39 2024 +0200
+
+    filter-container- part5 - working - with icons and properly stretching
+
+[33mcommit 0c2fba25cc510bcdd140709e6f7a826d337d75bc[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 23:24:36 2024 +0200
+
+    filter-container- part4 - tying still styling and alignment
+
+[33mcommit 92aa620e955d5ef7ea9ec714d9a94a3481079206[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 22:06:21 2024 +0200
+
+    filter-container- part3 - better css
+
+[33mcommit 8a07f3bba55ca893d01fba97dd84f57dc83df81b[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 20:24:59 2024 +0200
+
+    filter-container- part2 - strech on desktop working
+
+[33mcommit d2617d58c6e352b9c9cd953fa41d7b86ec85947e[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 17:00:03 2024 +0200
+
+    filter-container- part1
+
+[33mcommit a3c34cf6eee83cf75659c43fc50728bd17d654d7[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 16:10:40 2024 +0200
+
+    custom_dropdown_develoment_part5 - clear icon working, selection label more decent, both more generalized style
+
+[33mcommit bc8694dc354aeb42fc3ebd4815c4a8dcc8e34abd[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 14:09:01 2024 +0200
+
+    custom_dropdown_develoment_part4 - populate and clear working, header working
+
+[33mcommit 2983c264b3acdd1893e8c091871510c0abbaab83[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 00:52:29 2024 +0200
+
+    custom_dropdown_develoment_part3
+
+[33mcommit 95f9ace4d2ca89533f25f629f45f95473ba2f968[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Fri Oct 4 00:11:16 2024 +0200
+
+    custom_dropdown_develoment_part2
+
+[33mcommit 6e73ec230e4418bacc17fe6dc5eea2c59b09fb4d[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 3 23:06:14 2024 +0200
+
+    custom_dropdown_development
+
+[33mcommit 2fefdd6f2cacfef7d48c6c8a40a2f480c251a60b[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 3 19:46:34 2024 +0200
+
+    git_howto.md erstellt
+
+[33mcommit 7caf72d7bbd2bb7095db65bec86fafcb51a1efdd[m
+Author: thomas.koschitzki <thomas.koschitzki@julius-kuehn.de>
+Date:   Thu Oct 3 19:40:15 2024 +0200
+
+    Initial commit

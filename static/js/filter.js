@@ -360,8 +360,16 @@ function showAutocompleteSuggestions(suggestions) {
         autocompleteList = document.createElement('div');
         autocompleteList.id = 'autocomplete-list';
         autocompleteList.className = 'autocomplete-items';
-        searchBox.parentNode.appendChild(autocompleteList);
+        document.body.appendChild(autocompleteList);
     }
+
+    // Position the autocompleteList under the searchBox
+    const searchBoxRect = searchBox.getBoundingClientRect();
+    autocompleteList.style.position = 'absolute';
+    autocompleteList.style.top = `${searchBoxRect.bottom + window.scrollY}px`;
+    autocompleteList.style.left = `${searchBoxRect.left + window.scrollX}px`;
+    autocompleteList.style.width = `${searchBoxRect.width}px`;
+    autocompleteList.style.zIndex = '10000'; // Ensure it's on top
 
     autocompleteList.innerHTML = '';
 
