@@ -85,6 +85,7 @@
 
 /* Dropdown Arrow */
 .dropdown-header::after {
+    visibility:hidden;
     content: '\25BC';
     font-size: clamp(1.1em, 0vw, 1.3em);
     color: var(--secondary-text-color);

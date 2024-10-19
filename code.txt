@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-19 15:57:53 ===
+=== Code Summary Generated at 2024-10-19 18:38:49 ===
 
 === Project Folder Structure ===
 
@@ -328,7 +328,7 @@ button {
     --button-active-background: var(--accent-color); /* Active button background */
     --arrow-button-size: 40px; /* Size for navigation arrows */
     --big-button-height: 60px;
-    --autocomplete-min-digits: 3;
+    
 }
 
 --- File: static\css\components\autocomplete.css ---
@@ -1058,6 +1058,7 @@ button {
 
 /* Dropdown Arrow */
 .dropdown-header::after {
+    visibility:hidden;
     content: '\25BC';
     font-size: clamp(1.1em, 0vw, 1.3em);
     color: var(--secondary-text-color);
