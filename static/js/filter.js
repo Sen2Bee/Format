@@ -17,6 +17,7 @@ import { updateMovieListings } from './catalog.js';
 import { updatePagination } from './pagination.js';
 
 let debounceTimer = null;
+let autocomplete_min_digits = 2;
 
 /**
  * Initialize the toggle functionality for the filter panel and advanced filters
@@ -119,9 +120,12 @@ export function initializeFilterDropdowns() {
             }
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                triggerDropdownChangeEvent();
-                handleAutocomplete();
-            }, 500); // Reduced debounce time for better responsiveness
+                if (searchBox.value.length > autocomplete_min_digits) {
+                    // triggerDropdownChangeEvent();
+                    handleAutocomplete();
+                }
+
+            }, 2000); // Reduced debounce time for better responsiveness
         });
     } else {
         console.error("initializeFilterDropdowns: searchBox element not found.");
@@ -370,10 +374,15 @@ export function getSelectedValues(dropdownListId) {
 /**
  * Function to handle autocomplete for cast and director names
  */
+/**
+ * Function to handle autocomplete for cast and director names
+ */
 function handleAutocomplete() {
     const searchQuery = searchBox.value.trim();
 
-    if (searchQuery.length >= 3) {
+    if (searchQuery.length >= autocomplete_min_digits) {
+        showProgressIndicator(); // Show the progress indicator before starting the fetch
+
         fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
             .then(response => {
                 if (!response.ok) {
@@ -382,16 +391,20 @@ function handleAutocomplete() {
                 return response.json();
             })
             .then(data => {
-                showAutocompleteSuggestions(data);
+                showAutocompleteSuggestions(data); // Populate autocomplete suggestions
             })
             .catch(error => {
                 console.error('Error fetching autocomplete suggestions:', error);
-                hideAutocompleteSuggestions();
+                hideAutocompleteSuggestions(); // Hide suggestions on error
+            })
+            .finally(() => {
+                hideProgressIndicator(); // Always hide the progress indicator
             });
     } else {
-        hideAutocompleteSuggestions();
+        hideAutocompleteSuggestions(); // Hide suggestions if query is too short
     }
 }
+
 
 /**
  * Function to show autocomplete suggestions
@@ -442,6 +455,7 @@ function hideAutocompleteSuggestions() {
     if (autocompleteList) {
         autocompleteList.parentNode.removeChild(autocompleteList);
     }
+    hideProgressIndicator();
 }
 
 /**
@@ -557,7 +571,6 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
  * @param {number} page - The current page number for pagination
  */
 export function updateFilters(page = 1) {
-
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
     const selectedCountries = getSelectedValues('country-dropdown-list');
@@ -567,6 +580,7 @@ export function updateFilters(page = 1) {
     const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
+    console.log("updateFilters", searchQuery)
 
     const params = new URLSearchParams();
     if (selectedYears.length) {

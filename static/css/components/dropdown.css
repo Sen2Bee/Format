@@ -19,9 +19,6 @@
     display: none;
 }
 
-
-
-
 /* Custom Dropdowns */
 .custom-dropdown {
     flex: 1 1 180px;
@@ -139,7 +136,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 75%; /* Adjust based on desired space */
+
     line-height: 1; /* Ensure the text is vertically centered */
     /* Removed margin-right to prevent conflict with absolute positioning */
     z-index: 4500; /* Ensure it appears above other elements */

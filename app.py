@@ -684,11 +684,17 @@ def autocomplete():
         # Construct the query for autocomplete suggestions (movies, cast, directors)
         search_pattern = f"%{query}%"
         autocomplete_query = """
-            SELECT title AS name, 'movie' AS type FROM movies WHERE title LIKE %s
+            (SELECT movie_id, title AS name, 'movie' AS type 
+             FROM movies 
+             WHERE title LIKE %s)
             UNION
-            SELECT name AS name, 'cast' AS type FROM cast WHERE name LIKE %s
+            (SELECT NULL AS movie_id, name AS name, 'cast' AS type 
+             FROM cast 
+             WHERE name LIKE %s)
             UNION
-            SELECT name AS name, 'director' AS type FROM crew WHERE job = 'Director' AND name LIKE %s
+            (SELECT NULL AS movie_id, name AS name, 'director' AS type 
+             FROM crew 
+             WHERE job = 'Director' AND name LIKE %s)
             LIMIT 10;
         """
         cursor.execute(autocomplete_query, (search_pattern, search_pattern, search_pattern))
@@ -704,7 +710,6 @@ def autocomplete():
     except Exception as e:
         print(f"Error during autocomplete: {e}")
         return jsonify({"error": str(e)}), 500
-
 
 
 if __name__ == '__main__':
