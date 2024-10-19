@@ -27,6 +27,6 @@
     --dropdown-background: rgba(44, 44, 44, 0.95); /* Dropdown background */
     --button-active-background: var(--accent-color); /* Active button background */
     --arrow-button-size: 40px; /* Size for navigation arrows */
-    --big-button-height: 50px;
+    --big-button-height: 55px;
     
 }

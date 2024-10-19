@@ -463,6 +463,10 @@ def filter_movies():
         standorte_counts = get_counts(cursor, "format_standort", selected_years, selected_countries, selected_genres, search_query)
         media_counts = get_counts(cursor, "media", selected_years, selected_countries, selected_genres, search_query)
 
+
+        # **Sort Years with Decades**
+        year_counts = sort_years_with_decades(year_counts)
+
         # **10. Determine the Selected Theme (Optional)**
         # This part depends on your application logic. Ensure it's compatible with the new pagination.
 
