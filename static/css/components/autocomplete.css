@@ -7,7 +7,7 @@
     left: 0;
     right: 0;
     background-color: var(--background-dark);
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     border-radius: 0 0 5px 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     max-height: 300px;

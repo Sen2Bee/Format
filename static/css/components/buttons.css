@@ -32,11 +32,16 @@
     text-align: center;
     box-sizing: border-box;
     font-family: var(--font-body);
+    height: var(--big-button-height); /* Example height */
 }
 
 .filter-button.selected,
 .filter-button:hover {
-    background-color: var(--accent-color);
+    /* background-color: var(--accent-color); */
+    /* color: var(--accent-color); */
+    border: 1px solid var(--accent-color);
+    background-color: var(--background-dark);
+    color: var(--accent-color);
 }
 
 /* Filters Buttons Row */
@@ -57,19 +62,26 @@
     color: var(--accent-color);
     padding: 10px 20px;
     margin: 5px;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--button-background);
     border-radius: 3px;
     font-size: 1em;
     cursor: pointer;
     transition: background-color var(--transition-duration), box-shadow var(--transition-duration) ease;
     font-family: var(--font-body);
     line-height: 1;
-    min-height: 80px;
+    min-height: var(--big-button-height);
     align-self: center;
 }
 
 .filter-action-button:hover {
-    background-color: var(--accent-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* background-color: var(--accent-color); */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); */
+    border: 1px solid var(--accent-color);
     color: var(--text-color);
+}
+
+.filter-action-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
 }

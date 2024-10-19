@@ -30,6 +30,7 @@ export function initializeFilterPanelToggle() {
  */
 export function clearAllFilters() {
     // Clear selections in all dropdowns
+
     const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
     filterButtons.forEach(button => button.classList.remove('selected'));
 
@@ -73,6 +74,8 @@ export function clearAllFilters() {
     // Trigger a filter update
     triggerDropdownChangeEvent();
 }
+
+
 
 /**
  * Initialize event listeners for action buttons like "Clear All"
@@ -165,6 +168,75 @@ export function attachDropdownEventDelegation() {
     const dropdownHeaders = document.querySelectorAll('.dropdown-header');
     const dropdownLists = document.querySelectorAll('.dropdown-list');
 
+    // Function to handle dropdown toggling
+    function toggleDropdown(targetDropdown, header) {
+        const isVisible = targetDropdown.classList.contains('show');
+        if (isVisible) {
+            targetDropdown.classList.remove('show');
+            header.setAttribute('aria-expanded', 'false');
+        } else {
+            // Close other open dropdowns
+            document.querySelectorAll('.dropdown-list.show').forEach(list => {
+                list.classList.remove('show');
+                document.querySelector(`.dropdown-header[data-target="${list.id}"]`)?.setAttribute('aria-expanded', 'false');
+            });
+            targetDropdown.classList.add('show');
+            header.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    // Function to handle selection of dropdown items
+    function handleDropdownSelection(dropdownList, target) {
+        const isSingleSelect = dropdownList.classList.contains('single-select');
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+
+        if (isSingleSelect) {
+            dropdownList.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('selected'));
+            target.classList.add('selected');
+        } else {
+            target.classList.toggle('selected');
+        }
+
+        // Update the selection badge
+        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+        const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
+        updateSelectionBadge(selectedValues, selectionBadge, dropdownList.id);
+
+        // Update the visibility of the clear button
+        if (isSingleSelect) {
+            if (clearButton) clearButton.style.display = 'none';
+        } else {
+            if (selectedValues.length > 0) {
+                clearButton.classList.add('visible');
+            } else {
+                clearButton.classList.remove('visible');
+            }
+        }
+
+        // Trigger filter update
+        triggerDropdownChangeEvent();
+    }
+
+    // Function to clear selected items in a dropdown
+    function clearDropdownSelection(dropdownList) {
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+
+        // Deselect all buttons
+        dropdownList.querySelectorAll('.filter-button.selected').forEach(button => button.classList.remove('selected'));
+
+        // Clear the badge and hide clear button
+        updateSelectionBadge([], selectionBadge, dropdownList.id);
+        if (clearButton) clearButton.classList.remove('visible');
+
+        // Trigger filter update
+        triggerDropdownChangeEvent();
+    }
+
+    // Attach event listeners to dropdown headers
     dropdownHeaders.forEach(header => {
         header.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -190,70 +262,25 @@ export function attachDropdownEventDelegation() {
             const target = event.target;
             if (target && target.classList.contains('filter-button')) {
                 event.preventDefault();
-                const isSingleSelect = dropdownList.classList.contains('single-select');
-                const value = target.dataset.value;
-
-                if (isSingleSelect) {
-                    // For single-select dropdowns, deselect all and select the clicked button
-                    const allButtons = dropdownList.querySelectorAll('.filter-button');
-                    allButtons.forEach(btn => btn.classList.remove('selected'));
-                    target.classList.add('selected');
-                } else {
-                    // For multi-select dropdowns, toggle selection
-                    target.classList.toggle('selected');
-                }
-
-                // Update the selection badge
-                const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
-                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-                const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
-                const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
-                updateSelectionBadge(selectedValues, selectionBadge, dropdownList.id);
-
-                // Update the clear icon visibility for multi-select dropdowns
-                const clearButton = dropdownHeader.querySelector('.clear-icon');
-
-                if (isSingleSelect) {
-                    if (clearButton) {
-                        clearButton.style.display = 'none';
-                    }
-                } else {
-                    if (selectedValues.length > 0) {
-                        clearButton.classList.add('visible');
-                    } else {
-                        clearButton.classList.remove('visible');
-                    }
-                }
-
-                // Trigger filter update
-                triggerDropdownChangeEvent();
+                handleDropdownSelection(dropdownList, target);
             }
         });
 
         // Handle clear button (only for multi-select dropdowns)
         const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
-        const clearButton = dropdownHeader.querySelector('.clear-icon');
+        const clearButton = dropdownHeader?.querySelector('.clear-icon');
+
         if (clearButton) {
             clearButton.addEventListener('click', (event) => {
                 event.stopPropagation();
-                const buttons = dropdownList.querySelectorAll('.filter-button.selected');
-                buttons.forEach(button => button.classList.remove('selected'));
-                const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-                updateSelectionBadge([], selectionBadge, dropdownList.id);
-                clearButton.classList.remove('visible');
-                triggerDropdownChangeEvent();
+                clearDropdownSelection(dropdownList);
             });
 
             // Ensure the clear button is accessible via keyboard
             clearButton.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
-                    const buttons = dropdownList.querySelectorAll('.filter-button.selected');
-                    buttons.forEach(button => button.classList.remove('selected'));
-                    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-                    updateSelectionBadge([], selectionBadge, dropdownList.id);
-                    clearButton.classList.remove('visible');
-                    triggerDropdownChangeEvent();
+                    clearDropdownSelection(dropdownList);
                 }
             });
         }
@@ -270,6 +297,7 @@ export function attachDropdownEventDelegation() {
         });
     });
 }
+
 
 /**
  * Function to toggle dropdown visibility
@@ -295,6 +323,8 @@ export function toggleDropdown(dropdownList, header) {
 }
 
 export function updateSelectionBadge(selectedValues, badgeElement) {
+    if (!badgeElement) return; // Early return if badgeElement is not provided
+
     if (selectedValues.length > 0) {
         badgeElement.textContent = selectedValues.join(', ');
         badgeElement.classList.add('visible');
@@ -304,7 +334,20 @@ export function updateSelectionBadge(selectedValues, badgeElement) {
         badgeElement.classList.remove('visible');
         badgeElement.style.display = 'none';
     }
+    checkSelections();
 }
+
+// Function to check if any selections exist and enable/disable the "Clear All" button
+function checkSelections() {
+    const selectedButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
+    
+    if (selectedButtons.length > 0) {
+        clearAllFiltersButton.removeAttribute('disabled');  // Enable the button
+    } else {
+        clearAllFiltersButton.setAttribute('disabled', 'true');  // Disable the button
+    }
+}
+
 
 /**
  * Function to trigger a custom event to notify filter.js of dropdown changes

@@ -81,12 +81,13 @@
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     font-family: var(--font-body);
     position: relative;
-    height: 70px; /* Let height adjust based on content */
+    height: var(--big-button-height); /* Let height adjust based on content */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
     white-space: nowrap; /* Prevents wrapping inside the header */
     overflow: hidden; /* Prevents content from overflowing */
     z-index: 4000; /* Ensure this is lower than the autocomplete list */
 }
+
 
 .dropdown-header:hover {
     border: 1px solid var(--accent-color);
@@ -112,7 +113,7 @@
 
 .dropdown-header .header-label span {
     
-    font-size: clamp(1.2em, 1vw, 1.5em);
+    font-size: clamp(1.2em, 0vw, 1.5em);
     font-weight: 100;
     white-space: nowrap;
     overflow: hidden;
@@ -123,7 +124,7 @@
 /* Dropdown Arrow */
 .dropdown-header::after {
     content: '\25BC';
-    font-size: clamp(1.1em, 1vw, 1.3em);
+    font-size: clamp(1.1em, 0vw, 1.3em);
     color: var(--secondary-text-color);
     position: absolute;
     top: 5px;
@@ -139,8 +140,9 @@
 .selection-clear-container {
     display: flex;
     justify-content: space-between;
-    margin-top: 5px;
+    align-items: center; /* This ensures the badge aligns with the center */
     width: 100%;
+    position: relative; /* Added to contain the absolutely positioned badge */
 }
 
 /* Clear Icon */
@@ -155,23 +157,29 @@
 }
 
 .clear-icon.visible {
-    visibility: visible;
+    visibility: hidden;
     opacity: 1;
 }
 
 /* Selection Badge */
 .selection-badge {
-    background-color: var(--button-background);
+    position: absolute;
+    bottom: -5px; /* Overlaps 5px below the header */
+    right: 10px; /* Adjust as needed */
+    /* background-color: var(--accent-color); */
     color: var(--accent-color);
     font-size: 0.8em;
-    padding: 5px 10px;
+    padding: 3px 10px; /* Adjust padding for better vertical alignment */
     border-radius: 12px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 75%; /* Adjust based on desired space */
-    margin-right: 10px; /* Space between badge and clear icon */
+    line-height: 1; /* Ensure the text is vertically centered */
+    /* Removed margin-right to prevent conflict with absolute positioning */
+    z-index: 4500; /* Ensure it appears above other elements */
 }
+
 
 /* Show Clear Icon and Badge When Items Are Selected */
 .dropdown-header.has-selection .clear-icon,
@@ -180,39 +188,30 @@
     opacity: 1;
 }
 
-.dropdown-header.has-selection .selection-badge {
-    background-color: var(--accent-color);
-    color: var(--text-color);
-}
 /* Dropdown Lists Container */
 .dropdown-lists-container {
     position: absolute; /* Position absolutely within the container */
-    top: 100%; /* Align below the search and filter form */
+
     left: 0;
     width: 100%;
-    /* Optional: Add a background if needed */
     background-color: var(--dropdown-background);
-    /* Ensure it appears above other elements within the container */
-    z-index: 7000;
-    /* Additional styling as needed */
+    z-index: 7000; /* Ensure it appears above other elements */
+    box-sizing: border-box; /* Ensure consistent box model */
 }
 
 /* Dropdown List */
 .dropdown-list {
-    position: absolute;
-    top: 0; /* Adjust based on layout */
-    left: 0;
+    position: relative; /* Relative to the .dropdown-lists-container */
     width: 100%;
-    max-height: 300px; /* Example max height */
+    max-height: 300px;
     overflow-y: auto;
     background-color: var(--dropdown-background);
-    border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    z-index: 8000; /* Ensure it's above .search-dropdown-container */
+    z-index: 8000; /* Ensure it's above other elements */
     display: none; /* Hidden by default */
-    /* Transition for smooth appearance */
     transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0; /* Start with invisible state */
 }
 
 /* Show the dropdown list when active */

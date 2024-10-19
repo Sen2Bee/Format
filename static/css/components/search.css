@@ -15,7 +15,7 @@
     backdrop-filter: blur(5px);
     transition: all var(--transition-duration) ease;
     font-family: var(--font-body);
-    border-bottom: 1px solid var(--link-hover-color);
+    border-bottom: 1px solid var(--button-background);
     /* Ensure overflow is visible to allow dropdowns to appear */
     overflow: visible;
 }
