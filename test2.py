@@ -74,9 +74,10 @@ def test_query():
     year_param = 1916
 
     try:
-        cursor.execute(query, (year_param,))
+        query = "Select format_inhalt from movies limit 10"
+        # cursor.execute(query, (year_param,))
         # query = "SELECT release_date FROM movies where release_date = 1916 LIMIT 10;"
-        # cursor.execute(query)
+        cursor.execute(query)
 
         results = cursor.fetchall()
         print(len(results))

@@ -604,7 +604,7 @@ export function updateFilters(page = 1) {
             populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
             populateDropdown('medium-dropdown-list', media, selectedMedia);
             populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
-
+                
             // Update the movie listings with the current number of movies
             updateMovieListings(movies);
 

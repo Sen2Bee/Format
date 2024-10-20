@@ -127,6 +127,7 @@ def catalog():
     per_page = 10
     offset = (page - 1) * per_page
 
+
     # Establish database connection
     connection = connect_to_db()
     if not connection:
@@ -148,6 +149,7 @@ def catalog():
             m.folder_name, 
             m.overview, 
             m.format_standort,  
+            m.format_inhalt,  
             GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
             GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
             (SELECT name FROM crew WHERE crew.movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
@@ -227,7 +229,7 @@ def catalog():
 
     # Determine the selected theme
     selected_theme = None
-
+    
     if genre_filter:
         # Find the theme that matches the genre_filter
         matched_themes = [theme for theme in themes if theme['name'].lower().startswith(genre_filter.lower()) or genre_filter.lower() in theme['name'].lower()]
@@ -254,6 +256,7 @@ def catalog():
                 m.imdb_rating, 
                 m.folder_name, 
                 m.overview,
+                m.format_inhalt,
                 m.poster_images
             FROM 
                 movies m
@@ -261,7 +264,7 @@ def catalog():
             GROUP BY m.movie_id
             HAVING m.imdb_rating > 6.7 AND m.poster_images > 0
             ORDER BY RAND()
-            LIMIT 50;
+            LIMIT 10;
         """
         cursor.execute(featured_query, ())
         featured_movies = cursor.fetchall()
@@ -276,7 +279,7 @@ def catalog():
     # Close cursor and database connection
     cursor.close()
     connection.close()
-
+    print("in catalog_"*10, movies[:1])
     # Render the catalog template with the movies and pagination data
     ret_val = render_template('catalog.html', 
                                movies=movies, 
@@ -429,6 +432,7 @@ def filter_movies():
                 m.folder_name,
                 m.overview,
                 m.format_standort,
+                m.format_inhalt,
                 GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
                 GROUP_CONCAT(DISTINCT cr.name SEPARATOR ', ') AS director,
