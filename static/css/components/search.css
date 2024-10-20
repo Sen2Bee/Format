@@ -24,7 +24,7 @@
 .search-container {
     position: relative;
     width: 100%;
-    height: var(--big-button-height);
+    height: 45px;
     margin-bottom: 15px;
     border: none;
     border-radius: 10px;

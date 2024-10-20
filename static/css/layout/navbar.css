@@ -21,7 +21,7 @@
 
 .theme-title {
     font-size: 1.0rem;  /* Adjust font size for the theme title */
-    color: var(--link-color);  /* Use defined accent color */
+    color: var(--accent-color);  /* Use defined accent color */
     text-transform: lowercase;
     transition: color var(--transition-duration);  /* Smooth color transition */
 }

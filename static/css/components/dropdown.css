@@ -68,10 +68,11 @@
 }
 
 .dropdown-header .header-label i {
-    padding-left: 5px;
-    font-size: clamp(1em, 1vw, 1.2em);
+    padding: 5px 5px;
+    font-size: clamp(1.7em, 2vw, 1.2em); /* Icon size is defined here */
     margin-right: 5px;
 }
+
 
 .dropdown-header .header-label span {
     font-size: clamp(1.2em, 0vw, 1.5em);

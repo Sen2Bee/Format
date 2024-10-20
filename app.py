@@ -343,9 +343,11 @@ def filter_movies():
                     year_filters.append("m.release_date BETWEEN %s AND %s")
                     params.extend([start_year, end_year])
                 else:
-                    year_filters.append("YEAR(m.release_date) = %s")
+                    year_filters.append("m.release_date = %s")
                     params.append(int(year))
             where_clauses.append(f"({' OR '.join(year_filters)})")
+
+        print("selected_years", selected_years, where_clauses)
 
         # **Apply Country Filter**
         if selected_countries:
@@ -375,18 +377,19 @@ def filter_movies():
         total_movies = cursor.fetchone()['total']
 
         # **4. Determine columns_per_row and items_per_page**
-        if total_movies > 100:
+        # Ensure a maximum of 10 rows, based on the number of columns per row
+        if total_movies > 1000:
             columns_per_row = 5
-            items_per_page = 50
-        elif total_movies > 60:
+        elif total_movies > 100:
             columns_per_row = 4
-            items_per_page = 40
         elif total_movies > 20:
             columns_per_row = 3
-            items_per_page = 30
         else:
             columns_per_row = 1
-            items_per_page = 10
+
+        # Items per page should be columns_per_row * 10 (max 10 rows)
+        items_per_page = columns_per_row * 10
+
 
         # **5. Calculate total_pages**
         total_pages = math.ceil(total_movies / items_per_page) if items_per_page else 1
@@ -399,6 +402,18 @@ def filter_movies():
 
         # **7. Calculate OFFSET for Pagination**
         offset = (page - 1) * items_per_page
+
+        # Detailed print log
+        print(f"""
+        Pagination Debugging Log:
+        --------------------------
+        Selected Page: {page}
+        Items Per Page: {items_per_page}
+        Total Movies: {total_movies}
+        Total Pages: {total_pages}
+        Calculated Offset: {offset}
+        --------------------------
+        """)
 
         # **8. Build the Base Query to Fetch Movies with Filters and Pagination**
         base_query = """
@@ -492,6 +507,7 @@ def filter_movies():
 
     except Exception as e:
         print(f"Error occurred in filter_movies: {e}")
+        print(base_query, tuple(base_params))
         return jsonify({'error': str(e)}), 500
 
 def build_sort_expression(sort_option):
@@ -672,7 +688,7 @@ def get_counts(cursor, field, selected_years=None, selected_countries=None, sele
                 year_filters.append("m.release_date BETWEEN %s AND %s")
                 params.extend([start_year, end_year])
             else:
-                year_filters.append("YEAR(m.release_date) = %s")
+                year_filters.append("m.release_date = %s")
                 params.append(int(year))
         count_query += f" AND ({' OR '.join(year_filters)})"
 
