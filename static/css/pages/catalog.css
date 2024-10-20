@@ -2,7 +2,7 @@
 
 /* Movie Listings Section */
 .movie-listings {
-    padding: 20px;
+    /* padding: 20px; */
     background-color: var(--background-dark);
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid with flexible columns */

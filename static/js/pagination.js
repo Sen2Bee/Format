@@ -15,7 +15,7 @@ export function updatePagination(currentPage, totalPages, totalMovies, columnsPe
         // Create the "Previous" Button
         let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
         let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
-        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
+        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Zurück</a></li>`;
 
         // Determine if ellipsis is needed
         const showStartEllipsis = currentPage > 3;
@@ -47,7 +47,7 @@ export function updatePagination(currentPage, totalPages, totalMovies, columnsPe
         // Create the "Next" Button
         let nextDisabledClass = currentPage >= totalPages ? 'disabled' : '';
         let nextDisabledAttr = currentPage >= totalPages ? 'aria-disabled="true"' : '';
-        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
+        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Nächste &raquo;</a></li>`;
     });
 
     attachPaginationEventListeners(columnsPerRow);

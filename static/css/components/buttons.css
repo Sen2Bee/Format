@@ -20,13 +20,13 @@
 
 /* Filter Buttons */
 .filter-button {
-    background-color: var(--button-background);
+    background-color: var(--background-dark);
     color: var(--text-color);
     border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: background-color var(--transition-duration), transform var(--transition-duration);
-    font-size: 0.9em;
+    font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
     flex: 1 0 calc(33.33% - 15px);
     text-align: center;
     box-sizing: border-box;

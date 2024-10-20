@@ -127,7 +127,6 @@ def catalog():
     per_page = 10
     offset = (page - 1) * per_page
 
-
     # Establish database connection
     connection = connect_to_db()
     if not connection:
@@ -150,7 +149,7 @@ def catalog():
             m.overview, 
             m.format_standort,  
             m.format_inhalt,  
-            GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
+            GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,  -- Added country_code
             GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
             (SELECT name FROM crew WHERE crew.movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
             (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') 
@@ -229,24 +228,19 @@ def catalog():
 
     # Determine the selected theme
     selected_theme = None
-    
+
     if genre_filter:
-        # Find the theme that matches the genre_filter
         matched_themes = [theme for theme in themes if theme['name'].lower().startswith(genre_filter.lower()) or genre_filter.lower() in theme['name'].lower()]
         if matched_themes:
             selected_theme = matched_themes[0]
         else:
-            # If no exact match, select a random theme excluding certain genres
             selected_theme = random.choice([theme for theme in themes if "genre" in theme['sql_condition'].lower()])
     else:
-        # Select a random theme from the themes list
         selected_theme = random.choice(themes)
 
     # Fetch featured movies based on the selected theme's sql_condition
     if selected_theme:
-        # Extract the JOIN and WHERE conditions from the selected theme's sql_condition
         theme_sql_condition = selected_theme['sql_condition']
-
         featured_query = f"""
             SELECT 
                 m.movie_id, 
@@ -279,7 +273,9 @@ def catalog():
     # Close cursor and database connection
     cursor.close()
     connection.close()
+
     print("in catalog_"*10, movies[:1])
+
     # Render the catalog template with the movies and pagination data
     ret_val = render_template('catalog.html', 
                                movies=movies, 
@@ -350,8 +346,6 @@ def filter_movies():
                     params.append(int(year))
             where_clauses.append(f"({' OR '.join(year_filters)})")
 
-        print("selected_years", selected_years, where_clauses)
-
         # **Apply Country Filter**
         if selected_countries:
             country_placeholders = ','.join(['%s'] * len(selected_countries))
@@ -393,7 +387,6 @@ def filter_movies():
         # Items per page should be columns_per_row * 10 (max 10 rows)
         items_per_page = columns_per_row * 10
 
-
         # **5. Calculate total_pages**
         total_pages = math.ceil(total_movies / items_per_page) if items_per_page else 1
 
@@ -433,7 +426,7 @@ def filter_movies():
                 m.overview,
                 m.format_standort,
                 m.format_inhalt,
-                GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
+                GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,  -- Added country_code
                 GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
                 GROUP_CONCAT(DISTINCT cr.name SEPARATOR ', ') AS director,
                 (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ')
@@ -481,7 +474,6 @@ def filter_movies():
         country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres, search_query)
         standorte_counts = get_counts(cursor, "format_standort", selected_years, selected_countries, selected_genres, search_query)
         media_counts = get_counts(cursor, "media", selected_years, selected_countries, selected_genres, search_query)
-
 
         # **Sort Years with Decades**
         year_counts = sort_years_with_decades(year_counts)
