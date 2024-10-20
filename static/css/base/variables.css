@@ -13,7 +13,7 @@
     --secondary-text-color: #bfbfbf; /* Muted Light Gray */
     --link-color: #e7b000; /* Yellow for links */
     --link-hover-color: #ff6347; /* Link hover color */
-    --button-background: rgba(68, 68, 68, 0.9); /* Button background */
+    --button-background: rgba(68, 68, 68, 0.9); /* Button background */ 
     --button-hover-background: rgba(85, 85, 85, 0.9); /* Button hover background */
     --border-color: #333333; /* Darker Gray for borders */
     --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle shadow color */

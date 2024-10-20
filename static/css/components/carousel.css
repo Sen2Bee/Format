@@ -35,6 +35,11 @@
     align-items: center;
     padding: 0 5px;
 }
+.swiper-button-next, .swiper-button-prev {
+    --swiper-navigation-color: var(--accent-color); /* Replace with your desired color */
+    --swiper-theme-color: var(--background-dark); /* Replace with your desired color */
+}
+
 
 /* Featured Movie Card */
 .featured-movie-card {

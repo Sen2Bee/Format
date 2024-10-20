@@ -31,8 +31,11 @@ export function updatePagination(currentPage, totalPages, totalMovies, columnsPe
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, currentPage + 2);
         for (let p = startPage; p <= endPage; p++) {
-            let activeClass = (p === currentPage) ? 'active' : '';
-            paginationContainer.innerHTML += `<li class="${activeClass}"><a href="#" data-page="${p}">${p}</a></li>`;
+            if (p === currentPage) {
+                paginationContainer.innerHTML += `<li class="active"><span>${p}</span></li>`;  // Use <span> for active page
+            } else {
+                paginationContainer.innerHTML += `<li><a href="#" data-page="${p}">${p}</a></li>`;
+            }
         }
 
         // Add ellipsis and last page if needed
