@@ -85,9 +85,11 @@
 
 /* Dropdown Arrow */
 .dropdown-header::after {
-    visibility:hidden;
-    content: '\25BC';
-    font-size: clamp(1.1em, 0vw, 1.3em);
+    visibility: visible;
+    content: '\f078'; /* FontAwesome Unicode for down arrow (chevron) */
+    font-family: 'Font Awesome 5 Free'; /* Ensure FontAwesome is used */
+    font-weight: 900; /* Necessary to display the correct solid version of FontAwesome */
+    font-size: clamp(1.1em, 1vw, 1.3em);
     color: var(--secondary-text-color);
     position: absolute;
     right: 12px;
@@ -110,38 +112,36 @@
 /* Clear Icon */
 .clear-icon {
     font-size: 1.4em;
+    bottom: -10px; /* Aligns it vertically in the middle of the header */
     cursor: pointer;
     color: var(--accent-color);
     flex-shrink: 0; /* Prevent shrinking */
+    position: absolute;
+    right: 10px; /* Align to the far right */
     visibility: hidden;
     opacity: 0;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .clear-icon.visible {
-    visibility: hidden;
+    visibility: visible;
     opacity: 1;
 }
 
 /* Selection Badge */
 .selection-badge {
     position: absolute;
-    bottom: 5px; /* Moves the badge 10px below the bottom of the header. Adjust as needed */
-    right: 5px; /* Adjust as needed */
-    /* background-color: var(--accent-color); */
+    bottom: 5px; /* Aligns it vertically in the middle of the header */
+    right: 35px; /* Adjust distance from the right to make more space for the clear icon */
     color: var(--accent-color);
     font-size: 0.8em;
-    padding: 3px 10px; /* Adjust padding for better vertical alignment */
-    border-radius: 12px;
+    /* border-radius: 12px; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
     line-height: 1; /* Ensure the text is vertically centered */
-    /* Removed margin-right to prevent conflict with absolute positioning */
     z-index: 4500; /* Ensure it appears above other elements */
 }
-
 
 
 

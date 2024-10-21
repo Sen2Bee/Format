@@ -2,6 +2,8 @@ db_user="tom"  # Your MySQL username
 db_passwd="user"  # Your MySQL password
 db_name ="formatdb"  # Your MySQL database name
 
+movies_path = r"e:\Format_FV\_Movies\_Movies_Fertig"
+
 themes = [
     # Genre-based themes
   {'name': 'Actionfilme', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Action'", 'css_class': 'theme-action'},

@@ -74,7 +74,7 @@
 /* Hover Title */
 .hover-title {
     position: absolute;
-    font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
+    font-size: clamp(2em, 2vw, 1.3em); /* Responsive font size */
     bottom: 0;
     left: 0;
     width: 100%;
@@ -236,6 +236,40 @@
 
 .country-tooltip:hover {
     overflow: visible; /* Prevent clipping */
+}
+
+/* Tooltip container */
+.person-image-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.person-image-tooltip .tooltip-content {
+    visibility: hidden;
+    width: 150px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the text */
+    left: 50%;
+    margin-left: -75px; /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.person-image-tooltip .tooltip-content img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.person-image-tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
 }
 
 

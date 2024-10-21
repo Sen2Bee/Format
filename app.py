@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, send_from_directory, jsonify
 import mysql.connector
-from vars import db_name, db_passwd, db_user, themes, search_conditions
+from vars import db_name, db_passwd, db_user, themes, search_conditions, movies_path
 import math
 import os
 import redis
@@ -815,6 +815,18 @@ def autocomplete():
             connection.close()
 
     return jsonify(suggestions)
+
+
+@app.route('/get_person_images/<movie_folder>', methods=['GET'])
+def get_person_images(movie_folder):
+    folder_path = os.path.join(movies_path, movie_folder, 'person')
+    try:
+        # List all files in the 'person' folder of the given movie
+        available_images = [f for f in os.listdir(folder_path) if f.endswith('.jpg')]
+        return jsonify({"images": available_images})
+    except Exception as e:
+        return jsonify({"error": str(e), "images": []}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

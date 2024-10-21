@@ -1,32 +1,3 @@
-// File: static/js/catalog.js
-
-// Import any dependencies (if necessary)
-import { movieContainer } from './entry.js';  // Import the movie container element
-
-// Lookup table for country names to ISO 3166-1 alpha-2 codes
-const countryCodeMap = {
-    "United States": "US",
-    "Germany": "DE",
-    "France": "FR",
-    "United Kingdom": "UK",
-    "Netherlands": "NL",
-    "Iceland": "IS",
-    "Belgium": "BE",
-    "Russia": "RU",
-    "Saudi Arabia": "SA",
-    // Add more countries as needed
-};
-
-// Function to transform countries into their short versions
-function getShortCountries(countries) {
-    // If the countries array exists and is not empty, map full names to short versions
-    if (Array.isArray(countries) && countries.length > 0) {
-        return countries.map(country => countryCodeMap[country] || country).join(', ');
-    }
-    return "Unknown Countries";
-}
-
-
 export function updateMovieListings(movies) {
     const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
@@ -40,42 +11,63 @@ export function updateMovieListings(movies) {
             const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.jpg`;
             const defaultImagePath = '/static/images/default_movie.png';
             console.log(movie);  // For debugging purposes
-    
+            
+            // You must declare movieCard here
             const movieCard = document.createElement('div');
-            movieCard.className = 'movie-card';
-    
-            // Handle cases where 'director', 'actors', 'countries', and 'genres' are arrays or null
-            const directors = Array.isArray(movie.director) && movie.director.length > 0 ? movie.director.join(', ') : "Unknown Director";
-            let actors = movie.actors ? (Array.isArray(movie.actors) ? movie.actors.join(', ') : movie.actors) : "Unknown Actors";
+            movieCard.className = 'movie-card';  // Now movieCard is defined properly
 
-            // Truncate actors' names if they exceed 75 characters (including spaces)
+            function getPersonImage(person, movieFolder) {
+                const [name, id] = person.split('_'); // Split the name and id
+                const personImageFilename = encodeURIComponent(name.trim()) + `_${id}.jpg`; 
+                return `${encodeURIComponent(movieFolder)}/person/${personImageFilename}`;
+            }
+
+            // Handle directors and actors as tooltips with images
+            const directors = Array.isArray(movie.director) && movie.director.length > 0 
+                ? movie.director.map(director => {
+                    const directorImage = getPersonImage(director, movie.folder_name);
+                    console.log(directorImage)
+                    return `<span class="director-tooltip" data-director="${director}">
+                                <img src="${directorImage}" alt="${director}" onerror="this.onerror=null; this.src='/static/images/default_person.png';" class="person-image-tooltip">
+                                ${director.split('_')[0]}
+                            </span>`;
+                }).join(', ') 
+                : "Unknown Director";
+
+            let actors = movie.actors 
+                ? (Array.isArray(movie.actors) 
+                    ? movie.actors.map(actor => {
+                        const actorImage = getPersonImage(actor, movie.folder_name);
+                        return `<span class="actor-tooltip" data-actor="${actor}">
+                                    <img src="${actorImage}" alt="${actor}" onerror="this.onerror=null; this.src='/static/images/default_person.png';" class="person-image-tooltip">
+                                    ${actor.split('_')[0]}
+                                </span>`;
+                    }).join(', ') 
+                    : movie.actors) 
+                : "Unknown Actors";
+
             if (actors.length > 75) {
                 actors = actors.substring(0, 72) + '...';
             }
-            
-            // Generate the HTML for countries with custom tooltips
+
             const countries = Array.isArray(movie.countries) && movie.countries.length > 0
                 ? movie.countries.map(country => {
-                    const match = country.match(/(.*?)\s\((.*?)\)/); // Extract full name and short code
+                    const match = country.match(/(.*?)\s\((.*?)\)/); 
                     const fullName = match ? match[1] : country;
                     const shortCode = match ? match[2] : country;
                     return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
                 }).join(', ')
                 : "Unknown Countries";
 
-
-
             const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
-    
-            // Fallback to 'overview' if 'format_inhalt' is null or empty
+
             let content = movie.format_inhalt ? movie.format_inhalt : movie.overview ? movie.overview : "Keine Inhaltsangabe verfügbar.";
             if (content.length > 150) {
                 content = content.substring(0, 150) + '...';
             }
-            
-            // Fallback for IMDb rating if it's null or not provided
+
             let imdb_rating = movie.imdb_rating ? movie.imdb_rating : 6;
-    
+
             movieCard.innerHTML = `
             <div class="movie-content-wrapper">
                 <div class="image-container">
@@ -106,9 +98,28 @@ export function updateMovieListings(movies) {
             </div>
         `;
         
-            movieContainer.appendChild(movieCard);
+            movieContainer.appendChild(movieCard);  // Append the movieCard to movieContainer
         });
     } else {
         movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
     }
 }
+
+// Add tooltip event listener for director and actor elements to display images
+document.addEventListener('mouseover', function(event) {
+    if (event.target.classList.contains('director-tooltip') || event.target.classList.contains('actor-tooltip')) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip-content';
+        tooltip.innerHTML = `<img src="${event.target.querySelector('img').src}" alt="${event.target.dataset.director || event.target.dataset.actor}">`;
+        document.body.appendChild(tooltip);
+
+        event.target.addEventListener('mousemove', (e) => {
+            tooltip.style.left = `${e.pageX + 10}px`;
+            tooltip.style.top = `${e.pageY + 10}px`;
+        });
+
+        event.target.addEventListener('mouseout', () => {
+            tooltip.remove();
+        });
+    }
+});
