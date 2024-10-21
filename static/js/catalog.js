@@ -1,5 +1,3 @@
-// File: static/js/catalog.js
-
 export function updateMovieListings(movies) {
     const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
@@ -37,7 +35,6 @@ export function updateMovieListings(movies) {
                         const personImage = getPersonImage(person);
                         const personName = person.split('_')[0].replace(/_/g, ' '); // Replace underscores with spaces for display
 
-                        // Prepare tooltip content with template literals
                         const tooltipContent = `
                             <div class="tooltip-person-content">
                                 <img src="${personImage}" alt="${personName}" onerror="this.onerror=null; this.src='/static/images/default_person.png';">
@@ -45,7 +42,6 @@ export function updateMovieListings(movies) {
                             </div>
                         `;
 
-                        // Return the tooltip element with correct attributes
                         return `
                             <span 
                                 class="person-tooltip" 
@@ -63,17 +59,36 @@ export function updateMovieListings(movies) {
                         ? movie.director.map(director => renderPersonTooltip(director, "Director")).join(', ') 
                         : "Unknown Director";
 
-                    // Map actors with their tooltip images
-                    let actors = movie.actors 
-                        ? (Array.isArray(movie.actors) 
-                            ? movie.actors.map(actor => renderPersonTooltip(actor, "Actor")).join(', ') 
-                            : movie.actors) 
-                        : "Unknown Actors";
-                        
-                    // Truncate actors if necessary
-                    if (actors.length > 75) {
-                        actors = actors.substring(0, 72) + '...';
+                    // Process actors
+                    let actors = "Unknown Actors";
+                    if (movie.actors) {
+                        if (Array.isArray(movie.actors)) {
+                            actors = movie.actors.map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                        } else if (typeof movie.actors === 'string') {
+                            // Split the string into an array by commas
+                            const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
+                            actors = actorArray.map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                        }
                     }
+
+                    // Limit the number of displayed actors
+                    const maxActorsToShow = 5;
+                    if (Array.isArray(movie.actors)) {
+                        if (movie.actors.length > maxActorsToShow) {
+                            const displayedActors = movie.actors.slice(0, maxActorsToShow).map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                            const remainingCount = movie.actors.length - maxActorsToShow;
+                            actors = `${displayedActors}, ...`;
+                        }
+                    } else if (typeof movie.actors === 'string') {
+                        const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
+                        if (actorArray.length > maxActorsToShow) {
+                            const displayedActors = actorArray.slice(0, maxActorsToShow).map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                            const remainingCount = actorArray.length - maxActorsToShow;
+                            actors = `${displayedActors}, ...`;
+                        }
+                    }
+
+                    console.log("Actors processed:", actors);
 
                     const countries = Array.isArray(movie.countries) && movie.countries.length > 0
                         ? movie.countries.map(country => {
@@ -122,7 +137,7 @@ export function updateMovieListings(movies) {
                             </div>
                         </div>
                     `;
-                    
+
                     movieContainer.appendChild(movieCard);
                 })
                 .catch(err => console.error('Error fetching person images:', err));
@@ -133,22 +148,23 @@ export function updateMovieListings(movies) {
     } else {
         movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
     }
+
+    // Initialize Tippy.js after all movie cards have been appended
+    initializeTippyTooltips();
 }
 
 // Function to initialize Tippy.js tooltips
 function initializeTippyTooltips() {
-    // Ensure Tippy.js is available
     if (typeof tippy === 'undefined') {
         console.error("Tippy.js is not loaded.");
         return;
     }
 
-    // Initialize Tippy.js on elements with the 'person-tooltip' class
     tippy('.person-tooltip', {
-        allowHTML: true, // Allow HTML content in tooltips
-        interactive: true, // Allow interaction with the tooltip (e.g., clicking links)
-        theme: 'light-border', // Optional: choose a theme or define your own
-        placement: 'top', // Position the tooltip above the element
-        arrow: true, // Show an arrow pointing to the element
+        allowHTML: true,
+        interactive: true,
+        theme: 'light-border',
+        placement: 'top',
+        arrow: true,
     });
 }
