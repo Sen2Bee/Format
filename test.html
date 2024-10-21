@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tooltip Test with Tippy.js</title>
+
+    <!-- Tippy.js and Popper.js CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css">
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+
+    <!-- Simple Styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .person-tooltip {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .tooltip-person-content {
+            text-align: center;
+        }
+
+        .tooltip-person-content img {
+            width: 100px;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .tooltip-person-content .tooltip-name {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Test Tooltip with Person Image</h1>
+
+    <p>Hover over the person's name below to see their image:</p>
+
+    <!-- Person Name with Tooltip -->
+    <span 
+        class="person-tooltip" 
+        tabindex="0" 
+        aria-label="Director: Bobby Farrelly"
+        data-tippy-content='
+            <div class="tooltip-person-content">
+                <img src="http://localhost:8000/e:\Format_FV\_Movies\_Movies_Fertig\$ (1971) (US) [FORMAT_2141] [TMDB_31644]\person\Wolfgang Kieling_26517.jpg" alt="Arthur Brauss">
+                <span class="tooltip-name">Bobby Farrelly</span>
+            </div>
+        '>
+        Bobby Farrelly
+    </span>
+
+    <!-- Initialize Tippy.js -->
+    <script>
+        tippy('.person-tooltip', {
+            allowHTML: true,  // Allows rendering HTML content in the tooltip
+            theme: 'light',   // Optional theme for the tooltip
+            interactive: true, // Tooltip stays visible if you hover over it
+            animation: 'scale', // Animation effect
+        });
+    </script>
+
+</body>
+</html>

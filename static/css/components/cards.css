@@ -1,6 +1,33 @@
 /* Import Additional Fonts for Themes */
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
 
+/* CSS Variables for Reusability and Consistency */
+:root {
+    --link-color: #FFD700; /* Bright Yellow */
+    --secondary-text-color: #FFFFFF; /* White */
+    --secondary-secondary-text-color: #CCCCCC; /* Light Gray */
+    --highlight-color: #FF6347; /* Tomato */
+    --font-heading: 'Anton', sans-serif;
+    --transition-duration: 0.3s;
+}
+
+/* Container for Movie Listings */
+.movie-listings {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px; /* Adjust as needed */
+    margin: 0 auto;
+}
+
+/* Media Query to Limit to 4 Columns on Large Screens */
+@media (min-width: 1200px) {
+    .movie-listings {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 /* General Movie Card Container */
 .movie-card {
     display: flex;
@@ -8,16 +35,14 @@
     background-color: #1e1e1e;
     color: var(--secondary-text-color);
     border-radius: 10px;
-    margin: 20px auto;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 1100px;
     transition: transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
     position: relative;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    height: 100%; /* Ensure all cards have equal height */
 }
 
 /* Overlay for Improved Text Visibility */
@@ -40,6 +65,7 @@
 
 /* Movie Content Wrapper */
 .movie-content-wrapper {
+    flex: 1; /* Allow the content to expand and fill the card */
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -53,18 +79,20 @@
 
 /* Image Container */
 .image-container {
-    width: 100%; /* Full width for the image */
     position: relative;
-    transition: transform var(--transition-duration) ease;
+    width: 100%;
+    aspect-ratio: 2 / 3; /* 2:3 aspect ratio */
     overflow: hidden;
+    border-radius: 10px;
+    transition: transform var(--transition-duration) ease;
 }
 
 .image-container img {
     width: 100%;
-    height: auto;
-    border-radius: 10px;
+    height: 100%;
     object-fit: cover;
-    aspect-ratio: 2 / 3; /* Maintain aspect ratio of 2:3 for movie posters */
+    border-radius: 10px;
+    transition: transform var(--transition-duration) ease;
 }
 
 .movie-card:hover .image-container img {
@@ -78,8 +106,8 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.7);  /* semi-transparent background */
-    color: rgba(255, 255, 255, 0.7); /* semi-transparent text */
+    background: rgba(0, 0, 0, 0.7);  /* Semi-transparent background */
+    color: rgba(255, 255, 255, 0.7); /* Semi-transparent text */
     text-align: center;
     padding: 5px;
     opacity: 0;
@@ -170,14 +198,14 @@
     color: var(--highlight-color); /* Change color on hover, optional */
 }
 
-/* Tooltip container */
+/* Tooltip container for countries */
 .country-tooltip {
     position: relative;
     display: inline-block;
     cursor: help;
 }
 
-/* Tooltip text */
+/* Tooltip text for countries */
 .country-tooltip::before {
     content: attr(data-country);
     visibility: hidden;
@@ -206,7 +234,7 @@
     opacity: 1;
 }
 
-/* Optional arrow under the tooltip */
+/* Optional arrow under the tooltip for countries */
 .country-tooltip::after {
     content: "";
     position: absolute;
@@ -238,41 +266,49 @@
     overflow: visible; /* Prevent clipping */
 }
 
-/* Tooltip container */
-.person-image-tooltip {
-    position: relative;
-    display: inline-block;
+/* Tooltip container for persons */
+.person-tooltip {
+    /* No additional styles needed as Tippy.js handles tooltip styling */
+    /* However, you can style the trigger element here if desired */
+    /* For example: */
+    color: var(--link-color); /* Bright yellow for names */
+    text-decoration: underline dotted; /* Indicate interactivity */
     cursor: pointer;
 }
 
-.person-image-tooltip .tooltip-content {
-    visibility: hidden;
-    width: 150px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%; /* Position above the text */
-    left: 50%;
-    margin-left: -75px; /* Center the tooltip */
-    opacity: 0;
-    transition: opacity 0.3s;
+/* Optional: Style the content inside Tippy.js tooltips */
+.tooltip-person-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.person-image-tooltip .tooltip-content img {
+.tooltip-person-content img {
     width: 100%;
+    height: auto;
     border-radius: 6px;
+    margin-bottom: 8px;
+    object-fit: cover;
 }
 
-.person-image-tooltip:hover .tooltip-content {
-    visibility: visible;
-    opacity: 1;
+.tooltip-person-content .tooltip-name {
+    display: block;
+    font-weight: bold;
+    font-size: 1.1em;
+    text-transform: capitalize;
 }
 
+/* Remove the old CSS-based tooltip styles to prevent conflicts */
+/* 
+.person-tooltip .tooltip-content {
+    ...
+}
 
+.person-tooltip:hover .tooltip-content,
+.person-tooltip:focus .tooltip-content {
+    ...
+}
+*/
 
 /* Location/Standort */
 .standort {
@@ -316,12 +352,11 @@
 
 /* Tablet (Max Width: 1024px) */
 @media (max-width: 1024px) {
-    .movie-card {
-        width: 95%;
-        margin: 15px auto;
+    .movie-listings {
+        max-width: 1000px;
     }
 
-    .movie-content-wrapper {
+    .movie-card {
         gap: 15px;
     }
 
@@ -333,15 +368,12 @@
 
 /* Mobile (Max Width: 768px) */
 @media (max-width: 768px) {
-    .movie-card {
-        width: 100%;
-        margin: 10px auto;
+    .movie-listings {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 
-    .movie-content-wrapper {
-        grid-template-columns: 1fr;
+    .movie-card {
         gap: 10px;
-        background: none;
     }
 
     .info-section,
@@ -364,8 +396,12 @@
 
 /* Very Small Mobile (Max Width: 480px) */
 @media (max-width: 480px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
     .movie-card {
-        width: 100%;
+        gap: 8px;
     }
 
     .header-section h2 {
