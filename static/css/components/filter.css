@@ -1,17 +1,47 @@
 /* filter.css */
 
-/* Import CSS Variables */
-@import url('../base/variables.css');
+.sidebar {
+    width: var(--sidebar-width);
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-right: 20px;
+}
 
-/* Import Base Styles */
-@import url('../base/reset.css');
-@import url('../base/typography.css');
+.filter-section {
+    margin-bottom: 30px;
+}
 
-/* Import Component Styles */
-@import url('./search.css');
-@import url('./dropdown.css');
-@import url('./buttons.css');
-@import url('./autocomplete.css');
+.filter-section h4 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+}
 
-/* Import Responsive Styles */
-@import url('../base/responsive.css');
+.filter-section ul {
+    list-style: none;
+}
+
+.filter-section ul li {
+    margin-bottom: 10px;
+}
+
+.filter-section ul li input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.filter-section input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.filter-section span {
+    display: block;
+    text-align: right;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Responsive Adjustments handled in responsive.css */

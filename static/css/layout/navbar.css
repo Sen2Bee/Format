@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--primary-color);  /* Use defined primary color */
+    background-color: var(--footer-background);  /* Use defined primary color */
     position: fixed;
     top: 0;
     left: 0;

@@ -1,105 +1,206 @@
-/* responsive.css */
+/* Mobile-First Base Styles */
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    /* Adjustments for elements */
-    .main-filters-container {
-        overflow-x: auto;
+/* Ensure all elements are responsive by default */
+
+/* Extra Small Devices (Mobile Phones, <480px) */
+@media (max-width: var(--breakpoint-xs)) {
+    /* Navbar */
+    header .container {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 10px;
     }
 
-    .custom-dropdown {
-        flex: 0 0 180px;
-        max-width: 180px;
+    nav ul {
+        flex-direction: column;
+        width: 100%;
     }
 
-    .dropdown-header .header-label span {
-        max-width: 120px;
+    nav ul li {
+        width: 100%;
     }
 
-    .selection-clear-container {
-        gap: 6px;
+    nav ul li a {
+        padding: 10px 0;
+        width: 100%;
+        display: block;
     }
 
-    .selection-badge {
-        max-width: 60%;
-        font-size: 0.7em;
+    /* Search Bar */
+    .search-bar {
+        width: 100%;
+        margin-top: 10px;
     }
 
-    .clear-icon {
-        font-size: 1.2em;
+    .search-bar input {
+        width: 100%;
     }
 
-    #autocomplete-list {
-        max-height: 200px;
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 50vh;
     }
 
-    .autocomplete-item {
-        padding: 8px 10px;
-        font-size: 0.9em;
+    .hero-carousel .overlay {
+        bottom: 10%;
+        left: 5%;
+        max-width: 90%;
     }
 
-    /* Navbar adjustments */
-    .navbar {
-        height: 50px;
+    /* Sidebar */
+    .sidebar {
+        display: none; /* Hide sidebar on mobile */
     }
 
-    .navbar.shrunk {
-        height: 35px;
+    /* Movie Grid */
+    .movie-listing {
+        padding: 0;
     }
 
-    .navbar.hidden {
-        top: -50px;
+    .view-toggle {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
     }
 
-    .logo span {
-        font-size: 2rem;
+    .movies.grid-view {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
     }
 
-    .sub-logo span {
-        font-size: 1.4rem;
+    .movie-card {
+        flex-direction: column;
     }
 
-    .nav-center-title {
-        font-size: 1rem;
+    /* Footer */
+    footer .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    footer .footer-links ul {
+        flex-direction: column;
+    }
+
+    footer .footer-social {
+        margin-top: 10px;
     }
 }
 
-@media (max-width: 480px) {
-    .custom-dropdown {
-        flex: 0 0 150px;
-        max-width: 150px;
+/* Small Devices (Tablet Portrait, 480px - 767px) */
+@media (min-width: var(--breakpoint-xs)) and (max-width: var(--breakpoint-sm)) {
+    /* Navbar */
+    header .container {
+        flex-direction: row;
+        justify-content: space-between;
     }
 
-    .dropdown-header .header-label span {
-        max-width: 100px;
+    nav ul {
+        flex-direction: row;
     }
 
-    .selection-clear-container {
-        gap: 4px;
+    nav ul li {
+        width: auto;
     }
 
-    .selection-badge {
-        max-width: 50%;
-        font-size: 0.6em;
+    /* Search Bar */
+    .search-bar {
+        width: 60%;
     }
 
-    .clear-icon {
-        font-size: 1em;
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 60vh;
     }
 
-    .logo span {
-        font-size: 1.6rem;
+    /* Sidebar */
+    .sidebar {
+        width: 200px;
     }
 
-    .sub-logo span {
-        font-size: 1.2rem;
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+    }
+}
+
+/* Medium Devices (Tablet Landscape, 768px - 1023px) */
+@media (min-width: var(--breakpoint-sm)) and (max-width: var(--breakpoint-md)) {
+    /* Navbar */
+    header .container {
+        padding: 15px;
     }
 
-    .nav-links li a {
-        font-size: 1.2rem;
+    /* Search Bar */
+    .search-bar {
+        width: 50%;
     }
 
-    .theme-title {
-        font-size: 1.2rem;
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 65vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        display: block;
+        width: var(--sidebar-width);
+    }
+
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 25px;
+    }
+}
+
+/* Large Devices (Desktop, 1024px - 1199px) */
+@media (min-width: var(--breakpoint-md)) and (max-width: var(--breakpoint-lg)) {
+    /* Navbar */
+    header .container {
+        padding: 20px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+        width: 40%;
+    }
+
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 70vh;
+    }
+
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 30px;
+    }
+}
+
+/* Extra Large Devices (Large Desktop, ≥1200px) */
+@media (min-width: var(--breakpoint-lg)) {
+    /* Navbar */
+    header .container {
+        padding: 25px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+        width: 30%;
+    }
+
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 80vh;
+    }
+
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 35px;
     }
 }

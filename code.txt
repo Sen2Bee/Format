@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-21 14:24:13 ===
+=== Code Summary Generated at 2024-10-21 21:37:10 ===
 
 === Project Folder Structure ===
 
@@ -42,6 +42,7 @@ Format/
             dd_bg_years.jpeg
             dd_bg_years.webp
             default_movie.png
+            default_person.png
             event1.jpg
             event2.jpg
             event3.jpg
@@ -516,6 +517,33 @@ button {
 /* Import Additional Fonts for Themes */
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
 
+/* CSS Variables for Reusability and Consistency */
+:root {
+    --link-color: #FFD700; /* Bright Yellow */
+    --secondary-text-color: #FFFFFF; /* White */
+    --secondary-secondary-text-color: #CCCCCC; /* Light Gray */
+    --highlight-color: #FF6347; /* Tomato */
+    --font-heading: 'Anton', sans-serif;
+    --transition-duration: 0.3s;
+}
+
+/* Container for Movie Listings */
+.movie-listings {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px; /* Adjust as needed */
+    margin: 0 auto;
+}
+
+/* Media Query to Limit to 4 Columns on Large Screens */
+@media (min-width: 1200px) {
+    .movie-listings {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 /* General Movie Card Container */
 .movie-card {
     display: flex;
@@ -523,16 +551,14 @@ button {
     background-color: #1e1e1e;
     color: var(--secondary-text-color);
     border-radius: 10px;
-    margin: 20px auto;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 1100px;
     transition: transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
     position: relative;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    height: 100%; /* Ensure all cards have equal height */
 }
 
 /* Overlay for Improved Text Visibility */
@@ -555,6 +581,7 @@ button {
 
 /* Movie Content Wrapper */
 .movie-content-wrapper {
+    flex: 1; /* Allow the content to expand and fill the card */
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -568,18 +595,20 @@ button {
 
 /* Image Container */
 .image-container {
-    width: 100%; /* Full width for the image */
     position: relative;
-    transition: transform var(--transition-duration) ease;
+    width: 100%;
+    aspect-ratio: 2 / 3; /* 2:3 aspect ratio */
     overflow: hidden;
+    border-radius: 10px;
+    transition: transform var(--transition-duration) ease;
 }
 
 .image-container img {
     width: 100%;
-    height: auto;
-    border-radius: 10px;
+    height: 100%;
     object-fit: cover;
-    aspect-ratio: 2 / 3; /* Maintain aspect ratio of 2:3 for movie posters */
+    border-radius: 10px;
+    transition: transform var(--transition-duration) ease;
 }
 
 .movie-card:hover .image-container img {
@@ -593,8 +622,8 @@ button {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.7);  /* semi-transparent background */
-    color: rgba(255, 255, 255, 0.7); /* semi-transparent text */
+    background: rgba(0, 0, 0, 0.7);  /* Semi-transparent background */
+    color: rgba(255, 255, 255, 0.7); /* Semi-transparent text */
     text-align: center;
     padding: 5px;
     opacity: 0;
@@ -685,14 +714,14 @@ button {
     color: var(--highlight-color); /* Change color on hover, optional */
 }
 
-/* Tooltip container */
+/* Tooltip container for countries */
 .country-tooltip {
     position: relative;
     display: inline-block;
     cursor: help;
 }
 
-/* Tooltip text */
+/* Tooltip text for countries */
 .country-tooltip::before {
     content: attr(data-country);
     visibility: hidden;
@@ -721,7 +750,7 @@ button {
     opacity: 1;
 }
 
-/* Optional arrow under the tooltip */
+/* Optional arrow under the tooltip for countries */
 .country-tooltip::after {
     content: "";
     position: absolute;
@@ -753,41 +782,49 @@ button {
     overflow: visible; /* Prevent clipping */
 }
 
-/* Tooltip container */
-.person-image-tooltip {
-    position: relative;
-    display: inline-block;
+/* Tooltip container for persons */
+.person-tooltip {
+    /* No additional styles needed as Tippy.js handles tooltip styling */
+    /* However, you can style the trigger element here if desired */
+    /* For example: */
+    color: var(--link-color); /* Bright yellow for names */
+    text-decoration: underline dotted; /* Indicate interactivity */
     cursor: pointer;
 }
 
-.person-image-tooltip .tooltip-content {
-    visibility: hidden;
-    width: 150px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%; /* Position above the text */
-    left: 50%;
-    margin-left: -75px; /* Center the tooltip */
-    opacity: 0;
-    transition: opacity 0.3s;
+/* Optional: Style the content inside Tippy.js tooltips */
+.tooltip-person-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.person-image-tooltip .tooltip-content img {
+.tooltip-person-content img {
     width: 100%;
+    height: auto;
     border-radius: 6px;
+    margin-bottom: 8px;
+    object-fit: cover;
 }
 
-.person-image-tooltip:hover .tooltip-content {
-    visibility: visible;
-    opacity: 1;
+.tooltip-person-content .tooltip-name {
+    display: block;
+    font-weight: bold;
+    font-size: 1.1em;
+    text-transform: capitalize;
 }
 
+/* Remove the old CSS-based tooltip styles to prevent conflicts */
+/* 
+.person-tooltip .tooltip-content {
+    ...
+}
 
+.person-tooltip:hover .tooltip-content,
+.person-tooltip:focus .tooltip-content {
+    ...
+}
+*/
 
 /* Location/Standort */
 .standort {
@@ -831,12 +868,11 @@ button {
 
 /* Tablet (Max Width: 1024px) */
 @media (max-width: 1024px) {
-    .movie-card {
-        width: 95%;
-        margin: 15px auto;
+    .movie-listings {
+        max-width: 1000px;
     }
 
-    .movie-content-wrapper {
+    .movie-card {
         gap: 15px;
     }
 
@@ -848,15 +884,12 @@ button {
 
 /* Mobile (Max Width: 768px) */
 @media (max-width: 768px) {
-    .movie-card {
-        width: 100%;
-        margin: 10px auto;
+    .movie-listings {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 
-    .movie-content-wrapper {
-        grid-template-columns: 1fr;
+    .movie-card {
         gap: 10px;
-        background: none;
     }
 
     .info-section,
@@ -879,8 +912,12 @@ button {
 
 /* Very Small Mobile (Max Width: 480px) */
 @media (max-width: 480px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
     .movie-card {
-        width: 100%;
+        gap: 8px;
     }
 
     .header-section h2 {
@@ -2128,134 +2165,44 @@ footer {
 
 /* Movie Listings Section */
 .movie-listings {
-    /* padding: 20px; */
     background-color: var(--background-dark);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid with flexible columns */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Dynamically fit columns */
     gap: 20px;
+    padding: 20px;
+    margin: 0 auto; /* Center the grid */
+    max-width: 100%; /* Allow the grid to use the full width of the screen */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1600px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Slightly smaller cards on large screens */
+    }
+}
+
+@media (max-width: 1200px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller cards for medium screens */
+    }
+}
+
+@media (max-width: 900px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Further reduce size on smaller screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .movie-listings {
+        grid-template-columns: 1fr; /* 1 column on extra small screens */
+    }
 }
 
 /* Ensure movie cards take full width of their grid cell */
 .movie-listings .movie-card {
     width: 100%;
 }
-
-/* Column Variations */
-.movie-listings.columns-1 {
-    grid-template-columns: 1fr;
-}   
-
-.movie-listings.columns-2 {
-    grid-template-columns: repeat(2, 1fr); /* Two-column layout */
-}
-
-.movie-listings.columns-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.movie-listings.columns-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.movie-listings.columns-5 {
-    grid-template-columns: repeat(5, 1fr);
-}
-
-/* Responsive Adjustments */
-
-/* For larger screens, maintain more columns */
-@media (max-width: 1600px) {
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 1400px) {
-    .movie-listings.columns-4 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* Medium screens (1024px and below) */
-@media (max-width: 1024px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(2, 1fr); /* Two-column layout for medium screens */
-    }
-}
-
-/* One-column layout for smaller screens */
-@media (max-width: 768px) {
-    .movie-listings {
-        grid-template-columns: 1fr; /* One column layout on smaller screens */
-    }
-}
-
-/* Ensure responsive behavior and spacing */
-@media (max-width: 768px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: 1fr; /* One column layout on smaller screens */
-    }
-}
-
-/* Column Variations for various screen sizes */
-.movie-listings.columns-2 {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.movie-listings.columns-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.movie-listings.columns-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.movie-listings.columns-5 {
-    grid-template-columns: repeat(5, 1fr);
-}
-
-/* Grid alignment and spacing */
-.movie-listings {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    background-color: var(--background-dark);
-}
-
-/* Responsive Adjustments for smaller screens */
-@media (max-width: 1400px) {
-    .movie-listings.columns-4 {
-        grid-template-columns: repeat(3, 1fr); /* Adjust to 3 columns */
-    }
-}
-
-@media (max-width: 1600px) {
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(4, 1fr); /* Adjust to 4 columns */
-    }
-}
-
-@media (max-width: 1024px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(2, 1fr); /* Adjust to 2 columns on medium screens */
-    }
-}
-
-@media (max-width: 768px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: 1fr; /* Adjust to 1 column on small screens */
-    }
-}
-
 
 --- File: static\css\pages\contact.css ---
 /* contact.css */
@@ -2627,122 +2574,167 @@ export function updateMovieListings(movies) {
 
     movieContainer.innerHTML = "";  // Clear existing entries
     if (movies.length > 0) {
-        movies.forEach(movie => {
+        const promises = movies.map(movie => {
             const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.jpg`;
             const defaultImagePath = '/static/images/default_movie.png';
-            console.log(movie);  // For debugging purposes
-            
-            // You must declare movieCard here
+
             const movieCard = document.createElement('div');
-            movieCard.className = 'movie-card';  // Now movieCard is defined properly
+            movieCard.className = 'movie-card';
 
-            function getPersonImage(person, movieFolder) {
-                const [name, id] = person.split('_'); // Split the name and id
-                const personImageFilename = encodeURIComponent(name.trim()) + `_${id}.jpg`; 
-                return `${encodeURIComponent(movieFolder)}/person/${personImageFilename}`;
-            }
+            // Fetch available person images from the backend
+            return fetch(`/get_person_images/${encodeURIComponent(movie.folder_name)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const availableImages = data.images;
 
-            // Handle directors and actors as tooltips with images
-            const directors = Array.isArray(movie.director) && movie.director.length > 0 
-                ? movie.director.map(director => {
-                    const directorImage = getPersonImage(director, movie.folder_name);
-                    console.log(directorImage)
-                    return `<span class="director-tooltip" data-director="${director}">
-                                <img src="${directorImage}" alt="${director}" onerror="this.onerror=null; this.src='/static/images/default_person.png';" class="person-image-tooltip">
-                                ${director.split('_')[0]}
-                            </span>`;
-                }).join(', ') 
-                : "Unknown Director";
+                    // Function to get person image by matching the name in availableImages
+                    function getPersonImage(person) {
+                        for (const image of availableImages) {
+                            if (image.startsWith(person.trim())) {
+                                return `/movie_images/${encodeURIComponent(movie.folder_name)}/person/${encodeURIComponent(image)}`;
+                            }
+                        }
+                        return '/static/images/default_person.png'; // Fallback to default person image
+                    }
 
-            let actors = movie.actors 
-                ? (Array.isArray(movie.actors) 
-                    ? movie.actors.map(actor => {
-                        const actorImage = getPersonImage(actor, movie.folder_name);
-                        return `<span class="actor-tooltip" data-actor="${actor}">
-                                    <img src="${actorImage}" alt="${actor}" onerror="this.onerror=null; this.src='/static/images/default_person.png';" class="person-image-tooltip">
-                                    ${actor.split('_')[0]}
-                                </span>`;
-                    }).join(', ') 
-                    : movie.actors) 
-                : "Unknown Actors";
+                    // Unified Tooltip Class for Directors and Actors
+                    const renderPersonTooltip = (person, role) => {
+                        const personImage = getPersonImage(person);
+                        const personName = person.split('_')[0].replace(/_/g, ' '); // Replace underscores with spaces for display
 
-            if (actors.length > 75) {
-                actors = actors.substring(0, 72) + '...';
-            }
+                        const tooltipContent = `
+                            <div class="tooltip-person-content">
+                                <img src="${personImage}" alt="${personName}" onerror="this.onerror=null; this.src='/static/images/default_person.png';">
+                                <span class="tooltip-name">${personName}</span>
+                            </div>
+                        `;
 
-            const countries = Array.isArray(movie.countries) && movie.countries.length > 0
-                ? movie.countries.map(country => {
-                    const match = country.match(/(.*?)\s\((.*?)\)/); 
-                    const fullName = match ? match[1] : country;
-                    const shortCode = match ? match[2] : country;
-                    return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
-                }).join(', ')
-                : "Unknown Countries";
+                        return `
+                            <span 
+                                class="person-tooltip" 
+                                tabindex="0" 
+                                aria-label="${role}: ${personName}"
+                                data-tippy-content="${tooltipContent.replace(/"/g, '&quot;')}" 
+                            >
+                                ${personName}
+                            </span>
+                        `;
+                    };
 
-            const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
+                    // Map directors with their tooltip images
+                    const directors = Array.isArray(movie.director) && movie.director.length > 0 
+                        ? movie.director.map(director => renderPersonTooltip(director, "Director")).join(', ') 
+                        : "Unknown Director";
 
-            let content = movie.format_inhalt ? movie.format_inhalt : movie.overview ? movie.overview : "Keine Inhaltsangabe verfügbar.";
-            if (content.length > 150) {
-                content = content.substring(0, 150) + '...';
-            }
+                    // Process actors
+                    let actors = "Unknown Actors";
+                    if (movie.actors) {
+                        if (Array.isArray(movie.actors)) {
+                            actors = movie.actors.map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                        } else if (typeof movie.actors === 'string') {
+                            // Split the string into an array by commas
+                            const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
+                            actors = actorArray.map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                        }
+                    }
 
-            let imdb_rating = movie.imdb_rating ? movie.imdb_rating : 6;
+                    // Limit the number of displayed actors
+                    const maxActorsToShow = 5;
+                    if (Array.isArray(movie.actors)) {
+                        if (movie.actors.length > maxActorsToShow) {
+                            const displayedActors = movie.actors.slice(0, maxActorsToShow).map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                            const remainingCount = movie.actors.length - maxActorsToShow;
+                            actors = `${displayedActors}, ...`;
+                        }
+                    } else if (typeof movie.actors === 'string') {
+                        const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
+                        if (actorArray.length > maxActorsToShow) {
+                            const displayedActors = actorArray.slice(0, maxActorsToShow).map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                            const remainingCount = actorArray.length - maxActorsToShow;
+                            actors = `${displayedActors}, ...`;
+                        }
+                    }
 
-            movieCard.innerHTML = `
-            <div class="movie-content-wrapper">
-                <div class="image-container">
-                    <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';" loading="lazy">
-                    <div class="hover-title">
-                        <span>${movie.original_title}</span>
-                    </div>
-                </div>
-                <div class="info-section">
-                    <h2>${movie.main_title}</h2>
-                    <div class="metadata">
-                        <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
-                        <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
-                        <p class="inline-meta">
-                            <i class="fas fa-clock"></i> ${movie.runtime} min | 
-                            <i class="fas fa-compact-disc"></i> ${movie.formats} | 
-                            <i class="fas fa-child"></i>${movie.format_fsk} | 
-                            &#9733; ${imdb_rating}
-                        </p>
-                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
-                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
-                        <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
-                    </div>
-                </div>
-                <div class="overview-section">
-                    <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
-                </div>
-            </div>
-        `;
-        
-            movieContainer.appendChild(movieCard);  // Append the movieCard to movieContainer
+                    console.log("Actors processed:", actors);
+
+                    const countries = Array.isArray(movie.countries) && movie.countries.length > 0
+                        ? movie.countries.map(country => {
+                            const match = country.match(/(.*?)\s\((.*?)\)/); 
+                            const fullName = match ? match[1] : country;
+                            const shortCode = match ? match[2] : country;
+                            return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
+                        }).join(', ')
+                        : "Unknown Countries";
+
+                    const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
+
+                    let content = movie.format_inhalt ? movie.format_inhalt : (movie.overview ? movie.overview : "Keine Inhaltsangabe verfügbar.");
+                    if (content.length > 150) {
+                        content = content.substring(0, 150) + '...';
+                    }
+
+                    let imdb_rating = movie.imdb_rating ? movie.imdb_rating : 6;
+
+                    movieCard.innerHTML = `
+                        <div class="movie-content-wrapper">
+                            <div class="image-container">
+                                <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';" loading="lazy">
+                                <div class="hover-title">
+                                    <span>${movie.original_title}</span>
+                                </div>
+                            </div>
+                            <div class="info-section">
+                                <h2>${movie.main_title}</h2>
+                                <div class="metadata">
+                                    <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
+                                    <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                                    <p class="inline-meta">
+                                        <i class="fas fa-clock"></i> ${movie.runtime} min | 
+                                        <i class="fas fa-compact-disc"></i> ${movie.formats} | 
+                                        <i class="fas fa-child"></i> ${movie.format_fsk} | 
+                                        &#9733; ${imdb_rating}
+                                    </p>
+                                    <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
+                                    <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
+                                    <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
+                                </div>
+                            </div>
+                            <div class="overview-section">
+                                <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                            </div>
+                        </div>
+                    `;
+
+                    movieContainer.appendChild(movieCard);
+                })
+                .catch(err => console.error('Error fetching person images:', err));
         });
+
+        // Wait for all movie cards to be appended, then initialize Tippy.js
+        Promise.all(promises).then(() => initializeTippyTooltips());
     } else {
         movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
     }
+
+    // Initialize Tippy.js after all movie cards have been appended
+    initializeTippyTooltips();
 }
 
-// Add tooltip event listener for director and actor elements to display images
-document.addEventListener('mouseover', function(event) {
-    if (event.target.classList.contains('director-tooltip') || event.target.classList.contains('actor-tooltip')) {
-        const tooltip = document.createElement('div');
-        tooltip.className = 'tooltip-content';
-        tooltip.innerHTML = `<img src="${event.target.querySelector('img').src}" alt="${event.target.dataset.director || event.target.dataset.actor}">`;
-        document.body.appendChild(tooltip);
-
-        event.target.addEventListener('mousemove', (e) => {
-            tooltip.style.left = `${e.pageX + 10}px`;
-            tooltip.style.top = `${e.pageY + 10}px`;
-        });
-
-        event.target.addEventListener('mouseout', () => {
-            tooltip.remove();
-        });
+// Function to initialize Tippy.js tooltips
+function initializeTippyTooltips() {
+    if (typeof tippy === 'undefined') {
+        console.error("Tippy.js is not loaded.");
+        return;
     }
-});
+
+    tippy('.person-tooltip', {
+        allowHTML: true,
+        interactive: true,
+        theme: 'light-border',
+        placement: 'top',
+        arrow: true,
+    });
+}
 
 --- File: static\js\entry.js ---
 // File: static/js/entry.js
@@ -3840,6 +3832,13 @@ export function attachPaginationEventListeners(columnsPerRow) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Tippy.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <!-- Popper.js (required by Tippy.js) -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <!-- Tippy.js JS -->
+    <script src="https://unpkg.com/tippy.js@6"></script>
+
 </head>
 <body>
     <header>

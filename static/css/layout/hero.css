@@ -1,112 +1,69 @@
 /* hero.css */
 
-/* Hero Section */
-.hero {
+.hero-carousel {
+    margin-top: var(--header-height);
     position: relative;
+    height: 70vh;
+}
+
+.hero-carousel .swiper-container {
     width: 100%;
-    height: calc(100vh - 60px); /* Full height minus the navbar */
+    height: 100%;
+}
+
+.hero-carousel .swiper-slide {
+    position: relative;
+    background-size: cover;
+    background-position: center;
     display: flex;
-    justify-content: center;
     align-items: center;
-    overflow: hidden;
+    justify-content: center;
+}
+
+.hero-carousel .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    color: #fff;
+    text-align: left;
+}
+
+.hero-carousel .overlay h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.hero-carousel .overlay p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.hero-carousel .overlay .btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.hero-carousel .overlay .btn:hover {
+    background-color: var(--button-hover);
+}
+
+/* Swiper Navigation Buttons */
+.swiper-button-next,
+.swiper-button-prev {
     color: #fff;
 }
 
-.hero-image img {
-    width: 100%;
-    height: calc(100vh - 60px); /* Full height minus the navbar */
-    object-fit: cover; /* Cover the entire hero area */
-    object-position: center top;
-    filter: brightness(50%); /* Darken the image for text readability */
-    position: absolute;
-    top: 0;
-    left: 0;
+.swiper-pagination-bullet {
+    background: #fff;
+    opacity: 0.7;
 }
 
-.hero-overlay {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    background-color: rgba(61, 61, 59, 0); /* Semi-transparent overlay */
-    color: #ffd700; /* Gold text color for contrast */
-    border-radius: 8px;
-    display: inline-block;
-    margin-bottom: 20px; /* Space between overlay and button */
-    transition: background-color 0.3s ease, transform 0.3s ease;
+.swiper-pagination-bullet-active {
+    opacity: 1;
 }
 
-/* Fade-in and Fade-out Animations */
-.fade-in {
-    animation: fadeIn var(--transition-duration) ease-in-out;
-}
-
-.fade-out {
-    animation: fadeOut var(--transition-duration) ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-/* Tagline Container at the Bottom of the Hero */
-#tagline-container {
-    position: absolute;
-    bottom: 0;  /* Stick to the bottom of the hero */
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.6);  /* Semi-transparent dark background */
-    padding: 15px 0; /* Vertical padding */
-    z-index: 1; /* Place the tagline container below the hero-overlay */
-}
-
-/* Text Styling for the Tagline */
-#dynamic-tagline {
-    font-family: 'Cinzel', serif; /* Cinematic font */
-    font-size: 1.6em;  /* Adjust the font size */
-    color: #fff;  /* White text color */
-    text-align: center;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Text shadow for better readability */
-    padding: 0 20px; /* Horizontal padding */
-    margin: 0;
-}
-
-/* Button Styling within Hero */
-.hero-overlay .btn-primary {
-    margin-top: 20px;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-    #dynamic-tagline {
-        font-size: 1.6em;
-    }
-
-    .hero-overlay {
-        padding: 10px 20px;
-        font-size: 1em;
-    }
-
-    .btn-primary {
-        font-size: 1em;
-        padding: 10px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    #dynamic-tagline {
-        font-size: 1.2em;
-        padding: 0 10px;
-    }
-
-    .btn-primary {
-        font-size: 0.9em;
-        padding: 8px 16px;
-    }
-}
+/* Responsive Adjustments handled in responsive.css */
