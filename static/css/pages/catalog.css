@@ -2,131 +2,41 @@
 
 /* Movie Listings Section */
 .movie-listings {
-    /* padding: 20px; */
     background-color: var(--background-dark);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid with flexible columns */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Dynamically fit columns */
     gap: 20px;
+    padding: 20px;
+    margin: 0 auto; /* Center the grid */
+    max-width: 100%; /* Allow the grid to use the full width of the screen */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1600px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Slightly smaller cards on large screens */
+    }
+}
+
+@media (max-width: 1200px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller cards for medium screens */
+    }
+}
+
+@media (max-width: 900px) {
+    .movie-listings {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Further reduce size on smaller screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .movie-listings {
+        grid-template-columns: 1fr; /* 1 column on extra small screens */
+    }
 }
 
 /* Ensure movie cards take full width of their grid cell */
 .movie-listings .movie-card {
     width: 100%;
 }
-
-/* Column Variations */
-.movie-listings.columns-1 {
-    grid-template-columns: 1fr;
-}   
-
-.movie-listings.columns-2 {
-    grid-template-columns: repeat(2, 1fr); /* Two-column layout */
-}
-
-.movie-listings.columns-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.movie-listings.columns-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.movie-listings.columns-5 {
-    grid-template-columns: repeat(5, 1fr);
-}
-
-/* Responsive Adjustments */
-
-/* For larger screens, maintain more columns */
-@media (max-width: 1600px) {
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 1400px) {
-    .movie-listings.columns-4 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* Medium screens (1024px and below) */
-@media (max-width: 1024px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(2, 1fr); /* Two-column layout for medium screens */
-    }
-}
-
-/* One-column layout for smaller screens */
-@media (max-width: 768px) {
-    .movie-listings {
-        grid-template-columns: 1fr; /* One column layout on smaller screens */
-    }
-}
-
-/* Ensure responsive behavior and spacing */
-@media (max-width: 768px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: 1fr; /* One column layout on smaller screens */
-    }
-}
-
-/* Column Variations for various screen sizes */
-.movie-listings.columns-2 {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.movie-listings.columns-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.movie-listings.columns-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.movie-listings.columns-5 {
-    grid-template-columns: repeat(5, 1fr);
-}
-
-/* Grid alignment and spacing */
-.movie-listings {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    background-color: var(--background-dark);
-}
-
-/* Responsive Adjustments for smaller screens */
-@media (max-width: 1400px) {
-    .movie-listings.columns-4 {
-        grid-template-columns: repeat(3, 1fr); /* Adjust to 3 columns */
-    }
-}
-
-@media (max-width: 1600px) {
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(4, 1fr); /* Adjust to 4 columns */
-    }
-}
-
-@media (max-width: 1024px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(2, 1fr); /* Adjust to 2 columns on medium screens */
-    }
-}
-
-@media (max-width: 768px) {
-    .movie-listings.columns-3,
-    .movie-listings.columns-4,
-    .movie-listings.columns-5 {
-        grid-template-columns: 1fr; /* Adjust to 1 column on small screens */
-    }
-}
-

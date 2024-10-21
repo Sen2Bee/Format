@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-20 12:23:14 ===
+=== Code Summary Generated at 2024-10-21 14:24:13 ===
 
 === Project Folder Structure ===
 
@@ -97,132 +97,6 @@ Format/
 @import url('./pages/events.css');
 
 
-/* Add these styles to your main CSS file */
-
-/* Movie Listings Grid Layout */
-.movie-listings {
-    display: grid;
-    grid-gap: 20px;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* Default to 1 column */
-.movie-listings.columns-1 {
-    grid-template-columns: 1fr;
-}
-
-/* 3 columns for 21-60 movies */
-.movie-listings.columns-3 {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-/* 4 columns for 61-100 movies */
-.movie-listings.columns-4 {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-/* 5 columns for more than 100 movies */
-.movie-listings.columns-5 {
-    grid-template-columns: repeat(5, 1fr);
-}
-
-/* Movie Card Styles */
-.movie-card {
-    background-color: var(--background-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.movie-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-}
-
-.movie-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.image-container {
-    position: relative;
-    width: 100%;
-    padding-top: 150%; /* 2:3 aspect ratio */
-    overflow: hidden;
-}
-
-.image-container img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.info-section {
-    padding: 15px;
-    flex-grow: 1;
-}
-
-.header-section h2 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-    color: var(--primary-color);
-    font-family: var(--font-heading);
-}
-
-.metadata p {
-    font-size: 0.9em;
-    color: var(--secondary-text-color);
-    margin: 5px 0;
-}
-
-.overview-section p {
-    font-size: 0.9em;
-    color: var(--text-color);
-    margin-top: 10px;
-}
-
-.more-link {
-    color: var(--accent-color);
-    text-decoration: none;
-}
-
-.more-link:hover {
-    text-decoration: underline;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 1200px) {
-    .movie-listings.columns-5 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .movie-listings.columns-4 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .movie-listings.columns-3 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .movie-listings.columns-2 {
-        grid-template-columns: 1fr;
-    }
-}
 
 --- File: static\css\base\reset.css ---
 /* reset.css */
@@ -400,9 +274,9 @@ body {
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
+    font-family: var(--secondary-text-color);
     color: var(--text-light);
-    margin-bottom: 15px;
+    /* margin-bottom: 15px; */
 }
 
 /* Paragraphs */
@@ -457,7 +331,7 @@ button {
     --dropdown-background: rgba(44, 44, 44, 0.95); /* Dropdown background */
     --button-active-background: var(--accent-color); /* Active button background */
     --arrow-button-size: 40px; /* Size for navigation arrows */
-    --big-button-height: 55px;
+    --big-button-height: 60px;
     
 }
 
@@ -537,13 +411,13 @@ button {
 
 /* Filter Buttons */
 .filter-button {
-    background-color: var(--button-background);
+    background-color: var(--background-dark);
     color: var(--text-color);
     border: none;
     border-radius: 25px;
     cursor: pointer;
     transition: background-color var(--transition-duration), transform var(--transition-duration);
-    font-size: 0.9em;
+    font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
     flex: 1 0 calc(33.33% - 15px);
     text-align: center;
     box-sizing: border-box;
@@ -639,36 +513,26 @@ button {
     display: none;
 }
 --- File: static\css\components\cards.css ---
-/* static/css/components/cards.css */
-
 /* Import Additional Fonts for Themes */
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
 
-
-
 /* General Movie Card Container */
 .movie-card {
-    display: grid;
-    flex-direction: column;
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
     background-color: #1e1e1e;
-    color: var(--text-light);
+    color: var(--secondary-text-color);
     border-radius: 10px;
     margin: 20px auto;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 1100px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
     position: relative;
     background-size: cover;
     background-position: center;
-}
-
-/* Movie Card Background Image */
-.movie-card.poster-background {
     background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
 }
 
 /* Overlay for Improved Text Visibility */
@@ -681,7 +545,7 @@ button {
     height: 100%;
     background: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay */
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--transition-duration) ease;
     z-index: 1;
 }
 
@@ -691,47 +555,66 @@ button {
 
 /* Movie Content Wrapper */
 .movie-content-wrapper {
-    display: grid;
-    grid-template-columns: 250px 1fr; /* Poster and content */
-    grid-template-areas: 
-        "poster metadata"
-        "overview overview"; /* Overview spans below */
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
     background: rgba(30, 30, 30, 0.85);
     z-index: 2;
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 
 /* Image Container */
 .image-container {
-    grid-area: poster;
+    width: 100%; /* Full width for the image */
     position: relative;
-    align-self: start;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-duration) ease;
+    overflow: hidden;
 }
 
 .image-container img {
     width: 100%;
     height: auto;
     border-radius: 10px;
+    object-fit: cover;
+    aspect-ratio: 2 / 3; /* Maintain aspect ratio of 2:3 for movie posters */
 }
 
 .movie-card:hover .image-container img {
     transform: scale(1.05); /* Zoom-in effect on hover */
 }
 
+/* Hover Title */
+.hover-title {
+    position: absolute;
+    font-size: clamp(2em, 2vw, 1.3em); /* Responsive font size */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);  /* semi-transparent background */
+    color: rgba(255, 255, 255, 0.7); /* semi-transparent text */
+    text-align: center;
+    padding: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.image-container:hover .hover-title {
+    opacity: 1;
+}
+
 /* Info Section */
 .info-section {
-    grid-area: metadata;
-    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    width: 100%; /* Ensure full width below the poster */
     z-index: 2;
 }
 
-/* Main Title Styling */
+/* Header Section */
 .header-section {
     display: flex;
     justify-content: space-between;
@@ -740,7 +623,7 @@ button {
 
 .header-section h2 {
     margin: 0;
-    font-size: 1.8em;
+    font-size: clamp(1.5rem, 2.5vw, 2rem); /* Adaptive font size */
     color: var(--link-color); /* Bright Yellow for headline */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     font-family: var(--font-heading);
@@ -752,32 +635,164 @@ button {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem); /* Adaptive font size */
+    color: var(--secondary-secondary-text-color);
+    background-color: rgba(37, 43, 54, 0.85); /* Background color */
+    padding: 15px;
+    border-radius: 8px;
 }
 
 .metadata p {
     margin: 5px 0;
-    color: var(--text-light); /* White text for metadata */
+    color: var(--secondary-text-color); /* White text for metadata */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Restrict the number of lines for actors list */
+.metadata p.actors {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines (for Webkit browsers) */
+    line-clamp: 2; /* Standard property */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
 }
 
 .metadata p strong,
 .metadata p span {
-    color: var(--text-light); /* Ensure white color for strong and span elements */
+    color: var(--secondary-text-color); /* Ensure white color for strong and span elements */
     font-size: 1.1em;
     font-weight: bold;
 }
 
 /* Inline Metadata */
 .inline-meta {
-    font-size: 1.1em;
-    color: var(--text-light); /* Use white color for inline meta */
+    font-size: clamp(1rem, 1.5vw, 1.1rem); /* Adaptive font size */
+    color: var(--secondary-text-color); /* Use white color for inline meta */
     padding-top: 10px;
     border-top: 1px solid #444;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
+.countries span[title] {
+    cursor: help;
+    /* text-decoration: underline dotted; */
+}
+
+.countries span[title]:hover {
+    color: var(--highlight-color); /* Change color on hover, optional */
+}
+
+/* Tooltip container */
+.country-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+/* Tooltip text */
+.country-tooltip::before {
+    content: attr(data-country);
+    visibility: hidden;
+    opacity: 0;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 1.2em;  /* Control the size of the tooltip */
+    position: absolute;
+    z-index: 1000;  /* Ensure it's always on top */
+    bottom: 125%; /* Position above the country code */
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease-in-out;
+    max-width: 200px; /* Set a maximum width for long names */
+    word-wrap: break-word;
+}
+
+/* Show tooltip on hover */
+.country-tooltip:hover::before {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Optional arrow under the tooltip */
+.country-tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: 100%; /* Position at the bottom of the tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent; /* Arrow pointing up */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.country-tooltip:hover::after {
+    opacity: 1;
+}
+
+/* Prevent the tooltip from being cut off when near the edges of the screen */
+.country-tooltip:hover::before {
+    left: 50%;
+    transform: translateX(-50%);
+    /* Ensure it stays within the viewport */
+    white-space: normal; 
+    word-wrap: break-word;
+    max-width: 300px; /* Maximum width for larger tooltips */
+}
+
+.country-tooltip:hover {
+    overflow: visible; /* Prevent clipping */
+}
+
+/* Tooltip container */
+.person-image-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.person-image-tooltip .tooltip-content {
+    visibility: hidden;
+    width: 150px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position above the text */
+    left: 50%;
+    margin-left: -75px; /* Center the tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.person-image-tooltip .tooltip-content img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.person-image-tooltip:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
+/* Location/Standort */
 .standort {
-    color: var(--text-light); /* Use white text for location */
+    font-size: clamp(1rem, 1.5vw, 1.1rem); /* Adaptive font size */
+    color: var(--secondary-text-color); /* Use white text for location */
     margin-top: 10px;
     border-top: 1px solid #444;
     padding-top: 10px;
@@ -786,22 +801,19 @@ button {
 
 /* Overview Section */
 .overview-section {
-    grid-area: overview;
     padding: 15px;
-    background-color: rgba(37, 43, 54, 0.8);
+    background-color: rgba(45, 52, 62, 0.9); /* Background color */
     border-radius: 8px;
-    color: var(--text-light); /* Use white color */
+    color: var(--secondary-secondary-text-color); /* Use white color */
     line-height: 1.4;
-    z-index: 2;
-    transition: font-weight 0.3s ease;
+    transition: font-weight var(--transition-duration) ease;
     position: relative;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
-/* Enhanced Text Visibility in Overview */
 .overview-section p {
     margin: 0;
-    color: var(--text-light); /* White text for overview */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    color: var(--secondary-text-color); /* White text for overview */
 }
 
 .overview-section a {
@@ -815,22 +827,17 @@ button {
     text-decoration: underline;
 }
 
-/* Responsive Styles for Tablet and Mobile */
+/* Responsive Styles */
+
+/* Tablet (Max Width: 1024px) */
 @media (max-width: 1024px) {
     .movie-card {
         width: 95%;
+        margin: 15px auto;
     }
 
     .movie-content-wrapper {
-        grid-template-columns: 180px 1fr;
-        grid-template-areas: 
-            "poster metadata"
-            "overview overview";
         gap: 15px;
-    }
-
-    .info-section {
-        padding: 15px;
     }
 
     .inline-meta,
@@ -839,6 +846,7 @@ button {
     }
 }
 
+/* Mobile (Max Width: 768px) */
 @media (max-width: 768px) {
     .movie-card {
         width: 100%;
@@ -847,34 +855,40 @@ button {
 
     .movie-content-wrapper {
         grid-template-columns: 1fr;
-        grid-template-areas: 
-            "metadata"
-            "overview";
         gap: 10px;
         background: none;
     }
 
-    .image-container {
-        display: none;
-    }
-
     .info-section,
     .overview-section {
-        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+    }
+
+    .header-section h2 {
+        font-size: 1.2em;
+    }
+
+    .metadata {
+        padding: 0;
+    }
+
+    .overview-section {
+        font-size: 0.9em;
     }
 }
 
+/* Very Small Mobile (Max Width: 480px) */
 @media (max-width: 480px) {
     .movie-card {
         width: 100%;
     }
 
-    .movie-content-wrapper {
-        grid-template-columns: 1fr;
-        grid-template-areas: 
-            "metadata"
-            "overview";
-        gap: 10px;
+    .header-section h2 {
+        font-size: 1em;
+    }
+
+    .overview-section {
+        font-size: 0.85em;
     }
 }
 
@@ -882,44 +896,6 @@ button {
 .missing-poster {
     border: 2px dashed red;
     opacity: 0.6;
-}
-
-/* Desktop Styles */
-.desktop-layout {
-    display: grid; /* Default structure for desktop */
-}
-
-.mobile-layout {
-    display: none; /* Hide mobile structure by default */
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-    .desktop-layout {
-        display: none; /* Hide desktop layout on mobile */
-    }
-
-    .mobile-layout {
-        display: grid; /* Show mobile layout on small screens */
-    }
-
-    .mobile-layout .info-section,
-    .mobile-layout .overview-section {
-        padding: 10px;
-        margin: 10px;
-    }
-
-    .mobile-layout .header-section h2 {
-        font-size: 1.2em;
-    }
-
-    .mobile-layout .metadata {
-        padding: 0;
-    }
-
-    .mobile-layout .overview-section {
-        font-size: 0.9em;
-    }
 }
 
 --- File: static\css\components\carousel.css ---
@@ -1192,9 +1168,11 @@ button {
 
 /* Dropdown Arrow */
 .dropdown-header::after {
-    visibility:hidden;
-    content: '\25BC';
-    font-size: clamp(1.1em, 0vw, 1.3em);
+    visibility: visible;
+    content: '\f078'; /* FontAwesome Unicode for down arrow (chevron) */
+    font-family: 'Font Awesome 5 Free'; /* Ensure FontAwesome is used */
+    font-weight: 900; /* Necessary to display the correct solid version of FontAwesome */
+    font-size: clamp(1.1em, 1vw, 1.3em);
     color: var(--secondary-text-color);
     position: absolute;
     right: 12px;
@@ -1217,38 +1195,36 @@ button {
 /* Clear Icon */
 .clear-icon {
     font-size: 1.4em;
+    bottom: -10px; /* Aligns it vertically in the middle of the header */
     cursor: pointer;
     color: var(--accent-color);
     flex-shrink: 0; /* Prevent shrinking */
+    position: absolute;
+    right: 10px; /* Align to the far right */
     visibility: hidden;
     opacity: 0;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .clear-icon.visible {
-    visibility: hidden;
+    visibility: visible;
     opacity: 1;
 }
 
 /* Selection Badge */
 .selection-badge {
     position: absolute;
-    bottom: 5px; /* Moves the badge 10px below the bottom of the header. Adjust as needed */
-    right: 5px; /* Adjust as needed */
-    /* background-color: var(--accent-color); */
+    bottom: 5px; /* Aligns it vertically in the middle of the header */
+    right: 35px; /* Adjust distance from the right to make more space for the clear icon */
     color: var(--accent-color);
     font-size: 0.8em;
-    padding: 3px 10px; /* Adjust padding for better vertical alignment */
-    border-radius: 12px;
+    /* border-radius: 12px; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
     line-height: 1; /* Ensure the text is vertically centered */
-    /* Removed margin-right to prevent conflict with absolute positioning */
     z-index: 4500; /* Ensure it appears above other elements */
 }
-
 
 
 
@@ -1366,7 +1342,7 @@ label span.required {
     justify-content: center;
     align-items: center;
     background-color: var(--background-dark);
-    padding: 15px 0; /* Added padding for spacing */
+    padding: 10px 0; /* Added padding for spacing */
     color: var(--text-light);
     border-top: 0.5px solid var(--button-background);
 }
@@ -1391,7 +1367,7 @@ label span.required {
 .pagination nav ul li a,
 .pagination nav ul li span {
     display: inline-block;
-    padding: 8px 12px;
+    padding: 8px 5px;
     background-color: var(--primary-color);
     color: var(--text-light);
     border-radius: 4px;
@@ -1515,7 +1491,7 @@ label span.required {
     align-items: stretch;
     width: 100%;
     background-color: var(--background-dark);
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     backdrop-filter: blur(5px);
@@ -2148,19 +2124,29 @@ footer {
 }
 
 --- File: static\css\pages\catalog.css ---
-/* File: static/css/pages/catalog.css */
+/* static/css/pages/catalog.css */
 
 /* Movie Listings Section */
 .movie-listings {
-    padding: 20px;
+    /* padding: 20px; */
     background-color: var(--background-dark);
     display: grid;
-    grid-template-columns: 1fr; /* Default to one column */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid with flexible columns */
     gap: 20px;
 }
 
+/* Ensure movie cards take full width of their grid cell */
+.movie-listings .movie-card {
+    width: 100%;
+}
+
+/* Column Variations */
 .movie-listings.columns-1 {
     grid-template-columns: 1fr;
+}   
+
+.movie-listings.columns-2 {
+    grid-template-columns: repeat(2, 1fr); /* Two-column layout */
 }
 
 .movie-listings.columns-3 {
@@ -2175,77 +2161,90 @@ footer {
     grid-template-columns: repeat(5, 1fr);
 }
 
-/* Movie Card Styles */
-.movie-card {
-    background-color: var(--primary-color);
-    border-radius: 8px;
-    overflow: hidden;
-    color: var(--text-light);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.movie-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Adjust the content within the movie card */
-.movie-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.image-container img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-}
-
-.info-section {
-    padding: 15px;
-    flex-grow: 1;
-}
-
-.info-section h2 {
-    margin-top: 0;
-    font-size: 1.2rem;
-}
-
-.metadata {
-    font-size: 0.9rem;
-    color: var(--secondary-text-color);
-}
-
-.overview-section {
-    padding: 15px;
-    background-color: var(--secondary-color);
-    font-size: 0.9rem;
-    color: var(--text-light);
-}
-
-.overview-section p {
-    margin: 0;
-}
-
-.overview-section .more-link {
-    color: var(--link-color);
-    text-decoration: none;
-    margin-left: 5px;
-}
-
-.overview-section .more-link:hover {
-    text-decoration: underline;
-}
-
 /* Responsive Adjustments */
+
+/* For larger screens, maintain more columns */
+@media (max-width: 1600px) {
+    .movie-listings.columns-5 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1400px) {
+    .movie-listings.columns-4 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Medium screens (1024px and below) */
 @media (max-width: 1024px) {
     .movie-listings.columns-3,
     .movie-listings.columns-4,
     .movie-listings.columns-5 {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr); /* Two-column layout for medium screens */
+    }
+}
+
+/* One-column layout for smaller screens */
+@media (max-width: 768px) {
+    .movie-listings {
+        grid-template-columns: 1fr; /* One column layout on smaller screens */
+    }
+}
+
+/* Ensure responsive behavior and spacing */
+@media (max-width: 768px) {
+    .movie-listings.columns-3,
+    .movie-listings.columns-4,
+    .movie-listings.columns-5 {
+        grid-template-columns: 1fr; /* One column layout on smaller screens */
+    }
+}
+
+/* Column Variations for various screen sizes */
+.movie-listings.columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.movie-listings.columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.movie-listings.columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.movie-listings.columns-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* Grid alignment and spacing */
+.movie-listings {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background-color: var(--background-dark);
+}
+
+/* Responsive Adjustments for smaller screens */
+@media (max-width: 1400px) {
+    .movie-listings.columns-4 {
+        grid-template-columns: repeat(3, 1fr); /* Adjust to 3 columns */
+    }
+}
+
+@media (max-width: 1600px) {
+    .movie-listings.columns-5 {
+        grid-template-columns: repeat(4, 1fr); /* Adjust to 4 columns */
+    }
+}
+
+@media (max-width: 1024px) {
+    .movie-listings.columns-3,
+    .movie-listings.columns-4,
+    .movie-listings.columns-5 {
+        grid-template-columns: repeat(2, 1fr); /* Adjust to 2 columns on medium screens */
     }
 }
 
@@ -2253,9 +2252,10 @@ footer {
     .movie-listings.columns-3,
     .movie-listings.columns-4,
     .movie-listings.columns-5 {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Adjust to 1 column on small screens */
     }
 }
+
 
 --- File: static\css\pages\contact.css ---
 /* contact.css */
@@ -2618,59 +2618,131 @@ export function updateCarouselTitle() {
 }
 
 --- File: static\js\catalog.js ---
-// File: static/js/catalog.js
-
-// Import any dependencies (if necessary)
-import { movieContainer } from './entry.js';  // Import the movie container element
-
-/**
- * Function to update the movie listings based on the filter results
- */
 export function updateMovieListings(movies) {
+    const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
         console.error("updateMovieListings: movieContainer element not found.");
         return;
     }
 
     movieContainer.innerHTML = "";  // Clear existing entries
-
     if (movies.length > 0) {
         movies.forEach(movie => {
-            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name)}/poster/poster_1.jpg`;
+            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.jpg`;
             const defaultImagePath = '/static/images/default_movie.png';
-
+            console.log(movie);  // For debugging purposes
+            
+            // You must declare movieCard here
             const movieCard = document.createElement('div');
-            movieCard.className = 'movie-card';
+            movieCard.className = 'movie-card';  // Now movieCard is defined properly
+
+            function getPersonImage(person, movieFolder) {
+                const [name, id] = person.split('_'); // Split the name and id
+                const personImageFilename = encodeURIComponent(name.trim()) + `_${id}.jpg`; 
+                return `${encodeURIComponent(movieFolder)}/person/${personImageFilename}`;
+            }
+
+            // Handle directors and actors as tooltips with images
+            const directors = Array.isArray(movie.director) && movie.director.length > 0 
+                ? movie.director.map(director => {
+                    const directorImage = getPersonImage(director, movie.folder_name);
+                    console.log(directorImage)
+                    return `<span class="director-tooltip" data-director="${director}">
+                                <img src="${directorImage}" alt="${director}" onerror="this.onerror=null; this.src='/static/images/default_person.png';" class="person-image-tooltip">
+                                ${director.split('_')[0]}
+                            </span>`;
+                }).join(', ') 
+                : "Unknown Director";
+
+            let actors = movie.actors 
+                ? (Array.isArray(movie.actors) 
+                    ? movie.actors.map(actor => {
+                        const actorImage = getPersonImage(actor, movie.folder_name);
+                        return `<span class="actor-tooltip" data-actor="${actor}">
+                                    <img src="${actorImage}" alt="${actor}" onerror="this.onerror=null; this.src='/static/images/default_person.png';" class="person-image-tooltip">
+                                    ${actor.split('_')[0]}
+                                </span>`;
+                    }).join(', ') 
+                    : movie.actors) 
+                : "Unknown Actors";
+
+            if (actors.length > 75) {
+                actors = actors.substring(0, 72) + '...';
+            }
+
+            const countries = Array.isArray(movie.countries) && movie.countries.length > 0
+                ? movie.countries.map(country => {
+                    const match = country.match(/(.*?)\s\((.*?)\)/); 
+                    const fullName = match ? match[1] : country;
+                    const shortCode = match ? match[2] : country;
+                    return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
+                }).join(', ')
+                : "Unknown Countries";
+
+            const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
+
+            let content = movie.format_inhalt ? movie.format_inhalt : movie.overview ? movie.overview : "Keine Inhaltsangabe verfügbar.";
+            if (content.length > 150) {
+                content = content.substring(0, 150) + '...';
+            }
+
+            let imdb_rating = movie.imdb_rating ? movie.imdb_rating : 6;
 
             movieCard.innerHTML = `
-                <div class="movie-content-wrapper">
-                    <div class="image-container">
-                        <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';">
-                    </div>
-                    <div class="info-section">
-                        <h2>${movie.main_title}</h2>
-                        <div class="metadata">
-                            <p><strong>Director:</strong> ${movie.director}</p>
-                            <p><strong>Actors:</strong> ${movie.actors}</p>
-                            <p class="inline-meta">${movie.runtime} min | ${movie.formats} | FSK ${movie.format_fsk} | &#9733; ${movie.imdb_rating}</p>
-                            <p class="standort"><strong>Location:</strong> ${movie.format_standort || 'N/A'}</p>
-                            <p class="countries"><strong>Countries:</strong> ${movie.countries}</p>
-                        </div>
-                    </div>
-                    <div class="overview-section">
-                        ${movie.overview.length > 350
-                            ? `<p>${movie.overview.substring(0, 350)}... <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>`
-                            : `<p>${movie.overview} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>`}
+            <div class="movie-content-wrapper">
+                <div class="image-container">
+                    <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';" loading="lazy">
+                    <div class="hover-title">
+                        <span>${movie.original_title}</span>
                     </div>
                 </div>
-            `;
-
-            movieContainer.appendChild(movieCard);
+                <div class="info-section">
+                    <h2>${movie.main_title}</h2>
+                    <div class="metadata">
+                        <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
+                        <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                        <p class="inline-meta">
+                            <i class="fas fa-clock"></i> ${movie.runtime} min | 
+                            <i class="fas fa-compact-disc"></i> ${movie.formats} | 
+                            <i class="fas fa-child"></i>${movie.format_fsk} | 
+                            &#9733; ${imdb_rating}
+                        </p>
+                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
+                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
+                        <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
+                    </div>
+                </div>
+                <div class="overview-section">
+                    <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                </div>
+            </div>
+        `;
+        
+            movieContainer.appendChild(movieCard);  // Append the movieCard to movieContainer
         });
     } else {
         movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
     }
 }
+
+// Add tooltip event listener for director and actor elements to display images
+document.addEventListener('mouseover', function(event) {
+    if (event.target.classList.contains('director-tooltip') || event.target.classList.contains('actor-tooltip')) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip-content';
+        tooltip.innerHTML = `<img src="${event.target.querySelector('img').src}" alt="${event.target.dataset.director || event.target.dataset.actor}">`;
+        document.body.appendChild(tooltip);
+
+        event.target.addEventListener('mousemove', (e) => {
+            tooltip.style.left = `${e.pageX + 10}px`;
+            tooltip.style.top = `${e.pageY + 10}px`;
+        });
+
+        event.target.addEventListener('mouseout', () => {
+            tooltip.remove();
+        });
+    }
+});
 
 --- File: static\js\entry.js ---
 // File: static/js/entry.js
@@ -3335,7 +3407,7 @@ export function updateFilters(page = 1) {
             populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
             populateDropdown('medium-dropdown-list', media, selectedMedia);
             populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
-
+                
             // Update the movie listings with the current number of movies
             updateMovieListings(movies);
 
@@ -3698,7 +3770,7 @@ export function updatePagination(currentPage, totalPages, totalMovies, columnsPe
         // Create the "Previous" Button
         let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
         let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
-        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Previous</a></li>`;
+        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Zurück</a></li>`;
 
         // Determine if ellipsis is needed
         const showStartEllipsis = currentPage > 3;
@@ -3730,7 +3802,7 @@ export function updatePagination(currentPage, totalPages, totalMovies, columnsPe
         // Create the "Next" Button
         let nextDisabledClass = currentPage >= totalPages ? 'disabled' : '';
         let nextDisabledAttr = currentPage >= totalPages ? 'aria-disabled="true"' : '';
-        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Next &raquo;</a></li>`;
+        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Nächste &raquo;</a></li>`;
     });
 
     attachPaginationEventListeners(columnsPerRow);
