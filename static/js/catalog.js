@@ -168,3 +168,51 @@ function initializeTippyTooltips() {
         arrow: true,
     });
 }
+
+
+// toggle-view.js
+
+export function toogleViews() {
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const movieListings = document.querySelector('.movie-listings');
+
+    // Function to activate Grid View
+    const activateGridView = () => {
+        movieListings.classList.remove('list-view');
+        gridViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+        gridViewBtn.setAttribute('aria-pressed', 'true');
+        listViewBtn.setAttribute('aria-pressed', 'false');
+    };
+
+    // Function to activate List View
+    const activateListView = () => {
+        movieListings.classList.add('list-view');
+        listViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+        listViewBtn.setAttribute('aria-pressed', 'true');
+        gridViewBtn.setAttribute('aria-pressed', 'false');
+    };
+
+    // Event Listeners for Toggle Buttons
+    gridViewBtn.addEventListener('click', () => {
+        activateGridView();
+        localStorage.setItem('movieView', 'grid');
+    });
+
+    listViewBtn.addEventListener('click', () => {
+        activateListView();
+        localStorage.setItem('movieView', 'list');
+    });
+
+    // Optional: Persist User Preference using LocalStorage
+    // Check if user has a saved preference
+    const savedView = localStorage.getItem('movieView');
+
+    if (savedView === 'list') {
+        activateListView();
+    } else {
+        activateGridView();
+    }
+};

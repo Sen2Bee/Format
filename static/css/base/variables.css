@@ -11,13 +11,22 @@
     /* Additional Color Variables */
     --button-background: #ffffff; /* Button background color */
     --background-dark: #444444; /* Darker background for headers or active states */
-    --secondary-text-color: #888888; /* Secondary text color for less prominent text */
-    --accent-color: #ff9900; /* Accent color for borders, icons, highlights */
+    --secondary-text-color: #FFFFFF; /* White */
+    --secondary-secondary-text-color: #CCCCCC; /* Light Gray */
+    --accent-color: #FF6347; /* Tomato */
     --dropdown-background: #ffffff; /* Dropdown list background */
+    --highlight-color: #FF6347; /* Tomato */
+    --movie-card-background: #1e1e1e; /* Movie card background */
+    --movie-card-hover-shadow: rgba(0, 0, 0, 0.4); /* Shadow on hover */
+    --overlay-background: rgba(0, 0, 0, 0.4); /* Overlay background */
+    --tooltip-background: #333; /* Tooltip background */
+    --tooltip-text-color: #fff; /* Tooltip text color */
+    --missing-poster-border: red; /* Missing poster border color */
 
     /* Font Variables */
     --font-family: 'Nunito', sans-serif; /* Primary font family */
     --font-body: 'Nunito', sans-serif; /* Body font family */
+    --font-heading: 'Anton', sans-serif; /* Heading font family */
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
@@ -36,4 +45,37 @@
     --breakpoint-sm: 768px; /* Small Devices */
     --breakpoint-md: 1024px; /* Medium Devices */
     --breakpoint-lg: 1200px; /* Large Devices */
+
+    /* Toggle Button Variables */
+    --toggle-button-size: 24px;
+    --toggle-button-color: var(--secondary-text-color);
+    --toggle-button-active-color: var(--accent-color);
+
+    /* Spacing Variables */
+    --spacing-small: 8px;
+    --spacing-medium: 16px;
+    --spacing-large: 24px;
+
+    /* Border Radius Variables */
+    --border-radius-small: 4px;
+    --border-radius-medium: 8px;
+    --border-radius-large: 10px;
+
+    /* Button-Specific Color Variables */
+    --button-border-color: #CCCCCC; /* Light Gray */
+    --button-text-color: #333333; /* Dark Gray */
+    --button-hover-background: #f0f0f0; /* Very Light Gray */
+    --button-active-background: #e0e0e0; /* Light Gray */
+}
+/* Dark Mode Theme */
+[data-theme="dark"] {
+    --background-color: var(--background-color-dark);
+    --text-color: var(--text-color-dark);
+    --header-background: var(--header-background-dark);
+    --footer-background: var(--footer-background-dark);
+    --button-background: var(--button-background-dark);
+    --button-text-color: var(--button-text-color-dark);
+    --button-border-color: var(--button-border-color-dark);
+    --button-hover-background: var(--button-hover-background-dark);
+    /* Override other variables as needed */
 }

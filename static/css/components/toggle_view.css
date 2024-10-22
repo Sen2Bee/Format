@@ -1,0 +1,34 @@
+/* File: static/css/components/toggle-view.css */
+
+/* Theme Toggle Button Styling */
+.theme-toggle-btn {
+    background-color: var(--button-background); /* #ffffff or #333333 in dark mode */
+    color: var(--button-text-color); /* #333333 or #e0e0e0 in dark mode */
+    border: 1px solid var(--button-border-color); /* #CCCCCC or #555555 in dark mode */
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: var(--toggle-button-size);
+    transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease, border-color var(--transition-duration) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px; /* Adjust spacing as needed */
+}
+
+.theme-toggle-btn.active {
+    background-color: var(--button-hover-background); /* #f0f0f0 or #444444 in dark mode */
+    color: var(--button-text-color); /* #333333 or #e0e0e0 in dark mode */
+    border-color: var(--button-border-color); /* #CCCCCC or #555555 in dark mode */
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--button-hover-background); /* #f0f0f0 or #444444 in dark mode */
+    color: var(--button-text-color); /* #333333 or #e0e0e0 in dark mode */
+    border-color: var(--button-border-color); /* #CCCCCC or #555555 in dark mode */
+}
+
+.theme-toggle-btn:focus {
+    outline: 2px solid var(--accent-color); /* Retain accent color for focus */
+    outline-offset: 2px;
+}

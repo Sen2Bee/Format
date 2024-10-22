@@ -1,4 +1,4 @@
-/* buttons.css */
+/* File: static/css/components/buttons.css */
 
 /* Filter Buttons Container */
 .filter-buttons-container {
@@ -20,9 +20,9 @@
 
 /* Filter Buttons */
 .filter-button {
-    background-color: var(--background-dark);
-    color: var(--text-color);
-    border: none;
+    background-color: var(--button-background); /* #ffffff */
+    color: var(--button-text-color); /* #333333 */
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
     border-radius: 25px;
     cursor: pointer;
     transition: background-color var(--transition-duration), transform var(--transition-duration);
@@ -36,11 +36,9 @@
 
 .filter-button.selected,
 .filter-button:hover {
-    /* background-color: var(--accent-color); */
-    /* color: var(--accent-color); */
-    border: 1px solid var(--accent-color);
-    background-color: var(--background-dark);
-    color: var(--accent-color);
+    background-color: var(--button-hover-background); /* #f0f0f0 */
+    color: var(--button-text-color); /* #333333 */
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
 }
 
 /* Filters Buttons Row */
@@ -57,11 +55,11 @@
 .filter-action-button {
     display: flex;
     align-items: center;
-    background-color: var(--background-dark);
-    color: var(--accent-color);
+    background-color: var(--button-background); /* #ffffff */
+    color: var(--button-text-color); /* #333333 */
     padding: 10px 20px;
     margin: 5px;
-    border: 1px solid var(--button-background);
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
     border-radius: 3px;
     font-size: 1em;
     cursor: pointer;
@@ -73,10 +71,9 @@
 }
 
 .filter-action-button:hover {
-    /* background-color: var(--accent-color); */
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); */
-    border: 1px solid var(--accent-color);
-    color: var(--text-color);
+    background-color: var(--button-hover-background); /* #f0f0f0 */
+    color: var(--button-text-color); /* #333333 */
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
 }
 
 .filter-action-button:disabled {
@@ -94,7 +91,7 @@
     height: var(--arrow-button-size);
     background: transparent;
     border: none;
-    color: var(--accent-color);
+    color: var(--button-border-color); /* #CCCCCC */
     font-size: 1.5em;
     cursor: pointer;
     z-index: 5000;
