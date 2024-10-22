@@ -62,7 +62,7 @@
 .pagination nav ul li.disabled span,
 .pagination ul li.disabled a {
     background-color: var(--secondary-color); /* Muted color for disabled state */
-    color: var(--text-color);
+    color: var(---secondary-text-color);
     cursor: not-allowed;
     border: 1px solid var(--border-color);
     pointer-events: none; /* Prevent interaction */

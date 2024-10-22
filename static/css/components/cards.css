@@ -160,7 +160,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-small);
-    font-size: clamp(0.9rem, 1.5vw, 1.1rem); /* Adaptive font size */
+    font-size: var(--meta-data-font-size); /* Adaptive font size */
     color: var(--secondary-secondary-text-color);
     background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
     padding: var(--spacing-medium);
@@ -191,14 +191,13 @@
 .metadata p strong,
 .metadata p span {
     color: var(--secondary-secondary-text-color);
-    font-size: 1.1em;
+    font-size: var(--meta-data-font-size);
     font-weight: bold;
 }
 
 /* Inline Metadata */
 .inline-meta {
-    font-size: clamp(1rem, 1.5vw, 1.1rem);
-    color: var(--secondary-secondary-text-color);
+    font-size: var(--meta-data-font-size);
     padding-top: var(--spacing-small);
     border-top: 1px solid var(--button-border-color);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
@@ -229,7 +228,7 @@
     text-align: center;
     border-radius: var(--border-radius-small);
     padding: 8px 12px;
-    font-size: 1em;
+    font-size: var(--meta-data-font-size);
     position: absolute;
     z-index: 1000;
     bottom: 125%;
@@ -310,7 +309,7 @@
 
 /* Location/Standort */
 .standort {
-    font-size: clamp(1rem, 1.5vw, 1.1rem);
+    font-size: var(--meta-data-font-size);
     color: var(--secondary-secondary-text-color);
     margin-top: var(--spacing-small);
     border-top: 1px solid var(--button-border-color);
@@ -358,10 +357,6 @@
         gap: 15px;
     }
 
-    .inline-meta,
-    .standort {
-        font-size: 0.95em;
-    }
 }
 
 /* Mobile (Max Width: 768px) */
@@ -387,9 +382,6 @@
         padding: 0;
     }
 
-    .overview-section {
-        font-size: 0.9em;
-    }
 }
 
 /* Very Small Mobile (Max Width: 480px) */
@@ -404,10 +396,6 @@
 
     .header-section h2 {
         font-size: 1em;
-    }
-
-    .overview-section {
-        font-size: 0.85em;
     }
 
     .movie-listings.list-view .movie-card {

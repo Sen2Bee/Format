@@ -822,7 +822,8 @@ export function updateHeadline(
     // Add total movie count with thousand separators
     if (total_movies !== undefined && total_movies > 0) {
         const formattedTotalMovies = total_movies.toLocaleString('de-DE'); // German locale for dot as thousand separator
-        appendTextWithIcon('fa fa-film', `${formattedTotalMovies} Filme gefunden`);
+        appendTextWithIcon('fa fa-film', `${formattedTotalMovies} ${formattedTotalMovies === '1' ? 'Film gefunden' : 'Filme gefunden'}`);
+
     }
 
     // Default text if nothing is selected

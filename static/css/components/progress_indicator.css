@@ -1,4 +1,5 @@
-/* progress-indicator.css */
+/* Import the Google Font Anton */
+@import url('https://fonts.googleapis.com/css?family=Anton');
 
 /* Progress Indicator Styles */
 .progress-indicator {
@@ -15,26 +16,38 @@
     z-index: 10000; /* Ensure it's on top of other elements */
 }
 
-/* Spinner Animation */
-.progress-indicator .spinner {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid var(--accent-color); /* Accent color */
+/* Pulsing Loader */
+.loader {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1.5s linear infinite;
+    background: #FF6347; /* Use the accent color */
+    box-shadow: 0 0 0 rgba(255, 99, 71, 0.4);
+    animation: pulse 2s infinite;
 }
 
-/* Spinner Animation Keyframes */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 99, 71, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 99, 71, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 99, 71, 0);
+    }
 }
 
 /* Progress Indicator Text */
 .progress-indicator p {
     margin-top: 15px;
-    color: var(--text-light); /* Use defined text color */
+    color: #ffffff; /* White text for better readability */
     font-size: 1.2em;
     text-align: center;
+    font-family: 'Anton', sans-serif; /* Custom font */
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }

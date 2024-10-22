@@ -13,15 +13,15 @@
     --background-dark: #DAD7D2; /* Darker background for sections */
     --secondary-text-color: #FFFFFF; /* White text on dark backgrounds */
     --secondary-secondary-text-color: #B5B2AD; /* Subtle light gray */
-    --accent-color: #3c5597; /* Muted terracotta */
+    --accent-color: #846c1e; /* Muted terracotta */
     --dropdown-background: #FFFFFF; /* Dropdown background */
-    --highlight-color: #3c5597; /* Same as accent */
+    --highlight-color: #846c1e; /* Same as accent */
     --movie-card-background: #FFFFFF; /* Movie card background */
     --movie-card-hover-shadow: rgba(0, 0, 0, 0.1); /* Soft shadow */
     --overlay-background: rgba(0, 0, 0, 0.5); /* Overlay background */
     --tooltip-background: #3D3D3D; /* Dark tooltip background */
     --tooltip-text-color: #FFFFFF; /* Tooltip text color */
-    --missing-poster-border: #3c5597; /* Accent color */
+    --missing-poster-border: #846c1e; /* Accent color */
 
     /* Font Variables */
     --font-family: 'Lato', sans-serif; /* Lato as the main font */
@@ -32,6 +32,7 @@
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
+    --meta-data-font-size: clamp(0.7rem, 1.1vw, 1.1rem); /* Adaptive font size */
 
     /* Layout Variables */
     --header-height: 60px; /* Header height */
