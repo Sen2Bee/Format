@@ -1,38 +1,13 @@
-/* Container for Movie Listings */
-.movie-listings {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px; /* Adjust as needed */
-    margin: 0 auto;
-    transition: all var(--transition-duration) ease;
-    background-color: var(--background-dark); /* Black/gray background */
-}
-
-/* Media Query to Limit to 4 Columns on Large Screens */
-@media (min-width: var(--breakpoint-lg)) {
-    .movie-listings {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* List View Styling */
-.movie-listings.list-view {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
+/* cards.css */
 /* General Movie Card Container */
 .movie-card {
     display: flex;
-    flex-direction: column; /* Stack content vertically */
-    background-color: var(--background-dark); /* Black/gray background */
-    color: var(--secondary-text-color); /* White text */
-    border-radius: var(--border-radius-medium); /* 8px */
+    flex-direction: column; /* Default for grid view, stacks content vertically */
+    background-color: var(--background-dark);
+    color: var(--secondary-text-color);
+    border-radius: var(--border-radius-medium);
     overflow: hidden;
-    box-shadow: 0 4px 8px var(--movie-card-hover-shadow); /* rgba(0, 0, 0, 0.4) */
+    box-shadow: 0 4px 8px var(--movie-card-hover-shadow);
     transition: transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
     position: relative;
     background-size: cover;
@@ -41,9 +16,11 @@
     height: 100%; /* Ensure all cards have equal height */
 }
 
+/* List View Styling */
 .movie-listings.list-view .movie-card {
-    flex-direction: row; /* Side by side in list view */
-    height: auto; /* Allow height to adjust based on content */
+    flex-direction: row; /* Change layout to side-by-side in list view */
+    align-items: stretch; /* Stretch items to match the card's height */
+    height: 500px; /* Adjust as needed */
 }
 
 /* Overlay for Improved Text Visibility */
@@ -64,41 +41,61 @@
     opacity: 1;
 }
 
-/* Movie Content Wrapper */
+/* Movie Content Wrapper (Metadata and Title) */
 .movie-content-wrapper {
-    flex: 1; /* Allow the content to expand and fill the card */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    justify-content: space-between; /* Ensure items align top and bottom */
+    gap: var(--spacing-small);
     padding: var(--spacing-medium);
-    background: rgba(30, 30, 30, 0.85); /* Semi-transparent dark background */
+    background: rgba(30, 30, 30, 0.85);
     z-index: 2;
-    border-radius: var(--border-radius-medium); /* 8px */
+    border-radius: var(--border-radius-medium);
     position: relative;
-    overflow: hidden;
 }
 
-.movie-listings.list-view .movie-content-wrapper {
-    padding: 15px;
-    background: rgba(30, 30, 30, 0.9); /* Slightly more opaque in list view */
+/* Dedicated Info Wrapper */
+.info-wrapper {
+    display: flex;
+    flex-direction: column; /* Default for grid view (vertical stack) */
+    justify-content: flex-start; /* Ensure content stacks from top */
+    flex: 1;
+}
+
+.movie-listings.list-view .info-wrapper {
+    display: flex;
+    flex-direction: column; /* Keep info stacked */
+    justify-content: space-between; /* Title & metadata at the top, overview at the bottom */
+    flex: 1;
 }
 
 /* Image Container */
 .image-container {
     position: relative;
-    width: 100%;
-    aspect-ratio: 2 / 3; /* 2:3 aspect ratio */
+    width: var(--poster-width);
+    aspect-ratio: 2 / 3; /* Keep the aspect ratio */
     overflow: hidden;
-    border-radius: var(--border-radius-medium); /* 8px */
+    border-radius: var(--border-radius-medium);
     transition: transform var(--transition-duration) ease;
 }
 
-.movie-listings.list-view .image-container {
-    width: 150px; /* Fixed width for list view */
-    aspect-ratio: 2 / 3; /* Maintain aspect ratio */
-    flex-shrink: 0;
-    margin-right: var(--spacing-medium);
+
+
+.movie-listings.list-view .movie-content-wrapper {
+    padding: var(--spacing-small); /* Reduce padding in list view if needed */
+    background: rgba(30, 30, 30, 0.9); /* Slightly more opaque in list view */
+    flex-direction: row;
 }
+
+.movie-listings.list-view .image-container {
+    width: auto; /* Fixed width for list view */
+    aspect-ratio: auto; /* Let the height fill based on the container */
+    flex-shrink: 0;
+    height: 100%; /* Match the height of the card */
+    margin-right: var(--spacing-medium); /* Space between image and text */
+}
+
 
 .image-container img {
     width: 100%;
@@ -120,7 +117,7 @@
     left: 0;
     width: 100%;
     background: rgba(0, 0, 0, 0.7);  /* Semi-transparent dark background */
-    color: var(--secondary-secondary-text-color); /* White text */
+    color: var(--secondary-text-color); /* #FFFFFF */
     text-align: center;
     padding: var(--spacing-small);
     opacity: 0;
@@ -173,7 +170,7 @@
 }
 
 .movie-listings.list-view .metadata {
-    padding: var(--spacing-small);
+    padding: var(--spacing-small); /* Reduce padding in list view */
 }
 
 .metadata p {
@@ -234,8 +231,8 @@
     color: var(--tooltip-text-color); /* #fff */
     text-align: center;
     border-radius: var(--border-radius-small); /* 4px */
-    padding: var(--spacing-small);
-    font-size: 1.2em;
+    padding: 8px 12px;
+    font-size: 1.2em;  /* Control the size of the tooltip */
     position: absolute;
     z-index: 1000;
     bottom: 125%; /* Position above the country code */
@@ -244,7 +241,7 @@
     white-space: nowrap;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
     transition: opacity var(--transition-duration) ease-in-out;
-    max-width: 200px;
+    max-width: 200px; /* Set a maximum width for long names */
     word-wrap: break-word;
 }
 
@@ -327,7 +324,7 @@
 
 /* Overview Section */
 .overview-section {
-    padding: var(--spacing-medium);
+    padding: 15px;
     background-color: rgba(30, 30, 30, 0.9); /* Dark semi-transparent gray */
     border-radius: var(--border-radius-small); /* 4px */
     color: var(--secondary-secondary-text-color); /* #CCCCCC */
@@ -425,6 +422,7 @@
     .movie-listings.list-view .image-container {
         margin-right: 0;
         margin-bottom: var(--spacing-small);
+        height: auto; /* Allow height to adjust */
     }
 }
 

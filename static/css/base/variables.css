@@ -66,6 +66,9 @@
     --button-text-color: #333333; /* Dark Gray */
     --button-hover-background: #f0f0f0; /* Very Light Gray */
     --button-active-background: #e0e0e0; /* Light Gray */
+
+    --poster-width: 70%;
+
 }
 /* Dark Mode Theme */
 [data-theme="dark"] {

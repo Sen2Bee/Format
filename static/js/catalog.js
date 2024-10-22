@@ -116,24 +116,26 @@ export function updateMovieListings(movies) {
                                     <span>${movie.original_title}</span>
                                 </div>
                             </div>
-                            <div class="info-section">
-                                <h2>${movie.main_title}</h2>
-                                <div class="metadata">
-                                    <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
-                                    <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
-                                    <p class="inline-meta">
-                                        <i class="fas fa-clock"></i> ${movie.runtime} min | 
-                                        <i class="fas fa-compact-disc"></i> ${movie.formats} | 
-                                        <i class="fas fa-child"></i> ${movie.format_fsk} | 
-                                        &#9733; ${imdb_rating}
-                                    </p>
-                                    <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
-                                    <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
-                                    <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
+                            <div class="info-wrapper">
+                                <div class="info-section">
+                                    <h2>${movie.main_title}</h2>
+                                    <div class="metadata">
+                                        <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
+                                        <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                                        <p class="inline-meta">
+                                            <i class="fas fa-clock"></i> ${movie.runtime} min | 
+                                            <i class="fas fa-compact-disc"></i> ${movie.formats} | 
+                                            <i class="fas fa-child"></i> ${movie.format_fsk} | 
+                                            &#9733; ${imdb_rating}
+                                        </p>
+                                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
+                                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
+                                        <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="overview-section">
-                                <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                                <div class="overview-section">
+                                    <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                                </div>
                             </div>
                         </div>
                     `;
