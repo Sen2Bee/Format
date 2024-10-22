@@ -621,6 +621,16 @@ export function updateFilters(page = 1) {
 
             // Update pagination
             updatePagination(current_page, total_pages, total_movies, columnsPerRow);
+
+            updateHeadline(selectedGenres, 
+                selectedYears, 
+                selectedCountries, 
+                selectedStandorte,
+                selectedMedia, 
+                selectedSortByValues,
+                searchQuery, 
+                total_movies); // Pass selected genres and years
+
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
@@ -630,14 +640,7 @@ export function updateFilters(page = 1) {
         })
         .finally(() => {
             hideProgressIndicator();
-            updateHeadline(selectedGenres, 
-                selectedYears, 
-                selectedCountries, 
-                selectedStandorte,
-                selectedMedia, 
-                selectedSortByValues,
-                searchQuery, 
-                total_movies); // Pass selected genres and years
+
         });
 }
 
@@ -758,6 +761,7 @@ export function updateHeadline(
     total_movies
 ) {
     let headlineText = 'Auswahl: ';
+    console.log("total_movies", total_movies)
 
     // Clear existing headline content
     const headlineElement = document.querySelector('.view-toggle-title');
@@ -815,9 +819,10 @@ export function updateHeadline(
         appendTextWithIcon('fa fa-sort', selectedSortByValues.join(', '));
     }
 
-    // Add total movie count if present
+    // Add total movie count with thousand separators
     if (total_movies !== undefined && total_movies > 0) {
-        appendTextWithIcon('fa fa-film', `${total_movies} Filme gefunden`);
+        const formattedTotalMovies = total_movies.toLocaleString('de-DE'); // German locale for dot as thousand separator
+        appendTextWithIcon('fa fa-film', `${formattedTotalMovies} Filme gefunden`);
     }
 
     // Default text if nothing is selected
