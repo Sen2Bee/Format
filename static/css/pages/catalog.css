@@ -62,7 +62,7 @@
 /* Headline Styling */
 .view-toggle-headline h2{
     font-size: 1.7rem;
-    color: var(--secondary-text-color); /* White text */
+    color: var(--text-color); /* White text */
     margin: 0;
     /* text-transform: uppercase; */
 }

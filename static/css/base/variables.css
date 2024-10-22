@@ -1,32 +1,32 @@
 :root {
     /* Color Variables */
-    --primary-color: #f4f4f4; /* Primary brand color */
-    --secondary-color: #333; /* Secondary color for text and elements */
-    --background-color: #f4f4f4; /* General background color */
-    --text-color: #333; /* Primary text color */
-    --header-background: #ffffff; /* Header background */
-    --footer-background: #222222; /* Footer background */
-    --button-hover: #e65c00; /* Button hover state color */
+    --primary-color: #FAF8F6; /* Soft off-white */
+    --secondary-color: #3D3D3D; /* Dark charcoal gray */
+    --background-color: #FFFDFB; /* Very light beige */
+    --text-color: #2C2C2C; /* Dark gray for text */
+    --header-background: #EFEDEA; /* Slightly darker than background */
+    --footer-background: #EFEDEA; /* Matching header */
+    --button-hover: #E0DED9; /* Hover effect */
 
     /* Additional Color Variables */
-    --button-background: #ffffff; /* Button background color */
-    --background-dark: #444444; /* Darker background for headers or active states */
-    --secondary-text-color: #FFFFFF; /* White */
-    --secondary-secondary-text-color: #CCCCCC; /* Light Gray */
-    --accent-color: #FF6347; /* Tomato */
-    --dropdown-background: #ffffff; /* Dropdown list background */
-    --highlight-color: #FF6347; /* Tomato */
-    --movie-card-background: #1e1e1e; /* Movie card background */
-    --movie-card-hover-shadow: rgba(0, 0, 0, 0.4); /* Shadow on hover */
-    --overlay-background: rgba(0, 0, 0, 0.4); /* Overlay background */
-    --tooltip-background: #333; /* Tooltip background */
-    --tooltip-text-color: #fff; /* Tooltip text color */
-    --missing-poster-border: red; /* Missing poster border color */
+    --button-background: #FFFFFF; /* White */
+    --background-dark: #DAD7D2; /* Darker background for sections */
+    --secondary-text-color: #FFFFFF; /* White text on dark backgrounds */
+    --secondary-secondary-text-color: #B5B2AD; /* Subtle light gray */
+    --accent-color: #3c5597; /* Muted terracotta */
+    --dropdown-background: #FFFFFF; /* Dropdown background */
+    --highlight-color: #3c5597; /* Same as accent */
+    --movie-card-background: #FFFFFF; /* Movie card background */
+    --movie-card-hover-shadow: rgba(0, 0, 0, 0.1); /* Soft shadow */
+    --overlay-background: rgba(0, 0, 0, 0.5); /* Overlay background */
+    --tooltip-background: #3D3D3D; /* Dark tooltip background */
+    --tooltip-text-color: #FFFFFF; /* Tooltip text color */
+    --missing-poster-border: #3c5597; /* Accent color */
 
     /* Font Variables */
     --font-family: 'Lato', sans-serif; /* Lato as the main font */
     --font-body: 'Lato', sans-serif; /* Body font family */
-    --font-heading: 'Anton', sans-serif; /* Heading font family */
+    --font-heading: 'Cardo', serif; /* Heading font family */
     --font-cursive: 'Pinyon Script', cursive;
 
     --font-size-base: 16px; /* Base font size */
@@ -50,7 +50,7 @@
 
     /* Toggle Button Variables */
     --toggle-button-size: 24px;
-    --toggle-button-color: var(--secondary-text-color);
+    --toggle-button-color: var(--secondary-color);
     --toggle-button-active-color: var(--accent-color);
 
     /* Spacing Variables */
@@ -65,23 +65,47 @@
 
     /* Button-Specific Color Variables */
     --button-border-color: #CCCCCC; /* Light Gray */
-    --button-text-color: #333333; /* Dark Gray */
-    --button-hover-background: #f0f0f0; /* Very Light Gray */
-    --button-active-background: #e0e0e0; /* Light Gray */
+    --button-text-color: #2C2C2C; /* Dark Gray */
+    --button-hover-background: #E0DED9; /* Very Light Gray */
+    --button-active-background: #D3D0CB; /* Light Gray */
 
     --poster-width: 70%;
     --catalog-width: 1200px;
 }
-
-/* Dark Mode Theme */
 [data-theme="dark"] {
-    --background-color: var(--background-color-dark);
-    --text-color: var(--text-color-dark);
-    --header-background: var(--header-background-dark);
-    --footer-background: var(--footer-background-dark);
-    --button-background: var(--button-background-dark);
-    --button-text-color: var(--button-text-color-dark);
-    --button-border-color: var(--button-border-color-dark);
-    --button-hover-background: var(--button-hover-background-dark);
-    /* Override other variables as needed */
+    /* Override Color Variables for Dark Theme */
+    --primary-color: #1A1A1A; /* Dark charcoal */
+    --secondary-color: #EAEAEA; /* Light gray text */
+    --background-color: #121212; /* Near black */
+    --text-color: #D6D6D6; /* Light gray */
+    --header-background: #151515; /* Slight variation */
+    --footer-background: #151515; /* Matching header */
+    --button-hover: #2A2A2A; /* Button hover */
+
+    /* Additional Color Variables */
+    --button-background: #1F1F1F; /* Dark button background */
+    --background-dark: #1C1C1C; /* For dark sections */
+    --secondary-text-color: #FFFFFF; /* White text */
+    --secondary-secondary-text-color: #A0A0A0; /* Light gray */
+    --accent-color: #B58B4B; /* Muted gold */
+    --dropdown-background: #1A1A1A; /* Dropdown background */
+    --highlight-color: #B58B4B; /* Same as accent */
+    --movie-card-background: #1F1F1F; /* Movie card background */
+    --movie-card-hover-shadow: rgba(255, 255, 255, 0.1); /* Light shadow */
+    --overlay-background: rgba(0, 0, 0, 0.7); /* Overlay */
+    --tooltip-background: #EAEAEA; /* Light tooltip background */
+    --tooltip-text-color: #1A1A1A; /* Tooltip text color */
+    --missing-poster-border: #B58B4B; /* Accent color */
+
+    /* Toggle Button Variables */
+    --toggle-button-color: var(--secondary-color);
+    --toggle-button-active-color: var(--accent-color);
+
+    /* Button-Specific Color Variables */
+    --button-border-color: #444444; /* Dark Gray */
+    --button-text-color: #D6D6D6; /* Light Gray */
+    --button-hover-background: #2A2A2A; /* Dark Gray */
+    --button-active-background: #333333; /* Slightly lighter gray */
+
+    /* Update other variables as needed */
 }

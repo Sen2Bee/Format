@@ -33,7 +33,7 @@
     display: inline-block;
     padding: 8px 5px;
     background-color: var(--primary-color);
-    color: var(--text-light);
+    color: var(--text-color);
     border-radius: 4px;
     text-decoration: none;
     transition: background-color var(--transition-duration), transform var(--transition-duration);
@@ -46,14 +46,14 @@
 .pagination nav ul li a:hover,
 .pagination nav ul li span:hover {
     background-color: var(--accent-color);
-    color: var(--background-dark);
+    color: var(--text-color);
     transform: translateY(-2px); /* Subtle lift effect */
 }
 
 /* Active State for Current Page */
 .pagination nav ul li.active span {
     background-color: var(--accent-color);
-    color: var(--background-dark);
+    color: var(--secondary-text-color);
     font-weight: bold;
     cursor: default;
 }
@@ -62,7 +62,7 @@
 .pagination nav ul li.disabled span,
 .pagination ul li.disabled a {
     background-color: var(--secondary-color); /* Muted color for disabled state */
-    color: var(--secondary-text-color);
+    color: var(--text-color);
     cursor: not-allowed;
     border: 1px solid var(--border-color);
     pointer-events: none; /* Prevent interaction */

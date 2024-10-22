@@ -51,7 +51,7 @@
     padding: 0 50px;
     font-size: 1em;
     background: transparent;
-    color: #f5f5f5;
+    color: var(--text-color);
     border: none;
     border-radius: 10px;
     box-sizing: border-box;
@@ -59,7 +59,7 @@
 }
 
 #search-box::placeholder {
-    color: rgba(245, 245, 245, 0.7);
+    color: var(--text-color);
     font-style: italic;
 }
 

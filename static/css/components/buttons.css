@@ -55,8 +55,8 @@
 .filter-action-button {
     display: flex;
     align-items: center;
-    background-color: var(--button-background); /* #ffffff */
-    color: var(--button-text-color); /* #333333 */
+    background-color: var(--background-dark); /* #ffffff */
+    color: var(--text-color); /* #333333 */
     padding: 10px 20px;
     margin: 5px;
     border: 1px solid var(--button-border-color); /* #CCCCCC */
@@ -68,6 +68,7 @@
     line-height: 1;
     min-height: var(--big-button-height);
     align-self: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
 }
 
 .filter-action-button:hover {

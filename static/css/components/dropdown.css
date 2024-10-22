@@ -37,7 +37,7 @@
     justify-content: flex-start; /* Aligns the clear icon and badge to the left */
     flex-direction: column; /* For two-row layout */
     background-color: var(--background-dark); /* Adjust background color */
-    color: var(--secondary-text-color); /* Use lighter text for better contrast */
+    color: var(--text-color); /* Use lighter text for better contrast */
     cursor: pointer;
     font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;

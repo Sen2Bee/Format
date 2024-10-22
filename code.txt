@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-22 19:42:24 ===
+=== Code Summary Generated at 2024-10-22 21:19:50 ===
 
 === Project Folder Structure ===
 
@@ -410,7 +410,7 @@ button {
 --- File: static\css\base\variables.css ---
 :root {
     /* Color Variables */
-    --primary-color: #ff6600; /* Primary brand color */
+    --primary-color: #f4f4f4; /* Primary brand color */
     --secondary-color: #333; /* Secondary color for text and elements */
     --background-color: #f4f4f4; /* General background color */
     --text-color: #333; /* Primary text color */
@@ -434,9 +434,11 @@ button {
     --missing-poster-border: red; /* Missing poster border color */
 
     /* Font Variables */
-    --font-family: 'Nunito', sans-serif; /* Primary font family */
-    --font-body: 'Nunito', sans-serif; /* Body font family */
+    --font-family: 'Lato', sans-serif; /* Lato as the main font */
+    --font-body: 'Lato', sans-serif; /* Body font family */
     --font-heading: 'Anton', sans-serif; /* Heading font family */
+    --font-cursive: 'Pinyon Script', cursive;
+
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
@@ -479,8 +481,8 @@ button {
 
     --poster-width: 70%;
     --catalog-width: 1200px;
-
 }
+
 /* Dark Mode Theme */
 [data-theme="dark"] {
     --background-color: var(--background-color-dark);
@@ -1318,7 +1320,7 @@ Error reading file: static\css\components\cards_old.css
     font-family: var(--font-body);
     background-color: var(--button-background);
     border-radius: 3px;
-    border: 1px solid var(--button-background);
+    /* border: 1px solid var(--button-background); */
 }
 
 /* Dropdown Header */
@@ -2436,12 +2438,11 @@ footer .container {
 }
 
 /* Headline Styling */
-.view-toggle-headline h2 {
-    font-size: 1.8rem;
+.view-toggle-headline h2{
+    font-size: 1.7rem;
     color: var(--secondary-text-color); /* White text */
     margin: 0;
-    text-transform: uppercase;
-    font-family: var(--font-heading);
+    /* text-transform: uppercase; */
 }
 
 /* Toggle Buttons Container */
@@ -3693,7 +3694,9 @@ export function updateFilters(page = 1) {
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
-    updateHeadline();
+
+
+
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
@@ -3721,7 +3724,7 @@ export function updateFilters(page = 1) {
     }
 
     params.append('page', page);
-
+    let total_movies = 0;
     // Show the progress indicator before starting the fetch
     showProgressIndicator();
 
@@ -3759,6 +3762,16 @@ export function updateFilters(page = 1) {
 
             // Update pagination
             updatePagination(current_page, total_pages, total_movies, columnsPerRow);
+
+            updateHeadline(selectedGenres, 
+                selectedYears, 
+                selectedCountries, 
+                selectedStandorte,
+                selectedMedia, 
+                selectedSortByValues,
+                searchQuery, 
+                total_movies); // Pass selected genres and years
+
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
@@ -3768,7 +3781,7 @@ export function updateFilters(page = 1) {
         })
         .finally(() => {
             hideProgressIndicator();
-            updateHeadline();
+
         });
 }
 
@@ -3877,31 +3890,95 @@ export function triggerDropdownChangeEvent() {
     document.dispatchEvent(event);
 }
 
-export function updateHeadline() {
 
-    const searchQuery = document.getElementById('search-box').value.trim();
-    
-    let headlineText = 'Selected Items: ';
-    
+export function updateHeadline(
+    selectedGenres = [], 
+    selectedYears = [], 
+    selectedCountries = [], 
+    selectedStandorte = [], 
+    selectedMedia = [], 
+    selectedSortByValues = [], 
+    searchQuery,
+    total_movies
+) {
+    let headlineText = 'Auswahl: ';
+    console.log("total_movies", total_movies)
+
+    // Clear existing headline content
+    const headlineElement = document.querySelector('.view-toggle-title');
+    if (!headlineElement) {
+        console.error('Element with class .view-toggle-title not found');
+        return;
+    }
+    headlineElement.innerHTML = '';  // Clear existing content
+
+    // Helper function to add text with icon
+    const appendTextWithIcon = (iconClass, text) => {
+        const span = document.createElement('span');
+        const icon = document.createElement('i');
+        icon.className = iconClass;  // Assign Font Awesome class
+        span.appendChild(icon);      // Add the icon to span
+        span.innerHTML += ` ${text}`; // Add text after the icon
+        if (headlineElement.innerHTML) {
+            headlineElement.innerHTML += ' | '; // Add separator if there is existing content
+        }
+        headlineElement.appendChild(span); // Append the span to the headline
+    };
+
+    // Add search query if present
     if (searchQuery) {
-        headlineText += `Search: "${searchQuery}"`;
+        appendTextWithIcon('fa fa-search', searchQuery);
     }
 
-    if (genre) {
-        headlineText += (searchQuery ? ' | ' : '') + `Genre: ${genre}`;
+    // Add genres if present
+    if (selectedGenres.length > 0) {
+        appendTextWithIcon('fa fa-film', selectedGenres.join(', '));
     }
 
-    if (year) {
-        headlineText += (searchQuery || genre ? ' | ' : '') + `Year: ${year}`;
+    // Add years if present
+    if (selectedYears.length > 0) {
+        appendTextWithIcon('fa fa-calendar-alt', selectedYears.join(', '));
     }
 
-    if (!searchQuery && !genre && !year) {
-        headlineText = 'Selected Items: None';  // Default text if nothing is selected
+    // Add countries if present
+    if (selectedCountries.length > 0) {
+        appendTextWithIcon('fa fa-globe', selectedCountries.join(', '));
     }
 
-    // Update the headline
-    document.getElementById('selected-filters-headline').textContent = headlineText;
+    // Add standorte (locations) if present
+    if (selectedStandorte.length > 0) {
+        appendTextWithIcon('fa fa-map-marker-alt', selectedStandorte.join(', '));
+    }
+
+    // Add media formats if present
+    if (selectedMedia.length > 0) {
+        appendTextWithIcon('fa fa-compact-disc', selectedMedia.join(', '));
+    }
+
+    // Add sort options if present
+    if (selectedSortByValues.length > 0) {
+        appendTextWithIcon('fa fa-sort', selectedSortByValues.join(', '));
+    }
+
+    // Add total movie count with thousand separators
+    if (total_movies !== undefined && total_movies > 0) {
+        const formattedTotalMovies = total_movies.toLocaleString('de-DE'); // German locale for dot as thousand separator
+        appendTextWithIcon('fa fa-film', `${formattedTotalMovies} Filme gefunden`);
+    }
+
+    // Default text if nothing is selected
+    if (!searchQuery && 
+        selectedGenres.length === 0 && 
+        selectedYears.length === 0 && 
+        selectedCountries.length === 0 && 
+        selectedStandorte.length === 0 && 
+        selectedMedia.length === 0 && 
+        selectedSortByValues.length === 0 && 
+        total_movies === 0) {
+        headlineElement.textContent = '';  // Set to empty if nothing is selected
+    }
 }
+
 --- File: static\js\hero.js ---
 document.addEventListener('DOMContentLoaded', function () {
  
@@ -4251,6 +4328,7 @@ export function themeToggle() {
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <!-- Tippy.js CSS -->
@@ -4533,7 +4611,7 @@ export function themeToggle() {
 <section class="view-toggle-section" style="padding: 20px; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
     <!-- Headline Left of Toggle Buttons -->
     <div class="view-toggle-headline">
-        <h2 class="view-toggle-title">Ansicht auswählen</h2>
+        <h2 class="view-toggle-title"></h2>
     </div>
 
     <!-- Toggle Buttons Right of Headline -->
