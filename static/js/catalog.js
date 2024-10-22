@@ -112,7 +112,7 @@ export function updateMovieListings(movies) {
                             <div class="image-container">
                                 <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';" loading="lazy">
                                 <div class="hover-title">
-                                    <span>${movie.original_title}</span>
+                                    <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
                                 </div>
                             </div>
                             <div class="info-wrapper">

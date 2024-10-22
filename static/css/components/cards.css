@@ -110,7 +110,7 @@
 /* Hover Title */
 .hover-title {
     position: absolute;
-    font-size: clamp(1.5em, 2vw, 1.3em); /* Responsive font size */
+    font-size: var(--meta-data-font-size); /* Responsive font size */
     bottom: 0;
     left: 0;
     width: 100%;
@@ -139,21 +139,22 @@
     flex: 1; /* Take remaining space in list view */
 }
 
-/* Header Section */
-.header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .header-section h2 {
     margin: 0;
-    font-size: clamp(1.5rem, 2.5vw, 2rem); /* Adaptive font size */
+    font-size: clamp(1rem, 2vw, 1.5rem); /* Ensure font-size adapts to screen size */
     color: var(--text-color);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     font-family: var(--font-heading);
     text-transform: uppercase;
+    white-space: nowrap; /* Prevents wrapping */
+    overflow: hidden; /* Hides overflowed text */
+    text-overflow: ellipsis; /* Adds ellipsis ("...") to indicate overflow */
+    max-width: 100%; /* Ensure it fits within the available space */
 }
+
+
+
+
 
 /* Metadata Section */
 .metadata {
@@ -319,6 +320,7 @@
 
 /* Overview Section */
 .overview-section {
+    font-size: var(--meta-data-font-size);
     padding: 15px;
     background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
     border-radius: var(--border-radius-small);

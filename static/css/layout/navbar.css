@@ -60,7 +60,7 @@
 
 .logo span {
     font-size: 2.5rem;  /* Adjust main logo size for better readability */
-    color: var(--text-light);  /* Use defined light text color */
+    color: var(--text-color);  /* Use defined light text color */
     font-family: var(--font-heading);  /* Use heading font */
     text-transform: lowercase;
     margin-right: 5px;
@@ -75,6 +75,7 @@
 
 /* Navigation Links */
 .nav-links {
+    color: var(--text-color);  /* Use defined light text color */
     display: flex;
     gap: 20px;
     list-style: none;
