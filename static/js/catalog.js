@@ -88,7 +88,6 @@ export function updateMovieListings(movies) {
                         }
                     }
 
-                    console.log("Actors processed:", actors);
 
                     const countries = Array.isArray(movie.countries) && movie.countries.length > 0
                         ? movie.countries.map(country => {
@@ -153,6 +152,8 @@ export function updateMovieListings(movies) {
 
     // Initialize Tippy.js after all movie cards have been appended
     initializeTippyTooltips();
+
+   
 }
 
 // Function to initialize Tippy.js tooltips
@@ -218,3 +219,8 @@ export function toogleViews() {
         activateGridView();
     }
 };
+
+
+
+
+

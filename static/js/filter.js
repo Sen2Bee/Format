@@ -153,6 +153,8 @@ export function initializeFilterDropdowns() {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
     }
 
+    
+
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
 
@@ -161,6 +163,8 @@ export function initializeFilterDropdowns() {
 
     // Initial filter update
     triggerDropdownChangeEvent();
+
+
 }
 
 /**
@@ -549,6 +553,10 @@ export function updateFilters(page = 1) {
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
+
+
+
+
     const params = new URLSearchParams();
     if (selectedYears.length) {
         params.append('years', selectedYears.join(','));
@@ -575,7 +583,7 @@ export function updateFilters(page = 1) {
     }
 
     params.append('page', page);
-
+    let total_movies = 0;
     // Show the progress indicator before starting the fetch
     showProgressIndicator();
 
@@ -622,6 +630,14 @@ export function updateFilters(page = 1) {
         })
         .finally(() => {
             hideProgressIndicator();
+            updateHeadline(selectedGenres, 
+                selectedYears, 
+                selectedCountries, 
+                selectedStandorte,
+                selectedMedia, 
+                selectedSortByValues,
+                searchQuery, 
+                total_movies); // Pass selected genres and years
         });
 }
 
@@ -728,4 +744,91 @@ export function triggerDropdownChangeEvent() {
     const event = new CustomEvent('dropdownChange');
     console.log("Dispatching dropdownChange event");
     document.dispatchEvent(event);
+}
+
+
+export function updateHeadline(
+    selectedGenres = [], 
+    selectedYears = [], 
+    selectedCountries = [], 
+    selectedStandorte = [], 
+    selectedMedia = [], 
+    selectedSortByValues = [], 
+    searchQuery,
+    total_movies
+) {
+    let headlineText = 'Auswahl: ';
+
+    // Clear existing headline content
+    const headlineElement = document.querySelector('.view-toggle-title');
+    if (!headlineElement) {
+        console.error('Element with class .view-toggle-title not found');
+        return;
+    }
+    headlineElement.innerHTML = '';  // Clear existing content
+
+    // Helper function to add text with icon
+    const appendTextWithIcon = (iconClass, text) => {
+        const span = document.createElement('span');
+        const icon = document.createElement('i');
+        icon.className = iconClass;  // Assign Font Awesome class
+        span.appendChild(icon);      // Add the icon to span
+        span.innerHTML += ` ${text}`; // Add text after the icon
+        if (headlineElement.innerHTML) {
+            headlineElement.innerHTML += ' | '; // Add separator if there is existing content
+        }
+        headlineElement.appendChild(span); // Append the span to the headline
+    };
+
+    // Add search query if present
+    if (searchQuery) {
+        appendTextWithIcon('fa fa-search', searchQuery);
+    }
+
+    // Add genres if present
+    if (selectedGenres.length > 0) {
+        appendTextWithIcon('fa fa-film', selectedGenres.join(', '));
+    }
+
+    // Add years if present
+    if (selectedYears.length > 0) {
+        appendTextWithIcon('fa fa-calendar-alt', selectedYears.join(', '));
+    }
+
+    // Add countries if present
+    if (selectedCountries.length > 0) {
+        appendTextWithIcon('fa fa-globe', selectedCountries.join(', '));
+    }
+
+    // Add standorte (locations) if present
+    if (selectedStandorte.length > 0) {
+        appendTextWithIcon('fa fa-map-marker-alt', selectedStandorte.join(', '));
+    }
+
+    // Add media formats if present
+    if (selectedMedia.length > 0) {
+        appendTextWithIcon('fa fa-compact-disc', selectedMedia.join(', '));
+    }
+
+    // Add sort options if present
+    if (selectedSortByValues.length > 0) {
+        appendTextWithIcon('fa fa-sort', selectedSortByValues.join(', '));
+    }
+
+    // Add total movie count if present
+    if (total_movies !== undefined && total_movies > 0) {
+        appendTextWithIcon('fa fa-film', `${total_movies} Filme gefunden`);
+    }
+
+    // Default text if nothing is selected
+    if (!searchQuery && 
+        selectedGenres.length === 0 && 
+        selectedYears.length === 0 && 
+        selectedCountries.length === 0 && 
+        selectedStandorte.length === 0 && 
+        selectedMedia.length === 0 && 
+        selectedSortByValues.length === 0 && 
+        total_movies === 0) {
+        headlineElement.textContent = '';  // Set to empty if nothing is selected
+    }
 }

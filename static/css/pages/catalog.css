@@ -6,7 +6,7 @@
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     padding: 20px;
-    max-width: 1200px; /* Adjust as needed */
+    max-width: var(--catalog-width); /* Adjust as needed */
     margin: 0 auto;
     transition: all var(--transition-duration) ease;
     background-color: var(--background-dark); /* Black/gray background */
@@ -52,20 +52,19 @@
 /* Toggle View Section */
 .view-toggle-section {
     padding: 20px;
-    max-width: 1200px;
+    max-width: var(--catalog-width); /* Adjust as needed */;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: right;
 }
 
 /* Headline Styling */
-.view-toggle-headline h2 {
-    font-size: 1.8rem;
+.view-toggle-headline h2{
+    font-size: 1.7rem;
     color: var(--secondary-text-color); /* White text */
     margin: 0;
-    text-transform: uppercase;
-    font-family: var(--font-heading);
+    /* text-transform: uppercase; */
 }
 
 /* Toggle Buttons Container */

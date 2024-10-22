@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-21 21:37:10 ===
+=== Code Summary Generated at 2024-10-22 19:42:24 ===
 
 === Project Folder Structure ===
 
@@ -18,6 +18,7 @@ Format/
                 autocomplete.css
                 buttons.css
                 cards.css
+                cards_old.css
                 carousel.css
                 dropdown.css
                 filter.css
@@ -25,6 +26,7 @@ Format/
                 pagination.css
                 progress_indicator.css
                 search.css
+                toggle_view.css
             layout/
                 footer.css
                 hero.css
@@ -60,9 +62,11 @@ Format/
             main.js
             navbar.js
             pagination.js
+            theme_toggle.js
     templates/
         catalog.html
         index.html
+        components/
 
 === File Contents ===
 
@@ -153,109 +157,210 @@ html, body {
 }
 
 --- File: static\css\base\responsive.css ---
-/* responsive.css */
+/* Mobile-First Base Styles */
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    /* Adjustments for elements */
-    .main-filters-container {
-        overflow-x: auto;
+/* Ensure all elements are responsive by default */
+
+/* Extra Small Devices (Mobile Phones, <480px) */
+@media (max-width: var(--breakpoint-xs)) {
+    /* Navbar */
+    header .container {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 10px;
     }
 
-    .custom-dropdown {
-        flex: 0 0 180px;
-        max-width: 180px;
+    nav ul {
+        flex-direction: column;
+        width: 100%;
     }
 
-    .dropdown-header .header-label span {
-        max-width: 120px;
+    nav ul li {
+        width: 100%;
     }
 
-    .selection-clear-container {
-        gap: 6px;
+    nav ul li a {
+        padding: 10px 0;
+        width: 100%;
+        display: block;
     }
 
-    .selection-badge {
-        max-width: 60%;
-        font-size: 0.7em;
+    /* Search Bar */
+    .search-bar {
+        width: 100%;
+        margin-top: 10px;
     }
 
-    .clear-icon {
-        font-size: 1.2em;
+    .search-bar input {
+        width: 100%;
     }
 
-    #autocomplete-list {
-        max-height: 200px;
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 50vh;
     }
 
-    .autocomplete-item {
-        padding: 8px 10px;
-        font-size: 0.9em;
+    .hero-carousel .overlay {
+        bottom: 10%;
+        left: 5%;
+        max-width: 90%;
     }
 
-    /* Navbar adjustments */
-    .navbar {
-        height: 50px;
+    /* Sidebar */
+    .sidebar {
+        display: none; /* Hide sidebar on mobile */
     }
 
-    .navbar.shrunk {
-        height: 35px;
+    /* Movie Grid */
+    .movie-listing {
+        padding: 0;
     }
 
-    .navbar.hidden {
-        top: -50px;
+    .view-toggle {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
     }
 
-    .logo span {
-        font-size: 2rem;
+    .movies.grid-view {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
     }
 
-    .sub-logo span {
-        font-size: 1.4rem;
+    .movie-card {
+        flex-direction: column;
     }
 
-    .nav-center-title {
-        font-size: 1rem;
+    /* Footer */
+    footer .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    footer .footer-links ul {
+        flex-direction: column;
+    }
+
+    footer .footer-social {
+        margin-top: 10px;
     }
 }
 
-@media (max-width: 480px) {
-    .custom-dropdown {
-        flex: 0 0 150px;
-        max-width: 150px;
+/* Small Devices (Tablet Portrait, 480px - 767px) */
+@media (min-width: var(--breakpoint-xs)) and (max-width: var(--breakpoint-sm)) {
+    /* Navbar */
+    header .container {
+        flex-direction: row;
+        justify-content: space-between;
     }
 
-    .dropdown-header .header-label span {
-        max-width: 100px;
+    nav ul {
+        flex-direction: row;
     }
 
-    .selection-clear-container {
-        gap: 4px;
+    nav ul li {
+        width: auto;
     }
 
-    .selection-badge {
-        max-width: 50%;
-        font-size: 0.6em;
+    /* Search Bar */
+    .search-bar {
+        width: 60%;
     }
 
-    .clear-icon {
-        font-size: 1em;
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 60vh;
     }
 
-    .logo span {
-        font-size: 1.6rem;
+    /* Sidebar */
+    .sidebar {
+        width: 200px;
     }
 
-    .sub-logo span {
-        font-size: 1.2rem;
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+    }
+}
+
+/* Medium Devices (Tablet Landscape, 768px - 1023px) */
+@media (min-width: var(--breakpoint-sm)) and (max-width: var(--breakpoint-md)) {
+    /* Navbar */
+    header .container {
+        padding: 15px;
     }
 
-    .nav-links li a {
-        font-size: 1.2rem;
+    /* Search Bar */
+    .search-bar {
+        width: 50%;
     }
 
-    .theme-title {
-        font-size: 1.2rem;
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 65vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        display: block;
+        width: var(--sidebar-width);
+    }
+
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 25px;
+    }
+}
+
+/* Large Devices (Desktop, 1024px - 1199px) */
+@media (min-width: var(--breakpoint-md)) and (max-width: var(--breakpoint-lg)) {
+    /* Navbar */
+    header .container {
+        padding: 20px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+        width: 40%;
+    }
+
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 70vh;
+    }
+
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 30px;
+    }
+}
+
+/* Extra Large Devices (Large Desktop, ≥1200px) */
+@media (min-width: var(--breakpoint-lg)) {
+    /* Navbar */
+    header .container {
+        padding: 25px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+        width: 30%;
+    }
+
+    /* Hero Carousel */
+    .hero-carousel {
+        height: 80vh;
+    }
+
+    /* Movie Grid */
+    .movies.grid-view {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 35px;
     }
 }
 
@@ -303,37 +408,90 @@ button {
 }
 
 --- File: static\css\base\variables.css ---
-/* variables.css */
-
 :root {
     /* Color Variables */
-    --primary-color: #1a1a1a; /* Dark Gray for primary elements */
-    --secondary-color: #333333; /* Darker Gray for secondary elements */
-    --accent-color: #e7b000; /* Accent color (e.g., buttons, highlights) */
-    --background-light: #ffffff; /* White for light backgrounds */
-    --background-dark: #1e1e1e; /* Dark gray for backgrounds */
-    --text-color: #f5f5f5; /* Light text color */
-    --text-light: #ffffff; /* White text for dark backgrounds */
-    --text-dark: #000000; /* Black text for light backgrounds */
-    --secondary-text-color: #bfbfbf; /* Muted Light Gray */
-    --link-color: #e7b000; /* Yellow for links */
-    --link-hover-color: #ff6347; /* Link hover color */
-    --button-background: rgba(68, 68, 68, 0.9); /* Button background */ 
-    --button-hover-background: rgba(85, 85, 85, 0.9); /* Button hover background */
-    --border-color: #333333; /* Darker Gray for borders */
-    --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle shadow color */
-    --font-heading: 'Segoe UI', sans-serif; /* Font for headings */
-    --font-body: 'Roboto', sans-serif; /* Font for body text */
-    --transition-duration: 0.3s; /* Consistent transition duration */
-    --filter-width: 98%; /* Width for filters */
-    --placeholder-color: #aaa; /* Placeholder text color */
-    --scrollbar-bg: #333;
-    --scrollbar-thumb: #555;
-    --dropdown-background: rgba(44, 44, 44, 0.95); /* Dropdown background */
-    --button-active-background: var(--accent-color); /* Active button background */
-    --arrow-button-size: 40px; /* Size for navigation arrows */
-    --big-button-height: 60px;
-    
+    --primary-color: #ff6600; /* Primary brand color */
+    --secondary-color: #333; /* Secondary color for text and elements */
+    --background-color: #f4f4f4; /* General background color */
+    --text-color: #333; /* Primary text color */
+    --header-background: #ffffff; /* Header background */
+    --footer-background: #222222; /* Footer background */
+    --button-hover: #e65c00; /* Button hover state color */
+
+    /* Additional Color Variables */
+    --button-background: #ffffff; /* Button background color */
+    --background-dark: #444444; /* Darker background for headers or active states */
+    --secondary-text-color: #FFFFFF; /* White */
+    --secondary-secondary-text-color: #CCCCCC; /* Light Gray */
+    --accent-color: #FF6347; /* Tomato */
+    --dropdown-background: #ffffff; /* Dropdown list background */
+    --highlight-color: #FF6347; /* Tomato */
+    --movie-card-background: #1e1e1e; /* Movie card background */
+    --movie-card-hover-shadow: rgba(0, 0, 0, 0.4); /* Shadow on hover */
+    --overlay-background: rgba(0, 0, 0, 0.4); /* Overlay background */
+    --tooltip-background: #333; /* Tooltip background */
+    --tooltip-text-color: #fff; /* Tooltip text color */
+    --missing-poster-border: red; /* Missing poster border color */
+
+    /* Font Variables */
+    --font-family: 'Nunito', sans-serif; /* Primary font family */
+    --font-body: 'Nunito', sans-serif; /* Body font family */
+    --font-heading: 'Anton', sans-serif; /* Heading font family */
+    --font-size-base: 16px; /* Base font size */
+    --font-size-lg: 1.25rem; /* Large font size */
+    --font-size-sm: 0.875rem; /* Small font size */
+
+    /* Layout Variables */
+    --header-height: 60px; /* Header height */
+    --footer-height: 200px; /* Footer height */
+    --sidebar-width: 250px; /* Sidebar width */
+    --big-button-height: 50px; /* Height for larger buttons or dropdown headers */
+
+    /* Transition Variables */
+    --transition-duration: 0.3s; /* Standard transition duration */
+
+    /* Responsive Breakpoints */
+    --breakpoint-xs: 480px; /* Extra Small Devices */
+    --breakpoint-sm: 768px; /* Small Devices */
+    --breakpoint-md: 1024px; /* Medium Devices */
+    --breakpoint-lg: 1200px; /* Large Devices */
+
+    /* Toggle Button Variables */
+    --toggle-button-size: 24px;
+    --toggle-button-color: var(--secondary-text-color);
+    --toggle-button-active-color: var(--accent-color);
+
+    /* Spacing Variables */
+    --spacing-small: 8px;
+    --spacing-medium: 16px;
+    --spacing-large: 24px;
+
+    /* Border Radius Variables */
+    --border-radius-small: 4px;
+    --border-radius-medium: 8px;
+    --border-radius-large: 10px;
+
+    /* Button-Specific Color Variables */
+    --button-border-color: #CCCCCC; /* Light Gray */
+    --button-text-color: #333333; /* Dark Gray */
+    --button-hover-background: #f0f0f0; /* Very Light Gray */
+    --button-active-background: #e0e0e0; /* Light Gray */
+
+    --poster-width: 70%;
+    --catalog-width: 1200px;
+
+}
+/* Dark Mode Theme */
+[data-theme="dark"] {
+    --background-color: var(--background-color-dark);
+    --text-color: var(--text-color-dark);
+    --header-background: var(--header-background-dark);
+    --footer-background: var(--footer-background-dark);
+    --button-background: var(--button-background-dark);
+    --button-text-color: var(--button-text-color-dark);
+    --button-border-color: var(--button-border-color-dark);
+    --button-hover-background: var(--button-hover-background-dark);
+    /* Override other variables as needed */
 }
 
 --- File: static\css\components\autocomplete.css ---
@@ -390,7 +548,7 @@ button {
 }
 
 --- File: static\css\components\buttons.css ---
-/* buttons.css */
+/* File: static/css/components/buttons.css */
 
 /* Filter Buttons Container */
 .filter-buttons-container {
@@ -412,9 +570,9 @@ button {
 
 /* Filter Buttons */
 .filter-button {
-    background-color: var(--background-dark);
-    color: var(--text-color);
-    border: none;
+    background-color: var(--button-background); /* #ffffff */
+    color: var(--button-text-color); /* #333333 */
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
     border-radius: 25px;
     cursor: pointer;
     transition: background-color var(--transition-duration), transform var(--transition-duration);
@@ -428,11 +586,9 @@ button {
 
 .filter-button.selected,
 .filter-button:hover {
-    /* background-color: var(--accent-color); */
-    /* color: var(--accent-color); */
-    border: 1px solid var(--accent-color);
-    background-color: var(--background-dark);
-    color: var(--accent-color);
+    background-color: var(--button-hover-background); /* #f0f0f0 */
+    color: var(--button-text-color); /* #333333 */
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
 }
 
 /* Filters Buttons Row */
@@ -449,11 +605,11 @@ button {
 .filter-action-button {
     display: flex;
     align-items: center;
-    background-color: var(--background-dark);
-    color: var(--accent-color);
+    background-color: var(--button-background); /* #ffffff */
+    color: var(--button-text-color); /* #333333 */
     padding: 10px 20px;
     margin: 5px;
-    border: 1px solid var(--button-background);
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
     border-radius: 3px;
     font-size: 1em;
     cursor: pointer;
@@ -465,10 +621,9 @@ button {
 }
 
 .filter-action-button:hover {
-    /* background-color: var(--accent-color); */
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); */
-    border: 1px solid var(--accent-color);
-    color: var(--text-color);
+    background-color: var(--button-hover-background); /* #f0f0f0 */
+    color: var(--button-text-color); /* #333333 */
+    border: 1px solid var(--button-border-color); /* #CCCCCC */
 }
 
 .filter-action-button:disabled {
@@ -486,7 +641,7 @@ button {
     height: var(--arrow-button-size);
     background: transparent;
     border: none;
-    color: var(--accent-color);
+    color: var(--button-border-color); /* #CCCCCC */
     font-size: 1.5em;
     cursor: pointer;
     z-index: 5000;
@@ -513,52 +668,31 @@ button {
 .filter-nav-arrow.hidden {
     display: none;
 }
+
 --- File: static\css\components\cards.css ---
-/* Import Additional Fonts for Themes */
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Comic+Neue&family=Creepster&family=Great+Vibes&family=Merriweather&family=Orbitron&family=Roboto+Condensed&display=swap');
-
-/* CSS Variables for Reusability and Consistency */
-:root {
-    --link-color: #FFD700; /* Bright Yellow */
-    --secondary-text-color: #FFFFFF; /* White */
-    --secondary-secondary-text-color: #CCCCCC; /* Light Gray */
-    --highlight-color: #FF6347; /* Tomato */
-    --font-heading: 'Anton', sans-serif;
-    --transition-duration: 0.3s;
-}
-
-/* Container for Movie Listings */
-.movie-listings {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px; /* Adjust as needed */
-    margin: 0 auto;
-}
-
-/* Media Query to Limit to 4 Columns on Large Screens */
-@media (min-width: 1200px) {
-    .movie-listings {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
+/* cards.css */
 /* General Movie Card Container */
 .movie-card {
     display: flex;
-    flex-direction: column; /* Stack content vertically */
-    background-color: #1e1e1e;
+    flex-direction: column; /* Default for grid view, stacks content vertically */
+    background-color: var(--background-dark);
     color: var(--secondary-text-color);
-    border-radius: 10px;
+    border-radius: var(--border-radius-medium);
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px var(--movie-card-hover-shadow);
     transition: transform var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
     position: relative;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 100%; /* Ensure all cards have equal height */
+}
+
+/* List View Styling */
+.movie-listings.list-view .movie-card {
+    flex-direction: row; /* Change layout to side-by-side in list view */
+    align-items: stretch; /* Stretch items to match the card's height */
+    height: 500px; /* Adjust as needed */
 }
 
 /* Overlay for Improved Text Visibility */
@@ -569,7 +703,7 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Semi-transparent overlay */
+    background: var(--overlay-background); /* rgba(0, 0, 0, 0.4) */
     opacity: 0;
     transition: opacity var(--transition-duration) ease;
     z-index: 1;
@@ -579,35 +713,67 @@ button {
     opacity: 1;
 }
 
-/* Movie Content Wrapper */
+/* Movie Content Wrapper (Metadata and Title) */
 .movie-content-wrapper {
-    flex: 1; /* Allow the content to expand and fill the card */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 20px;
+    justify-content: space-between; /* Ensure items align top and bottom */
+    gap: var(--spacing-small);
+    padding: var(--spacing-medium);
     background: rgba(30, 30, 30, 0.85);
     z-index: 2;
-    border-radius: 10px;
+    border-radius: var(--border-radius-medium);
     position: relative;
-    overflow: hidden;
+}
+
+/* Dedicated Info Wrapper */
+.info-wrapper {
+    display: flex;
+    flex-direction: column; /* Default for grid view (vertical stack) */
+    justify-content: flex-start; /* Ensure content stacks from top */
+    flex: 1;
+}
+
+.movie-listings.list-view .info-wrapper {
+    display: flex;
+    flex-direction: column; /* Keep info stacked */
+    justify-content: space-between; /* Title & metadata at the top, overview at the bottom */
+    flex: 1;
 }
 
 /* Image Container */
 .image-container {
     position: relative;
-    width: 100%;
-    aspect-ratio: 2 / 3; /* 2:3 aspect ratio */
+    width: var(--poster-width);
+    aspect-ratio: 2 / 3; /* Keep the aspect ratio */
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: var(--border-radius-medium);
     transition: transform var(--transition-duration) ease;
 }
+
+
+
+.movie-listings.list-view .movie-content-wrapper {
+    padding: var(--spacing-small); /* Reduce padding in list view if needed */
+    background: rgba(30, 30, 30, 0.9); /* Slightly more opaque in list view */
+    flex-direction: row;
+}
+
+.movie-listings.list-view .image-container {
+    width: auto; /* Fixed width for list view */
+    aspect-ratio: auto; /* Let the height fill based on the container */
+    flex-shrink: 0;
+    height: 100%; /* Match the height of the card */
+    margin-right: var(--spacing-medium); /* Space between image and text */
+}
+
 
 .image-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: var(--border-radius-medium); /* 8px */
     transition: transform var(--transition-duration) ease;
 }
 
@@ -618,16 +784,16 @@ button {
 /* Hover Title */
 .hover-title {
     position: absolute;
-    font-size: clamp(2em, 2vw, 1.3em); /* Responsive font size */
+    font-size: clamp(1.5em, 2vw, 1.3em); /* Responsive font size */
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.7);  /* Semi-transparent background */
-    color: rgba(255, 255, 255, 0.7); /* Semi-transparent text */
+    background: rgba(0, 0, 0, 0.7);  /* Semi-transparent dark background */
+    color: var(--secondary-text-color); /* #FFFFFF */
     text-align: center;
-    padding: 5px;
+    padding: var(--spacing-small);
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity var(--transition-duration) ease-in-out;
 }
 
 .image-container:hover .hover-title {
@@ -643,6 +809,10 @@ button {
     z-index: 2;
 }
 
+.movie-listings.list-view .info-section {
+    flex: 1; /* Take remaining space in list view */
+}
+
 /* Header Section */
 .header-section {
     display: flex;
@@ -653,7 +823,7 @@ button {
 .header-section h2 {
     margin: 0;
     font-size: clamp(1.5rem, 2.5vw, 2rem); /* Adaptive font size */
-    color: var(--link-color); /* Bright Yellow for headline */
+    color: var(--button-text-color); /* Changed from var(--link-color) to #333333 */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     font-family: var(--font-heading);
     text-transform: uppercase;
@@ -663,21 +833,24 @@ button {
 .metadata {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--spacing-small);
     font-size: clamp(0.9rem, 1.5vw, 1.1rem); /* Adaptive font size */
-    color: var(--secondary-secondary-text-color);
-    background-color: rgba(37, 43, 54, 0.85); /* Background color */
-    padding: 15px;
-    border-radius: 8px;
+    color: var(--secondary-secondary-text-color); /* #CCCCCC */
+    background-color: rgba(37, 43, 54, 0.85); /* Semi-transparent dark background */
+    padding: var(--spacing-medium);
+    border-radius: var(--border-radius-small); /* 4px */
+}
+
+.movie-listings.list-view .metadata {
+    padding: var(--spacing-small); /* Reduce padding in list view */
 }
 
 .metadata p {
     margin: 5px 0;
-    color: var(--secondary-text-color); /* White text for metadata */
+    color: var(--secondary-text-color); /* #FFFFFF */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Restrict the number of lines for actors list */
 .metadata p.actors {
     display: -webkit-box;
     -webkit-line-clamp: 2; /* Limit to 2 lines (for Webkit browsers) */
@@ -691,7 +864,7 @@ button {
 
 .metadata p strong,
 .metadata p span {
-    color: var(--secondary-text-color); /* Ensure white color for strong and span elements */
+    color: var(--secondary-secondary-text-color); /* #FFFFFF */
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -699,9 +872,9 @@ button {
 /* Inline Metadata */
 .inline-meta {
     font-size: clamp(1rem, 1.5vw, 1.1rem); /* Adaptive font size */
-    color: var(--secondary-text-color); /* Use white color for inline meta */
-    padding-top: 10px;
-    border-top: 1px solid #444;
+    color: var(--secondary-secondary-text-color); /* #FFFFFF */
+    padding-top: var(--spacing-small);
+    border-top: 1px solid var(--button-border-color); /* #CCCCCC */
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
@@ -711,7 +884,7 @@ button {
 }
 
 .countries span[title]:hover {
-    color: var(--highlight-color); /* Change color on hover, optional */
+    color: var(--button-border-color); /* Changed to gray to fit BW/Gray policy */
 }
 
 /* Tooltip container for countries */
@@ -726,20 +899,20 @@ button {
     content: attr(data-country);
     visibility: hidden;
     opacity: 0;
-    background-color: #333;
-    color: #fff;
+    background-color: var(--tooltip-background); /* #333 */
+    color: var(--tooltip-text-color); /* #fff */
     text-align: center;
-    border-radius: 5px;
+    border-radius: var(--border-radius-small); /* 4px */
     padding: 8px 12px;
     font-size: 1.2em;  /* Control the size of the tooltip */
     position: absolute;
-    z-index: 1000;  /* Ensure it's always on top */
+    z-index: 1000;
     bottom: 125%; /* Position above the country code */
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity var(--transition-duration) ease-in-out;
     max-width: 200px; /* Set a maximum width for long names */
     word-wrap: break-word;
 }
@@ -759,9 +932,9 @@ button {
     transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;
-    border-color: transparent transparent #333 transparent; /* Arrow pointing up */
+    border-color: transparent transparent var(--tooltip-background) transparent; /* Arrow pointing up */
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity var(--transition-duration) ease-in-out;
 }
 
 .country-tooltip:hover::after {
@@ -784,10 +957,7 @@ button {
 
 /* Tooltip container for persons */
 .person-tooltip {
-    /* No additional styles needed as Tippy.js handles tooltip styling */
-    /* However, you can style the trigger element here if desired */
-    /* For example: */
-    color: var(--link-color); /* Bright yellow for names */
+    color: var(--button-text-color); /* Changed from var(--link-color) to #333333 */
     text-decoration: underline dotted; /* Indicate interactivity */
     cursor: pointer;
 }
@@ -814,34 +984,22 @@ button {
     text-transform: capitalize;
 }
 
-/* Remove the old CSS-based tooltip styles to prevent conflicts */
-/* 
-.person-tooltip .tooltip-content {
-    ...
-}
-
-.person-tooltip:hover .tooltip-content,
-.person-tooltip:focus .tooltip-content {
-    ...
-}
-*/
-
 /* Location/Standort */
 .standort {
     font-size: clamp(1rem, 1.5vw, 1.1rem); /* Adaptive font size */
-    color: var(--secondary-text-color); /* Use white text for location */
-    margin-top: 10px;
-    border-top: 1px solid #444;
-    padding-top: 10px;
+    color: var(--secondary-secondary-text-color); /* #CCCCCC */
+    margin-top: var(--spacing-small);
+    border-top: 1px solid var(--button-border-color); /* #CCCCCC */
+    padding-top: var(--spacing-small);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 /* Overview Section */
 .overview-section {
     padding: 15px;
-    background-color: rgba(45, 52, 62, 0.9); /* Background color */
-    border-radius: 8px;
-    color: var(--secondary-secondary-text-color); /* Use white color */
+    background-color: rgba(30, 30, 30, 0.9); /* Dark semi-transparent gray */
+    border-radius: var(--border-radius-small); /* 4px */
+    color: var(--secondary-secondary-text-color); /* #CCCCCC */
     line-height: 1.4;
     transition: font-weight var(--transition-duration) ease;
     position: relative;
@@ -850,11 +1008,11 @@ button {
 
 .overview-section p {
     margin: 0;
-    color: var(--secondary-text-color); /* White text for overview */
+    color: var(--secondary-secondary-text-color); /* #CCCCCC */
 }
 
 .overview-section a {
-    color: var(--link-color); /* Bright yellow for links */
+    color: var(--button-text-color); /* Changed from var(--link-color) to #333333 */
     text-decoration: none;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
@@ -867,7 +1025,7 @@ button {
 /* Responsive Styles */
 
 /* Tablet (Max Width: 1024px) */
-@media (max-width: 1024px) {
+@media (max-width: var(--breakpoint-md)) {
     .movie-listings {
         max-width: 1000px;
     }
@@ -883,7 +1041,7 @@ button {
 }
 
 /* Mobile (Max Width: 768px) */
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-sm)) {
     .movie-listings {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
@@ -911,7 +1069,7 @@ button {
 }
 
 /* Very Small Mobile (Max Width: 480px) */
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
     .movie-listings {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
@@ -927,14 +1085,27 @@ button {
     .overview-section {
         font-size: 0.85em;
     }
+
+    .movie-listings.list-view .movie-card {
+        flex-direction: column; /* Stack vertically again for small screens */
+        align-items: center;
+    }
+
+    .movie-listings.list-view .image-container {
+        margin-right: 0;
+        margin-bottom: var(--spacing-small);
+        height: auto; /* Allow height to adjust */
+    }
 }
 
 /* Missing Poster Styling */
 .missing-poster {
-    border: 2px dashed red;
+    border: 2px dashed var(--button-border-color); /* Changed from red to gray */
     opacity: 0.6;
 }
 
+--- File: static\css\components\cards_old.css ---
+Error reading file: static\css\components\cards_old.css
 --- File: static\css\components\carousel.css ---
 /* Movie Carousel Section */
 .movie-carousel-section {
@@ -1115,7 +1286,6 @@ button {
 .theme-musical { font-family: 'Brush Script MT', cursive; color: #ff66cc; }
 .theme-sport { font-family: 'Copperplate Gothic Bold', sans-serif; color: #009999; }
 .theme-history { font-family: 'Baskerville', serif; color: #660000; }
-
 
 --- File: static\css\components\dropdown.css ---
 /* dropdown.css */
@@ -1312,21 +1482,51 @@ button {
 --- File: static\css\components\filter.css ---
 /* filter.css */
 
-/* Import CSS Variables */
-@import url('../base/variables.css');
+.sidebar {
+    width: var(--sidebar-width);
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-right: 20px;
+}
 
-/* Import Base Styles */
-@import url('../base/reset.css');
-@import url('../base/typography.css');
+.filter-section {
+    margin-bottom: 30px;
+}
 
-/* Import Component Styles */
-@import url('./search.css');
-@import url('./dropdown.css');
-@import url('./buttons.css');
-@import url('./autocomplete.css');
+.filter-section h4 {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+}
 
-/* Import Responsive Styles */
-@import url('../base/responsive.css');
+.filter-section ul {
+    list-style: none;
+}
+
+.filter-section ul li {
+    margin-bottom: 10px;
+}
+
+.filter-section ul li input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.filter-section input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.filter-section span {
+    display: block;
+    text-align: right;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Responsive Adjustments handled in responsive.css */
 
 --- File: static\css\components\forms.css ---
 /* forms.css */
@@ -1605,166 +1805,180 @@ label span.required {
     visibility: visible;
     opacity: 1;
 }
+--- File: static\css\components\toggle_view.css ---
+/* File: static/css/components/toggle-view.css */
+
+/* Theme Toggle Button Styling */
+.theme-toggle-btn {
+    background-color: var(--button-background); /* #ffffff or #333333 in dark mode */
+    color: var(--button-text-color); /* #333333 or #e0e0e0 in dark mode */
+    border: 1px solid var(--button-border-color); /* #CCCCCC or #555555 in dark mode */
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: var(--toggle-button-size);
+    transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease, border-color var(--transition-duration) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px; /* Adjust spacing as needed */
+}
+
+.theme-toggle-btn.active {
+    background-color: var(--button-hover-background); /* #f0f0f0 or #444444 in dark mode */
+    color: var(--button-text-color); /* #333333 or #e0e0e0 in dark mode */
+    border-color: var(--button-border-color); /* #CCCCCC or #555555 in dark mode */
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--button-hover-background); /* #f0f0f0 or #444444 in dark mode */
+    color: var(--button-text-color); /* #333333 or #e0e0e0 in dark mode */
+    border-color: var(--button-border-color); /* #CCCCCC or #555555 in dark mode */
+}
+
+.theme-toggle-btn:focus {
+    outline: 2px solid var(--accent-color); /* Retain accent color for focus */
+    outline-offset: 2px;
+}
 
 --- File: static\css\layout\footer.css ---
 /* footer.css */
 
-/* Footer Styles */
 footer {
-    background-color: var(--primary-color);
+    background-color: var(--footer-background);
     color: #fff;
-    padding: 40px 20px;
-    width: 100%; /* Ensure the footer takes up the full width */
-    overflow: hidden;
+    padding: 40px 0;
+    margin-top: 40px;
 }
 
-.footer-content {
+footer .container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 20px;
 }
 
-.footer-content p {
-    margin: 0;
+.footer-about,
+.footer-links,
+.footer-social {
+    flex: 1 1 200px;
+}
+
+.footer-about h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.footer-about p {
     font-size: 1rem;
-    color: #fff;
+    color: #ccc;
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    footer {
-        padding: 30px 15px;
-    }
-
-    .footer-content p {
-        font-size: 0.9rem;
-    }
+.footer-links ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-@media (max-width: 480px) {
-    footer {
-        padding: 20px 10px;
-    }
-
-    .footer-content p {
-        font-size: 0.8rem;
-    }
+.footer-links ul li a {
+    color: #ccc;
+    transition: color 0.3s;
 }
+
+.footer-links ul li a:hover {
+    color: var(--primary-color);
+}
+
+.footer-social a {
+    color: #ccc;
+    font-size: 1.5rem;
+    margin-right: 10px;
+    transition: color 0.3s;
+}
+
+.footer-social a:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #999;
+}
+
+/* Responsive Adjustments handled in responsive.css */
 
 --- File: static\css\layout\hero.css ---
 /* hero.css */
 
-/* Hero Section */
-.hero {
+.hero-carousel {
+    margin-top: var(--header-height);
     position: relative;
+    height: 70vh;
+}
+
+.hero-carousel .swiper-container {
     width: 100%;
-    height: calc(100vh - 60px); /* Full height minus the navbar */
+    height: 100%;
+}
+
+.hero-carousel .swiper-slide {
+    position: relative;
+    background-size: cover;
+    background-position: center;
     display: flex;
-    justify-content: center;
     align-items: center;
-    overflow: hidden;
+    justify-content: center;
+}
+
+.hero-carousel .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    color: #fff;
+    text-align: left;
+}
+
+.hero-carousel .overlay h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.hero-carousel .overlay p {
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.hero-carousel .overlay .btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.hero-carousel .overlay .btn:hover {
+    background-color: var(--button-hover);
+}
+
+/* Swiper Navigation Buttons */
+.swiper-button-next,
+.swiper-button-prev {
     color: #fff;
 }
 
-.hero-image img {
-    width: 100%;
-    height: calc(100vh - 60px); /* Full height minus the navbar */
-    object-fit: cover; /* Cover the entire hero area */
-    object-position: center top;
-    filter: brightness(50%); /* Darken the image for text readability */
-    position: absolute;
-    top: 0;
-    left: 0;
+.swiper-pagination-bullet {
+    background: #fff;
+    opacity: 0.7;
 }
 
-.hero-overlay {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    background-color: rgba(61, 61, 59, 0); /* Semi-transparent overlay */
-    color: #ffd700; /* Gold text color for contrast */
-    border-radius: 8px;
-    display: inline-block;
-    margin-bottom: 20px; /* Space between overlay and button */
-    transition: background-color 0.3s ease, transform 0.3s ease;
+.swiper-pagination-bullet-active {
+    opacity: 1;
 }
 
-/* Fade-in and Fade-out Animations */
-.fade-in {
-    animation: fadeIn var(--transition-duration) ease-in-out;
-}
-
-.fade-out {
-    animation: fadeOut var(--transition-duration) ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-/* Tagline Container at the Bottom of the Hero */
-#tagline-container {
-    position: absolute;
-    bottom: 0;  /* Stick to the bottom of the hero */
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.6);  /* Semi-transparent dark background */
-    padding: 15px 0; /* Vertical padding */
-    z-index: 1; /* Place the tagline container below the hero-overlay */
-}
-
-/* Text Styling for the Tagline */
-#dynamic-tagline {
-    font-family: 'Cinzel', serif; /* Cinematic font */
-    font-size: 1.6em;  /* Adjust the font size */
-    color: #fff;  /* White text color */
-    text-align: center;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Text shadow for better readability */
-    padding: 0 20px; /* Horizontal padding */
-    margin: 0;
-}
-
-/* Button Styling within Hero */
-.hero-overlay .btn-primary {
-    margin-top: 20px;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-    #dynamic-tagline {
-        font-size: 1.6em;
-    }
-
-    .hero-overlay {
-        padding: 10px 20px;
-        font-size: 1em;
-    }
-
-    .btn-primary {
-        font-size: 1em;
-        padding: 10px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    #dynamic-tagline {
-        font-size: 1.2em;
-        padding: 0 10px;
-    }
-
-    .btn-primary {
-        font-size: 0.9em;
-        padding: 8px 16px;
-    }
-}
+/* Responsive Adjustments handled in responsive.css */
 
 --- File: static\css\layout\navbar.css ---
 /* General Navbar Styles */
@@ -1772,7 +1986,7 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--primary-color);  /* Use defined primary color */
+    background-color: var(--footer-background);  /* Use defined primary color */
     position: fixed;
     top: 0;
     left: 0;
@@ -2001,7 +2215,6 @@ footer {
         text-decoration: none;
     }
 }
-
 --- File: static\css\pages\about.css ---
 /* about.css */
 
@@ -2161,48 +2374,124 @@ footer {
 }
 
 --- File: static\css\pages\catalog.css ---
-/* static/css/pages/catalog.css */
+/* catalog.css */
 
-/* Movie Listings Section */
+/* Container for Movie Listings */
 .movie-listings {
-    background-color: var(--background-dark);
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Dynamically fit columns */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     padding: 20px;
-    margin: 0 auto; /* Center the grid */
-    max-width: 100%; /* Allow the grid to use the full width of the screen */
+    max-width: var(--catalog-width); /* Adjust as needed */
+    margin: 0 auto;
+    transition: all var(--transition-duration) ease;
+    background-color: var(--background-dark); /* Black/gray background */
 }
 
-/* Responsive Adjustments */
-@media (max-width: 1600px) {
+/* Media Query to Limit to 4 Columns on Large Screens */
+@media (min-width: var(--breakpoint-lg)) {
     .movie-listings {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Slightly smaller cards on large screens */
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
-@media (max-width: 1200px) {
+/* List View Styling */
+.movie-listings.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Responsive Styles */
+
+/* Tablet (Max Width: 1024px) */
+@media (max-width: var(--breakpoint-md)) {
     .movie-listings {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller cards for medium screens */
+        max-width: 1000px;
     }
 }
 
-@media (max-width: 900px) {
+/* Mobile (Max Width: 768px) */
+@media (max-width: var(--breakpoint-sm)) {
     .movie-listings {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Further reduce size on smaller screens */
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
 }
 
-@media (max-width: 600px) {
+/* Very Small Mobile (Max Width: 480px) */
+@media (max-width: var(--breakpoint-xs)) {
     .movie-listings {
-        grid-template-columns: 1fr; /* 1 column on extra small screens */
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
 }
 
-/* Ensure movie cards take full width of their grid cell */
-.movie-listings .movie-card {
-    width: 100%;
+/* Toggle View Section */
+.view-toggle-section {
+    padding: 20px;
+    max-width: var(--catalog-width); /* Adjust as needed */;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: right;
 }
+
+/* Headline Styling */
+.view-toggle-headline h2 {
+    font-size: 1.8rem;
+    color: var(--secondary-text-color); /* White text */
+    margin: 0;
+    text-transform: uppercase;
+    font-family: var(--font-heading);
+}
+
+/* Toggle Buttons Container */
+.view-toggle-container {
+    display: flex;
+    gap: 10px;
+}
+
+/* Toggle Button Styles */
+.view-toggle-btn {
+    background-color: var(--button-background); /* Button background */
+    color: var(--button-text-color); /* Icon/text color */
+    border: none;
+    padding: 10px 15px;
+    border-radius: var(--border-radius-medium);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Active/Pressed Button */
+.view-toggle-btn.active,
+.view-toggle-btn[aria-pressed="true"] {
+    background-color: var(--highlight-color); /* Highlight for active button */
+    color: var(--secondary-text-color); /* Ensure contrasting text color */
+}
+
+/* Button Hover & Focus States */
+.view-toggle-btn:hover,
+.view-toggle-btn:focus {
+    background-color: var(--button-hover-background);
+    outline: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .view-toggle-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .view-toggle-container {
+        margin-top: 10px;
+    }
+
+    .view-toggle-headline h2 {
+        font-size: 1.5rem;
+    }
+}
+
 
 --- File: static\css\pages\contact.css ---
 /* contact.css */
@@ -2655,7 +2944,6 @@ export function updateMovieListings(movies) {
                         }
                     }
 
-                    console.log("Actors processed:", actors);
 
                     const countries = Array.isArray(movie.countries) && movie.countries.length > 0
                         ? movie.countries.map(country => {
@@ -2683,24 +2971,26 @@ export function updateMovieListings(movies) {
                                     <span>${movie.original_title}</span>
                                 </div>
                             </div>
-                            <div class="info-section">
-                                <h2>${movie.main_title}</h2>
-                                <div class="metadata">
-                                    <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
-                                    <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
-                                    <p class="inline-meta">
-                                        <i class="fas fa-clock"></i> ${movie.runtime} min | 
-                                        <i class="fas fa-compact-disc"></i> ${movie.formats} | 
-                                        <i class="fas fa-child"></i> ${movie.format_fsk} | 
-                                        &#9733; ${imdb_rating}
-                                    </p>
-                                    <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
-                                    <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
-                                    <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
+                            <div class="info-wrapper">
+                                <div class="info-section">
+                                    <h2>${movie.main_title}</h2>
+                                    <div class="metadata">
+                                        <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
+                                        <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                                        <p class="inline-meta">
+                                            <i class="fas fa-clock"></i> ${movie.runtime} min | 
+                                            <i class="fas fa-compact-disc"></i> ${movie.formats} | 
+                                            <i class="fas fa-child"></i> ${movie.format_fsk} | 
+                                            &#9733; ${imdb_rating}
+                                        </p>
+                                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
+                                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
+                                        <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="overview-section">
-                                <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                                <div class="overview-section">
+                                    <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -2718,6 +3008,8 @@ export function updateMovieListings(movies) {
 
     // Initialize Tippy.js after all movie cards have been appended
     initializeTippyTooltips();
+
+   
 }
 
 // Function to initialize Tippy.js tooltips
@@ -2735,6 +3027,59 @@ function initializeTippyTooltips() {
         arrow: true,
     });
 }
+
+
+// toggle-view.js
+
+export function toogleViews() {
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const movieListings = document.querySelector('.movie-listings');
+
+    // Function to activate Grid View
+    const activateGridView = () => {
+        movieListings.classList.remove('list-view');
+        gridViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+        gridViewBtn.setAttribute('aria-pressed', 'true');
+        listViewBtn.setAttribute('aria-pressed', 'false');
+    };
+
+    // Function to activate List View
+    const activateListView = () => {
+        movieListings.classList.add('list-view');
+        listViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+        listViewBtn.setAttribute('aria-pressed', 'true');
+        gridViewBtn.setAttribute('aria-pressed', 'false');
+    };
+
+    // Event Listeners for Toggle Buttons
+    gridViewBtn.addEventListener('click', () => {
+        activateGridView();
+        localStorage.setItem('movieView', 'grid');
+    });
+
+    listViewBtn.addEventListener('click', () => {
+        activateListView();
+        localStorage.setItem('movieView', 'list');
+    });
+
+    // Optional: Persist User Preference using LocalStorage
+    // Check if user has a saved preference
+    const savedView = localStorage.getItem('movieView');
+
+    if (savedView === 'list') {
+        activateListView();
+    } else {
+        activateGridView();
+    }
+};
+
+
+
+
+
 
 --- File: static\js\entry.js ---
 // File: static/js/entry.js
@@ -2948,6 +3293,8 @@ export function initializeFilterDropdowns() {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
     }
 
+    
+
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
 
@@ -2956,6 +3303,8 @@ export function initializeFilterDropdowns() {
 
     // Initial filter update
     triggerDropdownChangeEvent();
+
+
 }
 
 /**
@@ -3344,6 +3693,8 @@ export function updateFilters(page = 1) {
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
+    updateHeadline();
+
     const params = new URLSearchParams();
     if (selectedYears.length) {
         params.append('years', selectedYears.join(','));
@@ -3417,6 +3768,7 @@ export function updateFilters(page = 1) {
         })
         .finally(() => {
             hideProgressIndicator();
+            updateHeadline();
         });
 }
 
@@ -3523,6 +3875,32 @@ export function triggerDropdownChangeEvent() {
     const event = new CustomEvent('dropdownChange');
     console.log("Dispatching dropdownChange event");
     document.dispatchEvent(event);
+}
+
+export function updateHeadline() {
+
+    const searchQuery = document.getElementById('search-box').value.trim();
+    
+    let headlineText = 'Selected Items: ';
+    
+    if (searchQuery) {
+        headlineText += `Search: "${searchQuery}"`;
+    }
+
+    if (genre) {
+        headlineText += (searchQuery ? ' | ' : '') + `Genre: ${genre}`;
+    }
+
+    if (year) {
+        headlineText += (searchQuery || genre ? ' | ' : '') + `Year: ${year}`;
+    }
+
+    if (!searchQuery && !genre && !year) {
+        headlineText = 'Selected Items: None';  // Default text if nothing is selected
+    }
+
+    // Update the headline
+    document.getElementById('selected-filters-headline').textContent = headlineText;
 }
 --- File: static\js\hero.js ---
 document.addEventListener('DOMContentLoaded', function () {
@@ -3695,12 +4073,17 @@ movieCards.forEach(card => {
 
 import { initializeSwiper } from './carousel.js';  // Example import
 import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js'; 
+import { toogleViews } from './catalog.js'; 
+import { themeToggle } from './theme_toggle.js'; 
 
 document.addEventListener('DOMContentLoaded', function () {
     initializeFilterDropdowns();  // Initialize dropdowns on page load
     initializeSwiper(); // Initialize Swiper Carousel
     initializeFilterPanelToggle(); // Initialize filter panel toggle
     initializeFilterActionButtons(); // Initialize "Clear All" and "Show All Results" buttons
+    toogleViews();
+    themeToggle();
+
 });
 
 --- File: static\js\navbar.js ---
@@ -3817,6 +4200,44 @@ export function attachPaginationEventListeners(columnsPerRow) {
     });
 }
 
+--- File: static\js\theme_toggle.js ---
+// File: static/js/theme-toggle.js
+
+export function themeToggle() {
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+
+    // Function to apply theme
+    const applyTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            themeToggleBtn.classList.add('active');
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; // Change icon
+        } else {
+            themeToggleBtn.classList.remove('active');
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; // Change icon
+        }
+    };
+
+    // Initial theme application
+    applyTheme(currentTheme);
+
+    // Toggle theme on button click
+    themeToggleBtn.addEventListener('click', () => {
+        const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+
+    // Keyboard Accessibility for Theme Toggle Button
+    themeToggleBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            themeToggleBtn.click();
+        }
+    });
+}
+
 --- File: templates\catalog.html ---
 <!-- File: templates/catalog.html -->
 <!DOCTYPE html>
@@ -3861,6 +4282,10 @@ export function attachPaginationEventListeners(columnsPerRow) {
                 <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
                 <!-- Additional menu links can be placed here -->
             </ul>
+            <!-- Add this inside the <nav class="navbar"> ... </nav> -->
+            <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Dark Mode" tabindex="0">
+                <i class="fas fa-moon"></i>
+            </button>
         </nav>
         <!-- Separate link for mobile users -->
         <div class="mobile-footer-link">
@@ -3868,229 +4293,229 @@ export function attachPaginationEventListeners(columnsPerRow) {
         </div>
     </header>
     
-  <main>
-    <!-- Movie Carousel Section -->
-    <section class="movie-carousel-section">
-        <!-- Swiper.js Carousel -->
-        <div class="swiper-container">
-            <div class="swiper-wrapper">
-                {% for featured_movie in featured_movies %}
-                <div class="swiper-slide">
-                    <div class="featured-movie-card">
-                        <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" 
-                             alt="{{ featured_movie['main_title'] }}" 
-                             onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
-                             loading="lazy">
-                        <div class="featured-movie-overlay">
-                            <h3>{{ featured_movie['main_title'] }}</h3>
-                            <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
+    <main>
+        <!-- Movie Carousel Section -->
+        <section class="movie-carousel-section">
+            <!-- Swiper.js Carousel -->
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    {% for featured_movie in featured_movies %}
+                    <div class="swiper-slide">
+                        <div class="featured-movie-card">
+                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                                 alt="{{ featured_movie['main_title'] }}" 
+                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
+                                 loading="lazy">
+                            <div class="featured-movie-overlay">
+                                <h3>{{ featured_movie['main_title'] }}</h3>
+                                <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Navigation -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
             </div>
-            <!-- Add Pagination -->
-            <div class="swiper-pagination"></div>
-            <!-- Add Navigation -->
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
-        </div>
-    </section>
+        </section>
 
 
-    <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
-        <div class="spinner" aria-hidden="true"></div>
-        <p>Loading movies...</p>
-    </div> 
-        
+        <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Loading movies...</p>
+        </div> 
+            
 
-    <!-- Catalog Search Section -->
-    <section class="catalog-search"> 
-        <div class="search-dropdown-container">
-            <!-- Search Box Container -->
-            <div class="search-container">
-                <i class="fas fa-search search-icon" aria-hidden="true"></i>
-                <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
-                <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
-            </div>
+        <!-- Catalog Search Section -->
+        <section class="catalog-search"> 
+            <div class="search-dropdown-container">
+                <!-- Search Box Container -->
+                <div class="search-container">
+                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                    <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
+                    <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
+                </div>
 
-            <form id="filter-form">
-                <!-- Main Filters Container Wrapper -->
-                <div class="main-filters-container-wrapper">
-                    <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
-                    <div class="main-filters-container">
-                        <!-- Left Navigation Arrow -->
-                        <button class="filter-nav-arrow left hidden" aria-label="Scroll Left">
-                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                <form id="filter-form">
+                    <!-- Main Filters Container Wrapper -->
+                    <div class="main-filters-container-wrapper">
+                        <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
+                        <div class="main-filters-container">
+                            <!-- Left Navigation Arrow -->
+                            <button class="filter-nav-arrow left hidden" aria-label="Scroll Left">
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <!-- Year Filter -->
+                            <div class="custom-dropdown" data-dropdown="year-dropdown">
+                                <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                            <span>Zeit</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Genre Filter -->
+                            <div class="custom-dropdown" data-dropdown="genre-dropdown">
+                                <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-film" aria-hidden="true"></i>
+                                            <span>Genre</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Country Filter -->
+                            <div class="custom-dropdown" data-dropdown="country-dropdown">
+                                <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-globe" aria-hidden="true"></i>
+                                            <span>Land</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Standort Filter -->
+                            <div class="custom-dropdown" data-dropdown="standort-dropdown">
+                                <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                            <span>Regal</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Medium Filter -->
+                            <div class="custom-dropdown" data-dropdown="medium-dropdown">
+                                <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-compact-disc" aria-hidden="true"></i>
+                                            <span>Medium</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sort By Dropdown -->
+                            <div class="custom-dropdown" data-dropdown="sort-dropdown">
+                                <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-sort" aria-hidden="true"></i>
+                                            <span>Ordnung</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <!-- No clear icon for single-select dropdowns -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Clear All Filters Button -->
+                            <button type="button" id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
+                                <i class="fas fa-undo" aria-hidden="true"></i>
+                                <span class="sr-only">Alle Filter zurücksetzen</span>
+                            </button>  
+
+                        </div>
+                        <!-- Right Navigation Arrow -->
+                        <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
+                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
                         </button>
-                        <!-- Year Filter -->
-                        <div class="custom-dropdown" data-dropdown="year-dropdown">
-                            <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="dropdown-header-top">
-                                    <div class="header-label">
-                                        <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-                                        <span>Zeit</span>
-                                    </div>
-                                    <div class="dropdown-arrow">
-                                        <!-- Arrow Icon -->
-                                    </div>
-                                </div>
-                                <div class="dropdown-header-bottom">
-                                    <span class="selection-badge">
-                                        <span class="badge-label"></span>
-                                    </span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Genre Filter -->
-                        <div class="custom-dropdown" data-dropdown="genre-dropdown">
-                            <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="dropdown-header-top">
-                                    <div class="header-label">
-                                        <i class="fas fa-film" aria-hidden="true"></i>
-                                        <span>Genre</span>
-                                    </div>
-                                    <div class="dropdown-arrow">
-                                        <!-- Arrow Icon -->
-                                    </div>
-                                </div>
-                                <div class="dropdown-header-bottom">
-                                    <span class="selection-badge">
-                                        <span class="badge-label"></span>
-                                    </span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Country Filter -->
-                        <div class="custom-dropdown" data-dropdown="country-dropdown">
-                            <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="dropdown-header-top">
-                                    <div class="header-label">
-                                        <i class="fas fa-globe" aria-hidden="true"></i>
-                                        <span>Land</span>
-                                    </div>
-                                    <div class="dropdown-arrow">
-                                        <!-- Arrow Icon -->
-                                    </div>
-                                </div>
-                                <div class="dropdown-header-bottom">
-                                    <span class="selection-badge">
-                                        <span class="badge-label"></span>
-                                    </span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Standort Filter -->
-                        <div class="custom-dropdown" data-dropdown="standort-dropdown">
-                            <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="dropdown-header-top">
-                                    <div class="header-label">
-                                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                        <span>Regal</span>
-                                    </div>
-                                    <div class="dropdown-arrow">
-                                        <!-- Arrow Icon -->
-                                    </div>
-                                </div>
-                                <div class="dropdown-header-bottom">
-                                    <span class="selection-badge">
-                                        <span class="badge-label"></span>
-                                    </span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Medium Filter -->
-                        <div class="custom-dropdown" data-dropdown="medium-dropdown">
-                            <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="dropdown-header-top">
-                                    <div class="header-label">
-                                        <i class="fas fa-compact-disc" aria-hidden="true"></i>
-                                        <span>Medium</span>
-                                    </div>
-                                    <div class="dropdown-arrow">
-                                        <!-- Arrow Icon -->
-                                    </div>
-                                </div>
-                                <div class="dropdown-header-bottom">
-                                    <span class="selection-badge">
-                                        <span class="badge-label"></span>
-                                    </span>
-                                    <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sort By Dropdown -->
-                        <div class="custom-dropdown" data-dropdown="sort-dropdown">
-                            <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
-                                <div class="dropdown-header-top">
-                                    <div class="header-label">
-                                        <i class="fas fa-sort" aria-hidden="true"></i>
-                                        <span>Ordnung</span>
-                                    </div>
-                                    <div class="dropdown-arrow">
-                                        <!-- Arrow Icon -->
-                                    </div>
-                                </div>
-                                <div class="dropdown-header-bottom">
-                                    <span class="selection-badge">
-                                        <span class="badge-label"></span>
-                                    </span>
-                                    <!-- No clear icon for single-select dropdowns -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Clear All Filters Button -->
-                        <button type="button" id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
-                            <i class="fas fa-undo" aria-hidden="true"></i>
-                            <span class="sr-only">Alle Filter zurücksetzen</span>
-                        </button>  
-
                     </div>
-                    <!-- Right Navigation Arrow -->
-                    <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
-                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                    </button>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
 
-        <!-- Dropdown Lists Container -->
-        <div class="dropdown-lists-container">
-            <!-- Year Dropdown List -->
-            <div class="dropdown-list" id="year-dropdown-list">
-                <!-- Buttons populated dynamically -->
+            <!-- Dropdown Lists Container -->
+            <div class="dropdown-lists-container">
+                <!-- Year Dropdown List -->
+                <div class="dropdown-list" id="year-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Genre Dropdown List -->
+                <div class="dropdown-list" id="genre-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Country Dropdown List -->
+                <div class="dropdown-list" id="country-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Standort Dropdown List -->
+                <div class="dropdown-list" id="standort-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Medium Dropdown List -->
+                <div class="dropdown-list" id="medium-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Sort Dropdown List -->
+                <div class="dropdown-list" id="sort-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
             </div>
-            <!-- Genre Dropdown List -->
-            <div class="dropdown-list" id="genre-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Country Dropdown List -->
-            <div class="dropdown-list" id="country-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Standort Dropdown List -->
-            <div class="dropdown-list" id="standort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Medium Dropdown List -->
-            <div class="dropdown-list" id="medium-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-            <!-- Sort Dropdown List -->
-            <div class="dropdown-list" id="sort-dropdown-list">
-                <!-- Buttons populated dynamically -->
-            </div>
-        </div>
-    </section>
+        </section>
 
 
 
@@ -4104,14 +4529,34 @@ export function attachPaginationEventListeners(columnsPerRow) {
             </nav>
         </section>
         
-        <!-- Movie Listings Container -->
-        <section class="movie-listings-container" style="position: relative; background-color: var(--primary-bg-color);">
+<!-- Toggle View Buttons Container with Headline -->
+<section class="view-toggle-section" style="padding: 20px; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+    <!-- Headline Left of Toggle Buttons -->
+    <div class="view-toggle-headline">
+        <h2 class="view-toggle-title">Ansicht auswählen</h2>
+    </div>
 
+    <!-- Toggle Buttons Right of Headline -->
+    <div class="view-toggle-container">
+        <button id="grid-view-btn" class="view-toggle-btn active" aria-label="Grid View" aria-pressed="true">
+            <i class="fas fa-th"></i>
+        </button>
+        <button id="list-view-btn" class="view-toggle-btn" aria-label="List View" aria-pressed="false">
+            <i class="fas fa-list"></i>
+        </button>
+    </div>
+</section>
+
+
+    
+        <!-- Movie Listings Container -->
+        <!-- <section class="movie-listings-container" style="position: relative; background-color: var(--background-color);"> -->
+    
             <!-- Movie Listings Section -->
-            <section class="movie-listings columns-1">
+            <section class="movie-listings">
                 <!-- Movie cards will be dynamically populated here -->
             </section>
-        </section>
+        <!-- </section> -->
 
         <!-- Bottom Pagination Section -->
         <section class="pagination bottom-pagination">
@@ -4135,6 +4580,8 @@ export function attachPaginationEventListeners(columnsPerRow) {
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <!-- Toggle View JS -->
+    <script src="{{ url_for('static', filename='js/toggle-view.js') }}"></script>
 </body>
 </html>
 

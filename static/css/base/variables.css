@@ -1,6 +1,6 @@
 :root {
     /* Color Variables */
-    --primary-color: #ff6600; /* Primary brand color */
+    --primary-color: #f4f4f4; /* Primary brand color */
     --secondary-color: #333; /* Secondary color for text and elements */
     --background-color: #f4f4f4; /* General background color */
     --text-color: #333; /* Primary text color */
@@ -24,9 +24,11 @@
     --missing-poster-border: red; /* Missing poster border color */
 
     /* Font Variables */
-    --font-family: 'Nunito', sans-serif; /* Primary font family */
-    --font-body: 'Nunito', sans-serif; /* Body font family */
+    --font-family: 'Lato', sans-serif; /* Lato as the main font */
+    --font-body: 'Lato', sans-serif; /* Body font family */
     --font-heading: 'Anton', sans-serif; /* Heading font family */
+    --font-cursive: 'Pinyon Script', cursive;
+
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
@@ -68,8 +70,9 @@
     --button-active-background: #e0e0e0; /* Light Gray */
 
     --poster-width: 70%;
-
+    --catalog-width: 1200px;
 }
+
 /* Dark Mode Theme */
 [data-theme="dark"] {
     --background-color: var(--background-color-dark);
