@@ -67,7 +67,7 @@
     left: 0;
     width: 100%;
     background: rgba(0, 0, 0, 0.6);
-    color: var(--text-light);
+    color: var(--secondary-text-color);
     padding: 10px;
     box-sizing: border-box;
     opacity: 0;
@@ -96,6 +96,7 @@
 
 .featured-movie-overlay .btn-secondary:hover {
     background-color: var(--link-hover-color);
+    color: var(--secondary-text-color);
 }
 
 /* Swiper Pagination Adjustment */
