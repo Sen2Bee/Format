@@ -1,9 +1,66 @@
+// catalog.js
+
+function getIconSizeByType(typeval, type = "rating") {
+    // Define the minimum and maximum sizes for the icon
+    const minSize = 1;   // 1em for the smallest value
+    const maxSize = 2.5;   // 3em for the largest value
+
+    let minVal, maxVal;
+
+    // Set value ranges based on the type
+    if (type === "rating") {
+        minVal = 5;   // IMDb rating starts at 0
+        maxVal = 10;  // IMDb rating goes up to 10
+    } else if (type === "fsk") {
+        minVal = 0;   // FSK can start from 0
+        maxVal = 18;  // FSK goes up to 18
+    } else if (type === "runtime") {
+        minVal = 60;   // Minimum runtime is 60 minutes (1 hour)
+        maxVal = 180;  // Maximum runtime is 180 minutes (3 hours)
+    } else {
+        console.warn(`Unknown type: ${type}. Using default rating scale.`);
+        minVal = 0;  // Default to the rating scale
+        maxVal = 10;
+    }
+
+    // Clamp the value within the min and max range
+    const clampedVal = Math.max(minVal, Math.min(typeval, maxVal));
+
+    // Calculate the size as a ratio between the value and the value range
+    const size = minSize + (clampedVal - minVal) * (maxSize - minSize) / (maxVal - minVal);
+
+    // Return the size in 'em' units, rounded to two decimal places
+    return `${size.toFixed(2)}em`;
+}
+
+
+
+
+
+
+
+function getIconSizeByFsk(fsk) {
+    if (fsk <= 6) {
+        return '1em';  // Small size for lower FSK values
+    } else if (fsk <= 12) {
+        return '1.5em';  // Medium size for mid-range FSK values
+    } else if (fsk <= 16) {
+        return '2em';  // Large size for higher FSK values
+    } else if (fsk === 18) {
+        return '2.5em';  // Extra large size for FSK 18
+    } else {
+        return '1em';  // Default size
+    }
+}
 export function updateMovieListings(movies) {
     const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
         console.error("updateMovieListings: movieContainer element not found.");
         return;
     }
+
+    // Check if we are in list view or raster (grid) view
+    const isListView = movieContainer.classList.contains('list-view');
 
     movieContainer.innerHTML = "";  // Clear existing entries
     if (movies.length > 0) {
@@ -13,6 +70,32 @@ export function updateMovieListings(movies) {
 
             const movieCard = document.createElement('div');
             movieCard.className = 'movie-card';
+
+            let formatRuntimeHtml = '';
+            const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
+            formatRuntimeHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
+                    <span>${movie.runtime}</span>
+                </div>
+            `;  
+            let formatFskHtml = '';
+            const fskIconSize = getIconSizeByType(movie.format_fsk, "fsk");
+            formatFskHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
+                    <span>${movie.format_fsk}</span>
+                </div>
+            `;     
+            let formatRatingHtml = '';
+            const ratingIconSize = getIconSizeByType(movie.imdb_rating, "rating"); // Returns a size in 'em', like '2.125em'  
+            console.log("movie.imdb_rating", ratingIconSize, movie.imdb_rating)
+            formatRatingHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
+                    <span>${movie.imdb_rating}</span>
+                </div>
+            `;                    
 
             // Fetch available person images from the backend
             return fetch(`/get_person_images/${encodeURIComponent(movie.folder_name)}`)
@@ -88,7 +171,6 @@ export function updateMovieListings(movies) {
                         }
                     }
 
-
                     const countries = Array.isArray(movie.countries) && movie.countries.length > 0
                         ? movie.countries.map(country => {
                             const match = country.match(/(.*?)\s\((.*?)\)/); 
@@ -100,12 +182,14 @@ export function updateMovieListings(movies) {
 
                     const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
 
-                    let content = movie.format_inhalt ? movie.format_inhalt : (movie.overview ? movie.overview : "Keine Inhaltsangabe verfügbar.");
-                    if (content.length > 150) {
-                        content = content.substring(0, 150) + '...';
-                    }
 
-                    let imdb_rating = movie.imdb_rating ? movie.imdb_rating : 6;
+                    // Determine the overview truncation length based on view type
+                    let content = movie.format_inhalt ? movie.format_inhalt : (movie.format_inhalt ? movie.format_inhalt : "Keine Inhaltsangabe verfügbar.");
+                    const maxLength = isListView ? 300 : 150; // 300 characters for list view, 150 for raster view
+                    if (content.length > maxLength) {
+                        content = content.substring(0, maxLength) + '...';
+                    }                    
+
 
                     movieCard.innerHTML = `
                         <div class="movie-content-wrapper">
@@ -121,13 +205,13 @@ export function updateMovieListings(movies) {
                                     <div class="metadata">
                                         <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
                                         <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
-                                        <p class="inline-meta">
-                                            <i class="fas fa-clock"></i> ${movie.runtime} min | 
-                                            <i class="fas fa-compact-disc"></i> ${movie.formats} | 
-                                            <i class="fas fa-child"></i> ${movie.format_fsk} | 
-                                            &#9733; ${imdb_rating}
-                                        </p>
-                                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
+                                        <!-- Inline Meta in List View -->
+                                        <div class="inline-meta">
+                                            ${formatRuntimeHtml}                                        
+                                            ${formatFskHtml}                                        
+                                            ${formatRatingHtml}
+                                        </div>
+                                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'} | <i class="fas fa-disc"></i></strong>${movie.formats}</p>
                                         <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
                                         <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
                                     </div>
@@ -152,8 +236,6 @@ export function updateMovieListings(movies) {
 
     // Initialize Tippy.js after all movie cards have been appended
     initializeTippyTooltips();
-
-   
 }
 
 // Function to initialize Tippy.js tooltips
@@ -175,10 +257,15 @@ function initializeTippyTooltips() {
 
 // toggle-view.js
 
-export function toogleViews() {
+export function toggleViews() {
     const gridViewBtn = document.getElementById('grid-view-btn');
     const listViewBtn = document.getElementById('list-view-btn');
     const movieListings = document.querySelector('.movie-listings');
+
+    if (!gridViewBtn || !listViewBtn || !movieListings) {
+        console.error("toggleViews: One or more elements not found.");
+        return;
+    }
 
     // Function to activate Grid View
     const activateGridView = () => {
@@ -187,6 +274,7 @@ export function toogleViews() {
         listViewBtn.classList.remove('active');
         gridViewBtn.setAttribute('aria-pressed', 'true');
         listViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListingsUI();
     };
 
     // Function to activate List View
@@ -196,6 +284,7 @@ export function toogleViews() {
         gridViewBtn.classList.remove('active');
         listViewBtn.setAttribute('aria-pressed', 'true');
         gridViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListingsUI();
     };
 
     // Event Listeners for Toggle Buttons
@@ -209,6 +298,18 @@ export function toogleViews() {
         localStorage.setItem('movieView', 'list');
     });
 
+    // Function to update movie listings UI based on view type
+    const updateMovieListingsUI = () => {
+        // Assuming you have a function or way to re-fetch and re-render movies
+        // For example:
+        fetch('/get_movies') // Replace with your actual endpoint
+            .then(response => response.json())
+            .then(data => {
+                updateMovieListings(data.movies);
+            })
+            .catch(err => console.error('Error fetching movies:', err));
+    };
+
     // Optional: Persist User Preference using LocalStorage
     // Check if user has a saved preference
     const savedView = localStorage.getItem('movieView');
@@ -218,9 +319,4 @@ export function toogleViews() {
     } else {
         activateGridView();
     }
-};
-
-
-
-
-
+}

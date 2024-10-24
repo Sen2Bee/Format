@@ -2,7 +2,7 @@
 
 import { initializeSwiper } from './carousel.js';  // Example import
 import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js'; 
-import { toogleViews } from './catalog.js'; 
+import { toggleViews } from './catalog.js'; 
 import { themeToggle } from './theme_toggle.js'; 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeSwiper(); // Initialize Swiper Carousel
     initializeFilterPanelToggle(); // Initialize filter panel toggle
     initializeFilterActionButtons(); // Initialize "Clear All" and "Show All Results" buttons
-    toogleViews();
+    toggleViews();
     themeToggle();
 
 });

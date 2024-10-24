@@ -8,12 +8,11 @@ import os
 import redis
 import random
 
+from flask_caching import Cache  # Import Cache
+
 os.environ['FLASK_ENV'] = 'development'
 
 app = Flask(__name__)
-
-# Redis cache setup (if needed)
-# redis_cache = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 # Database configuration
 db_config = {
@@ -24,6 +23,11 @@ db_config = {
 }
 
 MOVIE_IMAGES_BASE_DIR = "e:/Format_FV/_Movies/_Movies_Fertig"
+
+# Initialize the cache with SimpleCache
+app.config['CACHE_TYPE'] = 'SimpleCache'
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # Cache timeout in seconds
+cache = Cache(app)
 
 def connect_to_db():
     """Establish a connection to the MySQL database."""
@@ -46,6 +50,7 @@ def index():
     print("Rendering the index page.")
     return render_template('index.html')
 
+@cache.cached(timeout=300)  # Cache this route
 @app.route('/movie/<int:movie_id>')
 def movie_details(movie_id):
     """Fetch and render details for a specific movie."""
@@ -117,6 +122,7 @@ def movie_details(movie_id):
         print(f"An error occurred while fetching movie details: {e}")
         return jsonify({'error': str(e)}), 500
 
+@cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/catalog')
 def catalog():
     """Render the catalog page with movies and featured movies based on filters."""
@@ -149,7 +155,7 @@ def catalog():
             m.overview, 
             m.format_standort,  
             m.format_inhalt,  
-            GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,  -- Added country_code
+            GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,
             GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
             (SELECT name FROM crew WHERE crew.movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
             (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') 
@@ -207,86 +213,93 @@ def catalog():
     base_query += " GROUP BY m.movie_id ORDER BY m.release_date DESC LIMIT %s OFFSET %s"
     pag_params = params + [per_page, offset]
 
-    # Execute the base query to get the filtered movie data
-    cursor.execute(base_query, pag_params)
-    movies = cursor.fetchall()
+    try:
+        # Execute the base query to get the filtered movie data
+        cursor.execute(base_query, pag_params)
+        movies = cursor.fetchall()
 
-    # Convert 'countries' and 'genres' from strings to lists
-    for movie in movies:
-        movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
-        movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
-        movie['actors'] = movie['actors'].split(', ') if movie['actors'] else []
-        movie['director'] = movie['director'].split(', ') if movie['director'] else []
+        # Convert 'countries' and 'genres' from strings to lists
+        for movie in movies:
+            movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
+            movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
+            movie['actors'] = movie['actors'].split(', ') if movie['actors'] else []
+            movie['director'] = movie['director'].split(', ') if movie['director'] else []
 
-    # Execute the count query to get the total count of filtered movies
-    cursor.execute(count_query, tuple(params))
-    total_movies = cursor.fetchone()['total']
-    total_pages = math.ceil(total_movies / per_page)
+        # Execute the count query to get the total count of filtered movies
+        cursor.execute(count_query, tuple(params))
+        total_movies = cursor.fetchone()['total']
+        total_pages = math.ceil(total_movies / per_page)
 
-    # Define pagination range for the current page
-    pagination_range = list(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        # Define pagination range for the current page
+        pagination_range = list(range(max(1, page - 2), min(total_pages + 1, page + 3)))
 
-    # Determine the selected theme
-    selected_theme = None
+        # Determine the selected theme
+        selected_theme = None
 
-    if genre_filter:
-        matched_themes = [theme for theme in themes if theme['name'].lower().startswith(genre_filter.lower()) or genre_filter.lower() in theme['name'].lower()]
-        if matched_themes:
-            selected_theme = matched_themes[0]
+        if genre_filter:
+            matched_themes = [theme for theme in themes if theme['name'].lower().startswith(genre_filter.lower()) or genre_filter.lower() in theme['name'].lower()]
+            if matched_themes:
+                selected_theme = matched_themes[0]
+            else:
+                selected_theme = random.choice([theme for theme in themes if "genre" in theme['sql_condition'].lower()])
         else:
-            selected_theme = random.choice([theme for theme in themes if "genre" in theme['sql_condition'].lower()])
-    else:
-        selected_theme = random.choice(themes)
+            selected_theme = random.choice(themes)
 
-    # Fetch featured movies based on the selected theme's sql_condition
-    if selected_theme:
-        theme_sql_condition = selected_theme['sql_condition']
-        featured_query = f"""
-            SELECT 
-                m.movie_id, 
-                COALESCE(m.format_titel, m.title) AS main_title,  
-                m.original_title, 
-                m.release_date, 
-                m.imdb_rating, 
-                m.folder_name, 
-                m.overview,
-                m.format_inhalt,
-                m.poster_images
-            FROM 
-                movies m
-                {theme_sql_condition}
-            GROUP BY m.movie_id
-            HAVING m.imdb_rating > 6.7 AND m.poster_images > 0
-            ORDER BY RAND()
-            LIMIT 10;
-        """
-        cursor.execute(featured_query, ())
-        featured_movies = cursor.fetchall()
+        # Fetch featured movies based on the selected theme's sql_condition
+        if selected_theme:
+            theme_sql_condition = selected_theme['sql_condition']
+            featured_query = f"""
+                SELECT 
+                    m.movie_id, 
+                    COALESCE(m.format_titel, m.title) AS main_title,  
+                    m.original_title, 
+                    m.release_date, 
+                    m.imdb_rating, 
+                    m.folder_name, 
+                    m.overview,
+                    m.format_inhalt,
+                    m.poster_images
+                FROM 
+                    movies m
+                    {theme_sql_condition}
+                GROUP BY m.movie_id
+                HAVING m.imdb_rating > 6.7 AND m.poster_images > 0
+                ORDER BY RAND()
+                LIMIT 10;
+            """
+            cursor.execute(featured_query, ())
+            featured_movies = cursor.fetchall()
 
-        # Convert 'countries' and 'genres' from strings to lists if needed
-        for movie in featured_movies:
-            movie['countries'] = movie['countries'].split(', ') if 'countries' in movie and movie['countries'] else []
-            movie['genres'] = movie['genres'].split(', ') if 'genres' in movie and movie['genres'] else []
-    else:
-        featured_movies = []
+            # Convert 'countries' and 'genres' from strings to lists if needed
+            for movie in featured_movies:
+                movie['countries'] = movie['countries'].split(', ') if 'countries' in movie and movie['countries'] else []
+                movie['genres'] = movie['genres'].split(', ') if 'genres' in movie and movie['genres'] else []
+        else:
+            featured_movies = []
 
-    # Close cursor and database connection
-    cursor.close()
-    connection.close()
+        # Close cursor and database connection
+        cursor.close()
+        connection.close()
 
-    print("in catalog_"*10, movies[:1])
+        print("in catalog_"*10, movies[:1])
 
-    # Render the catalog template with the movies and pagination data
-    ret_val = render_template('catalog.html', 
-                               movies=movies, 
-                               page=page, 
-                               total_pages=total_pages, 
-                               search_query=search_query, 
-                               pagination_range=pagination_range,
-                               featured_movies=featured_movies,
-                               selected_theme=selected_theme['name'] if selected_theme else "Featured")
+        # Render the catalog template with the movies and pagination data
+        ret_val = render_template('catalog.html', 
+                                   movies=movies, 
+                                   page=page, 
+                                   total_pages=total_pages, 
+                                   search_query=search_query, 
+                                   pagination_range=pagination_range,
+                                   featured_movies=featured_movies,
+                                   selected_theme=selected_theme['name'] if selected_theme else "Featured")
 
-    return ret_val
+        return ret_val
+
+    except Exception as e:
+        print(f"An error occurred in catalog: {e}")
+        cursor.close()
+        connection.close()
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/filter_movies', methods=['GET'])
 def filter_movies():
@@ -298,7 +311,7 @@ def filter_movies():
         search_query = request.args.get('search', '').strip()
         standorte = request.args.get('standorte', '').split(',') if request.args.get('standorte') else []
         media = request.args.get('media', '').split(',') if request.args.get('media') else []
-        sort_by = request.args.get('sort_by', 'zufall')  # Default sort by 'zufall' (random)
+        sort_by = request.args.get('sort_by', 'Zufall')  # Default sort by 'Zufall' (random)
         page = int(request.args.get('page', 1))
         
         # **2. Establish Database Connection**
@@ -426,7 +439,7 @@ def filter_movies():
                 m.overview,
                 m.format_standort,
                 m.format_inhalt,
-                GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,  -- Added country_code
+                GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
                 GROUP_CONCAT(DISTINCT cr.name SEPARATOR ', ') AS director,
                 (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ')
@@ -450,7 +463,6 @@ def filter_movies():
         else:
             base_query += " WHERE 1=1"
 
-        # **Append GROUP BY, ORDER BY, LIMIT, OFFSET**
         # **Build Sort Expression**
         sort_by_expression, sort_options = build_sort_expression(sort_by)
         base_query += f" GROUP BY m.movie_id ORDER BY {sort_by_expression} LIMIT %s OFFSET %s"
@@ -458,79 +470,85 @@ def filter_movies():
         # **Append LIMIT and OFFSET to Parameters**
         base_params = params + [items_per_page, offset]
 
-        # **Execute Base Query to Fetch Movies**
-        cursor.execute(base_query, tuple(base_params))
-        filtered_movies = cursor.fetchall()
+        try:
+            # **Execute Base Query to Fetch Movies**
+            cursor.execute(base_query, tuple(base_params))
+            filtered_movies = cursor.fetchall()
 
-        # **Convert 'countries' and 'genres' from Strings to Lists**
-        for movie in filtered_movies:
-            movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
-            movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
-            movie['director'] = movie['director'].split(', ') if movie['director'] else []
+            # **Convert 'countries' and 'genres' from Strings to Lists**
+            for movie in filtered_movies:
+                movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
+                movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
+                movie['director'] = movie['director'].split(', ') if movie['director'] else []
 
-        # **9. Fetch Counts for Dropdown Filters**
-        genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres, search_query)
-        year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres, search_query)
-        country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres, search_query)
-        standorte_counts = get_counts(cursor, "format_standort", selected_years, selected_countries, selected_genres, search_query)
-        media_counts = get_counts(cursor, "media", selected_years, selected_countries, selected_genres, search_query)
+            # **9. Fetch Counts for Dropdown Filters**
+            genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres, search_query)
+            year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres, search_query)
+            country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres, search_query)
+            standorte_counts = get_counts(cursor, "format_standort", selected_years, selected_countries, selected_genres, search_query)
+            media_counts = get_counts(cursor, "media", selected_years, selected_countries, selected_genres, search_query)
 
-        # **Sort Years with Decades**
-        year_counts = sort_years_with_decades(year_counts)
+            # **Sort Years with Decades**
+            year_counts = sort_years_with_decades(year_counts)
 
-        # **10. Determine the Selected Theme (Optional)**
-        # This part depends on your application logic. Ensure it's compatible with the new pagination.
+            # **10. Determine the Selected Theme (Optional)**
+            # This part depends on your application logic. Ensure it's compatible with the new pagination.
 
-        # **11. Close Cursor and Connection**
-        cursor.close()
-        connection.close()
+            # **11. Close Cursor and Connection**
+            cursor.close()
+            connection.close()
 
-        # **12. Return JSON Response**
-        return jsonify({
-            'movies': filtered_movies,
-            'years': year_counts,
-            'genres': genre_counts,
-            'countries': country_counts,
-            'standorte': standorte_counts,
-            'media': media_counts,
-            'current_page': page,
-            'total_pages': total_pages,
-            'total_movies': total_movies,
-            'columns_per_row': columns_per_row,
-            'items_per_page': items_per_page,
-            'sort_options': sort_options
-        })
-
+            # **12. Return JSON Response**
+            return jsonify({
+                'movies': filtered_movies,
+                'years': year_counts,
+                'genres': genre_counts,
+                'countries': country_counts,
+                'standorte': standorte_counts,
+                'media': media_counts,
+                'current_page': page,
+                'total_pages': total_pages,
+                'total_movies': total_movies,
+                'columns_per_row': columns_per_row,
+                'items_per_page': items_per_page,
+                'sort_options': sort_options
+            })
+        
+        except Exception as e:
+            print(f"Error occurred in filter_movies: {e}")
+            # It's important to log or handle variables like base_query and base_params carefully to avoid exposing sensitive information.
+            return jsonify({'error': str(e)}), 500
+        
     except Exception as e:
         print(f"Error occurred in filter_movies: {e}")
-        print(base_query, tuple(base_params))
+        # It's important to log or handle variables like base_query and base_params carefully to avoid exposing sensitive information.
         return jsonify({'error': str(e)}), 500
 
 def build_sort_expression(sort_option):
     """
     Builds the sort expression based on the sort_option.
+    Returns the SQL sort expression and a list of available sort options.
     """
     sort_options = {
-        "zufall": "RAND()",  # Zufall remains random, no asc or desc needed
-        "Title asc": "m.title ASC",
-        "Title desc": "m.title DESC",
-        "Jahr asc": "m.release_date ASC",
-        "Jahr desc": "m.release_date DESC",
-        "Bewertung asc": "CAST(m.imdb_rating AS DECIMAL(3,1)) ASC",
-        "Bewertung desc": "CAST(m.imdb_rating AS DECIMAL(3,1)) DESC",
-        "Regisseur asc": "director ASC",
-        "Regisseur desc": "director DESC",
-        "Länge asc": "m.runtime ASC",
-        "Länge desc": "m.runtime DESC",
+        "Zufall": "RAND()",  # Random
+        "Titel asc": "m.title ASC",  # Ascending order by movie title
+        "Titel desc": "m.title DESC",  # Descending order by movie title
+        "Jahr asc": "m.release_date ASC",  # Ascending order by release date
+        "Jahr desc": "m.release_date DESC",  # Descending order by release date
+        "Bewertung asc": "CAST(m.imdb_rating AS DECIMAL(3,1)) ASC",  # Ascending order by IMDb rating
+        "Bewertung desc": "CAST(m.imdb_rating AS DECIMAL(3,1)) DESC",  # Descending order by IMDb rating
+        "Regisseur asc": "director ASC",  # Ascending order by director's name
+        "Regisseur desc": "director DESC",  # Descending order by director's name
+        "Länge asc": "m.runtime ASC",  # Ascending order by runtime
+        "Länge desc": "m.runtime DESC",  # Descending order by runtime
     }
-    
+       
     # Default sort option
     default_sort = 'm.release_date DESC'
-    
     # Fetch the corresponding SQL expression
     sort_expression = sort_options.get(sort_option, default_sort)
 
-    return sort_expression, sort_options
+    return sort_expression, list(sort_options.keys())
 
 def sort_years_with_decades(year_counts):
     """Sorts year counts so that grouped decades appear at the top of the list."""
@@ -573,32 +591,6 @@ def sort_years_with_decades(year_counts):
 
     return sorted_combined_dict
 
-def build_sort_expression(sort_option):
-    """
-    Builds the sort expression based on the sort_option.
-    Returns the SQL sort expression and a list of available sort options.
-    """
-    sort_options = {
-        "Zufall": "RAND()",  # Random
-        "Titel asc": "m.title ASC",  # Ascending order by movie title
-        "Titel desc": "m.title DESC",  # Descending order by movie title
-        "Jahr asc": "m.release_date ASC",  # Ascending order by release date
-        "Jahr desc": "m.release_date DESC",  # Descending order by release date
-        "Bewertung asc": "CAST(m.imdb_rating AS DECIMAL(3,1)) ASC",  # Ascending order by IMDb rating
-        "Bewertung desc": "CAST(m.imdb_rating AS DECIMAL(3,1)) DESC",  # Descending order by IMDb rating
-        "Regisseur asc": "director ASC",  # Ascending order by director's name
-        "Regisseur desc": "director DESC",  # Descending order by director's name
-        "Länge asc": "m.runtime ASC",  # Ascending order by runtime
-        "Länge desc": "m.runtime DESC",  # Descending order by runtime
-    }
-       
-    # Default sort option
-    default_sort = 'm.release_date DESC'
-    # Fetch the corresponding SQL expression
-    sort_expression = sort_options.get(sort_option, default_sort)
-
-    return sort_expression, list(sort_options.keys())
-
 def get_counts(cursor, field, selected_years=None, selected_countries=None, selected_genres=None, search_query=None):
     """
     Generalized helper function to get counts of distinct values for the specified field,
@@ -629,7 +621,7 @@ def get_counts(cursor, field, selected_years=None, selected_countries=None, sele
             SELECT g.genre, COUNT(DISTINCT m.movie_id) AS count
             FROM movies m
             LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.movie_id
+            LEFT JOIN countries c ON m.movie_id = c.country
             LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
             WHERE 1=1
         """
@@ -740,7 +732,7 @@ def get_counts(cursor, field, selected_years=None, selected_countries=None, sele
 
         return result
 
-
+@cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/autocomplete')
 def autocomplete():
     """
@@ -816,7 +808,6 @@ def autocomplete():
 
     return jsonify(suggestions)
 
-
 @app.route('/get_person_images/<movie_folder>', methods=['GET'])
 def get_person_images(movie_folder):
     folder_path = os.path.join(movies_path, movie_folder, 'person')
@@ -826,7 +817,6 @@ def get_person_images(movie_folder):
         return jsonify({"images": available_images})
     except Exception as e:
         return jsonify({"error": str(e), "images": []}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)

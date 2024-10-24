@@ -1,5 +1,3 @@
-/* cards.css */
-
 /* General Movie Card Container */
 .movie-card {
     display: flex;
@@ -152,10 +150,6 @@
     max-width: 100%; /* Ensure it fits within the available space */
 }
 
-
-
-
-
 /* Metadata Section */
 .metadata {
     display: flex;
@@ -178,38 +172,79 @@
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-.metadata p.actors {
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limit to 2 lines */
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    word-break: break-word;
-}
-
-.metadata p strong,
-.metadata p span {
-    color: var(--secondary-secondary-text-color);
-    font-size: var(--meta-data-font-size);
-    font-weight: bold;
-}
-
-/* Inline Metadata */
+/* Updated styles for inline-meta */
 .inline-meta {
-    font-size: var(--meta-data-font-size);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-small);
     padding-top: var(--spacing-small);
+    opacity: 0.5;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    font-size: var(--meta-data-font-size);
+    margin-right: var(--spacing-small);
+}
+
+.meta-item i {
+    margin-right: 5px;
+}
+
+.meta-item span {
+    font-size: var(--meta-data-font-size);
+    color: var(--secondary-text-color);
+}
+
+/* Adjust font size for smaller screens if necessary */
+@media (max-width: var(--breakpoint-sm)) {
+    .meta-item {
+        font-size: 0.9em;
+    }
+}
+
+/* Grid View: Position inline-meta inside image-container */
+.movie-listings:not(.list-view) .movie-card .inline-meta {
+    display: flex;
+    flex-direction: column;
+    position: absolute; 
+    top: 20%; 
+    right: 10px; 
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6); 
+    padding: var(--spacing-small);
+    border-radius: var(--border-radius-small);
+    z-index: 3;
+    width: 25%;
+}
+
+/* Ensure image-container is position: relative to contain absolute children */
+.movie-listings:not(.list-view) .movie-card .image-container {
+    position: relative;
+}
+
+/* List View: Keep inline-meta in its original position */
+.movie-listings.list-view .movie-card .inline-meta {
+    position: static; /* Revert to default positioning */
+    background: none; /* Remove background if necessary */
+    border: none; /* Remove border if necessary */
+    padding-top: 5px; /* Remove padding if necessary */
+    padding-bottom: 5px; /* Remove padding if necessary */
+    margin: 0; /* Remove margin if necessary */
+    width: 100%; /* Ensure it takes full width in list view */
     border-top: 1px solid var(--button-border-color);
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    border-bottom: 1px solid var(--button-border-color);
+    /* border-bottom: 1px solid var(--button-border-color); */
 }
 
-.countries span[title] {
-    cursor: help;
+/* Adjustments for .inline-meta content in Grid View */
+.movie-listings:not(.list-view) .movie-card .inline-meta .meta-item {
+    margin-bottom: var(--spacing-small); /* Space between meta items */
 }
 
-.countries span[title]:hover {
-    color: var(--accent-color);
+.movie-listings:not(.list-view) .movie-card .inline-meta .meta-item span {
+    font-size: 0.9em; /* Reduce font size slightly if needed */
 }
 
 /* Tooltip container for countries */
@@ -266,19 +301,6 @@
     opacity: 1;
 }
 
-/* Prevent the tooltip from being cut off when near the edges of the screen */
-.country-tooltip:hover::before {
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: normal;
-    word-wrap: break-word;
-    max-width: 300px;
-}
-
-.country-tooltip:hover {
-    overflow: visible;
-}
-
 /* Tooltip container for persons */
 .person-tooltip {
     color: var(--accent-color);
@@ -313,7 +335,7 @@
     font-size: var(--meta-data-font-size);
     color: var(--secondary-secondary-text-color);
     margin-top: var(--spacing-small);
-    border-top: 1px solid var(--button-border-color);
+
     padding-top: var(--spacing-small);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
@@ -358,7 +380,6 @@
     .movie-card {
         gap: 15px;
     }
-
 }
 
 /* Mobile (Max Width: 768px) */
@@ -383,7 +404,6 @@
     .metadata {
         padding: 0;
     }
-
 }
 
 /* Very Small Mobile (Max Width: 480px) */
