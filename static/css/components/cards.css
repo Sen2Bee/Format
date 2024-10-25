@@ -303,7 +303,7 @@
 
 /* Tooltip container for persons */
 .person-tooltip {
-    color: var(--accent-color);
+    color: var(--secondary-secondary-text-color);
     text-decoration: underline dotted;
     cursor: pointer;
 }
@@ -346,7 +346,7 @@
     padding: 15px;
     background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
     border-radius: var(--border-radius-small);
-    color: var(--secondary-secondary-text-color);
+    color: var(--accent-color);
     line-height: 1.4;
     transition: font-weight var(--transition-duration) ease;
     position: relative;
@@ -355,11 +355,11 @@
 
 .overview-section p {
     margin: 0;
-    color: var(--secondary-secondary-text-color);
+    color: var(--accent-color);
 }
 
 .overview-section a {
-    color: var(--accent-color);
+    color: var(--secondary-text-color);
     text-decoration: none;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
