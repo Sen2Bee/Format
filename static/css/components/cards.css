@@ -19,7 +19,7 @@
 .movie-listings.list-view .movie-card {
     flex-direction: row; /* Change layout to side-by-side in list view */
     align-items: stretch; /* Stretch items to match the card's height */
-    height: 500px; /* Adjust as needed */
+    height: 450px; /* Adjust as needed */
 }
 
 /* Overlay for Improved Text Visibility */

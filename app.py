@@ -443,17 +443,11 @@ def filter_movies():
 
         # **4. Determine columns_per_row and items_per_page**
         # Ensure a maximum of 10 rows, based on the number of columns per row
-        if total_movies > 1000:
-            columns_per_row = 5
-        elif total_movies > 100:
-            columns_per_row = 4
-        elif total_movies > 20:
-            columns_per_row = 3
-        else:
-            columns_per_row = 1
+        rows_per_page = 3
+        columns_per_row = 4
 
         # Items per page should be columns_per_row * 10 (max 10 rows)
-        items_per_page = columns_per_row * 10
+        items_per_page = columns_per_row * rows_per_page
 
         # **5. Calculate total_pages**
         total_pages = math.ceil(total_movies / items_per_page) if items_per_page else 1
