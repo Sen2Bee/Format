@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-22 21:19:50 ===
+=== Code Summary Generated at 2024-10-25 17:57:11 ===
 
 === Project Folder Structure ===
 
@@ -18,7 +18,6 @@ Format/
                 autocomplete.css
                 buttons.css
                 cards.css
-                cards_old.css
                 carousel.css
                 dropdown.css
                 filter.css
@@ -66,7 +65,6 @@ Format/
     templates/
         catalog.html
         index.html
-        components/
 
 === File Contents ===
 
@@ -410,38 +408,39 @@ button {
 --- File: static\css\base\variables.css ---
 :root {
     /* Color Variables */
-    --primary-color: #f4f4f4; /* Primary brand color */
-    --secondary-color: #333; /* Secondary color for text and elements */
-    --background-color: #f4f4f4; /* General background color */
-    --text-color: #333; /* Primary text color */
-    --header-background: #ffffff; /* Header background */
-    --footer-background: #222222; /* Footer background */
-    --button-hover: #e65c00; /* Button hover state color */
+    --primary-color: #FAF8F6; /* Soft off-white */
+    --secondary-color: #3D3D3D; /* Dark charcoal gray */
+    --background-color: #FFFDFB; /* Very light beige */
+    --text-color: #2C2C2C; /* Dark gray for text */
+    --header-background: #EFEDEA; /* Slightly darker than background */
+    --footer-background: #EFEDEA; /* Matching header */
+    --button-hover: #E0DED9; /* Hover effect */
 
     /* Additional Color Variables */
-    --button-background: #ffffff; /* Button background color */
-    --background-dark: #444444; /* Darker background for headers or active states */
-    --secondary-text-color: #FFFFFF; /* White */
-    --secondary-secondary-text-color: #CCCCCC; /* Light Gray */
-    --accent-color: #FF6347; /* Tomato */
-    --dropdown-background: #ffffff; /* Dropdown list background */
-    --highlight-color: #FF6347; /* Tomato */
-    --movie-card-background: #1e1e1e; /* Movie card background */
-    --movie-card-hover-shadow: rgba(0, 0, 0, 0.4); /* Shadow on hover */
-    --overlay-background: rgba(0, 0, 0, 0.4); /* Overlay background */
-    --tooltip-background: #333; /* Tooltip background */
-    --tooltip-text-color: #fff; /* Tooltip text color */
-    --missing-poster-border: red; /* Missing poster border color */
+    --button-background: #FFFFFF; /* White */
+    --background-dark: #DAD7D2; /* Darker background for sections */
+    --secondary-text-color: #FFFFFF; /* White text on dark backgrounds */
+    --secondary-secondary-text-color: #B5B2AD; /* Subtle light gray */
+    --accent-color: #846c1e; /* Muted terracotta */
+    --dropdown-background: #FFFFFF; /* Dropdown background */
+    --highlight-color: #846c1e; /* Same as accent */
+    --movie-card-background: #FFFFFF; /* Movie card background */
+    --movie-card-hover-shadow: rgba(0, 0, 0, 0.1); /* Soft shadow */
+    --overlay-background: rgba(0, 0, 0, 0.5); /* Overlay background */
+    --tooltip-background: #3D3D3D; /* Dark tooltip background */
+    --tooltip-text-color: #FFFFFF; /* Tooltip text color */
+    --missing-poster-border: #846c1e; /* Accent color */
 
     /* Font Variables */
     --font-family: 'Lato', sans-serif; /* Lato as the main font */
     --font-body: 'Lato', sans-serif; /* Body font family */
-    --font-heading: 'Anton', sans-serif; /* Heading font family */
+    --font-heading: 'Cardo', serif; /* Heading font family */
     --font-cursive: 'Pinyon Script', cursive;
 
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
+    --meta-data-font-size: clamp(0.9rem, 1.2vw, 1.2rem); /* Adaptive font size */
 
     /* Layout Variables */
     --header-height: 60px; /* Header height */
@@ -460,7 +459,7 @@ button {
 
     /* Toggle Button Variables */
     --toggle-button-size: 24px;
-    --toggle-button-color: var(--secondary-text-color);
+    --toggle-button-color: var(--secondary-color);
     --toggle-button-active-color: var(--accent-color);
 
     /* Spacing Variables */
@@ -475,25 +474,49 @@ button {
 
     /* Button-Specific Color Variables */
     --button-border-color: #CCCCCC; /* Light Gray */
-    --button-text-color: #333333; /* Dark Gray */
-    --button-hover-background: #f0f0f0; /* Very Light Gray */
-    --button-active-background: #e0e0e0; /* Light Gray */
+    --button-text-color: #2C2C2C; /* Dark Gray */
+    --button-hover-background: #E0DED9; /* Very Light Gray */
+    --button-active-background: #D3D0CB; /* Light Gray */
 
     --poster-width: 70%;
     --catalog-width: 1200px;
 }
-
-/* Dark Mode Theme */
 [data-theme="dark"] {
-    --background-color: var(--background-color-dark);
-    --text-color: var(--text-color-dark);
-    --header-background: var(--header-background-dark);
-    --footer-background: var(--footer-background-dark);
-    --button-background: var(--button-background-dark);
-    --button-text-color: var(--button-text-color-dark);
-    --button-border-color: var(--button-border-color-dark);
-    --button-hover-background: var(--button-hover-background-dark);
-    /* Override other variables as needed */
+    /* Override Color Variables for Dark Theme */
+    --primary-color: #1A1A1A; /* Dark charcoal */
+    --secondary-color: #EAEAEA; /* Light gray text */
+    --background-color: #121212; /* Near black */
+    --text-color: #D6D6D6; /* Light gray */
+    --header-background: #151515; /* Slight variation */
+    --footer-background: #151515; /* Matching header */
+    --button-hover: #2A2A2A; /* Button hover */
+
+    /* Additional Color Variables */
+    --button-background: #1F1F1F; /* Dark button background */
+    --background-dark: #1C1C1C; /* For dark sections */
+    --secondary-text-color: #FFFFFF; /* White text */
+    --secondary-secondary-text-color: #A0A0A0; /* Light gray */
+    --accent-color: #B58B4B; /* Muted gold */
+    --dropdown-background: #1A1A1A; /* Dropdown background */
+    --highlight-color: #B58B4B; /* Same as accent */
+    --movie-card-background: #1F1F1F; /* Movie card background */
+    --movie-card-hover-shadow: rgba(255, 255, 255, 0.1); /* Light shadow */
+    --overlay-background: rgba(0, 0, 0, 0.7); /* Overlay */
+    --tooltip-background: #EAEAEA; /* Light tooltip background */
+    --tooltip-text-color: #1A1A1A; /* Tooltip text color */
+    --missing-poster-border: #B58B4B; /* Accent color */
+
+    /* Toggle Button Variables */
+    --toggle-button-color: var(--secondary-color);
+    --toggle-button-active-color: var(--accent-color);
+
+    /* Button-Specific Color Variables */
+    --button-border-color: #444444; /* Dark Gray */
+    --button-text-color: #D6D6D6; /* Light Gray */
+    --button-hover-background: #2A2A2A; /* Dark Gray */
+    --button-active-background: #333333; /* Slightly lighter gray */
+
+    /* Update other variables as needed */
 }
 
 --- File: static\css\components\autocomplete.css ---
@@ -607,8 +630,8 @@ button {
 .filter-action-button {
     display: flex;
     align-items: center;
-    background-color: var(--button-background); /* #ffffff */
-    color: var(--button-text-color); /* #333333 */
+    background-color: var(--background-dark); /* #ffffff */
+    color: var(--text-color); /* #333333 */
     padding: 10px 20px;
     margin: 5px;
     border: 1px solid var(--button-border-color); /* #CCCCCC */
@@ -620,6 +643,7 @@ button {
     line-height: 1;
     min-height: var(--big-button-height);
     align-self: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
 }
 
 .filter-action-button:hover {
@@ -672,12 +696,11 @@ button {
 }
 
 --- File: static\css\components\cards.css ---
-/* cards.css */
 /* General Movie Card Container */
 .movie-card {
     display: flex;
     flex-direction: column; /* Default for grid view, stacks content vertically */
-    background-color: var(--background-dark);
+    background-color: var(--movie-card-background);
     color: var(--secondary-text-color);
     border-radius: var(--border-radius-medium);
     overflow: hidden;
@@ -705,7 +728,7 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--overlay-background); /* rgba(0, 0, 0, 0.4) */
+    background: var(--overlay-background);
     opacity: 0;
     transition: opacity var(--transition-duration) ease;
     z-index: 1;
@@ -723,10 +746,16 @@ button {
     justify-content: space-between; /* Ensure items align top and bottom */
     gap: var(--spacing-small);
     padding: var(--spacing-medium);
-    background: rgba(30, 30, 30, 0.85);
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
     z-index: 2;
     border-radius: var(--border-radius-medium);
     position: relative;
+}
+
+.movie-listings.list-view .movie-content-wrapper {
+    padding: var(--spacing-small); /* Reduce padding in list view if needed */
+    background: rgba(0, 0, 0, 0.8); /* Slightly more opaque in list view */
+    flex-direction: row;
 }
 
 /* Dedicated Info Wrapper */
@@ -754,14 +783,6 @@ button {
     transition: transform var(--transition-duration) ease;
 }
 
-
-
-.movie-listings.list-view .movie-content-wrapper {
-    padding: var(--spacing-small); /* Reduce padding in list view if needed */
-    background: rgba(30, 30, 30, 0.9); /* Slightly more opaque in list view */
-    flex-direction: row;
-}
-
 .movie-listings.list-view .image-container {
     width: auto; /* Fixed width for list view */
     aspect-ratio: auto; /* Let the height fill based on the container */
@@ -770,12 +791,11 @@ button {
     margin-right: var(--spacing-medium); /* Space between image and text */
 }
 
-
 .image-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: var(--border-radius-medium); /* 8px */
+    border-radius: var(--border-radius-medium);
     transition: transform var(--transition-duration) ease;
 }
 
@@ -786,12 +806,12 @@ button {
 /* Hover Title */
 .hover-title {
     position: absolute;
-    font-size: clamp(1.5em, 2vw, 1.3em); /* Responsive font size */
+    font-size: var(--meta-data-font-size); /* Responsive font size */
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(0, 0, 0, 0.7);  /* Semi-transparent dark background */
-    color: var(--secondary-text-color); /* #FFFFFF */
+    background: var(--overlay-background);
+    color: var(--secondary-text-color);
     text-align: center;
     padding: var(--spacing-small);
     opacity: 0;
@@ -815,20 +835,17 @@ button {
     flex: 1; /* Take remaining space in list view */
 }
 
-/* Header Section */
-.header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .header-section h2 {
     margin: 0;
-    font-size: clamp(1.5rem, 2.5vw, 2rem); /* Adaptive font size */
-    color: var(--button-text-color); /* Changed from var(--link-color) to #333333 */
+    font-size: clamp(1rem, 2vw, 1.5rem); /* Ensure font-size adapts to screen size */
+    color: var(--text-color);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     font-family: var(--font-heading);
     text-transform: uppercase;
+    white-space: nowrap; /* Prevents wrapping */
+    overflow: hidden; /* Hides overflowed text */
+    text-overflow: ellipsis; /* Adds ellipsis ("...") to indicate overflow */
+    max-width: 100%; /* Ensure it fits within the available space */
 }
 
 /* Metadata Section */
@@ -836,11 +853,11 @@ button {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-small);
-    font-size: clamp(0.9rem, 1.5vw, 1.1rem); /* Adaptive font size */
-    color: var(--secondary-secondary-text-color); /* #CCCCCC */
-    background-color: rgba(37, 43, 54, 0.85); /* Semi-transparent dark background */
+    font-size: var(--meta-data-font-size); /* Adaptive font size */
+    color: var(--secondary-secondary-text-color);
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
     padding: var(--spacing-medium);
-    border-radius: var(--border-radius-small); /* 4px */
+    border-radius: var(--border-radius-small);
 }
 
 .movie-listings.list-view .metadata {
@@ -849,44 +866,83 @@ button {
 
 .metadata p {
     margin: 5px 0;
-    color: var(--secondary-text-color); /* #FFFFFF */
+    color: var(--secondary-text-color);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-.metadata p.actors {
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limit to 2 lines (for Webkit browsers) */
-    line-clamp: 2; /* Standard property */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    word-break: break-word;
-}
-
-.metadata p strong,
-.metadata p span {
-    color: var(--secondary-secondary-text-color); /* #FFFFFF */
-    font-size: 1.1em;
-    font-weight: bold;
-}
-
-/* Inline Metadata */
+/* Updated styles for inline-meta */
 .inline-meta {
-    font-size: clamp(1rem, 1.5vw, 1.1rem); /* Adaptive font size */
-    color: var(--secondary-secondary-text-color); /* #FFFFFF */
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-small);
     padding-top: var(--spacing-small);
-    border-top: 1px solid var(--button-border-color); /* #CCCCCC */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    opacity: 0.5;
 }
 
-.countries span[title] {
-    cursor: help;
-    /* text-decoration: underline dotted; */
+.meta-item {
+    display: flex;
+    align-items: center;
+    font-size: var(--meta-data-font-size);
+    margin-right: var(--spacing-small);
 }
 
-.countries span[title]:hover {
-    color: var(--button-border-color); /* Changed to gray to fit BW/Gray policy */
+.meta-item i {
+    margin-right: 5px;
+}
+
+.meta-item span {
+    font-size: var(--meta-data-font-size);
+    color: var(--secondary-text-color);
+}
+
+/* Adjust font size for smaller screens if necessary */
+@media (max-width: var(--breakpoint-sm)) {
+    .meta-item {
+        font-size: 0.9em;
+    }
+}
+
+/* Grid View: Position inline-meta inside image-container */
+.movie-listings:not(.list-view) .movie-card .inline-meta {
+    display: flex;
+    flex-direction: column;
+    position: absolute; 
+    top: 20%; 
+    right: 10px; 
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6); 
+    padding: var(--spacing-small);
+    border-radius: var(--border-radius-small);
+    z-index: 3;
+    width: 25%;
+}
+
+/* Ensure image-container is position: relative to contain absolute children */
+.movie-listings:not(.list-view) .movie-card .image-container {
+    position: relative;
+}
+
+/* List View: Keep inline-meta in its original position */
+.movie-listings.list-view .movie-card .inline-meta {
+    position: static; /* Revert to default positioning */
+    background: none; /* Remove background if necessary */
+    border: none; /* Remove border if necessary */
+    padding-top: 5px; /* Remove padding if necessary */
+    padding-bottom: 5px; /* Remove padding if necessary */
+    margin: 0; /* Remove margin if necessary */
+    width: 100%; /* Ensure it takes full width in list view */
+    border-top: 1px solid var(--button-border-color);
+    border-bottom: 1px solid var(--button-border-color);
+    /* border-bottom: 1px solid var(--button-border-color); */
+}
+
+/* Adjustments for .inline-meta content in Grid View */
+.movie-listings:not(.list-view) .movie-card .inline-meta .meta-item {
+    margin-bottom: var(--spacing-small); /* Space between meta items */
+}
+
+.movie-listings:not(.list-view) .movie-card .inline-meta .meta-item span {
+    font-size: 0.9em; /* Reduce font size slightly if needed */
 }
 
 /* Tooltip container for countries */
@@ -901,21 +957,21 @@ button {
     content: attr(data-country);
     visibility: hidden;
     opacity: 0;
-    background-color: var(--tooltip-background); /* #333 */
-    color: var(--tooltip-text-color); /* #fff */
+    background-color: var(--tooltip-background);
+    color: var(--tooltip-text-color);
     text-align: center;
-    border-radius: var(--border-radius-small); /* 4px */
+    border-radius: var(--border-radius-small);
     padding: 8px 12px;
-    font-size: 1.2em;  /* Control the size of the tooltip */
+    font-size: var(--meta-data-font-size);
     position: absolute;
     z-index: 1000;
-    bottom: 125%; /* Position above the country code */
+    bottom: 125%;
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
     transition: opacity var(--transition-duration) ease-in-out;
-    max-width: 200px; /* Set a maximum width for long names */
+    max-width: 200px;
     word-wrap: break-word;
 }
 
@@ -929,12 +985,12 @@ button {
 .country-tooltip::after {
     content: "";
     position: absolute;
-    bottom: 100%; /* Position at the bottom of the tooltip */
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;
-    border-color: transparent transparent var(--tooltip-background) transparent; /* Arrow pointing up */
+    border-color: transparent transparent var(--tooltip-background) transparent;
     opacity: 0;
     transition: opacity var(--transition-duration) ease-in-out;
 }
@@ -943,24 +999,10 @@ button {
     opacity: 1;
 }
 
-/* Prevent the tooltip from being cut off when near the edges of the screen */
-.country-tooltip:hover::before {
-    left: 50%;
-    transform: translateX(-50%);
-    /* Ensure it stays within the viewport */
-    white-space: normal; 
-    word-wrap: break-word;
-    max-width: 300px; /* Maximum width for larger tooltips */
-}
-
-.country-tooltip:hover {
-    overflow: visible; /* Prevent clipping */
-}
-
 /* Tooltip container for persons */
 .person-tooltip {
-    color: var(--button-text-color); /* Changed from var(--link-color) to #333333 */
-    text-decoration: underline dotted; /* Indicate interactivity */
+    color: var(--accent-color);
+    text-decoration: underline dotted;
     cursor: pointer;
 }
 
@@ -974,7 +1016,7 @@ button {
 .tooltip-person-content img {
     width: 100%;
     height: auto;
-    border-radius: 6px;
+    border-radius: var(--border-radius-small);
     margin-bottom: 8px;
     object-fit: cover;
 }
@@ -988,20 +1030,21 @@ button {
 
 /* Location/Standort */
 .standort {
-    font-size: clamp(1rem, 1.5vw, 1.1rem); /* Adaptive font size */
-    color: var(--secondary-secondary-text-color); /* #CCCCCC */
+    font-size: var(--meta-data-font-size);
+    color: var(--secondary-secondary-text-color);
     margin-top: var(--spacing-small);
-    border-top: 1px solid var(--button-border-color); /* #CCCCCC */
+
     padding-top: var(--spacing-small);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 /* Overview Section */
 .overview-section {
+    font-size: var(--meta-data-font-size);
     padding: 15px;
-    background-color: rgba(30, 30, 30, 0.9); /* Dark semi-transparent gray */
-    border-radius: var(--border-radius-small); /* 4px */
-    color: var(--secondary-secondary-text-color); /* #CCCCCC */
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+    border-radius: var(--border-radius-small);
+    color: var(--secondary-secondary-text-color);
     line-height: 1.4;
     transition: font-weight var(--transition-duration) ease;
     position: relative;
@@ -1010,11 +1053,11 @@ button {
 
 .overview-section p {
     margin: 0;
-    color: var(--secondary-secondary-text-color); /* #CCCCCC */
+    color: var(--secondary-secondary-text-color);
 }
 
 .overview-section a {
-    color: var(--button-text-color); /* Changed from var(--link-color) to #333333 */
+    color: var(--accent-color);
     text-decoration: none;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
@@ -1034,11 +1077,6 @@ button {
 
     .movie-card {
         gap: 15px;
-    }
-
-    .inline-meta,
-    .standort {
-        font-size: 0.95em;
     }
 }
 
@@ -1064,10 +1102,6 @@ button {
     .metadata {
         padding: 0;
     }
-
-    .overview-section {
-        font-size: 0.9em;
-    }
 }
 
 /* Very Small Mobile (Max Width: 480px) */
@@ -1084,10 +1118,6 @@ button {
         font-size: 1em;
     }
 
-    .overview-section {
-        font-size: 0.85em;
-    }
-
     .movie-listings.list-view .movie-card {
         flex-direction: column; /* Stack vertically again for small screens */
         align-items: center;
@@ -1102,12 +1132,10 @@ button {
 
 /* Missing Poster Styling */
 .missing-poster {
-    border: 2px dashed var(--button-border-color); /* Changed from red to gray */
+    border: 2px dashed var(--missing-poster-border);
     opacity: 0.6;
 }
 
---- File: static\css\components\cards_old.css ---
-Error reading file: static\css\components\cards_old.css
 --- File: static\css\components\carousel.css ---
 /* Movie Carousel Section */
 .movie-carousel-section {
@@ -1178,7 +1206,7 @@ Error reading file: static\css\components\cards_old.css
     left: 0;
     width: 100%;
     background: rgba(0, 0, 0, 0.6);
-    color: var(--text-light);
+    color: var(--secondary-text-color);
     padding: 10px;
     box-sizing: border-box;
     opacity: 0;
@@ -1207,6 +1235,7 @@ Error reading file: static\css\components\cards_old.css
 
 .featured-movie-overlay .btn-secondary:hover {
     background-color: var(--link-hover-color);
+    color: var(--secondary-text-color);
 }
 
 /* Swiper Pagination Adjustment */
@@ -1329,7 +1358,7 @@ Error reading file: static\css\components\cards_old.css
     justify-content: flex-start; /* Aligns the clear icon and badge to the left */
     flex-direction: column; /* For two-row layout */
     background-color: var(--background-dark); /* Adjust background color */
-    color: var(--secondary-text-color); /* Use lighter text for better contrast */
+    color: var(--text-color); /* Use lighter text for better contrast */
     cursor: pointer;
     font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -1608,7 +1637,7 @@ label span.required {
     display: inline-block;
     padding: 8px 5px;
     background-color: var(--primary-color);
-    color: var(--text-light);
+    color: var(--text-color);
     border-radius: 4px;
     text-decoration: none;
     transition: background-color var(--transition-duration), transform var(--transition-duration);
@@ -1621,14 +1650,14 @@ label span.required {
 .pagination nav ul li a:hover,
 .pagination nav ul li span:hover {
     background-color: var(--accent-color);
-    color: var(--background-dark);
+    color: var(--text-color);
     transform: translateY(-2px); /* Subtle lift effect */
 }
 
 /* Active State for Current Page */
 .pagination nav ul li.active span {
     background-color: var(--accent-color);
-    color: var(--background-dark);
+    color: var(--secondary-text-color);
     font-weight: bold;
     cursor: default;
 }
@@ -1637,7 +1666,7 @@ label span.required {
 .pagination nav ul li.disabled span,
 .pagination ul li.disabled a {
     background-color: var(--secondary-color); /* Muted color for disabled state */
-    color: var(--secondary-text-color);
+    color: var(---secondary-text-color);
     cursor: not-allowed;
     border: 1px solid var(--border-color);
     pointer-events: none; /* Prevent interaction */
@@ -1677,7 +1706,8 @@ label span.required {
 }
 
 --- File: static\css\components\progress_indicator.css ---
-/* progress-indicator.css */
+/* Import the Google Font Anton */
+@import url('https://fonts.googleapis.com/css?family=Anton');
 
 /* Progress Indicator Styles */
 .progress-indicator {
@@ -1694,28 +1724,40 @@ label span.required {
     z-index: 10000; /* Ensure it's on top of other elements */
 }
 
-/* Spinner Animation */
-.progress-indicator .spinner {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid var(--accent-color); /* Accent color */
+/* Pulsing Loader */
+.loader {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1.5s linear infinite;
+    background: #FF6347; /* Use the accent color */
+    box-shadow: 0 0 0 rgba(255, 99, 71, 0.4);
+    animation: pulse 2s infinite;
 }
 
-/* Spinner Animation Keyframes */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 99, 71, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 99, 71, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 99, 71, 0);
+    }
 }
 
 /* Progress Indicator Text */
 .progress-indicator p {
     margin-top: 15px;
-    color: var(--text-light); /* Use defined text color */
+    color: #ffffff; /* White text for better readability */
     font-size: 1.2em;
     text-align: center;
+    font-family: 'Anton', sans-serif; /* Custom font */
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 --- File: static\css\components\search.css ---
@@ -1772,7 +1814,7 @@ label span.required {
     padding: 0 50px;
     font-size: 1em;
     background: transparent;
-    color: #f5f5f5;
+    color: var(--text-color);
     border: none;
     border-radius: 10px;
     box-sizing: border-box;
@@ -1780,7 +1822,7 @@ label span.required {
 }
 
 #search-box::placeholder {
-    color: rgba(245, 245, 245, 0.7);
+    color: var(--text-color);
     font-style: italic;
 }
 
@@ -2045,7 +2087,7 @@ footer .container {
 
 .logo span {
     font-size: 2.5rem;  /* Adjust main logo size for better readability */
-    color: var(--text-light);  /* Use defined light text color */
+    color: var(--text-color);  /* Use defined light text color */
     font-family: var(--font-heading);  /* Use heading font */
     text-transform: lowercase;
     margin-right: 5px;
@@ -2060,6 +2102,7 @@ footer .container {
 
 /* Navigation Links */
 .nav-links {
+    color: var(--text-color);  /* Use defined light text color */
     display: flex;
     gap: 20px;
     list-style: none;
@@ -2440,7 +2483,7 @@ footer .container {
 /* Headline Styling */
 .view-toggle-headline h2{
     font-size: 1.7rem;
-    color: var(--secondary-text-color); /* White text */
+    color: var(--text-color); /* White text */
     margin: 0;
     /* text-transform: uppercase; */
 }
@@ -2855,12 +2898,69 @@ export function updateCarouselTitle() {
 }
 
 --- File: static\js\catalog.js ---
+// catalog.js
+
+function getIconSizeByType(typeval, type = "rating") {
+    // Define the minimum and maximum sizes for the icon
+    const minSize = 1;   // 1em for the smallest value
+    const maxSize = 2.5;   // 3em for the largest value
+
+    let minVal, maxVal;
+
+    // Set value ranges based on the type
+    if (type === "rating") {
+        minVal = 5;   // IMDb rating starts at 0
+        maxVal = 10;  // IMDb rating goes up to 10
+    } else if (type === "fsk") {
+        minVal = 0;   // FSK can start from 0
+        maxVal = 18;  // FSK goes up to 18
+    } else if (type === "runtime") {
+        minVal = 60;   // Minimum runtime is 60 minutes (1 hour)
+        maxVal = 180;  // Maximum runtime is 180 minutes (3 hours)
+    } else {
+        console.warn(`Unknown type: ${type}. Using default rating scale.`);
+        minVal = 0;  // Default to the rating scale
+        maxVal = 10;
+    }
+
+    // Clamp the value within the min and max range
+    const clampedVal = Math.max(minVal, Math.min(typeval, maxVal));
+
+    // Calculate the size as a ratio between the value and the value range
+    const size = minSize + (clampedVal - minVal) * (maxSize - minSize) / (maxVal - minVal);
+
+    // Return the size in 'em' units, rounded to two decimal places
+    return `${size.toFixed(2)}em`;
+}
+
+
+
+
+
+
+
+function getIconSizeByFsk(fsk) {
+    if (fsk <= 6) {
+        return '1em';  // Small size for lower FSK values
+    } else if (fsk <= 12) {
+        return '1.5em';  // Medium size for mid-range FSK values
+    } else if (fsk <= 16) {
+        return '2em';  // Large size for higher FSK values
+    } else if (fsk === 18) {
+        return '2.5em';  // Extra large size for FSK 18
+    } else {
+        return '1em';  // Default size
+    }
+}
 export function updateMovieListings(movies) {
     const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
         console.error("updateMovieListings: movieContainer element not found.");
         return;
     }
+
+    // Check if we are in list view or raster (grid) view
+    const isListView = movieContainer.classList.contains('list-view');
 
     movieContainer.innerHTML = "";  // Clear existing entries
     if (movies.length > 0) {
@@ -2870,6 +2970,32 @@ export function updateMovieListings(movies) {
 
             const movieCard = document.createElement('div');
             movieCard.className = 'movie-card';
+
+            let formatRuntimeHtml = '';
+            const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
+            formatRuntimeHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
+                    <span>${movie.runtime}</span>
+                </div>
+            `;  
+            let formatFskHtml = '';
+            const fskIconSize = getIconSizeByType(movie.format_fsk, "fsk");
+            formatFskHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
+                    <span>${movie.format_fsk}</span>
+                </div>
+            `;     
+            let formatRatingHtml = '';
+            const ratingIconSize = getIconSizeByType(movie.imdb_rating, "rating"); // Returns a size in 'em', like '2.125em'  
+            console.log("movie.imdb_rating", ratingIconSize, movie.imdb_rating)
+            formatRatingHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
+                    <span>${movie.imdb_rating}</span>
+                </div>
+            `;                    
 
             // Fetch available person images from the backend
             return fetch(`/get_person_images/${encodeURIComponent(movie.folder_name)}`)
@@ -2945,7 +3071,6 @@ export function updateMovieListings(movies) {
                         }
                     }
 
-
                     const countries = Array.isArray(movie.countries) && movie.countries.length > 0
                         ? movie.countries.map(country => {
                             const match = country.match(/(.*?)\s\((.*?)\)/); 
@@ -2957,19 +3082,21 @@ export function updateMovieListings(movies) {
 
                     const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
 
-                    let content = movie.format_inhalt ? movie.format_inhalt : (movie.overview ? movie.overview : "Keine Inhaltsangabe verfügbar.");
-                    if (content.length > 150) {
-                        content = content.substring(0, 150) + '...';
-                    }
 
-                    let imdb_rating = movie.imdb_rating ? movie.imdb_rating : 6;
+                    // Determine the overview truncation length based on view type
+                    let content = movie.format_inhalt ? movie.format_inhalt : (movie.format_inhalt ? movie.format_inhalt : "Keine Inhaltsangabe verfügbar.");
+                    const maxLength = isListView ? 300 : 150; // 300 characters for list view, 150 for raster view
+                    if (content.length > maxLength) {
+                        content = content.substring(0, maxLength) + '...';
+                    }                    
+
 
                     movieCard.innerHTML = `
                         <div class="movie-content-wrapper">
                             <div class="image-container">
                                 <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';" loading="lazy">
                                 <div class="hover-title">
-                                    <span>${movie.original_title}</span>
+                                    <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
                                 </div>
                             </div>
                             <div class="info-wrapper">
@@ -2978,13 +3105,13 @@ export function updateMovieListings(movies) {
                                     <div class="metadata">
                                         <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
                                         <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
-                                        <p class="inline-meta">
-                                            <i class="fas fa-clock"></i> ${movie.runtime} min | 
-                                            <i class="fas fa-compact-disc"></i> ${movie.formats} | 
-                                            <i class="fas fa-child"></i> ${movie.format_fsk} | 
-                                            &#9733; ${imdb_rating}
-                                        </p>
-                                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'}</p>
+                                        <!-- Inline Meta in List View -->
+                                        <div class="inline-meta">
+                                            ${formatRuntimeHtml}                                        
+                                            ${formatFskHtml}                                        
+                                            ${formatRatingHtml}
+                                        </div>
+                                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'} | <i class="fas fa-disc"></i></strong>${movie.formats}</p>
                                         <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
                                         <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
                                     </div>
@@ -3009,8 +3136,6 @@ export function updateMovieListings(movies) {
 
     // Initialize Tippy.js after all movie cards have been appended
     initializeTippyTooltips();
-
-   
 }
 
 // Function to initialize Tippy.js tooltips
@@ -3032,10 +3157,15 @@ function initializeTippyTooltips() {
 
 // toggle-view.js
 
-export function toogleViews() {
+export function toggleViews() {
     const gridViewBtn = document.getElementById('grid-view-btn');
     const listViewBtn = document.getElementById('list-view-btn');
     const movieListings = document.querySelector('.movie-listings');
+
+    if (!gridViewBtn || !listViewBtn || !movieListings) {
+        console.error("toggleViews: One or more elements not found.");
+        return;
+    }
 
     // Function to activate Grid View
     const activateGridView = () => {
@@ -3044,6 +3174,7 @@ export function toogleViews() {
         listViewBtn.classList.remove('active');
         gridViewBtn.setAttribute('aria-pressed', 'true');
         listViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListingsUI();
     };
 
     // Function to activate List View
@@ -3053,6 +3184,7 @@ export function toogleViews() {
         gridViewBtn.classList.remove('active');
         listViewBtn.setAttribute('aria-pressed', 'true');
         gridViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListingsUI();
     };
 
     // Event Listeners for Toggle Buttons
@@ -3066,6 +3198,18 @@ export function toogleViews() {
         localStorage.setItem('movieView', 'list');
     });
 
+    // Function to update movie listings UI based on view type
+    const updateMovieListingsUI = () => {
+        // Assuming you have a function or way to re-fetch and re-render movies
+        // For example:
+        fetch('/get_movies') // Replace with your actual endpoint
+            .then(response => response.json())
+            .then(data => {
+                updateMovieListings(data.movies);
+            })
+            .catch(err => console.error('Error fetching movies:', err));
+    };
+
     // Optional: Persist User Preference using LocalStorage
     // Check if user has a saved preference
     const savedView = localStorage.getItem('movieView');
@@ -3075,12 +3219,7 @@ export function toogleViews() {
     } else {
         activateGridView();
     }
-};
-
-
-
-
-
+}
 
 --- File: static\js\entry.js ---
 // File: static/js/entry.js
@@ -3963,7 +4102,8 @@ export function updateHeadline(
     // Add total movie count with thousand separators
     if (total_movies !== undefined && total_movies > 0) {
         const formattedTotalMovies = total_movies.toLocaleString('de-DE'); // German locale for dot as thousand separator
-        appendTextWithIcon('fa fa-film', `${formattedTotalMovies} Filme gefunden`);
+        appendTextWithIcon('fa fa-film', `${formattedTotalMovies} ${formattedTotalMovies === '1' ? 'Film gefunden' : 'Filme gefunden'}`);
+
     }
 
     // Default text if nothing is selected
@@ -4150,7 +4290,7 @@ movieCards.forEach(card => {
 
 import { initializeSwiper } from './carousel.js';  // Example import
 import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js'; 
-import { toogleViews } from './catalog.js'; 
+import { toggleViews } from './catalog.js'; 
 import { themeToggle } from './theme_toggle.js'; 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -4158,7 +4298,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeSwiper(); // Initialize Swiper Carousel
     initializeFilterPanelToggle(); // Initialize filter panel toggle
     initializeFilterActionButtons(); // Initialize "Clear All" and "Show All Results" buttons
-    toogleViews();
+    toggleViews();
     themeToggle();
 
 });
@@ -4403,7 +4543,7 @@ export function themeToggle() {
 
         <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
             <div class="spinner" aria-hidden="true"></div>
-            <p>Loading movies...</p>
+            <p>einen Moment bitte, lade Filme...</p>
         </div> 
             
 

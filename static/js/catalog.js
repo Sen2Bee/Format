@@ -65,7 +65,7 @@ export function updateMovieListings(movies) {
     movieContainer.innerHTML = "";  // Clear existing entries
     if (movies.length > 0) {
         const promises = movies.map(movie => {
-            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.jpg`;
+            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
             const defaultImagePath = '/static/images/default_movie.png';
 
             const movieCard = document.createElement('div');

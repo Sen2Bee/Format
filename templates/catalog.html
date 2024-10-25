@@ -62,7 +62,7 @@
                     {% for featured_movie in featured_movies %}
                     <div class="swiper-slide">
                         <div class="featured-movie-card">
-                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.avif') }}" 
                                  alt="{{ featured_movie['main_title'] }}" 
                                  onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
                                  loading="lazy">

@@ -1,15 +1,17 @@
-# app.py
-
 from flask import Flask, render_template, request, send_from_directory, jsonify
 import mysql.connector
+from mysql.connector import pooling
 from vars import db_name, db_passwd, db_user, themes, search_conditions, movies_path
 import math
 import os
-import redis
 import random
+import logging
+import time
+import hashlib
 
 from flask_caching import Cache  # Import Cache
 
+# Set Flask environment
 os.environ['FLASK_ENV'] = 'development'
 
 app = Flask(__name__)
@@ -29,39 +31,62 @@ app.config['CACHE_TYPE'] = 'SimpleCache'
 app.config['CACHE_DEFAULT_TIMEOUT'] = 300  # Cache timeout in seconds
 cache = Cache(app)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
+# Initialize MySQL Connection Pool
+try:
+    connection_pool = pooling.MySQLConnectionPool(pool_name="mypool",
+                                                  pool_size=10,
+                                                  **db_config)
+    logging.info("MySQL connection pool created successfully.")
+except mysql.connector.Error as err:
+    logging.error(f"Error creating connection pool: {err}")
+    connection_pool = None
+
+
 def connect_to_db():
-    """Establish a connection to the MySQL database."""
+    """Establish a connection to the MySQL database using connection pooling."""
+    if not connection_pool:
+        logging.error("Connection pool is not initialized.")
+        return None
     try:
-        connection = mysql.connector.connect(**db_config)
-        print("Successfully connected to the database.")
+        connection = connection_pool.get_connection()
+        logging.info("Successfully connected to the database via pool.")
         return connection
     except mysql.connector.Error as err:
-        print(f"Error connecting to database: {err}")
+        logging.error(f"Error getting connection from pool: {err}")
         return None
+
 
 @app.route('/movie_images/<path:filename>')
 def movie_images(filename):
     """Serve movie images from the specified directory."""
     return send_from_directory(MOVIE_IMAGES_BASE_DIR, filename)
 
+
 @app.route('/')
 def index():
     """Render the index page."""
-    print("Rendering the index page.")
+    logging.info("Rendering the index page.")
     return render_template('index.html')
+
 
 @cache.cached(timeout=300)  # Cache this route
 @app.route('/movie/<int:movie_id>')
 def movie_details(movie_id):
     """Fetch and render details for a specific movie."""
-    print(f"Fetching details for movie ID: {movie_id}")
+    logging.info(f"Fetching details for movie ID: {movie_id}")
     connection = connect_to_db()
     if not connection:
         return "Database connection failed", 500
 
     try:
+        start_time = time.time()
+
         cursor = connection.cursor(dictionary=True)
-        
+
         # Construct the query to fetch detailed movie information
         query = """
             SELECT 
@@ -82,7 +107,7 @@ def movie_details(movie_id):
                  FROM crew 
                  WHERE movie_id = m.movie_id AND job = 'Director' 
                  LIMIT 1) AS director,
-                GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') AS actors,
+                GROUP_CONCAT(DISTINCT movie_cast.name ORDER BY movie_cast.popularity DESC SEPARATOR ', ') AS actors,
                 TRIM(BOTH ', ' FROM CONCAT_WS(', ',
                     CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
                     CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
@@ -93,13 +118,14 @@ def movie_details(movie_id):
                 movies m
                 LEFT JOIN genres g ON m.movie_id = g.movie_id
                 LEFT JOIN countries c ON m.movie_id = c.movie_id
-                LEFT JOIN cast ON m.movie_id = cast.movie_id
+                LEFT JOIN movie_cast ON m.movie_id = movie_cast.movie_id
             WHERE 
                 m.movie_id = %s
             GROUP BY 
                 m.movie_id
         """
-        
+
+        logging.info(f"Executing query to fetch movie details for movie ID: {movie_id}")
         cursor.execute(query, (movie_id,))
         movie = cursor.fetchone()
 
@@ -113,14 +139,18 @@ def movie_details(movie_id):
         cursor.close()
         connection.close()
 
+        end_time = time.time()
+        logging.info(f"Fetched movie details in {end_time - start_time:.2f} seconds")
+
         if movie:
             return render_template('movie_details.html', movie=movie)
         else:
             return "Movie not found", 404
 
     except Exception as e:
-        print(f"An error occurred while fetching movie details: {e}")
+        logging.error(f"An error occurred while fetching movie details: {e}")
         return jsonify({'error': str(e)}), 500
+
 
 @cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/catalog')
@@ -132,6 +162,9 @@ def catalog():
     page = int(request.args.get('page', 1))
     per_page = 10
     offset = (page - 1) * per_page
+
+    logging.info("Rendering catalog page")
+    logging.info(f"Search Query: {search_query}, Genre Filter: {genre_filter}, Year Filter: {year_filter}, Page: {page}")
 
     # Establish database connection
     connection = connect_to_db()
@@ -158,8 +191,8 @@ def catalog():
             GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,
             GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
             (SELECT name FROM crew WHERE crew.movie_id = m.movie_id AND job = 'Director' LIMIT 1) AS director,
-            (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ') 
-                FROM cast WHERE cast.movie_id = m.movie_id LIMIT 3) AS actors,
+            (SELECT GROUP_CONCAT(DISTINCT movie_cast.name ORDER BY movie_cast.popularity DESC SEPARATOR ', ') 
+                FROM movie_cast WHERE movie_cast.movie_id = m.movie_id LIMIT 3) AS actors,
             TRIM(BOTH ', ' FROM CONCAT_WS(', ',
                 CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
                 CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
@@ -214,7 +247,10 @@ def catalog():
     pag_params = params + [per_page, offset]
 
     try:
+        start_time = time.time()
+
         # Execute the base query to get the filtered movie data
+        logging.info("Executing base query for movies")
         cursor.execute(base_query, pag_params)
         movies = cursor.fetchall()
 
@@ -226,6 +262,7 @@ def catalog():
             movie['director'] = movie['director'].split(', ') if movie['director'] else []
 
         # Execute the count query to get the total count of filtered movies
+        logging.info("Executing count query for total movies")
         cursor.execute(count_query, tuple(params))
         total_movies = cursor.fetchone()['total']
         total_pages = math.ceil(total_movies / per_page)
@@ -267,6 +304,7 @@ def catalog():
                 ORDER BY RAND()
                 LIMIT 10;
             """
+            logging.info("Executing featured movies query")
             cursor.execute(featured_query, ())
             featured_movies = cursor.fetchall()
 
@@ -281,7 +319,10 @@ def catalog():
         cursor.close()
         connection.close()
 
-        print("in catalog_"*10, movies[:1])
+        end_time = time.time()
+        logging.info(f"Catalog data fetched in {end_time - start_time:.2f} seconds")
+
+        logging.debug(f"Fetched movies: {movies[:1]}")
 
         # Render the catalog template with the movies and pagination data
         ret_val = render_template('catalog.html', 
@@ -294,17 +335,18 @@ def catalog():
                                    selected_theme=selected_theme['name'] if selected_theme else "Featured")
 
         return ret_val
-
+    
     except Exception as e:
-        print(f"An error occurred in catalog: {e}")
-        cursor.close()
-        connection.close()
+        logging.error(f"An error occurred while fetching catalog: {e}")
         return jsonify({'error': str(e)}), 500
+        
 
+@cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/filter_movies', methods=['GET'])
 def filter_movies():
     try:
         # **1. Retrieve Filter Parameters**
+        start_time = time.time()
         selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
         selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
         selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
@@ -314,22 +356,10 @@ def filter_movies():
         sort_by = request.args.get('sort_by', 'Zufall')  # Default sort by 'Zufall' (random)
         page = int(request.args.get('page', 1))
         
-        # **2. Establish Database Connection**
-        connection = connect_to_db()
-        if not connection:
-            return jsonify({"error": "Database connection failed"}), 500
+        logging.info("Filtering movies")
+        logging.info(f"Parameters - Years: {selected_years}, Genres: {selected_genres}, Countries: {selected_countries}, Search Query: '{search_query}', Standorte: {standorte}, Media: {media}, Sort By: {sort_by}, Page: {page}")
 
-        cursor = connection.cursor(dictionary=True)
-
-        # **3. Build the Count Query to Get total_movies**
-        count_query = """
-            SELECT COUNT(DISTINCT m.movie_id) as total 
-            FROM movies m 
-            LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.movie_id
-            LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
-        """
-
+        # **Build the filters and parameters**
         where_clauses = []
         params = []
 
@@ -376,13 +406,38 @@ def filter_movies():
             media_filters = [f"m.{medium} > 0" for medium in media]
             where_clauses.append(f"({' OR '.join(media_filters)})")
 
-        # **Construct WHERE Clause for Count Query**
-        if where_clauses:
-            count_query += " WHERE " + " AND ".join(where_clauses)
-        else:
-            count_query += " WHERE 1=1"
+        # **Construct WHERE Clause for Queries**
+        where_clause = " AND ".join(where_clauses) if where_clauses else "1=1"
+
+        # **Generate a Hash for the Current Filters**
+        filters_string = f"{selected_years}_{selected_genres}_{selected_countries}_{search_query}_{standorte}_{media}"
+        filters_hash = hashlib.md5(filters_string.encode('utf-8')).hexdigest()
+
+        # **Generate Cache Key for Counts**
+        counts_cache_key = f"counts_{filters_hash}"
+
+        # **Check if Counts are Cached**
+        counts_cached = cache.get(counts_cache_key)
+
+        # **2. Establish Database Connection**
+        connection = connect_to_db()
+        if not connection:
+            return jsonify({"error": "Database connection failed"}), 500
+
+        cursor = connection.cursor(dictionary=True)
+
+        # **3. Build the Count Query to Get total_movies**
+        count_query = f"""
+            SELECT COUNT(DISTINCT m.movie_id) as total 
+            FROM movies m 
+            LEFT JOIN genres g ON m.movie_id = g.movie_id
+            LEFT JOIN countries c ON m.movie_id = c.movie_id
+            LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
+            WHERE {where_clause}
+        """
 
         # **Execute Count Query to Get total_movies**
+        logging.info("Executing count query for total movies")
         cursor.execute(count_query, tuple(params))
         total_movies = cursor.fetchone()['total']
 
@@ -412,8 +467,8 @@ def filter_movies():
         # **7. Calculate OFFSET for Pagination**
         offset = (page - 1) * items_per_page
 
-        # Detailed print log
-        print(f"""
+        # Detailed log
+        logging.info(f"""
         Pagination Debugging Log:
         --------------------------
         Selected Page: {page}
@@ -421,11 +476,13 @@ def filter_movies():
         Total Movies: {total_movies}
         Total Pages: {total_pages}
         Calculated Offset: {offset}
+        Columns Per Row: {columns_per_row}
         --------------------------
         """)
 
         # **8. Build the Base Query to Fetch Movies with Filters and Pagination**
-        base_query = """
+        sort_expression, sort_options = build_sort_expression(sort_by)
+        base_query = f"""
             SELECT
                 m.movie_id,
                 COALESCE(m.format_titel, m.title) AS main_title,
@@ -442,8 +499,8 @@ def filter_movies():
                 GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
                 GROUP_CONCAT(DISTINCT cr.name SEPARATOR ', ') AS director,
-                (SELECT GROUP_CONCAT(DISTINCT cast.name ORDER BY cast.popularity DESC SEPARATOR ', ')
-                    FROM cast WHERE cast.movie_id = m.movie_id LIMIT 3) AS actors,
+                (SELECT GROUP_CONCAT(DISTINCT movie_cast.name ORDER BY movie_cast.popularity DESC SEPARATOR ', ')
+                    FROM movie_cast WHERE movie_cast.movie_id = m.movie_id LIMIT 3) AS actors,
                 TRIM(BOTH ', ' FROM CONCAT_WS(', ',
                     CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END,
                     CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END,
@@ -455,23 +512,17 @@ def filter_movies():
                 LEFT JOIN genres g ON m.movie_id = g.movie_id
                 LEFT JOIN countries c ON m.movie_id = c.movie_id
                 LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
+            WHERE {where_clause}
+            GROUP BY m.movie_id
+            ORDER BY {sort_expression}
+            LIMIT %s OFFSET %s
         """
 
-        # **Construct WHERE Clause for Base Query**
-        if where_clauses:
-            base_query += " WHERE " + " AND ".join(where_clauses)
-        else:
-            base_query += " WHERE 1=1"
-
-        # **Build Sort Expression**
-        sort_by_expression, sort_options = build_sort_expression(sort_by)
-        base_query += f" GROUP BY m.movie_id ORDER BY {sort_by_expression} LIMIT %s OFFSET %s"
-
-        # **Append LIMIT and OFFSET to Parameters**
         base_params = params + [items_per_page, offset]
 
         try:
             # **Execute Base Query to Fetch Movies**
+            logging.info("Executing base query for filtered movies")
             cursor.execute(base_query, tuple(base_params))
             filtered_movies = cursor.fetchall()
 
@@ -482,23 +533,33 @@ def filter_movies():
                 movie['director'] = movie['director'].split(', ') if movie['director'] else []
 
             # **9. Fetch Counts for Dropdown Filters**
-            genre_counts = get_counts(cursor, "genre", selected_years, selected_countries, selected_genres, search_query)
-            year_counts = get_counts(cursor, "release_date", selected_years, selected_countries, selected_genres, search_query)
-            country_counts = get_counts(cursor, "country", selected_years, selected_countries, selected_genres, search_query)
-            standorte_counts = get_counts(cursor, "format_standort", selected_years, selected_countries, selected_genres, search_query)
-            media_counts = get_counts(cursor, "media", selected_years, selected_countries, selected_genres, search_query)
+            if counts_cached:
+                logging.info("Using cached counts for dropdown filters")
+                genre_counts, year_counts, country_counts, standorte_counts, media_counts = counts_cached
+            else:
+                logging.info("Fetching counts for dropdown filters")
 
-            # **Sort Years with Decades**
-            year_counts = sort_years_with_decades(year_counts)
+                # **Fetch Counts for Each Filter Field**
+                genre_counts = get_counts(cursor, 'genre', where_clause, params)
+                year_counts = get_counts(cursor, 'release_date', where_clause, params)
+                country_counts = get_counts(cursor, 'country', where_clause, params)
+                standorte_counts = get_counts(cursor, 'format_standort', where_clause, params)
+                media_counts = get_counts(cursor, 'media', where_clause, params)
 
-            # **10. Determine the Selected Theme (Optional)**
-            # This part depends on your application logic. Ensure it's compatible with the new pagination.
+                # **Sort Years with Decades**
+                year_counts = sort_years_with_decades(year_counts)
 
-            # **11. Close Cursor and Connection**
+                # **Cache the Counts**
+                cache.set(counts_cache_key, (genre_counts, year_counts, country_counts, standorte_counts, media_counts), timeout=300)
+
+            # **10. Close Cursor and Connection**
             cursor.close()
             connection.close()
 
-            # **12. Return JSON Response**
+            end_time = time.time()
+            logging.info(f"Filtered movies fetched in {end_time - start_time:.2f} seconds")
+
+            # **11. Return JSON Response**
             return jsonify({
                 'movies': filtered_movies,
                 'years': year_counts,
@@ -515,14 +576,15 @@ def filter_movies():
             })
         
         except Exception as e:
-            print(f"Error occurred in filter_movies: {e}")
-            # It's important to log or handle variables like base_query and base_params carefully to avoid exposing sensitive information.
+            logging.error(f"Error occurred in filter_movies: {e}")
+            cursor.close()
+            connection.close()
             return jsonify({'error': str(e)}), 500
         
     except Exception as e:
-        print(f"Error occurred in filter_movies: {e}")
-        # It's important to log or handle variables like base_query and base_params carefully to avoid exposing sensitive information.
+        logging.error(f"Error occurred in filter_movies: {e}")
         return jsonify({'error': str(e)}), 500
+
 
 def build_sort_expression(sort_option):
     """
@@ -550,6 +612,7 @@ def build_sort_expression(sort_option):
 
     return sort_expression, list(sort_options.keys())
 
+
 def sort_years_with_decades(year_counts):
     """Sorts year counts so that grouped decades appear at the top of the list."""
     # Group years into decades
@@ -576,7 +639,7 @@ def sort_years_with_decades(year_counts):
     sorted_decades = sorted(decade_counts.items(), key=lambda x: int(x[0].split("...")[0]))
     # Sort individual years as strings to avoid ValueErrors
     sorted_years = sorted(
-        year_counts.items(),
+        individual_years.items(),
         key=lambda x: (int(x[0]) if x[0].isdigit() else float('inf')),  # Non-numeric years go last
         reverse=True
     )
@@ -587,160 +650,93 @@ def sort_years_with_decades(year_counts):
     # Convert back to dictionary format
     sorted_combined_dict = dict(sorted_combined)
 
-    print(sorted_combined_dict)
+    logging.debug(f"Sorted years with decades: {sorted_combined_dict}")
 
     return sorted_combined_dict
 
-def get_counts(cursor, field, selected_years=None, selected_countries=None, selected_genres=None, search_query=None):
+
+def get_counts(cursor, field, where_clause, params):
     """
     Generalized helper function to get counts of distinct values for the specified field,
     including search query filtering and filters for years, countries, and genres.
     """
-    # Ensure field is valid to prevent SQL injection and handle media formats separately
-    valid_fields = {"genre", "release_date", "country", "format_standort", "media"}
-    if field not in valid_fields:
-        raise ValueError(f"Invalid field name: {field}")
+    logging.info(f"Getting counts for field: {field}")
 
-    # Special case for media formats
     if field == "media":
-        count_query = """
-            SELECT
-                SUM(CASE WHEN m.format_vhs > 0 THEN 1 ELSE 0 END) AS vhs_count,
-                SUM(CASE WHEN m.format_dvd > 0 THEN 1 ELSE 0 END) AS dvd_count,
-                SUM(CASE WHEN m.format_blu > 0 THEN 1 ELSE 0 END) AS blu_count,
-                SUM(CASE WHEN m.format_blu3 > 0 THEN 1 ELSE 0 END) AS blu3_count
-            FROM movies m
-            LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.movie_id
-            LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
-            WHERE 1=1
-        """
-    elif field == "genre":
-        # Handle genre field, which is in the 'genres' table
-        count_query = """
-            SELECT g.genre, COUNT(DISTINCT m.movie_id) AS count
-            FROM movies m
-            LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.country
-            LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
-            WHERE 1=1
-        """
-    elif field == "country":
-        # Handle country field, which is in the 'countries' table
-        count_query = """
-            SELECT c.country, COUNT(DISTINCT m.movie_id) AS count
-            FROM movies m
-            LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.movie_id
-            LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
-            WHERE 1=1
-        """
-    else:
-        # Construct the base count query for other fields
+        # For media counts, calculate the sum of each media format
         count_query = f"""
-            SELECT m.{field}, COUNT(DISTINCT m.movie_id) AS count
+            SELECT
+                SUM(CASE WHEN m.format_vhs > 0 THEN 1 ELSE 0 END) AS format_vhs,
+                SUM(CASE WHEN m.format_dvd > 0 THEN 1 ELSE 0 END) AS format_dvd,
+                SUM(CASE WHEN m.format_blu > 0 THEN 1 ELSE 0 END) AS format_blu,
+                SUM(CASE WHEN m.format_blu3 > 0 THEN 1 ELSE 0 END) AS format_blu3
             FROM movies m
-            LEFT JOIN genres g ON m.movie_id = g.movie_id
-            LEFT JOIN countries c ON m.movie_id = c.movie_id
             LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
-            WHERE 1=1
+            WHERE {where_clause}
         """
-
-    params = []
-
-    # Apply search filter if available
-    if search_query:
-        search_pattern = f"%{search_query}%"
-        search_conditions = ("""
-            AND (m.title LIKE %s 
-            OR m.original_title LIKE %s 
-            OR m.format_titel LIKE %s 
-            OR m.wiki_awards LIKE %s
-            OR EXISTS (
-                SELECT 1 FROM cast c WHERE c.movie_id = m.movie_id AND c.name LIKE %s
-            )
-            OR EXISTS (
-                SELECT 1 FROM crew cr WHERE cr.movie_id = m.movie_id AND cr.job = 'Director' AND cr.name LIKE %s
-            ))
-        """)
-        count_query += search_conditions
-        params.extend([search_pattern] * 6)
-
-    # Apply year filters if available
-    if selected_years:
-        year_filters = []
-        for year in selected_years:
-            if "..." in year:  # Handle decade ranges
-                start_year = int(year.split("...")[0])
-                end_year = start_year + 9
-                year_filters.append("m.release_date BETWEEN %s AND %s")
-                params.extend([start_year, end_year])
-            else:
-                year_filters.append("m.release_date = %s")
-                params.append(int(year))
-        count_query += f" AND ({' OR '.join(year_filters)})"
-
-    # Apply genre filters if available
-    if selected_genres:
-        genre_placeholders = ','.join(['%s'] * len(selected_genres))
-        count_query += f" AND m.movie_id IN (SELECT movie_id FROM genres WHERE genre IN ({genre_placeholders}))"
-        params.extend(selected_genres)
-
-    # Apply country filters if available
-    if selected_countries:
-        country_placeholders = ','.join(['%s'] * len(selected_countries))
-        count_query += f" AND m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({country_placeholders}))"
-        params.extend(selected_countries)
-
-    # **Special Handling for Media Fields**
-    if field == "media":
-        # No additional grouping needed
-        pass
-    else:
-        # Group by the field and order by count descending
-        group_field = "g.genre" if field == "genre" else "c.country" if field == "country" else f"m.{field}"
-        count_query += f" GROUP BY {group_field} ORDER BY count DESC"
-
-    # **Execute Count Query**
-    cursor.execute(count_query, tuple(params))
-    
-    if field == "media":
+        cursor.execute(count_query, tuple(params))
         result = cursor.fetchone()
         return {
-            'format_vhs': result['vhs_count'],
-            'format_dvd': result['dvd_count'],
-            'format_blu': result['blu_count'],
-            'format_blu3': result['blu3_count']
+            'format_vhs': result['format_vhs'],
+            'format_dvd': result['format_dvd'],
+            'format_blu': result['format_blu'],
+            'format_blu3': result['format_blu3']
         }
     else:
-        # Convert the fetched rows into a dictionary with proper key types
-        result = {}
-        for row in cursor.fetchall():
-            key = row[field if field not in ["genre", "country"] else ("genre" if field == "genre" else "country")]
+        # For other fields (genre, release_date, country, format_standort)
+        if field == "genre":
+            group_field = "g.genre"
+            join_clause = "LEFT JOIN genres g ON m.movie_id = g.movie_id"
+        elif field == "country":
+            group_field = "c.country"
+            join_clause = "LEFT JOIN countries c ON m.movie_id = c.movie_id"
+        elif field == "release_date":
+            group_field = "m.release_date"
+            join_clause = ""
+        elif field == "format_standort":
+            group_field = "m.format_standort"
+            join_clause = ""
+        else:
+            raise ValueError(f"Invalid field name: {field}")
 
-            # Handle None values for the keys
-            if key is None:
-                key = 'Unknown'  # Replace None with a placeholder, or handle as needed
+        # Construct the count query
+        count_query = f"""
+            SELECT {group_field} AS field_value, COUNT(DISTINCT m.movie_id) AS count
+            FROM movies m
+            {join_clause}
+            LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
+            WHERE {where_clause}
+        """
 
-            # Ensure all keys are strings for consistent comparison and sorting
-            if isinstance(key, bytes):  # Handle potential binary values from the database
-                key = key.decode("utf-8")
-            elif isinstance(key, int):  # Ensure int keys (e.g., years) are strings
-                key = str(key)
+        # Add GROUP BY and ORDER BY clauses
+        if field in ["genre", "country"]:
+            count_query += f" GROUP BY {group_field} ORDER BY count DESC"
+        else:
+            # For release_date and format_standort
+            count_query += f" GROUP BY {group_field} ORDER BY {group_field} DESC"
 
-            result[key] = row['count']
+        cursor.execute(count_query, tuple(params))
+        results = cursor.fetchall()
 
-        return result
+        counts = {}
+        for row in results:
+            key = row['field_value'] if row['field_value'] else 'Unknown'
+            counts[key] = row['count']
+
+        return counts
+
 
 @cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/autocomplete')
 def autocomplete():
     """
-    Handle autocomplete AJAX requests by searching in movies, cast, and crew.
+    Handle autocomplete AJAX requests by searching in movies, movie_cast, and crew.
     Returns suggestions with associated movie_ids for efficient filtering.
     """
     query = request.args.get('query', '').strip()
     suggestions = []
+
+    logging.info(f"Handling autocomplete for query: '{query}'")
 
     if len(query) >= 2:
         connection = connect_to_db()
@@ -770,7 +766,7 @@ def autocomplete():
             # Search in cast names
             cast_query = """
                 SELECT movie_id, name 
-                FROM cast 
+                FROM movie_cast 
                 WHERE name LIKE %s
                 LIMIT 10
             """
@@ -800,7 +796,7 @@ def autocomplete():
                 })
 
         except Exception as e:
-            print(f"Error in autocomplete: {e}")
+            logging.error(f"Error in autocomplete: {e}")
             return jsonify({"error": "Internal Server Error"}), 500
         finally:
             cursor.close()
@@ -808,15 +804,19 @@ def autocomplete():
 
     return jsonify(suggestions)
 
+
 @app.route('/get_person_images/<movie_folder>', methods=['GET'])
 def get_person_images(movie_folder):
+    """Retrieve person images for a specific movie folder."""
     folder_path = os.path.join(movies_path, movie_folder, 'person')
     try:
         # List all files in the 'person' folder of the given movie
-        available_images = [f for f in os.listdir(folder_path) if f.endswith('.jpg')]
+        available_images = [f for f in os.listdir(folder_path) if f.endswith('.avif')]
         return jsonify({"images": available_images})
     except Exception as e:
+        logging.error(f"Error fetching person images for folder {movie_folder}: {e}")
         return jsonify({"error": str(e), "images": []}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
