@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-25 17:57:11 ===
+=== Code Summary Generated at 2024-10-25 20:49:51 ===
 
 === Project Folder Structure ===
 
@@ -717,7 +717,7 @@ button {
 .movie-listings.list-view .movie-card {
     flex-direction: row; /* Change layout to side-by-side in list view */
     align-items: stretch; /* Stretch items to match the card's height */
-    height: 500px; /* Adjust as needed */
+    height: 450px; /* Adjust as needed */
 }
 
 /* Overlay for Improved Text Visibility */
@@ -2426,7 +2426,7 @@ footer .container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    padding: 20px;
+    padding: 0 20px;
     max-width: var(--catalog-width); /* Adjust as needed */
     margin: 0 auto;
     transition: all var(--transition-duration) ease;
@@ -2965,7 +2965,7 @@ export function updateMovieListings(movies) {
     movieContainer.innerHTML = "";  // Clear existing entries
     if (movies.length > 0) {
         const promises = movies.map(movie => {
-            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.jpg`;
+            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
             const defaultImagePath = '/static/images/default_movie.png';
 
             const movieCard = document.createElement('div');
@@ -4520,7 +4520,7 @@ export function themeToggle() {
                     {% for featured_movie in featured_movies %}
                     <div class="swiper-slide">
                         <div class="featured-movie-card">
-                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.jpg') }}" 
+                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.avif') }}" 
                                  alt="{{ featured_movie['main_title'] }}" 
                                  onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
                                  loading="lazy">

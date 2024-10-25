@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory, jsonify
+from flask import Flask, render_template, request, send_from_directory, jsonify, url_for
 import mysql.connector
 from mysql.connector import pooling
 from vars import db_name, db_passwd, db_user, themes, search_conditions, movies_path
@@ -78,16 +78,23 @@ def index():
 def movie_details(movie_id):
     """Fetch and render details for a specific movie."""
     logging.info(f"Fetching details for movie ID: {movie_id}")
+    movie = get_movie_details(movie_id)
+
+    if movie:
+        return render_template('movie_details.html', movie=movie)
+    else:
+        logging.warning(f"Movie with ID {movie_id} not found.")
+        return "Movie not found", 404
+
+def get_movie_details(movie_id):
     connection = connect_to_db()
     if not connection:
-        return "Database connection failed", 500
+        return None
 
     try:
-        start_time = time.time()
-
         cursor = connection.cursor(dictionary=True)
 
-        # Construct the query to fetch detailed movie information
+        # Existing query to fetch movie details
         query = """
             SELECT 
                 m.movie_id, 
@@ -125,7 +132,6 @@ def movie_details(movie_id):
                 m.movie_id
         """
 
-        logging.info(f"Executing query to fetch movie details for movie ID: {movie_id}")
         cursor.execute(query, (movie_id,))
         movie = cursor.fetchone()
 
@@ -136,20 +142,76 @@ def movie_details(movie_id):
             movie['actors'] = movie['actors'].split(', ') if movie['actors'] else []
             movie['director'] = movie['director'].split(', ') if movie['director'] else []
 
+            # Retrieve backdrop images from the filesystem
+            backdrops = get_backdrop_images(movie['folder_name'])
+            movie['backdrops'] = backdrops
+            # Retrieve poster images
+            movie['posters'] = get_poster_images(movie['folder_name'])
+
+            # If no backdrops are available, use posters as backdrops
+            if not movie['backdrops']:
+                logging.info(f"No backdrops found for movie ID {movie_id}. Using posters as backdrops.")
+                movie['backdrops'] = movie['posters']            
+
+            print("*******"*10, movie['backdrops'])
+
         cursor.close()
         connection.close()
 
-        end_time = time.time()
-        logging.info(f"Fetched movie details in {end_time - start_time:.2f} seconds")
-
-        if movie:
-            return render_template('movie_details.html', movie=movie)
-        else:
-            return "Movie not found", 404
+        return movie
 
     except Exception as e:
         logging.error(f"An error occurred while fetching movie details: {e}")
-        return jsonify({'error': str(e)}), 500
+        cursor.close()
+        connection.close()
+        return None
+
+
+@app.route('/get_backdrop_images/<path:movie_folder>')
+def get_backdrop_images_route(movie_folder):
+    """API endpoint to retrieve backdrop images."""
+    backdrops = get_backdrop_images(movie_folder)
+    return jsonify({"images": [os.path.basename(url) for url in backdrops]})
+
+@app.route('/get_poster_images/<path:movie_folder>')
+def get_poster_images_route(movie_folder):
+    """API endpoint to retrieve poster images."""
+    posters = get_poster_images(movie_folder)
+    return jsonify({"images": [os.path.basename(url) for url in posters]})
+
+def get_backdrop_images(movie_folder):
+    """Retrieve backdrop image URLs for a specific movie folder."""
+    backdrops = []
+    folder_path = os.path.join(movies_path, movie_folder, 'backdrop')
+
+    if not os.path.exists(folder_path):
+        logging.warning(f"No backdrop directory found for folder: {movie_folder}")
+        return backdrops  # Return an empty list if the directory doesn't exist
+
+    # List all .avif files in the backdrop directory
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.lower().endswith('.avif'):
+            # Generate the URL for each backdrop image
+            backdrop_url = url_for('movie_images', filename=f"{movie_folder}/backdrop/{filename}")
+            backdrops.append(backdrop_url)
+
+    return backdrops
+
+def get_poster_images(movie_folder):
+    """Retrieve poster image URLs for a specific movie folder."""
+    posters = []
+    folder_path = os.path.join(movies_path, movie_folder, 'poster')
+
+    if not os.path.exists(folder_path):
+        logging.warning(f"No poster directory found for folder: {movie_folder}")
+        return posters  # Return empty list if directory does not exist
+
+    for filename in sorted(os.listdir(folder_path)):
+        if filename.lower().endswith(('.avif', '.jpg', '.jpeg', '.png', '.webp')):
+            poster_url = url_for('movie_images', filename=f"{movie_folder}/poster/{filename}")
+            posters.append(poster_url)
+
+    return posters
 
 
 @cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters

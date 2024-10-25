@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ movie.title }} - FORMAT Filmkunst-Verleih</title>
+    <!-- Responsive Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fonts and Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/movie_details.css') }}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <!-- Swiper.js CSS for Carousel -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Tippy.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <!-- Popper.js (required by Tippy.js) -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <!-- Tippy.js JS -->
+    <script src="https://unpkg.com/tippy.js@6"></script>
+</head>
+<body data-folder="{{ movie.folder_name }}>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
+                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
+            </div>
+            <div class="nav-center-title">
+                <span class="theme-title">{{ movie.title }}</span>
+            </div>
+            <!-- Add your menu toggle and nav-links here if needed -->
+        </nav>
+    </header>
+    <main>
+        <!-- Movie Details Section -->
+        <section class="movie-details">
+            <!-- Backdrop Carousel -->
+            {% if movie.backdrops %}
+            <div class="backdrop-carousel">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        {% for backdrop in movie.backdrops %}
+
+                        <div class="swiper-slide">
+                            <img src="{{ backdrop }}" alt="Backdrop Image" loading="lazy">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <!-- Add Pagination -->
+                    <div class="swiper-pagination"></div>
+                    <!-- Add Navigation -->
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
+
+                <!-- Poster Image -->
+                {% if movie.posters %}
+                <div class="poster-image-container">
+                    <img src="{{ movie.posters[0] }}" alt="Poster Image">
+                </div>
+                {% endif %} 
+            </div>
+            {% else %}
+            <!-- Fallback if no backdrops or posters are available -->
+            <div class="backdrop-placeholder">
+                {% if movie.posters %}
+                <!-- Use the first poster as the backdrop -->
+                <img src="{{ movie.posters[0] }}" alt="Poster Image as Backdrop">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/default_backdrop.jpg') }}" alt="No Backdrop Available">
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Movie Information -->
+            <div class="movie-info">
+                <h1>{{ movie.title }}</h1>
+                <p><strong>Original Title:</strong> {{ movie.original_title }}</p>
+                <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+                <p><strong>Runtime:</strong> {{ movie.runtime }} minutes</p>
+                <p><strong>Genres:</strong>
+                    {% for genre in movie.genres %}
+                        {{ genre.genre }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong>Countries:</strong>
+                    {% for country in movie.countries %}
+                        {{ country.country }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong>Production Companies:</strong>
+                    {% for company in movie.companies %}
+                        {{ company.company_name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong>Overview:</strong> {{ movie.overview }}</p>
+                <!-- Display cast -->
+                <h2>Cast</h2>
+                <ul>
+                    {% for actor in movie.cast %}
+                    <li>{{ actor.name }} as {{ actor.role }}</li>
+                    {% endfor %}
+                </ul>
+                <!-- Display crew -->
+                <h2>Crew</h2>
+                <ul>
+                    {% for member in movie.crew %}
+                    <li>{{ member.name }} - {{ member.job }}</li>
+                    {% endfor %}
+                </ul>
+                <!-- Awards -->
+                <h2>Awards</h2>
+                <ul>
+                    {% for award in movie.awards %}
+                    <li>{{ award.award }}</li>
+                    {% endfor %}
+                </ul>
+                <!-- Certificates -->
+                <h2>Certificates</h2>
+                <ul>
+                    {% for cert in movie.certificates %}
+                    <li>{{ cert.country }}: {{ cert.rating }}</li>
+                    {% endfor %}
+                </ul>
+                <!-- Spoken Languages -->
+                <h2>Spoken Languages</h2>
+                <ul>
+                    {% for lang in movie.languages %}
+                    <li>{{ lang.language }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+    <!-- Swiper.js JS for Carousel -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
+
+</body>
+</html>
+

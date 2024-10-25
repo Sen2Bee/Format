@@ -1,0 +1,138 @@
+/* File: static/css/pages/movie_details.css */
+
+/* Movie Details Section */
+.movie-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.backdrop-carousel {
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+}
+
+.backdrop-carousel img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.movie-info {
+    max-width: 800px;
+    width: 100%;
+}
+
+.movie-info h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.movie-info p {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.movie-info h2 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.movie-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.movie-info ul li {
+    margin-bottom: 5px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .movie-details {
+        padding: 10px;
+    }
+
+    .movie-info h1 {
+        font-size: 1.5rem;
+    }
+
+    .movie-info p {
+        font-size: 1rem;
+    }
+}
+
+/* Backdrop Carousel */
+.backdrop-carousel {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.backdrop-carousel .swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.backdrop-carousel img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Poster Image Styling */
+.poster-image-container {
+    position: absolute;
+    bottom: -50px; /* Adjust as needed */
+    left: 20px;    /* Adjust as needed */
+    width: 200px;  /* Adjust as needed */
+    z-index: 2;    /* Ensure the poster appears above the backdrop */
+}
+
+.poster-image-container img {
+    width: 100%;
+    height: auto;
+    border: 5px solid white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+    .poster-image-container {
+        bottom: -70px;
+        left: 40px;
+        width: 250px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .poster-image-container {
+        bottom: -100px;
+        left: 60px;
+        width: 300px;
+    }
+}
+
+/* Adjust the padding-top of the movie-info section to accommodate the overlapping poster */
+.movie-info {
+    max-width: 800px;
+    width: 100%;
+    padding-top: 120px; /* Adjust to prevent overlap */
+}
+
+@media (min-width: 768px) {
+    .movie-info {
+        padding-top: 150px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .movie-info {
+        padding-top: 200px;
+    }
+}

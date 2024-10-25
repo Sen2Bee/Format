@@ -199,10 +199,16 @@ export function updateMovieListings(movies) {
                                     <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
                                 </div>
                             </div>
+                            
                             <div class="info-wrapper">
-                                <div class="info-section">
+                                <div class="title-section">
                                     <h2>${movie.main_title}</h2>
-                                    <div class="metadata">
+                                </div>                                                
+                                <div class="overview-section">
+                                    <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                                </div>                                        
+                                <div class="info-section">
+                                    <div class="metadata">  
                                         <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
                                         <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
                                         <!-- Inline Meta in List View -->
@@ -212,12 +218,9 @@ export function updateMovieListings(movies) {
                                             ${formatRatingHtml}
                                         </div>
                                         <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'} | <i class="fas fa-disc"></i></strong>${movie.formats}</p>
-                                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${new Date(movie.release_date).getFullYear()}</p>
+                                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${movie.release_date}</p>
                                         <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
                                     </div>
-                                </div>
-                                <div class="overview-section">
-                                    <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
                                 </div>
                             </div>
                         </div>
