@@ -65,13 +65,19 @@
                         <button class="swiper-button-next" aria-label="Next Slide"></button>
                     </div>
                 </div>
-
+                {{ movie.video_link }}
                 <!-- Poster and Content Container -->
                 <div class="poster-content-container">
                     <!-- Poster Image -->
                     {% if movie.posters %}
                     <div class="poster-image-container">
                         <img src="{{ movie.posters[0] }}" alt="Poster Image" loading="lazy">
+                        {% if movie.video_link %}
+                        {{ movie.video_link }}
+                            <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer">
+                                <i class="fas fa-play"></i>
+                            </a>     
+                        {% endif %}                   
                     </div>
                     {% endif %}
 

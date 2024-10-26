@@ -96,6 +96,39 @@ def get_movie_awards(cursor, movie_id):
     awards = cursor.fetchall()
     return [award['award'] for award in awards] if awards else []
 
+
+def get_movie_embeddable_video_link(cursor, movie_id):
+    # Fetch the video link for the movie
+    query = """
+        SELECT video_link
+        FROM video_links
+        WHERE movie_id = %s
+        LIMIT 1
+    """
+    cursor.execute(query, (movie_id,))
+    result = cursor.fetchone()
+    
+    # Check if a video link was found
+    if result and result['video_link']:
+        video_url = result['video_link']
+        
+        # Convert to embeddable format if it’s a YouTube link
+        if 'youtube.com/watch' in video_url:
+            video_id = video_url.split('v=')[1]
+            ampersand_position = video_id.find('&')
+            if ampersand_position != -1:
+                video_id = video_id[:ampersand_position]
+            embeddable_link = f'https://www.youtube.com/embed/{video_id}'
+        else:
+            # For non-YouTube URLs, return the original link
+            embeddable_link = video_url
+        
+        return embeddable_link
+    
+    # Return None if no video link exists
+    return None
+
+
 def get_movie_certificates(cursor, movie_id):
     query = """
         SELECT country, rating, additional_info
@@ -151,7 +184,6 @@ def get_movie_details(movie_id):
                 m.format_standort,
                 m.wiki_critics,
                 m.wiki_background,
-                m.wiki_background,
                 GROUP_CONCAT(DISTINCT c.country ORDER BY c.country SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre ORDER BY g.genre SEPARATOR ', ') AS genres,
                 (SELECT GROUP_CONCAT(name SEPARATOR ', ') 
@@ -169,6 +201,7 @@ def get_movie_details(movie_id):
                 LEFT JOIN genres g ON m.movie_id = g.movie_id
                 LEFT JOIN countries c ON m.movie_id = c.movie_id
                 LEFT JOIN movie_cast ON m.movie_id = movie_cast.movie_id
+                LEFT JOIN video_links ON m.movie_id = video_links.movie_id
             WHERE 
                 m.movie_id = %s
             GROUP BY 
@@ -184,6 +217,7 @@ def get_movie_details(movie_id):
             movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
             movie['actors'] = movie['actors'].split(', ') if movie['actors'] else []
             movie['directors'] = movie['directors'].split(', ') if movie['directors'] else []
+            # movie['video_links'] = movie['video_links'].split(', ') if movie['video_links'] else []
 
             # Retrieve backdrop and poster images from the filesystem
             backdrops = get_backdrop_images(movie['folder_name'])
@@ -201,18 +235,20 @@ def get_movie_details(movie_id):
             movie['certificates'] = get_movie_certificates(cursor, movie_id)
             movie['production_companies'] = get_production_companies(cursor, movie_id)
             movie['spoken_languages'] = get_spoken_languages(cursor, movie_id)
+            movie['video_link'] = get_movie_embeddable_video_link(cursor, movie_id)
+            # movie['video_link'] = get_movie_video_link(cursor, movie_id)
+ 
+            # # Optionally, retrieve other crew members (excluding directors)
+            # query_other_crew = """
+            #     SELECT name, job
+            #     FROM crew
+            #     WHERE movie_id = %s AND job != 'Director'
+            # """
+            # cursor.execute(query_other_crew, (movie_id,))
+            # crew_members = cursor.fetchall()
+            # movie['crew_members'] = [{'name': member['name'], 'job': member['job']} for member in crew_members] if crew_members else []
 
-            # Optionally, retrieve other crew members (excluding directors)
-            query_other_crew = """
-                SELECT name, job
-                FROM crew
-                WHERE movie_id = %s AND job != 'Director'
-            """
-            cursor.execute(query_other_crew, (movie_id,))
-            crew_members = cursor.fetchall()
-            movie['crew_members'] = [{'name': member['name'], 'job': member['job']} for member in crew_members] if crew_members else []
-
-            print("*******" * 10, movie['backdrops'])
+            print("*******" * 10, movie['video_link'])
 
         cursor.close()
         connection.close()

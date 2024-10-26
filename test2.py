@@ -68,13 +68,14 @@ def test_query():
         ORDER BY m.release_date DESC
         LIMIT 10;
     """
-    # query = "SELECT * FROM movies WHERE release_date = 2000 LIMIT 10;"
+    #23254
+    query = "SELECT * FROM video_links LIMIT 10;"
 
     # Test year (e.g., 1916)
     year_param = 1916
 
     try:
-        query = "Select format_inhalt from movies limit 10"
+        query = "SELECT * FROM video_links LIMIT 10"
         # cursor.execute(query, (year_param,))
         # query = "SELECT release_date FROM movies where release_date = 1916 LIMIT 10;"
         cursor.execute(query)
