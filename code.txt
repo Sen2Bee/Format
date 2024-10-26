@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-26 20:09:34 ===
+=== Code Summary Generated at 2024-10-26 21:09:51 ===
 
 === Project Folder Structure ===
 
@@ -117,6 +117,11 @@ Format/
 /* Apply box-sizing globally */
 html {
     box-sizing: border-box;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 /* Normalize link styles but allow color */
@@ -1897,81 +1902,28 @@ label span.required {
 }
 
 --- File: static\css\layout\footer.css ---
-/* footer.css */
-
-/* footer.css */
-
+/* Footer styles */
 footer {
-    background-color: var(--footer-background);  /* Use defined primary color */
+    flex-shrink: 0;
+    /* Existing footer styles */
+    background-color: var(--footer-background);
     color: var(--text-color);
     text-align: center;
     padding: 30px 0;
-    /* max-height: 30px; */
+    width: 100%;
 }
 
 footer .footer-content {
-    /* If you need specific styles for footer-content */
     max-width: var(--catalog-width);
     margin: 0 auto;
     padding: 10px;
 }
 
 footer .footer-content p {
-    color: var(--text-color); /* Override the global p color */
-    font-size: 1rem; /* Adjust as needed */
-    margin: 0; /* Remove default margins if necessary */
-}
-}
-
-.footer-about,
-.footer-links,
-.footer-social {
-    flex: 1 1 200px;
-}
-
-.footer-about h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
-
-.footer-about p {
+    color: var(--text-color);
     font-size: 1rem;
+    margin: 0;
 }
-
-.footer-links ul {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.footer-links ul li a {
-
-    transition: color 0.3s;
-}
-
-.footer-links ul li a:hover {
-    color: var(--primary-color);
-}
-
-.footer-social a {
-    font-size: 1.5rem;
-    margin-right: 10px;
-    transition: color 0.3s;
-}
-
-.footer-social a:hover {
-    color: var(--primary-color);
-}
-
-.footer-bottom {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.9rem;
-    color: var(--secondary-color);
-}
-
-/* Responsive Adjustments handled in responsive.css */
-
 --- File: static\css\layout\hero.css ---
 /* hero.css */
 
@@ -2807,6 +2759,12 @@ body {
     font-family: var(--font-body);
     transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease;
 }
+/* Flex container to hold header, main, and footer */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
 
 /* Movie Details Section */
 .movie-details {
@@ -2859,7 +2817,9 @@ body {
 }
 
 .poster-content-container {
-
+    position:absolute;
+    left: 20%;
+    top: 60vh;
     z-index: 10;
 }
 
@@ -2920,6 +2880,10 @@ body {
     width: 65%; /* Occupies 65% of the container's width */
 
 }
+.content-wrap {
+    flex: 1 0 auto;
+}
+
 
 /* Movie Title */
 .movie-title {
@@ -3071,6 +3035,8 @@ body {
 /* Large Screens (Desktops) */
 @media (min-width: 992px) { /* Example breakpoint for large screens */
     .wrap-poster {
+        /* position: absolute; */
+        top: -10vh;
         float: left; /* Ensure the poster floats left */
         margin: 10px 20px 10px 0; /* Adjust margins as needed */
         width: 30%; /* Adjust width as needed */
@@ -3078,7 +3044,7 @@ body {
     }
 
     .content-wrap {
-        width: 65%; /* Adjust width to accommodate float */
+        width: 85%; /* Adjust width to accommodate float */
         text-align: justify; /* Justify text for a clean look */
     }
 
@@ -3093,7 +3059,7 @@ body {
     /* Clear float if necessary */
     .poster-content-container::after {
         content: "";
-        display: table;
+        /* display: table; */
         clear: both;
     }
 }
@@ -5400,6 +5366,7 @@ export function themeToggle() {
         });
     </script>
 
+<div class="page-container">
     <header>
         <nav class="navbar">
             <div class="logo">
@@ -5572,10 +5539,12 @@ export function themeToggle() {
             <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
-    <!-- Swiper.js JS for Carousel -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
+</div>
+
+<!-- Swiper.js JS for Carousel -->
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
 
 </body>
 </html>

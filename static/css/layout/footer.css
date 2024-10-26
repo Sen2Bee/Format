@@ -1,74 +1,22 @@
-/* footer.css */
-
-/* footer.css */
-
+/* Footer styles */
 footer {
-    background-color: var(--footer-background);  /* Use defined primary color */
+    flex-shrink: 0;
+    /* Existing footer styles */
+    background-color: var(--footer-background);
     color: var(--text-color);
     text-align: center;
     padding: 30px 0;
-    /* max-height: 30px; */
+    width: 100%;
 }
 
 footer .footer-content {
-    /* If you need specific styles for footer-content */
     max-width: var(--catalog-width);
     margin: 0 auto;
     padding: 10px;
 }
 
 footer .footer-content p {
-    color: var(--text-color); /* Override the global p color */
-    font-size: 1rem; /* Adjust as needed */
-    margin: 0; /* Remove default margins if necessary */
-}
-}
-
-.footer-about,
-.footer-links,
-.footer-social {
-    flex: 1 1 200px;
-}
-
-.footer-about h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
-
-.footer-about p {
+    color: var(--text-color);
     font-size: 1rem;
+    margin: 0;
 }
-
-.footer-links ul {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.footer-links ul li a {
-
-    transition: color 0.3s;
-}
-
-.footer-links ul li a:hover {
-    color: var(--primary-color);
-}
-
-.footer-social a {
-    font-size: 1.5rem;
-    margin-right: 10px;
-    transition: color 0.3s;
-}
-
-.footer-social a:hover {
-    color: var(--primary-color);
-}
-
-.footer-bottom {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.9rem;
-    color: var(--secondary-color);
-}
-
-/* Responsive Adjustments handled in responsive.css */

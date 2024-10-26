@@ -6,7 +6,7 @@
     <!-- Responsive Meta Tag -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Fonts and Stylesheets -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cardo:ital@0;1&family=Lato:wght@300;400;700&family=Pinyon+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/movie_details.css') }}">
     <!-- Font Awesome -->
@@ -30,6 +30,7 @@
         });
     </script>
 
+<div class="page-container">
     <header>
         <nav class="navbar">
             <div class="logo">
@@ -86,15 +87,15 @@
                     {% if movie.video_link %}
                     <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.format_titel }}">
                         <i class="fas fa-play"></i>
-                    </a>     
-                    {% endif %}                   
+                    </a>
+                    {% endif %}
                 </div>
                 {% endif %}
 
                 <!-- Additional Information -->
                 <div class="content-wrap">
-                    <h1 class="movie-title">{{ movie.format_titel }} ({{ movie.release_date }})</h1>
-                    <h2 class="original-title">Original Title: {{ movie.original_title }}</h2>
+                    <h1 class="movie-title">{{ movie.format_titel }} <span class="release-year">({{ movie.release_date }})</span></h1>
+                    <h2 class="original-title">Originaltitel: <em>{{ movie.original_title }}</em></h2>
 
                     <div class="movie-info">
                         <!-- Info Items -->
@@ -103,7 +104,7 @@
                             <span class="director">
                                 {{ movie.directors | join(', ') }}
                             </span>
-                        </div>   
+                        </div>
                         <div class="info-item">
                             <i class="fas fa-clock"></i>
                             <span class="info-text">{{ movie.runtime }} Minuten</span>
@@ -111,7 +112,7 @@
                         <div class="info-item">
                             <i class="fas fa-star"></i>
                             <span class="info-text">{{ movie.imdb_rating }}</span>
-                        </div>                            
+                        </div>
                         <div class="info-item">
                             <i class="fas fa-tags"></i>
                             <span class="info-text">
@@ -141,8 +142,8 @@
                             <span class="info-text">
                                 {{ movie.awards | join(', ') }}
                             </span>
-                        </div>                            
-                        {% endif %}    
+                        </div>
+                        {% endif %}
 
                         <!-- Spoken Languages -->
                         {% if movie.spoken_languages %}
@@ -151,17 +152,17 @@
                             <span class="info-text">
                                 {{ movie.spoken_languages | join(', ') }}
                             </span>
-                        </div>    
-                        {% endif %}                           
+                        </div>
+                        {% endif %}
                         <!-- Formats -->
                         {% if movie.formats %}
                         <div class="info-item">
-                            <i class="fas fa-circle"></i>
+                            <i class="fas fa-film"></i>
                             <span class="info-text">
                                 {{ movie.formats }}
                             </span>
-                        </div>     
-                        {% endif %}                                
+                        </div>
+                        {% endif %}
                     </div>
 
                     <!-- Additional Movie Information -->
@@ -174,23 +175,23 @@
 
                         {% if movie.actors %}
                             <p class="actors">
-                                <i class="fas fa-users"></i>
+                                <strong>Schauspieler:</strong>
                                 {{ movie.actors | join(', ') }}
                             </p>
-                        {% endif %} 
+                        {% endif %}
 
                         {% if movie.wiki_critics %}
-                            <p>
-                                <i class="fas fa-pen"></i>
+                            <p class="wiki-critics">
+                                <strong>Kritiken:</strong>
                                 {{ movie.wiki_critics }}
                             </p>
-                        {% endif %}     
+                        {% endif %}
                         {% if movie.wiki_background %}
-                            <p class="wiki_background">
-                                <i class="fas fa-file-alt"></i>
+                            <p class="wiki-background">
+                                <strong>Hintergrund:</strong>
                                 {{ movie.wiki_background }}
                             </p>
-                        {% endif %}               
+                        {% endif %}
                     </div>
                 </div> <!-- End of content-wrap -->
             </div> <!-- End of poster-content-container -->
@@ -202,10 +203,12 @@
             <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
-    <!-- Swiper.js JS for Carousel -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
+</div>
+
+<!-- Swiper.js JS for Carousel -->
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
 
 </body>
 </html>
