@@ -13,7 +13,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 60px 0;
+    /* padding: 60px 0; */ /* Removed to reduce vertical space */
     background-color: inherit; /* Inherit background from body */
     color: inherit; /* Inherit text color from body */
 }
@@ -22,7 +22,7 @@ body {
 .backdrop-carousel {
     position: relative;
     width: 100%;
-    margin-bottom: 60px;
+    margin-bottom: 20px; /* Reduced from 60px */
     overflow: visible; /* Changed from hidden to visible */
     border-radius: var(--border-radius-medium);
     box-shadow: 0 4px 8px var(--shadow-color-light);
@@ -64,15 +64,15 @@ body {
     display: flex;
     align-items: flex-start;
     position: relative;
-    margin-top: -35%; /* Shift up by 25% of its own height to overlap */
-    padding-top: 25%; /* Create space for overlapping */
+    margin-top: -25%; /* Reduced from -35% */
+    padding-top: 15%; /* Reduced from 25% */
     width: 100%;
     z-index: 1;
 }
 
 /* Poster Image Styling */
 .poster-image-container {
-    left:20px;
+    /* left:20px; */ /* Removed */
     width: 30%;
     flex: 0 0 auto; /* Prevents poster from stretching */
     border-radius: var(--border-radius-medium);
@@ -98,6 +98,7 @@ body {
     flex-direction: column;
     justify-content: center;
     padding-left: var(--spacing-medium);
+    margin-bottom: var(--spacing-small); /* Reduced if necessary */
 }
 
 /* Movie Title */
@@ -158,16 +159,22 @@ body {
 .additional-info {
     /* max-width: var(--catalog-width); */
     width: 98%;
-    padding: var(--spacing-medium);
+    padding: var(--spacing-small); /* Reduced padding */
+    color: var(--text-color);
+}
+.additional-info .cursive-text {
+    font-style: italic;
+    color: var(--accent-color);
 }
 
-.additional-info h2 {
-    font-size: var(--font-size-lg);
-    margin-top: var(--spacing-medium);
-    margin-bottom: var(--spacing-small);
-    font-family: var(--font-heading);
-    color: var(--highlight-color);
-    transition: color var(--transition-duration) ease;
+
+/* Additional Info Styles */
+.additional-info p {
+    color: var(--text-color); /* Ensures visibility based on theme */
+    opacity: 1; /* Make sure it's fully opaque */
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin: var(--spacing-small) 0;
 }
 
 .additional-info ul {
@@ -327,6 +334,7 @@ body {
     /* Hide text labels and show only icons in movie-info */
     .movie-info .info-item .info-text {
         display: none;
+        color: var(--text-color);
     }
 
     /* Adjust overview and kritiken */

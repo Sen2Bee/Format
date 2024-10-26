@@ -139,6 +139,7 @@ def get_movie_details(movie_id):
             SELECT 
                 m.movie_id, 
                 m.title, 
+                m.format_titel, 
                 m.original_title, 
                 m.release_date, 
                 m.runtime, 

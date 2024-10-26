@@ -37,7 +37,7 @@
                 <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
             </div>
             <div class="nav-center-title">
-                <span class="theme-title">{{ movie.title }}</span>
+                <span class="theme-title">{{ movie.format_titel }}</span>
             </div>
 
         </nav>
@@ -78,7 +78,7 @@
                     <!-- Content Container -->
                     <div class="content-container">
                         <!-- Titles -->
-                        <h1 class="movie-title">{{ movie.title }} ({{ movie.release_date }})</h1>
+                        <h1 class="movie-title">{{ movie.format_titel }} ({{ movie.release_date }})</h1>
                         <h2 class="original-title">Original Title: {{ movie.original_title }}</h2>
 
                         <!-- Movie Information -->
@@ -162,43 +162,30 @@
             </div>
             {% endif %}
 
-            <!-- Additional Movie Information -->
-            <div class="additional-info">
-                {% if movie.actors %}
-                <div class="info-item">
-                    <p>
-                        <i class="fas fa-users"></i>
-                        <span class="info-text">
-                            {{ movie.actors | join(', ') }}
-                        </span>
-                    </p>
-                </div>   
-                {% endif %} 
+<!-- Additional Movie Information -->
+<div class="additional-info">
+    {% if movie.overview %}
+        <p class="cursive-text">
+            <!-- <i class="fas fa-film"></i> -->
+            {{ movie.overview }}
+        </p>
+    {% endif %}
 
-                {% if movie.overview %}
-                <div class="info-item">
-                    <p>
-                        <i class="fas fa-circle"></i> <!-- Icon for overview content -->
-                        <span class="info-text">{{ movie.overview }}</span> <!-- Overview text -->
-                    </p>
-                </div>
-                {% endif %}
-                                           
-   
+    {% if movie.actors %}
+        <p>
+            <i class="fas fa-users"></i>
+            {{ movie.actors | join(', ') }}
+        </p>
+    {% endif %} 
 
-                {% if movie.wiki_critics %}
-                <div class="info-item">
-                    <p>
-                        <i class="fas fa-pen"></i> <!-- Icon for overview content -->
-                        <span class="info-text">{{ movie.wiki_critics }}</span> <!-- Overview text -->
-                    </p>
-                </div>
-                {% endif %}               
+    {% if movie.wiki_critics %}
+        <p>
+            <i class="fas fa-pen"></i> <!-- Icon for wiki critics content -->
+            {{ movie.wiki_critics }}
+        </p>
+    {% endif %}               
+</div>
 
-
-
-
-            </div>
         </section>
     </main>
     <footer>
