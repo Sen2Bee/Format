@@ -458,7 +458,7 @@ def catalog():
                 GROUP BY m.movie_id
                 HAVING m.imdb_rating > 6.7 AND m.poster_images > 0
                 ORDER BY RAND()
-                LIMIT 10;
+                LIMIT 20;
             """
             logging.info("Executing featured movies query")
             cursor.execute(featured_query, ())

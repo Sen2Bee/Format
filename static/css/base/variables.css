@@ -1,6 +1,17 @@
 /* variables.css */
+
+/*accent colors for light theme */
+
+
 :root {
+    --Warm-Terracotta: #D17A22;
+    --Muted-Teal: #3A8E8D;
+    --Deep-Olive-Green: #6B8F23;
+    --Soft-Burgundy: #A23E48;
+    --Dusty-Blue: #607780;  
+    --Gold: #846c1e;
     /* Color Variables */
+    --accent-color: var(--Gold); /* Muted terracotta */
     --primary-color: #FAF8F6; /* Soft off-white */
     --secondary-color: #3D3D3D; /* Dark charcoal gray */
     --background-color: #FFFDFB; /* Very light beige */
@@ -14,7 +25,7 @@
     --background-dark: #DAD7D2; /* Darker background for sections */
     --secondary-text-color: #FFFFFF; /* White text on dark backgrounds */
     --secondary-secondary-text-color: #B5B2AD; /* Subtle light gray */
-    --accent-color: #846c1e; /* Muted terracotta */
+
     --dropdown-background: #FFFFFF; /* Dropdown background */
     --highlight-color: #846c1e; /* Same as accent */
     --movie-card-background: #FFFFFF; /* Movie card background */
@@ -75,9 +86,17 @@
     --poster-width: 70%;
     --catalog-width: 1200px;
 }
+/*accent colors for light theme 
+Electric Blue (#4A90E2)
+Rich Burgundy (#B53A4B)
+Emerald Green (#2ECC71)
+Golden Amber (#D4A017)
+Burnt Orange (#E87D3E) */
+
 [data-theme="dark"] {
     /* Override Color Variables for Dark Theme */
     --primary-color: #1A1A1A; /* Dark charcoal */
+    --accent-color: #2ECC71;
     --secondary-color: #EAEAEA; /* Light gray text */
     --background-color: #121212; /* Near black */
     --text-color: #D6D6D6; /* Light gray */
