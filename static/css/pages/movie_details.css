@@ -135,13 +135,16 @@ body {
 
 .movie-info .info-text {
     display: inline-block;
-    font-size: var(--font-size-base);
+    font-size: var(--meta-data-font-size-small);
     color: var(--text-color);
     transition: color var(--transition-duration) ease;
 }
 
 /* Overview and Kritiken */
-.overview {
+.additional-info .overview {
+
+    font-style: italic;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     margin-top: var(--spacing-medium);
     font-size: var(--font-size-base);
     line-height: 1.6;
@@ -162,10 +165,7 @@ body {
     padding: var(--spacing-small); /* Reduced padding */
     color: var(--text-color);
 }
-.additional-info .cursive-text {
-    font-style: italic;
-    color: var(--accent-color);
-}
+
 
 
 /* Additional Info Styles */
