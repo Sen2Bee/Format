@@ -1,17 +1,27 @@
 /* footer.css */
 
+/* footer.css */
+
 footer {
-    background-color: var(--footer-background);
-    color: #fff;
-    padding: 40px 0;
-    margin-top: 40px;
+    background-color: var(--footer-background);  /* Use defined primary color */
+    color: var(--text-color);
+    text-align: center;
+    padding: 30px 0;
+    /* max-height: 30px; */
 }
 
-footer .container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
+footer .footer-content {
+    /* If you need specific styles for footer-content */
+    max-width: var(--catalog-width);
+    margin: 0 auto;
+    padding: 10px;
+}
+
+footer .footer-content p {
+    color: var(--text-color); /* Override the global p color */
+    font-size: 1rem; /* Adjust as needed */
+    margin: 0; /* Remove default margins if necessary */
+}
 }
 
 .footer-about,
@@ -27,7 +37,6 @@ footer .container {
 
 .footer-about p {
     font-size: 1rem;
-    color: #ccc;
 }
 
 .footer-links ul {
@@ -37,7 +46,7 @@ footer .container {
 }
 
 .footer-links ul li a {
-    color: #ccc;
+
     transition: color 0.3s;
 }
 
@@ -46,7 +55,6 @@ footer .container {
 }
 
 .footer-social a {
-    color: #ccc;
     font-size: 1.5rem;
     margin-right: 10px;
     transition: color 0.3s;
@@ -60,7 +68,7 @@ footer .container {
     text-align: center;
     margin-top: 20px;
     font-size: 0.9rem;
-    color: #999;
+    color: var(--secondary-color);
 }
 
 /* Responsive Adjustments handled in responsive.css */

@@ -150,6 +150,8 @@ def get_movie_details(movie_id):
                 m.overview, 
                 m.format_standort,
                 m.wiki_critics,
+                m.wiki_background,
+                m.wiki_background,
                 GROUP_CONCAT(DISTINCT c.country ORDER BY c.country SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre ORDER BY g.genre SEPARATOR ', ') AS genres,
                 (SELECT GROUP_CONCAT(name SEPARATOR ', ') 

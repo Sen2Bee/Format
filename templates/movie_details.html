@@ -172,7 +172,7 @@
     {% endif %}
 
     {% if movie.actors %}
-        <p>
+        <p class="actors">
             <i class="fas fa-users"></i>
             {{ movie.actors | join(', ') }}
         </p>
@@ -182,6 +182,12 @@
         <p>
             <i class="fas fa-pen"></i> <!-- Icon for wiki critics content -->
             {{ movie.wiki_critics }}
+        </p>
+    {% endif %}     
+    {% if movie.wiki_background %}
+        <p class="wiki_background">
+            <i class="fas fa-file-alt"></i>
+            {{ movie.wiki_background }}
         </p>
     {% endif %}               
 </div>
