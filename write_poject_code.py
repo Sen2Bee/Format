@@ -9,10 +9,10 @@ output_file = os.path.join(root_path, 'code.txt')
 
 # Define text-based file extensions to include
 text_extensions = {
-    # '.py', 
-    # '.html', 
+    '.py', 
+    '.html', 
     '.css', 
-    # '.js'
+    '.js'
     }
 
 # Define directories and files to include

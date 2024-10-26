@@ -13,7 +13,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* padding: 60px 0; */ /* Removed to reduce vertical space */
     background-color: inherit; /* Inherit background from body */
     color: inherit; /* Inherit text color from body */
 }
@@ -22,8 +21,8 @@ body {
 .backdrop-carousel {
     position: relative;
     width: 100%;
-    margin-bottom: 20px; /* Reduced from 60px */
-    overflow: visible; /* Changed from hidden to visible */
+    height: 60vh; /* Set height to 60% of viewport height */
+    overflow: hidden; /* Hide overflow to maintain aspect ratio */
     border-radius: var(--border-radius-medium);
     box-shadow: 0 4px 8px var(--shadow-color-light);
     background-color: var(--background-color);
@@ -59,42 +58,33 @@ body {
     border-radius: var(--border-radius-medium);
 }
 
-/* Poster and Content Container */
 .poster-content-container {
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-    margin-top: -25%; /* Reduced from -35% */
-    padding-top: 15%; /* Reduced from 25% */
-    width: 100%;
-    z-index: 1;
+
+    z-index: 10;
 }
 
-/* Poster Image Styling */
-.poster-image-container {
-    /* left:20px; */ /* Removed */
-    width: 30%;
-    flex: 0 0 auto; /* Prevents poster from stretching */
+/* Poster Wrap Styling */
+.wrap-poster {
+    float: left; /* Align the poster image to the left; change to 'right' if desired */
+    margin: 10px 20px 10px 0; /* Top, Right, Bottom, Left margins */
+    width: 30%; /* Occupies 30% of the container's width */
+    max-width: 300px; /* Optional: Set a max-width for larger screens */
     border-radius: var(--border-radius-medium);
     overflow: hidden;
     box-shadow: 0 4px 8px var(--movie-card-hover-shadow);
     background-color: var(--movie-card-background);
+    position: relative; /* For overlay positioning */
     transition: box-shadow var(--transition-duration) ease, transform var(--transition-duration) ease;
-    margin-right: var(--spacing-medium);
-    margin-left: 5%;
 }
 
-.poster-image-container img {
-    width: 100%;
+.wrap-poster img {
+    width: 100%; /* Ensure responsive sizing */
     height: auto;
     object-fit: cover;
     display: block;
 }
 
-.poster-image-container {
-    position: relative;
-}
-
+/* Play Trailer Overlay */
 .play-trailer-overlay {
     position: absolute;
     top: 50%;
@@ -117,29 +107,23 @@ body {
     font-size: 2.5em;
 }
 
-.poster-image-container:hover .play-trailer-overlay {
-    opacity: 1;
-}
-
+.wrap-poster:hover .play-trailer-overlay,
 .play-trailer-overlay:hover {
     opacity: 1;
 }
 
+/* Content Wrap Styling */
+.content-wrap {
+    text-align: justify; /* Justify text for a clean look */
+    font-size: 1.2rem;
+    margin-left: 0; /* Reset margin to accommodate float */
+    width: 65%; /* Occupies 65% of the container's width */
 
-
-/* Content Container Styling */
-.content-container {
-    flex: 1; /* Takes up remaining space */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-left: var(--spacing-medium);
-    margin-bottom: var(--spacing-small); /* Reduced if necessary */
 }
 
 /* Movie Title */
 .movie-title {
-    margin-top: 15%;
+    margin-top: 0;
     margin-bottom: var(--spacing-small);
     font-family: var(--font-heading);
     color: var(--text-color);
@@ -149,7 +133,6 @@ body {
 /* Original Title */
 .original-title {
     font-size: var(--meta-data-font-size);
-    /* color: var(--secondary-text-color); */
     transition: color var(--transition-duration) ease, transform var(--transition-duration) ease;
 }
 
@@ -178,7 +161,6 @@ body {
 
 /* Overview and Kritiken */
 .additional-info .overview {
-
     font-style: italic;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     margin-top: var(--spacing-medium);
@@ -208,18 +190,15 @@ body {
 
 /* Additional Info Sections */
 .additional-info {
-    /* max-width: var(--catalog-width); */
     width: 98%;
     padding: var(--spacing-small); /* Reduced padding */
     color: var(--text-color);
 }
 
-
-
 /* Additional Info Styles */
 .additional-info p {
-    color: var(--text-color); /* Ensures visibility based on theme */
-    opacity: 1; /* Make sure it's fully opaque */
+    color: var(--text-color);
+    opacity: 1;
     font-size: var(--font-size-base);
     line-height: 1.6;
     margin: var(--spacing-small) 0;
@@ -246,15 +225,14 @@ body {
     margin-top: -22px; /* Offset by half of the height to center */
     z-index: 1000; /* Higher z-index to appear above other elements */
     cursor: pointer;
-    background-color: transparent; /* Ensure transparent background */
-    border: none; /* Remove any border */
-    border-radius: var(--border-radius-medium); /* Maintain border radius */
+    background-color: transparent;
+    border: none;
+    border-radius: var(--border-radius-medium);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color var(--transition-duration) ease, opacity var(--transition-duration) ease;
-    opacity: 0.7; /* Slightly transparent initially */
-    
+    opacity: 0.7;
 }
 
 .swiper-button-next {
@@ -267,15 +245,15 @@ body {
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    background-color: rgba(0, 0, 0, 0.5); /* Darker background on hover */
-    opacity: 1; /* Fully opaque on hover */
-    color: var(--primary-color); /* Icon color */
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
+    color: var(--primary-color);
 }
 
 /* Swiper Pagination Bullets */
 .swiper-pagination {
-    bottom: 10px !important; /* Position pagination 10px from bottom */
-    z-index: 1000; /* Higher z-index to appear above other elements */
+    bottom: 10px !important;
+    z-index: 1000;
 }
 
 .swiper-pagination-bullet {
@@ -290,49 +268,78 @@ body {
 
 /* Responsive Adjustments */
 
-/* Large Screens */
-@media (min-width: var(--breakpoint-md)) {
-    .poster-content-container {
-        flex-direction: row;
-        margin-top: -25%; /* Ensure only 25% overlap */
-        padding-top: 25%; /* Space for overlapping */
+/* Large Screens (Desktops) */
+@media (min-width: 992px) { /* Example breakpoint for large screens */
+    .wrap-poster {
+        float: left; /* Ensure the poster floats left */
+        margin: 10px 20px 10px 0; /* Adjust margins as needed */
+        width: 30%; /* Adjust width as needed */
+        max-width: 300px; /* Optional: Set a max-width */
     }
 
-    .poster-image-container {
-        width: 20%; /* Occupies 20% of the container's width */
-        margin-left: 20%; /* Positions the poster 20% from the left */
-    }
-
-    .content-container {
-        padding-left: var(--spacing-medium);
+    .content-wrap {
+        width: 65%; /* Adjust width to accommodate float */
+        text-align: justify; /* Justify text for a clean look */
     }
 
     .movie-title {
-        font-size: var(--font-size-xl); /* Increase font size for larger screens */
+        font-size: 2.5rem; /* Adjust as needed */
     }
 
     .original-title {
-        font-size: var(--meta-data-font-size);
+        font-size: 1.5rem; /* Adjust as needed */
     }
 
-    /* Additional font size adjustments if necessary */
+    /* Clear float if necessary */
+    .poster-content-container::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
 }
 
-/* Medium Devices (Tablets) */
-@media (max-width: var(--breakpoint-md)) and (min-width: var(--breakpoint-sm)) {
-    .poster-content-container {
-        flex-direction: row;
-        margin-top: -20%; /* Adjust as needed */
-        padding-top: 20%; /* Space for overlapping */
+/* Medium Screens (Tablets) */
+@media (max-width: 991.98px) and (min-width: 576px) { /* Example breakpoints for medium screens */
+    .wrap-poster {
+        float: left; /* Maintain float on medium screens */
+        margin: 10px 15px 10px 0; /* Adjust margins */
+        width: 30%; /* Adjust width */
+        max-width: 250px; /* Optional: Set a max-width */
     }
 
-    .poster-image-container {
-        width: 200px; /* Adjust as needed */
-        margin-left: 20%; /* Maintain 20% from left */
+    .content-wrap {
+        width: 65%; /* Adjust width */
+        text-align: justify; /* Justify text */
     }
 
-    .content-container {
-        padding-left: var(--spacing-small);
+    .movie-title {
+        font-size: 2rem; /* Adjust as needed */
+    }
+
+    .original-title {
+        font-size: 1.2rem; /* Adjust as needed */
+    }
+
+    /* Clear float if necessary */
+    .poster-content-container::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+/* Small Screens (Mobile Phones) */
+@media (max-width: 575.98px) { /* Example breakpoint for small screens */
+    .wrap-poster {
+        float: none; /* Remove float on small screens */
+        width: 100%; /* Full width for the image */
+        max-width: 100%; /* Remove max-width */
+        margin: 0 auto var(--spacing-medium); /* Center the image with bottom margin */
+    }
+
+    .content-wrap {
+        width: 100%; /* Full width for content */
+        text-align: left; /* Align text to the left */
     }
 
     .movie-title {
@@ -340,171 +347,11 @@ body {
     }
 
     .original-title {
-        font-size: 1.2rem; /* Adjust as needed */
+        font-size: 1.1rem; /* Adjust as needed */
     }
 
+    /* Adjust additional info for better readability */
     .additional-info {
         padding: var(--spacing-small);
     }
-
-    /* Hide some info items or adjust layout if necessary */
-}
-
-/* Small Devices (Mobile Phones) */
-@media (max-width: var(--breakpoint-sm)) {
-    .poster-content-container {
-        flex-direction: column;
-        align-items: center;
-        margin-top: 0; /* Remove overlapping */
-        padding-top: 0; /* Remove padding */
-    }
-
-    .poster-image-container {
-        width: 150px; /* Smaller poster on mobile */
-        margin-left: 0;
-        margin-right: 0;
-        margin-bottom: var(--spacing-medium);
-    }
-
-    .content-container {
-        align-items: center;
-        text-align: center;
-        padding-left: 0;
-    }
-
-    .movie-title {
-        font-size: 1.6rem; /* Smaller font size for mobile */
-    }
-
-    .original-title {
-        font-size: 1rem; /* Smaller font size for mobile */
-    }
-
-    /* Hide text labels and show only icons in movie-info */
-    .movie-info .info-item .info-text {
-        display: none;
-        color: var(--text-color);
-    }
-
-    /* Adjust overview and kritiken */
-    .overview,
-    .kritiken {
-        text-align: center;
-    }
-
-    /* Adjust additional info */
-    .additional-info {
-        padding: var(--spacing-small);
-    }
-
-    .additional-info h2 {
-        font-size: 1.3rem;
-    }
-
-    /* Optionally, reduce padding or margins further */
-}
-
-/* Very Small Mobile (Max Width: 480px) */
-@media (max-width: var(--breakpoint-xs)) {
-    .poster-content-container {
-        flex-direction: column;
-        align-items: center;
-        margin-top: 0;
-        padding-top: 0;
-    }
-
-    .poster-image-container {
-        width: 120px; /* Even smaller poster */
-        margin-bottom: var(--spacing-small);
-    }
-
-    .content-container {
-        align-items: center;
-        text-align: center;
-        padding-left: 0;
-    }
-
-    .movie-title {
-        font-size: 1.4rem; /* Further reduced font size */
-    }
-
-    .original-title {
-        font-size: 0.9rem; /* Further reduced font size */
-    }
-
-    /* Hide text labels if necessary */
-    .movie-info .info-item .info-text {
-        display: none;
-    }
-
-    /* Adjust overview and kritiken for better readability */
-    .overview,
-    .kritiken {
-        font-size: 0.9rem;
-    }
-
-    /* Adjust additional info */
-    .additional-info {
-        padding: var(--spacing-xsmall);
-    }
-
-    .additional-info h2 {
-        font-size: 1.1rem;
-    }
-}
-
-/* Fallback for Swiper if no images are present */
-.backdrop-placeholder {
-    width: 100%;
-    max-width: 1200px;
-    height: 400px; /* Adjust as needed */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--background-color);
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius-medium);
-    box-shadow: 0 4px 8px var(--shadow-color-light);
-    transition: background-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
-}
-
-.backdrop-placeholder img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: var(--border-radius-medium);
-}
-
-/* Tippy.js Tooltip Styles */
-.tooltip-person-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.tooltip-person-content img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.tooltip-name {
-    font-weight: bold;
-    color: var(--text-color);
-}
-
-/* Smooth Transitions for Theme Changes */
-.poster-content-container,
-.poster-image-container,
-.content-container,
-.movie-title,
-.original-title,
-.swiper-button-next,
-.swiper-button-prev,
-.swiper-pagination-bullet,
-.swiper-pagination-bullet-active,
-.menu-toggle,
-.menu-toggle i {
-    transition: all var(--transition-duration) ease;
 }

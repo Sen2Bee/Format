@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-26 14:50:05 ===
+=== Code Summary Generated at 2024-10-26 20:09:34 ===
 
 === Project Folder Structure ===
 
@@ -1899,19 +1899,28 @@ label span.required {
 --- File: static\css\layout\footer.css ---
 /* footer.css */
 
+/* footer.css */
+
 footer {
-    background-color: var(--footer-background);
+    background-color: var(--footer-background);  /* Use defined primary color */
     color: var(--text-color);
     text-align: center;
-    padding: 40px 0;
-    margin-top: 40px;
+    padding: 30px 0;
+    /* max-height: 30px; */
 }
 
-footer .container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
+footer .footer-content {
+    /* If you need specific styles for footer-content */
+    max-width: var(--catalog-width);
+    margin: 0 auto;
+    padding: 10px;
+}
+
+footer .footer-content p {
+    color: var(--text-color); /* Override the global p color */
+    font-size: 1rem; /* Adjust as needed */
+    margin: 0; /* Remove default margins if necessary */
+}
 }
 
 .footer-about,
@@ -2804,7 +2813,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* padding: 60px 0; */ /* Removed to reduce vertical space */
     background-color: inherit; /* Inherit background from body */
     color: inherit; /* Inherit text color from body */
 }
@@ -2813,8 +2821,8 @@ body {
 .backdrop-carousel {
     position: relative;
     width: 100%;
-    margin-bottom: 20px; /* Reduced from 60px */
-    overflow: visible; /* Changed from hidden to visible */
+    height: 60vh; /* Set height to 60% of viewport height */
+    overflow: hidden; /* Hide overflow to maintain aspect ratio */
     border-radius: var(--border-radius-medium);
     box-shadow: 0 4px 8px var(--shadow-color-light);
     background-color: var(--background-color);
@@ -2850,51 +2858,72 @@ body {
     border-radius: var(--border-radius-medium);
 }
 
-/* Poster and Content Container */
 .poster-content-container {
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-    margin-top: -25%; /* Reduced from -35% */
-    padding-top: 15%; /* Reduced from 25% */
-    width: 100%;
-    z-index: 1;
+
+    z-index: 10;
 }
 
-/* Poster Image Styling */
-.poster-image-container {
-    /* left:20px; */ /* Removed */
-    width: 30%;
-    flex: 0 0 auto; /* Prevents poster from stretching */
+/* Poster Wrap Styling */
+.wrap-poster {
+    float: left; /* Align the poster image to the left; change to 'right' if desired */
+    margin: 10px 20px 10px 0; /* Top, Right, Bottom, Left margins */
+    width: 30%; /* Occupies 30% of the container's width */
+    max-width: 300px; /* Optional: Set a max-width for larger screens */
     border-radius: var(--border-radius-medium);
     overflow: hidden;
     box-shadow: 0 4px 8px var(--movie-card-hover-shadow);
     background-color: var(--movie-card-background);
+    position: relative; /* For overlay positioning */
     transition: box-shadow var(--transition-duration) ease, transform var(--transition-duration) ease;
-    margin-right: var(--spacing-medium);
-    margin-left: 5%;
 }
 
-.poster-image-container img {
-    width: 100%;
+.wrap-poster img {
+    width: 100%; /* Ensure responsive sizing */
     height: auto;
     object-fit: cover;
     display: block;
 }
 
-/* Content Container Styling */
-.content-container {
-    flex: 1; /* Takes up remaining space */
+/* Play Trailer Overlay */
+.play-trailer-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    padding-left: var(--spacing-medium);
-    margin-bottom: var(--spacing-small); /* Reduced if necessary */
+    width: 70px;
+    height: 70px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    color: var(--secondary-text-color);
+    opacity: 0.7;
+    transition: opacity var(--transition-duration) ease;
+    text-decoration: none;
+}
+
+.play-trailer-overlay i {
+    font-size: 2.5em;
+}
+
+.wrap-poster:hover .play-trailer-overlay,
+.play-trailer-overlay:hover {
+    opacity: 1;
+}
+
+/* Content Wrap Styling */
+.content-wrap {
+    text-align: justify; /* Justify text for a clean look */
+    font-size: 1.2rem;
+    margin-left: 0; /* Reset margin to accommodate float */
+    width: 65%; /* Occupies 65% of the container's width */
+
 }
 
 /* Movie Title */
 .movie-title {
-    margin-top: 15%;
+    margin-top: 0;
     margin-bottom: var(--spacing-small);
     font-family: var(--font-heading);
     color: var(--text-color);
@@ -2904,7 +2933,6 @@ body {
 /* Original Title */
 .original-title {
     font-size: var(--meta-data-font-size);
-    /* color: var(--secondary-text-color); */
     transition: color var(--transition-duration) ease, transform var(--transition-duration) ease;
 }
 
@@ -2933,13 +2961,24 @@ body {
 
 /* Overview and Kritiken */
 .additional-info .overview {
-
     font-style: italic;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     margin-top: var(--spacing-medium);
     font-size: var(--font-size-base);
     line-height: 1.6;
     color: var(--text-color);
+}
+
+.additional-info .wiki_background {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: var(--spacing-medium);
+    font-size: var(--meta-data-font-size-small);
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.additional-info .actors {
+    color: var(--accent-color);
 }
 
 .kritiken {
@@ -2951,18 +2990,15 @@ body {
 
 /* Additional Info Sections */
 .additional-info {
-    /* max-width: var(--catalog-width); */
     width: 98%;
     padding: var(--spacing-small); /* Reduced padding */
     color: var(--text-color);
 }
 
-
-
 /* Additional Info Styles */
 .additional-info p {
-    color: var(--text-color); /* Ensures visibility based on theme */
-    opacity: 1; /* Make sure it's fully opaque */
+    color: var(--text-color);
+    opacity: 1;
     font-size: var(--font-size-base);
     line-height: 1.6;
     margin: var(--spacing-small) 0;
@@ -2989,15 +3025,14 @@ body {
     margin-top: -22px; /* Offset by half of the height to center */
     z-index: 1000; /* Higher z-index to appear above other elements */
     cursor: pointer;
-    background-color: transparent; /* Ensure transparent background */
-    border: none; /* Remove any border */
-    border-radius: var(--border-radius-medium); /* Maintain border radius */
+    background-color: transparent;
+    border: none;
+    border-radius: var(--border-radius-medium);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background-color var(--transition-duration) ease, opacity var(--transition-duration) ease;
-    opacity: 0.7; /* Slightly transparent initially */
-    color: var(--highlight-color); /* Icon color */
+    opacity: 0.7;
 }
 
 .swiper-button-next {
@@ -3010,14 +3045,15 @@ body {
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    background-color: rgba(0, 0, 0, 0.5); /* Darker background on hover */
-    opacity: 1; /* Fully opaque on hover */
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 1;
+    color: var(--primary-color);
 }
 
 /* Swiper Pagination Bullets */
 .swiper-pagination {
-    bottom: 10px !important; /* Position pagination 10px from bottom */
-    z-index: 1000; /* Higher z-index to appear above other elements */
+    bottom: 10px !important;
+    z-index: 1000;
 }
 
 .swiper-pagination-bullet {
@@ -3032,49 +3068,78 @@ body {
 
 /* Responsive Adjustments */
 
-/* Large Screens */
-@media (min-width: var(--breakpoint-md)) {
-    .poster-content-container {
-        flex-direction: row;
-        margin-top: -25%; /* Ensure only 25% overlap */
-        padding-top: 25%; /* Space for overlapping */
+/* Large Screens (Desktops) */
+@media (min-width: 992px) { /* Example breakpoint for large screens */
+    .wrap-poster {
+        float: left; /* Ensure the poster floats left */
+        margin: 10px 20px 10px 0; /* Adjust margins as needed */
+        width: 30%; /* Adjust width as needed */
+        max-width: 300px; /* Optional: Set a max-width */
     }
 
-    .poster-image-container {
-        width: 20%; /* Occupies 20% of the container's width */
-        margin-left: 20%; /* Positions the poster 20% from the left */
-    }
-
-    .content-container {
-        padding-left: var(--spacing-medium);
+    .content-wrap {
+        width: 65%; /* Adjust width to accommodate float */
+        text-align: justify; /* Justify text for a clean look */
     }
 
     .movie-title {
-        font-size: var(--font-size-xl); /* Increase font size for larger screens */
+        font-size: 2.5rem; /* Adjust as needed */
     }
 
     .original-title {
-        font-size: var(--meta-data-font-size);
+        font-size: 1.5rem; /* Adjust as needed */
     }
 
-    /* Additional font size adjustments if necessary */
+    /* Clear float if necessary */
+    .poster-content-container::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
 }
 
-/* Medium Devices (Tablets) */
-@media (max-width: var(--breakpoint-md)) and (min-width: var(--breakpoint-sm)) {
-    .poster-content-container {
-        flex-direction: row;
-        margin-top: -20%; /* Adjust as needed */
-        padding-top: 20%; /* Space for overlapping */
+/* Medium Screens (Tablets) */
+@media (max-width: 991.98px) and (min-width: 576px) { /* Example breakpoints for medium screens */
+    .wrap-poster {
+        float: left; /* Maintain float on medium screens */
+        margin: 10px 15px 10px 0; /* Adjust margins */
+        width: 30%; /* Adjust width */
+        max-width: 250px; /* Optional: Set a max-width */
     }
 
-    .poster-image-container {
-        width: 200px; /* Adjust as needed */
-        margin-left: 20%; /* Maintain 20% from left */
+    .content-wrap {
+        width: 65%; /* Adjust width */
+        text-align: justify; /* Justify text */
     }
 
-    .content-container {
-        padding-left: var(--spacing-small);
+    .movie-title {
+        font-size: 2rem; /* Adjust as needed */
+    }
+
+    .original-title {
+        font-size: 1.2rem; /* Adjust as needed */
+    }
+
+    /* Clear float if necessary */
+    .poster-content-container::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+/* Small Screens (Mobile Phones) */
+@media (max-width: 575.98px) { /* Example breakpoint for small screens */
+    .wrap-poster {
+        float: none; /* Remove float on small screens */
+        width: 100%; /* Full width for the image */
+        max-width: 100%; /* Remove max-width */
+        margin: 0 auto var(--spacing-medium); /* Center the image with bottom margin */
+    }
+
+    .content-wrap {
+        width: 100%; /* Full width for content */
+        text-align: left; /* Align text to the left */
     }
 
     .movie-title {
@@ -3082,172 +3147,2436 @@ body {
     }
 
     .original-title {
-        font-size: 1.2rem; /* Adjust as needed */
+        font-size: 1.1rem; /* Adjust as needed */
     }
 
+    /* Adjust additional info for better readability */
     .additional-info {
         padding: var(--spacing-small);
     }
-
-    /* Hide some info items or adjust layout if necessary */
 }
 
-/* Small Devices (Mobile Phones) */
-@media (max-width: var(--breakpoint-sm)) {
-    .poster-content-container {
-        flex-direction: column;
-        align-items: center;
-        margin-top: 0; /* Remove overlapping */
-        padding-top: 0; /* Remove padding */
+--- File: static\js\carousel.js ---
+// File: static/js/carousel.js
+
+import { carouselTitle, genreFontMapping } from './entry.js';
+import { getSelectedValues } from './filter.js';
+
+export function initializeSwiper() {
+    const swiperContainer = document.querySelector('.swiper-container');
+    if (!swiperContainer) {
+        console.error("initializeSwiper: Swiper container not found.");
+        return;
     }
 
-    .poster-image-container {
-        width: 150px; /* Smaller poster on mobile */
-        margin-left: 0;
-        margin-right: 0;
-        margin-bottom: var(--spacing-medium);
-    }
+    const totalSlides = swiperContainer.querySelectorAll('.swiper-slide').length;
+    const slidesPerViewDesktop = 7; // Base number for desktop
 
-    .content-container {
-        align-items: center;
-        text-align: center;
-        padding-left: 0;
-    }
+    const swiper = new Swiper('.swiper-container', {
+        loop: totalSlides > slidesPerViewDesktop,
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        slidesPerView: 1, // Set default slides per view
+        spaceBetween: 10,
+        watchOverflow: true, // Disable Swiper if not enough slides
 
-    .movie-title {
-        font-size: 1.6rem; /* Smaller font size for mobile */
-    }
+        simulateTouch: true,
+        touchRatio: 1,
+        touchAngle: 45,
+        longSwipes: true,
+        longSwipesRatio: 0.5,
+        longSwipesMs: 300,
+        followFinger: true,
+        allowTouchMove: true,
 
-    .original-title {
-        font-size: 1rem; /* Smaller font size for mobile */
-    }
+        // Responsive breakpoints
+        breakpoints: {
+            2200: {
+                slidesPerView: 13,
+                spaceBetween: 10,
+            },
+            2000: {
+                slidesPerView: 10,
+                spaceBetween: 10,
+            },
+            1800: {
+                slidesPerView: 9,
+                spaceBetween: 10,
+            },
+            1600: {
+                slidesPerView: 8,
+                spaceBetween: 10,
+            },
+            1400: {
+                slidesPerView: 6.5,
+                spaceBetween: 10,
+            },
+            1200: {
+                slidesPerView: 6,
+                spaceBetween: 6,
+            },
+            1024: {
+                slidesPerView: 5,
+                spaceBetween: 8,
+            },
+            900: {
+                slidesPerView: 4,
+                spaceBetween: 10,
+            },
+            768: {
+                slidesPerView: 3,
+                spaceBetween: 12,
+            },
+            640: {
+                slidesPerView: 2.5,
+                spaceBetween: 14,
+            },
+            0: {
+                slidesPerView: 2.5,
+                spaceBetween: 16,
+            },
+        },
 
-    /* Hide text labels and show only icons in movie-info */
-    .movie-info .info-item .info-text {
-        display: none;
-        color: var(--text-color);
-    }
-
-    /* Adjust overview and kritiken */
-    .overview,
-    .kritiken {
-        text-align: center;
-    }
-
-    /* Adjust additional info */
-    .additional-info {
-        padding: var(--spacing-small);
-    }
-
-    .additional-info h2 {
-        font-size: 1.3rem;
-    }
-
-    /* Optionally, reduce padding or margins further */
+        on: {
+            resize: function () {
+                this.update(); // Update Swiper on window resize
+            },
+            init: function () {
+                if (totalSlides <= this.params.slidesPerView) {
+                    this.loopDestroy(); // Disable loop if not enough slides
+                }
+            },
+        },
+    });
 }
 
-/* Very Small Mobile (Max Width: 480px) */
-@media (max-width: var(--breakpoint-xs)) {
-    .poster-content-container {
-        flex-direction: column;
-        align-items: center;
-        margin-top: 0;
-        padding-top: 0;
-    }
-
-    .poster-image-container {
-        width: 120px; /* Even smaller poster */
-        margin-bottom: var(--spacing-small);
-    }
-
-    .content-container {
-        align-items: center;
-        text-align: center;
-        padding-left: 0;
-    }
-
-    .movie-title {
-        font-size: 1.4rem; /* Further reduced font size */
-    }
-
-    .original-title {
-        font-size: 0.9rem; /* Further reduced font size */
-    }
-
-    /* Hide text labels if necessary */
-    .movie-info .info-item .info-text {
-        display: none;
-    }
-
-    /* Adjust overview and kritiken for better readability */
-    .overview,
-    .kritiken {
-        font-size: 0.9rem;
-    }
-
-    /* Adjust additional info */
-    .additional-info {
-        padding: var(--spacing-xsmall);
-    }
-
-    .additional-info h2 {
-        font-size: 1.1rem;
+/**
+ * Function to update the carousel title based on selected genre
+ */
+export function updateCarouselTitle() {
+    const selectedGenres = getSelectedValues('genre-dropdown-list');
+    if (selectedGenres.length === 1) {
+        const genre = selectedGenres[0];
+        carouselTitle.textContent = genreFontMapping[genre] ? `${genre} Filmtitel` : `${genre} Filme`;
+        // Apply the corresponding font
+        carouselTitle.style.fontFamily = genreFontMapping[genre] || "'Open Sans', sans-serif";
+    } else if (selectedGenres.length > 1) {
+        carouselTitle.textContent = "Verschiedene Genres";
+        carouselTitle.style.fontFamily = "'Open Sans', sans-serif";
+    } else {
+        carouselTitle.textContent = "Hervorgehobene Filme";
+        carouselTitle.style.fontFamily = "'Cinzel', serif";
     }
 }
 
-/* Fallback for Swiper if no images are present */
-.backdrop-placeholder {
-    width: 100%;
-    max-width: 1200px;
-    height: 400px; /* Adjust as needed */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--background-color);
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius-medium);
-    box-shadow: 0 4px 8px var(--shadow-color-light);
-    transition: background-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
+--- File: static\js\catalog.js ---
+// catalog.js
+
+function getIconSizeByType(typeval, type = "rating") {
+    // Define the minimum and maximum sizes for the icon
+    const minSize = 1;   // 1em for the smallest value
+    const maxSize = 2.5;   // 3em for the largest value
+
+    let minVal, maxVal;
+
+    // Set value ranges based on the type
+    if (type === "rating") {
+        minVal = 5;   // IMDb rating starts at 0
+        maxVal = 10;  // IMDb rating goes up to 10
+    } else if (type === "fsk") {
+        minVal = 0;   // FSK can start from 0
+        maxVal = 18;  // FSK goes up to 18
+    } else if (type === "runtime") {
+        minVal = 60;   // Minimum runtime is 60 minutes (1 hour)
+        maxVal = 180;  // Maximum runtime is 180 minutes (3 hours)
+    } else {
+        console.warn(`Unknown type: ${type}. Using default rating scale.`);
+        minVal = 0;  // Default to the rating scale
+        maxVal = 10;
+    }
+
+    // Clamp the value within the min and max range
+    const clampedVal = Math.max(minVal, Math.min(typeval, maxVal));
+
+    // Calculate the size as a ratio between the value and the value range
+    const size = minSize + (clampedVal - minVal) * (maxSize - minSize) / (maxVal - minVal);
+
+    // Return the size in 'em' units, rounded to two decimal places
+    return `${size.toFixed(2)}em`;
 }
 
-.backdrop-placeholder img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: var(--border-radius-medium);
+
+
+
+
+
+
+function getIconSizeByFsk(fsk) {
+    if (fsk <= 6) {
+        return '1em';  // Small size for lower FSK values
+    } else if (fsk <= 12) {
+        return '1.5em';  // Medium size for mid-range FSK values
+    } else if (fsk <= 16) {
+        return '2em';  // Large size for higher FSK values
+    } else if (fsk === 18) {
+        return '2.5em';  // Extra large size for FSK 18
+    } else {
+        return '1em';  // Default size
+    }
+}
+export function updateMovieListings(movies) {
+    const movieContainer = document.querySelector('.movie-listings');
+    if (!movieContainer) {
+        console.error("updateMovieListings: movieContainer element not found.");
+        return;
+    }
+
+    // Check if we are in list view or raster (grid) view
+    const isListView = movieContainer.classList.contains('list-view');
+
+    movieContainer.innerHTML = "";  // Clear existing entries
+    if (movies.length > 0) {
+        const promises = movies.map(movie => {
+            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
+            const defaultImagePath = '/static/images/default_movie.png';
+
+            const movieCard = document.createElement('div');
+            movieCard.className = 'movie-card';
+
+            let formatRuntimeHtml = '';
+            const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
+            formatRuntimeHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
+                    <span>${movie.runtime}</span>
+                </div>
+            `;  
+            let formatFskHtml = '';
+            const fskIconSize = getIconSizeByType(movie.format_fsk, "fsk");
+            formatFskHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
+                    <span>${movie.format_fsk}</span>
+                </div>
+            `;     
+            let formatRatingHtml = '';
+            const ratingIconSize = getIconSizeByType(movie.imdb_rating, "rating"); // Returns a size in 'em', like '2.125em'  
+            console.log("movie.imdb_rating", ratingIconSize, movie.imdb_rating)
+            formatRatingHtml = `
+                <div class="meta-item">
+                    <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
+                    <span>${movie.imdb_rating}</span>
+                </div>
+            `;                    
+
+            // Fetch available person images from the backend
+            return fetch(`/get_person_images/${encodeURIComponent(movie.folder_name)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const availableImages = data.images;
+
+                    // Function to get person image by matching the name in availableImages
+                    function getPersonImage(person) {
+                        for (const image of availableImages) {
+                            if (image.startsWith(person.trim())) {
+                                return `/movie_images/${encodeURIComponent(movie.folder_name)}/person/${encodeURIComponent(image)}`;
+                            }
+                        }
+                        return '/static/images/default_person.png'; // Fallback to default person image
+                    }
+
+                    // Unified Tooltip Class for Directors and Actors
+                    const renderPersonTooltip = (person, role) => {
+                        const personImage = getPersonImage(person);
+                        const personName = person.split('_')[0].replace(/_/g, ' '); // Replace underscores with spaces for display
+
+                        const tooltipContent = `
+                            <div class="tooltip-person-content">
+                                <img src="${personImage}" alt="${personName}" onerror="this.onerror=null; this.src='/static/images/default_person.png';">
+                                <span class="tooltip-name">${personName}</span>
+                            </div>
+                        `;
+
+                        return `
+                            <span 
+                                class="person-tooltip" 
+                                tabindex="0" 
+                                aria-label="${role}: ${personName}"
+                                data-tippy-content="${tooltipContent.replace(/"/g, '&quot;')}" 
+                            >
+                                ${personName}
+                            </span>
+                        `;
+                    };
+
+                    // Map directors with their tooltip images
+                    const directors = Array.isArray(movie.director) && movie.director.length > 0 
+                        ? movie.director.map(director => renderPersonTooltip(director, "Director")).join(', ') 
+                        : "Unknown Director";
+
+                    // Process actors
+                    let actors = "Unknown Actors";
+                    if (movie.actors) {
+                        if (Array.isArray(movie.actors)) {
+                            actors = movie.actors.map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                        } else if (typeof movie.actors === 'string') {
+                            // Split the string into an array by commas
+                            const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
+                            actors = actorArray.map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                        }
+                    }
+
+                    // Limit the number of displayed actors
+                    const maxActorsToShow = 5;
+                    if (Array.isArray(movie.actors)) {
+                        if (movie.actors.length > maxActorsToShow) {
+                            const displayedActors = movie.actors.slice(0, maxActorsToShow).map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                            const remainingCount = movie.actors.length - maxActorsToShow;
+                            actors = `${displayedActors}, ...`;
+                        }
+                    } else if (typeof movie.actors === 'string') {
+                        const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
+                        if (actorArray.length > maxActorsToShow) {
+                            const displayedActors = actorArray.slice(0, maxActorsToShow).map(actor => renderPersonTooltip(actor, "Actor")).join(', ');
+                            const remainingCount = actorArray.length - maxActorsToShow;
+                            actors = `${displayedActors}, ...`;
+                        }
+                    }
+
+                    const countries = Array.isArray(movie.countries) && movie.countries.length > 0
+                        ? movie.countries.map(country => {
+                            const match = country.match(/(.*?)\s\((.*?)\)/); 
+                            const fullName = match ? match[1] : country;
+                            const shortCode = match ? match[2] : country;
+                            return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
+                        }).join(', ')
+                        : "Unknown Countries";
+
+                    const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
+
+
+                    // Determine the overview truncation length based on view type
+                    let content = movie.format_inhalt ? movie.format_inhalt : (movie.format_inhalt ? movie.format_inhalt : "Keine Inhaltsangabe verfügbar.");
+                    const maxLength = isListView ? 300 : 150; // 300 characters for list view, 150 for raster view
+                    if (content.length > maxLength) {
+                        content = content.substring(0, maxLength) + '...';
+                    }                    
+
+
+                    movieCard.innerHTML = `
+                        <div class="movie-content-wrapper">
+                            <div class="image-container">
+                             
+                                <a href="/movie/${movie.movie_id}">
+                                    <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';" loading="lazy">
+                                </a>
+
+                                <div class="hover-title">
+                                    <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-wrapper">
+                                <div class="title-section">
+                                    <h2>${movie.main_title}</h2>
+                                </div>                                                
+                                <div class="overview-section">
+                                    <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                                </div>                                        
+                                <div class="info-section">
+                                    <div class="metadata">  
+                                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | <i class="fas fa-film"></i></strong> ${genres}</p>
+                                        <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
+                                        <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                                        <!-- Inline Meta in List View -->
+                                        <div class="inline-meta">
+                                            ${formatRuntimeHtml}                                        
+                                            ${formatFskHtml}                                        
+                                            ${formatRatingHtml}
+                                            <div class="meta-item">
+                                                <i class="fas fa-calendar" style="font-size:1.4em;"></i>
+                                                <span>${movie.release_date}</span>
+                                            </div>
+                                        </div>
+                                        <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'} | <i class="fas fa-disc"></i></strong>${movie.formats}</p>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    movieContainer.appendChild(movieCard);
+                })
+                .catch(err => console.error('Error fetching person images:', err));
+        });
+
+        // Wait for all movie cards to be appended, then initialize Tippy.js
+        Promise.all(promises).then(() => initializeTippyTooltips());
+    } else {
+        movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
+    }
+
+    // Initialize Tippy.js after all movie cards have been appended
+    initializeTippyTooltips();
 }
 
-/* Tippy.js Tooltip Styles */
-.tooltip-person-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+// Function to initialize Tippy.js tooltips
+function initializeTippyTooltips() {
+    if (typeof tippy === 'undefined') {
+        console.error("Tippy.js is not loaded.");
+        return;
+    }
+
+    tippy('.person-tooltip', {
+        allowHTML: true,
+        interactive: true,
+        theme: 'light-border',
+        placement: 'top',
+        arrow: true,
+    });
 }
 
-.tooltip-person-content img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
+
+// toggle-view.js
+
+export function toggleViews() {
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const movieListings = document.querySelector('.movie-listings');
+
+    if (!gridViewBtn || !listViewBtn || !movieListings) {
+        console.error("toggleViews: One or more elements not found.");
+        return;
+    }
+
+    // Function to activate Grid View
+    const activateGridView = () => {
+        movieListings.classList.remove('list-view');
+        gridViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+        gridViewBtn.setAttribute('aria-pressed', 'true');
+        listViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListingsUI();
+    };
+
+    // Function to activate List View
+    const activateListView = () => {
+        movieListings.classList.add('list-view');
+        listViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+        listViewBtn.setAttribute('aria-pressed', 'true');
+        gridViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListingsUI();
+    };
+
+    // Event Listeners for Toggle Buttons
+    gridViewBtn.addEventListener('click', () => {
+        activateGridView();
+        localStorage.setItem('movieView', 'grid');
+    });
+
+    listViewBtn.addEventListener('click', () => {
+        activateListView();
+        localStorage.setItem('movieView', 'list');
+    });
+
+    // Function to update movie listings UI based on view type
+    const updateMovieListingsUI = () => {
+        // Assuming you have a function or way to re-fetch and re-render movies
+        // For example:
+        fetch('/get_movies') // Replace with your actual endpoint
+            .then(response => response.json())
+            .then(data => {
+                updateMovieListings(data.movies);
+            })
+            .catch(err => console.error('Error fetching movies:', err));
+    };
+
+    // Optional: Persist User Preference using LocalStorage
+    // Check if user has a saved preference
+    const savedView = localStorage.getItem('movieView');
+
+    if (savedView === 'list') {
+        activateListView();
+    } else {
+        activateGridView();
+    }
 }
 
-.tooltip-name {
-    font-weight: bold;
-    color: var(--text-color);
+--- File: static\js\entry.js ---
+// File: static/js/entry.js
+
+/** Cache Elements and Buttons */
+export const clearSearchBtn = document.getElementById('clear-search');
+export const searchBox = document.getElementById('search-box');
+export const movieContainer = document.querySelector('.movie-listings');
+export const topPaginationContainer = document.querySelector('.top-pagination nav ul');
+export const bottomPaginationContainer = document.querySelector('.bottom-pagination nav ul');
+export const progressIndicator = document.getElementById('progress-indicator');
+export const carouselTitle = document.getElementById('carousel-title');
+export const toggleFiltersButton = document.getElementById('toggle-filters-button');
+export const searchDropdownContainer = document.querySelector('.search-dropdown-container');
+export const clearAllFiltersButton = document.getElementById('clear-all-filters-button');
+// New elements for advanced filters
+export const toggleAdvancedFiltersButton = document.getElementById('toggle-advanced-filters-button');
+export const advancedFiltersContainer = document.getElementById('advanced-filters-container');
+
+/** Genre to Font Mapping */
+export const genreFontMapping = {
+    "Action": "'Anton', sans-serif",
+    "Drama": "'Playfair Display', serif",
+    "Family": "'Baloo 2', cursive", 
+    "Comedy": "'Comic Sans MS', cursive, sans-serif",
+    "Thriller": "'Roboto Slab', serif",
+    "Horror": "'Creepster', cursive",
+    "Sci-Fi": "'Orbitron', sans-serif",
+    "Romance": "'Great Vibes', cursive",
+    "Documentary": "'Merriweather', serif",
+    "Fantasy": "'Goudy Bookletter 1911', serif"
+};
+
+/**
+ * Function to show the progress indicator
+ */
+export function showProgressIndicator() {
+    if (progressIndicator) {
+        progressIndicator.style.display = 'flex'; // Show the Progress Indicator
+        progressIndicator.setAttribute('aria-hidden', 'false');
+    } else {
+        console.error("showProgressIndicator: Progress Indicator Element not found.");
+    }
 }
 
-/* Smooth Transitions for Theme Changes */
-.poster-content-container,
-.poster-image-container,
-.content-container,
-.movie-title,
-.original-title,
-.swiper-button-next,
-.swiper-button-prev,
-.swiper-pagination-bullet,
-.swiper-pagination-bullet-active,
-.menu-toggle,
-.menu-toggle i {
-    transition: all var(--transition-duration) ease;
+/**
+ * Function to hide the progress indicator
+ */
+export function hideProgressIndicator() {
+    if (progressIndicator) {
+        progressIndicator.style.display = 'none'; // Hide the Progress Indicator
+        progressIndicator.setAttribute('aria-hidden', 'true');
+    } else {
+        console.error("hideProgressIndicator: Progress Indicator Element not found.");
+    }
 }
+
+--- File: static\js\filter.js ---
+// File: static/js/filter.js
+
+// Import necessary elements and functions
+import {
+    searchBox,
+    clearSearchBtn,
+    toggleFiltersButton,
+    searchDropdownContainer,
+    clearAllFiltersButton,
+    movieContainer,
+    toggleAdvancedFiltersButton,
+    advancedFiltersContainer
+} from './entry.js';
+import { updateCarouselTitle } from './carousel.js';
+import { showProgressIndicator, hideProgressIndicator } from './entry.js';
+import { updateMovieListings } from './catalog.js';
+import { updatePagination } from './pagination.js';
+
+let debounceTimer = null;
+const AUTOCOMPLETE_DEBOUNCE_DELAY = 500; // milliseconds
+const AUTOCOMPLETE_MIN_DIGITS = 2;
+
+/**
+ * Initialize the toggle functionality for the filter panel and advanced filters
+ */
+export function initializeFilterPanelToggle() {
+    // Advanced Filters Toggle is now handled within the main filters
+}
+
+/**
+ * Clear all filters and reset selections
+ */
+export function clearAllFilters() {
+    // Clear selections in all dropdowns
+
+    const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
+    filterButtons.forEach(button => button.classList.remove('selected'));
+
+    // Hide clear icons
+    const clearIcons = document.querySelectorAll('.clear-icon');
+    clearIcons.forEach(icon => {
+        icon.classList.remove('visible');
+    });
+
+    // Reset and hide selection badges
+    const selectionBadges = document.querySelectorAll('.selection-badge');
+    selectionBadges.forEach(badge => {
+        badge.textContent = '';
+        badge.classList.remove('visible');
+    });
+
+    // For single-select dropdowns, ensure "Random" or first option is selected
+    const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
+    singleSelectDropdowns.forEach(dropdownList => {
+        const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
+        const optionsArray = Array.from(buttonsContainer.children).map(btn => btn.dataset.value);
+        const defaultOption = optionsArray.find(label => label.toLowerCase() === 'zufall');
+        const buttonToSelect = defaultOption
+            ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`)
+            : buttonsContainer.firstElementChild;
+
+        if (buttonToSelect) {
+            buttonToSelect.classList.add('selected');
+            const badge = dropdownList.parentElement.querySelector('.selection-badge');
+            updateSelectionBadge([buttonToSelect.dataset.value], badge, dropdownList.id);
+        }
+    });
+
+    // Clear search box
+    if (searchBox) {
+        searchBox.value = '';
+        clearSearchBtn.classList.remove('visible');
+        hideAutocompleteSuggestions();
+    }
+
+    // Trigger a filter update
+    triggerDropdownChangeEvent();
+}
+
+/**
+ * Initialize event listeners for action buttons like "Clear All"
+ */
+export function initializeFilterActionButtons() {
+    // Attach event listener to "Clear All" button
+    if (clearAllFiltersButton) {
+        clearAllFiltersButton.addEventListener('click', () => {
+            clearAllFilters();
+        });
+
+        // Ensure the button is accessible via keyboard
+        clearAllFiltersButton.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                clearAllFilters();
+            }
+        });
+    } else {
+        console.error("initializeFilterActionButtons: clearAllFiltersButton element not found.");
+    }
+}
+
+/**
+ * Function to initialize dropdowns and attach necessary event listeners
+ */
+export function initializeFilterDropdowns() {
+    // Handle filter updates triggered by custom dropdowns
+    document.addEventListener('dropdownChange', () => {
+        updateFilters();
+    });
+
+    // Search box input event with debouncing
+    if (searchBox) {
+        searchBox.addEventListener('input', () => {
+            // Toggle visibility of the clear icon
+            if (searchBox.value.length > 0) {
+                clearSearchBtn.classList.add('visible');
+            } else {
+                clearSearchBtn.classList.remove('visible');
+            }
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                if (searchBox.value.length >= AUTOCOMPLETE_MIN_DIGITS) {
+                    handleAutocomplete();
+                } else {
+                    hideAutocompleteSuggestions();
+                }
+            }, AUTOCOMPLETE_DEBOUNCE_DELAY);
+        });
+    } else {
+        console.error("initializeFilterDropdowns: searchBox element not found.");
+    }
+
+    // Clear search box and trigger update
+    if (clearSearchBtn && searchBox) {
+        clearSearchBtn.addEventListener('click', () => {
+            searchBox.value = '';
+            clearSearchBtn.classList.remove('visible');
+            triggerDropdownChangeEvent();
+            hideAutocompleteSuggestions();
+        });
+
+        // Ensure the clear button is accessible via keyboard
+        clearSearchBtn.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                searchBox.value = '';
+                clearSearchBtn.classList.remove('visible');
+                triggerDropdownChangeEvent();
+                hideAutocompleteSuggestions();
+            }
+        });
+    } else {
+        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
+    }
+
+    
+
+    // Attach event listeners to dropdowns using event delegation
+    attachDropdownEventDelegation();
+
+    // Initialize filter navigation arrows
+    initializeFilterNavigationArrows();
+
+    // Initial filter update
+    triggerDropdownChangeEvent();
+
+
+}
+
+/**
+ * Function to attach event listeners to dropdowns using event delegation
+ */
+export function attachDropdownEventDelegation() {
+    const dropdownHeaders = document.querySelectorAll('.dropdown-header');
+    const dropdownLists = document.querySelectorAll('.dropdown-list');
+
+    // Function to handle dropdown toggling
+    function toggleDropdown(targetDropdown, header) {
+        const isVisible = targetDropdown.classList.contains('show');
+        if (isVisible) {
+            targetDropdown.classList.remove('show');
+            header.setAttribute('aria-expanded', 'false');
+        } else {
+            // Close other open dropdowns
+            document.querySelectorAll('.dropdown-list.show').forEach(list => {
+                list.classList.remove('show');
+                document.querySelector(`.dropdown-header[data-target="${list.id}"]`)?.setAttribute('aria-expanded', 'false');
+            });
+            targetDropdown.classList.add('show');
+            header.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    // Function to handle selection of dropdown items
+    function handleDropdownSelection(dropdownList, target) {
+        const isSingleSelect = dropdownList.classList.contains('single-select');
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+
+        if (isSingleSelect) {
+            dropdownList.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('selected'));
+            target.classList.add('selected');
+        } else {
+            target.classList.toggle('selected');
+        }
+
+        // Update the selection badge
+        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+        const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
+        updateSelectionBadge(selectedValues, selectionBadge, dropdownList.id);
+
+        // Update the visibility of the clear button
+        if (isSingleSelect) {
+            if (clearButton) clearButton.style.display = 'none';
+        } else {
+            if (selectedValues.length > 0) {
+                clearButton.classList.add('visible');
+            } else {
+                clearButton.classList.remove('visible');
+            }
+        }
+
+        // Trigger filter update
+        triggerDropdownChangeEvent();
+    }
+
+    // Function to clear selected items in a dropdown
+    function clearDropdownSelection(dropdownList) {
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+        const clearButton = dropdownHeader.querySelector('.clear-icon');
+
+        // Deselect all buttons
+        dropdownList.querySelectorAll('.filter-button.selected').forEach(button => button.classList.remove('selected'));
+
+        // Clear the badge and hide clear button
+        updateSelectionBadge([], selectionBadge, dropdownList.id);
+        if (clearButton) clearButton.classList.remove('visible');
+
+        // Trigger filter update
+        triggerDropdownChangeEvent();
+    }
+
+    // Attach event listeners to dropdown headers
+    dropdownHeaders.forEach(header => {
+        header.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const targetDropdownId = header.getAttribute('data-target');
+            const targetDropdown = document.getElementById(targetDropdownId);
+            toggleDropdown(targetDropdown, header);
+        });
+
+        // Allow keyboard accessibility
+        header.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                const targetDropdownId = header.getAttribute('data-target');
+                const targetDropdown = document.getElementById(targetDropdownId);
+                toggleDropdown(targetDropdown, header);
+            }
+        });
+    });
+
+    // Handle button clicks within the dropdowns using event delegation
+    dropdownLists.forEach(dropdownList => {
+        dropdownList.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target && target.classList.contains('filter-button')) {
+                event.preventDefault();
+                handleDropdownSelection(dropdownList, target);
+            }
+        });
+
+        // Handle clear button (only for multi-select dropdowns)
+        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+        const clearButton = dropdownHeader?.querySelector('.clear-icon');
+
+        if (clearButton) {
+            clearButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                clearDropdownSelection(dropdownList);
+            });
+
+            // Ensure the clear button is accessible via keyboard
+            clearButton.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    clearDropdownSelection(dropdownList);
+                }
+            });
+        }
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (event) => {
+        dropdownLists.forEach(dropdownList => {
+            const header = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+            if (!dropdownList.contains(event.target) && !header.contains(event.target)) {
+                dropdownList.classList.remove('show');
+                header.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+}
+
+/**
+ * Function to update selection badges based on selected values
+ * @param {Array} selectedValues - Array of selected values
+ * @param {HTMLElement} badgeElement - The badge element to update
+ * @param {string} dropdownListId - ID of the dropdown list
+ */
+export function updateSelectionBadge(selectedValues, badgeElement, dropdownListId) {
+    if (!badgeElement) return; // Early return if badgeElement is not provided
+
+    if (selectedValues.length > 0) {
+        badgeElement.textContent = selectedValues.join(', ');
+        badgeElement.classList.add('visible');
+        badgeElement.style.display = 'inline-block';
+    } else {
+        badgeElement.textContent = '';
+        badgeElement.classList.remove('visible');
+        badgeElement.style.display = 'none';
+    }
+    checkSelections();
+}
+
+/**
+ * Function to check if any selections exist and enable/disable the "Clear All" button
+ */
+function checkSelections() {
+    const selectedButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
+    
+    if (selectedButtons.length > 0) {
+        clearAllFiltersButton.removeAttribute('disabled');  // Enable the button
+    } else {
+        clearAllFiltersButton.setAttribute('disabled', 'true');  // Disable the button
+    }
+}
+
+/**
+ * Helper function to get selected values from a specific dropdown list
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @returns {Array} - An array of selected values
+ */
+export function getSelectedValues(dropdownListId) {
+    const buttons = document.querySelectorAll(`#${dropdownListId} .filter-button.selected`);
+    return Array.from(buttons).map(btn => btn.dataset.value);
+}
+
+/**
+ * Function to handle autocomplete for cast and director names
+ */
+function handleAutocomplete() {
+    const searchQuery = searchBox.value.trim();
+
+    if (searchQuery.length >= AUTOCOMPLETE_MIN_DIGITS) {
+        showProgressIndicator(); // Show the progress indicator before starting the fetch
+
+        fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                showAutocompleteSuggestions(data); // Populate autocomplete suggestions
+            })
+            .catch(error => {
+                console.error('Error fetching autocomplete suggestions:', error);
+                hideAutocompleteSuggestions(); // Hide suggestions on error
+            })
+            .finally(() => {
+                hideProgressIndicator(); // Always hide the progress indicator
+            });
+    } else {
+        hideAutocompleteSuggestions(); // Hide suggestions if query is too short
+    }
+}
+
+/**
+ * Function to show autocomplete suggestions
+ * @param {Array} suggestions - Array of suggestion objects
+ */
+function showAutocompleteSuggestions(suggestions) {
+    let autocompleteList = document.getElementById('autocomplete-list');
+    if (!autocompleteList) {
+        autocompleteList = document.createElement('div');
+        autocompleteList.id = 'autocomplete-list';
+        autocompleteList.className = 'autocomplete-items';
+        document.body.appendChild(autocompleteList);
+    }
+
+    // Position the autocompleteList under the searchBox
+    const searchBoxRect = searchBox.getBoundingClientRect();
+    autocompleteList.style.position = 'absolute';
+    autocompleteList.style.top = `${searchBoxRect.bottom + window.scrollY}px`;
+    autocompleteList.style.left = `${searchBoxRect.left + window.scrollX}px`;
+    autocompleteList.style.width = `${searchBoxRect.width}px`;
+    autocompleteList.style.zIndex = '10000'; // Ensure it's on top
+
+    autocompleteList.innerHTML = '';
+
+    suggestions.forEach(item => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'autocomplete-item';
+        suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
+        suggestionItem.dataset.name = item.name;
+        suggestionItem.dataset.type = item.type;
+
+        suggestionItem.addEventListener('click', () => {
+            searchBox.value = item.name;
+            hideAutocompleteSuggestions();
+            triggerDropdownChangeEvent();
+        });
+
+        autocompleteList.appendChild(suggestionItem);
+    });
+}
+
+/**
+ * Function to hide autocomplete suggestions
+ */
+function hideAutocompleteSuggestions() {
+    const autocompleteList = document.getElementById('autocomplete-list');
+    if (autocompleteList) {
+        autocompleteList.parentNode.removeChild(autocompleteList);
+    }
+    hideProgressIndicator();
+}
+
+/**
+ * Function to populate dropdown lists with options
+ * @param {string} dropdownListId - The ID of the dropdown list element
+ * @param {Object|Array} options - An object with option labels as keys and counts as values or an array of labels
+ * @param {Array} selectedValues - An array of currently selected option values
+ * @param {boolean} singleSelect - If true, only one option can be selected
+ * @param {boolean} showCounts - If true, display counts alongside labels
+ */
+export function populateDropdown(dropdownListId, options, selectedValues = [], singleSelect = false, showCounts = true) {
+    const dropdownList = document.getElementById(dropdownListId);
+    if (!dropdownList) {
+        console.error(`populateDropdown: Element with ID '${dropdownListId}' not found.`);
+        return;
+    }
+
+    dropdownList.innerHTML = "";
+
+    // Add 'single-select' class if applicable
+    if (singleSelect) {
+        dropdownList.classList.add('single-select');
+    } else {
+        dropdownList.classList.remove('single-select');
+    }
+
+    let optionsArray = [];
+
+    if (typeof options === 'object' && !Array.isArray(options)) {
+        optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
+    } else if (Array.isArray(options)) {
+        optionsArray = options.map(label => ({ label }));
+    } else {
+        console.error(`populateDropdown: 'options' should be an object or array. Received:`, options);
+        return;
+    }
+
+    // Conditionally sort the options alphabetically, but skip sorting for "sort-dropdown-list"
+    if (dropdownListId !== 'sort-dropdown-list') {
+        optionsArray.sort((a, b) => a.label.localeCompare(b.label));
+    }
+
+    // For "sort-dropdown-list", implement ascending and descending options, excluding "Random"
+    if (dropdownListId === 'sort-dropdown-list') {
+        const extendedOptionsArray = [];
+        optionsArray.forEach(option => {
+            if (option.label.toLowerCase() === 'zufall') { // 'zufall' means 'random' in German
+                // Add "Random" without icons
+                extendedOptionsArray.push({
+                    label: option.label,
+                    value: `${option.label}`
+                });
+            } else {
+                // Add options with ascending and descending icons
+                extendedOptionsArray.push({
+                    value: option.label,
+                    label: option.label.includes("asc") ? `${option.label} <i class="fa fa-sort-amount-up"></i>` : `${option.label} <i class="fa fa-sort-amount-down"></i>`,
+                });
+            }
+        });
+
+        optionsArray = extendedOptionsArray;
+    }
+
+    // Create a container for the filter buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'filter-buttons-container';
+
+    // Render buttons
+    optionsArray.forEach(option => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "filter-button";
+
+        if (showCounts && option.count !== undefined) {
+            button.innerHTML = `${option.label} (${option.count})`;
+        } else {
+            button.innerHTML = option.label;
+        }
+
+        button.dataset.value = option.value || option.label;
+
+        if (selectedValues.includes(option.value || option.label)) {
+            button.classList.add('selected');
+        }
+        buttonsContainer.appendChild(button);
+    });
+
+    dropdownList.appendChild(buttonsContainer);
+
+    // Update the Selection Badge for normal filters
+    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+    const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+    const selectedValuesUpdated = Array.from(selectedButtons).map(btn => btn.dataset.value);
+    updateSelectionBadge(selectedValuesUpdated, selectionBadge, dropdownList.id);
+    
+    // Hide the clear icon for single-select dropdowns
+    const clearButton = dropdownHeader.querySelector('.clear-icon');
+    if (singleSelect) {
+        if (clearButton) {
+            clearButton.style.display = 'none';
+        }
+    } else {
+        if (clearButton) {
+            clearButton.style.display = '';
+        }
+    }
+}
+
+/**
+ * Function to update filters based on selected criteria and search query
+ * @param {number} page - The current page number for pagination
+ */
+export function updateFilters(page = 1) {
+    const selectedYears = getSelectedValues('year-dropdown-list');
+    const selectedGenres = getSelectedValues('genre-dropdown-list');
+    const selectedCountries = getSelectedValues('country-dropdown-list');
+    const selectedStandorte = getSelectedValues('standort-dropdown-list');
+    const selectedMedia = getSelectedValues('medium-dropdown-list');
+    const selectedSortByValues = getSelectedValues('sort-dropdown-list');
+    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"]; // 'Zufall' means 'Random'
+
+    const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+
+
+
+
+    const params = new URLSearchParams();
+    if (selectedYears.length) {
+        params.append('years', selectedYears.join(','));
+    }
+    if (selectedGenres.length) {
+        params.append('genres', selectedGenres.join(','));
+    }
+    if (selectedCountries.length) {
+        params.append('countries', selectedCountries.join(','));
+    }
+    if (selectedStandorte.length) {
+        params.append('standorte', selectedStandorte.join(','));
+    }
+    if (selectedMedia.length) {
+        params.append('media', selectedMedia.join(','));
+    }
+    if (selectedSortBy.length) {
+        params.append('sort_by', selectedSortBy[0]);
+    }
+
+    // Include search query regardless of length
+    if (searchQuery.length > 0) {
+        params.append('search', searchQuery);
+    }
+
+    params.append('page', page);
+    let total_movies = 0;
+    // Show the progress indicator before starting the fetch
+    showProgressIndicator();
+
+    fetch(`/filter_movies?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages, total_movies } = data;
+
+            // Determine number of columns per row based on total_movies
+            let columnsPerRow = 1; // Default to 1 column
+
+            if (total_movies > 100) {
+                columnsPerRow = 5;
+            } else if (total_movies > 60) {
+                columnsPerRow = 4;
+            } else if (total_movies > 20) {
+                columnsPerRow = 3;
+            } else {
+                columnsPerRow = 1;
+            }
+
+            // Populate dropdowns based on the filtered data
+            populateDropdown('year-dropdown-list', years, selectedYears);
+            populateDropdown('genre-dropdown-list', genres, selectedGenres);
+            populateDropdown('country-dropdown-list', countries, selectedCountries);
+            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
+            populateDropdown('medium-dropdown-list', media, selectedMedia);
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
+                
+            // Update the movie listings with the current number of movies
+            updateMovieListings(movies);
+
+            // Update the layout by adding a class based on columnsPerRow
+            setGridLayout(columnsPerRow);
+
+            // Update pagination
+            updatePagination(current_page, total_pages, total_movies, columnsPerRow);
+
+            updateHeadline(selectedGenres, 
+                selectedYears, 
+                selectedCountries, 
+                selectedStandorte,
+                selectedMedia, 
+                selectedSortByValues,
+                searchQuery, 
+                total_movies); // Pass selected genres and years
+
+        })
+        .catch(error => {
+            console.error('Error fetching filter data:', error);
+            if (movieContainer) {
+                movieContainer.innerHTML = `<p class="no-movies-message">An error occurred. Please try again later.</p>`;
+            }
+        })
+        .finally(() => {
+            hideProgressIndicator();
+
+        });
+}
+
+/**
+ * Function to set the grid layout based on the number of columns
+ * @param {number} columns - Number of columns per row
+ */
+function setGridLayout(columns) {
+    if (!movieContainer) return;
+
+    // Remove existing column classes
+    movieContainer.classList.remove('columns-1', 'columns-3', 'columns-4', 'columns-5');
+
+    // Add the appropriate column class
+    switch (columns) {
+        case 3:
+            movieContainer.classList.add('columns-3');
+            break;
+        case 4:
+            movieContainer.classList.add('columns-4');
+            break;
+        case 5:
+            movieContainer.classList.add('columns-5');
+            break;
+        default:
+            movieContainer.classList.add('columns-1');
+            break;
+    }
+}
+
+/**
+ * Initialize filter navigation arrows
+ */
+function initializeFilterNavigationArrows() {
+    const leftArrow = document.querySelector('.filter-nav-arrow.left');
+    const rightArrow = document.querySelector('.filter-nav-arrow.right');
+    const mainFiltersContainer = document.querySelector('.main-filters-container');
+
+    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
+        console.error("Filter navigation arrows or main filters container not found.");
+        return;
+    }
+
+    leftArrow.addEventListener('click', () => {
+        mainFiltersContainer.scrollBy({
+            left: -200,
+            behavior: 'smooth'
+        });
+    });
+
+    rightArrow.addEventListener('click', () => {
+        mainFiltersContainer.scrollBy({
+            left: 200,
+            behavior: 'smooth'
+        });
+    });
+
+    // Update arrow visibility on scroll
+    mainFiltersContainer.addEventListener('scroll', () => {
+        updateFilterNavigationArrowsVisibility();
+    });
+
+    // Update arrow visibility on window resize
+    window.addEventListener('resize', () => {
+        updateFilterNavigationArrowsVisibility();
+    });
+
+    // Initial check
+    updateFilterNavigationArrowsVisibility();
+}
+
+/**
+ * Update visibility of filter navigation arrows based on scroll position
+ */
+function updateFilterNavigationArrowsVisibility() {
+    const leftArrow = document.querySelector('.filter-nav-arrow.left');
+    const rightArrow = document.querySelector('.filter-nav-arrow.right');
+    const mainFiltersContainer = document.querySelector('.main-filters-container');
+
+    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
+        return;
+    }
+
+    const scrollLeft = mainFiltersContainer.scrollLeft;
+    const maxScrollLeft = mainFiltersContainer.scrollWidth - mainFiltersContainer.clientWidth;
+
+    if (scrollLeft <= 0) {
+        leftArrow.classList.add('hidden');
+    } else {
+        leftArrow.classList.remove('hidden');
+    }
+
+    if (scrollLeft >= maxScrollLeft - 1) {
+        rightArrow.classList.add('hidden');
+    } else {
+        rightArrow.classList.remove('hidden');
+    }
+}
+
+/**
+ * Function to trigger a custom event to notify filter.js of dropdown changes
+ */
+export function triggerDropdownChangeEvent() {
+    const event = new CustomEvent('dropdownChange');
+    console.log("Dispatching dropdownChange event");
+    document.dispatchEvent(event);
+}
+
+
+export function updateHeadline(
+    selectedGenres = [], 
+    selectedYears = [], 
+    selectedCountries = [], 
+    selectedStandorte = [], 
+    selectedMedia = [], 
+    selectedSortByValues = [], 
+    searchQuery,
+    total_movies
+) {
+    let headlineText = 'Auswahl: ';
+    console.log("total_movies", total_movies)
+
+    // Clear existing headline content
+    const headlineElement = document.querySelector('.view-toggle-title');
+    if (!headlineElement) {
+        console.error('Element with class .view-toggle-title not found');
+        return;
+    }
+    headlineElement.innerHTML = '';  // Clear existing content
+
+    // Helper function to add text with icon
+    const appendTextWithIcon = (iconClass, text) => {
+        const span = document.createElement('span');
+        const icon = document.createElement('i');
+        icon.className = iconClass;  // Assign Font Awesome class
+        span.appendChild(icon);      // Add the icon to span
+        span.innerHTML += ` ${text}`; // Add text after the icon
+        if (headlineElement.innerHTML) {
+            headlineElement.innerHTML += ' | '; // Add separator if there is existing content
+        }
+        headlineElement.appendChild(span); // Append the span to the headline
+    };
+
+    // Add search query if present
+    if (searchQuery) {
+        appendTextWithIcon('fa fa-search', searchQuery);
+    }
+
+    // Add genres if present
+    if (selectedGenres.length > 0) {
+        appendTextWithIcon('fa fa-film', selectedGenres.join(', '));
+    }
+
+    // Add years if present
+    if (selectedYears.length > 0) {
+        appendTextWithIcon('fa fa-calendar-alt', selectedYears.join(', '));
+    }
+
+    // Add countries if present
+    if (selectedCountries.length > 0) {
+        appendTextWithIcon('fa fa-globe', selectedCountries.join(', '));
+    }
+
+    // Add standorte (locations) if present
+    if (selectedStandorte.length > 0) {
+        appendTextWithIcon('fa fa-map-marker-alt', selectedStandorte.join(', '));
+    }
+
+    // Add media formats if present
+    if (selectedMedia.length > 0) {
+        appendTextWithIcon('fa fa-compact-disc', selectedMedia.join(', '));
+    }
+
+    // Add sort options if present
+    if (selectedSortByValues.length > 0) {
+        appendTextWithIcon('fa fa-sort', selectedSortByValues.join(', '));
+    }
+
+    // Add total movie count with thousand separators
+    if (total_movies !== undefined && total_movies > 0) {
+        const formattedTotalMovies = total_movies.toLocaleString('de-DE'); // German locale for dot as thousand separator
+        appendTextWithIcon('fa fa-film', `${formattedTotalMovies} ${formattedTotalMovies === '1' ? 'Film gefunden' : 'Filme gefunden'}`);
+
+    }
+
+    // Default text if nothing is selected
+    if (!searchQuery && 
+        selectedGenres.length === 0 && 
+        selectedYears.length === 0 && 
+        selectedCountries.length === 0 && 
+        selectedStandorte.length === 0 && 
+        selectedMedia.length === 0 && 
+        selectedSortByValues.length === 0 && 
+        total_movies === 0) {
+        headlineElement.textContent = '';  // Set to empty if nothing is selected
+    }
+}
+
+--- File: static\js\hero.js ---
+document.addEventListener('DOMContentLoaded', function () {
+ 
+    // Call the wrapper function after the DOM content is fully loaded
+    initializeHeroSectionIfPresent();
+
+    // Call truncateText function for overview sections
+    truncateText('.info-section.overview p', 500);
+
+    // Call the function on initial load and resize
+    adjustTitleFontSize();
+    window.addEventListener('resize', adjustTitleFontSize);
+
+    // Call the function on initial load and window resize
+    adjustMetadataWidth();
+    window.addEventListener('resize', adjustMetadataWidth);
+
+    // Call the function on initial load and window resize
+    updateMovieCardBackground();
+    window.addEventListener('resize', updateMovieCardBackground);
+
+});
+
+
+// Wrapper function to check the presence of hero section before initializing
+function initializeHeroSectionIfPresent() {
+    function manageHeroAndTaglines() {
+        // Taglines array for the hero section
+        const taglines = [
+            "Entdecke unsere Sammlung von fast 20.000 Filmen.",
+            "Finde deine Lieblingsfilme und entdecke neue Perlen.",
+            "Tauche ein in cineastische Meisterwerke.",
+            "Erlebe das Beste aus Arthouse- und klassischem Kino.",
+            "Dein Zugang zu zeitlosen Filmen.",
+            "Die Filmsammlung des FORMAT Filmkunst-Verleihs.",
+            "Für eine Handvoll Dollar kannst du von den Möglichkeiten profitieren.",
+            "Über 19.000 Filme - die größte private Filmsammlung Mitteldeutschlands.",
+            "Independent- und Arthouse-Filme auf DVD, Blu-ray und 3D-Blu-ray.",
+            "'Unendliche Weiten' an Informationen zu den Filmen.",
+            "Cineastische Raritäten, Arthouse und Blockbuster - alles unter einem Dach.",
+            "FILMKUNST-Verleih seit über 18 Jahren."
+        ];
+    
+        // Hero images array
+        const heroImages = [
+            '/static/images/backdrop_1.jpg',
+            '/static/images/backdrop_2.jpg',
+            '/static/images/backdrop_3.jpg',
+            '/static/images/backdrop_4.jpg'
+        ];
+    
+        // Elements for the hero section
+        const taglineElement = document.getElementById('dynamic-tagline');
+        const heroImageElement = document.querySelector('.hero-image img');
+        const logoElement = document.querySelector('.logo span');
+    
+        // Check for the presence of critical elements before proceeding
+        if (!taglineElement || !heroImageElement || !logoElement) {
+            console.info("Hero elements not found on this page. Skipping hero section initialization.");
+            return; // Exit the function if elements are not found
+        }
+    
+        // Initial setup for tagline and hero image
+        let currentTaglineIndex = Math.floor(Math.random() * taglines.length);
+        taglineElement.textContent = taglines[currentTaglineIndex];
+        taglineElement.classList.add('fade-in');
+    
+        // Set a random hero image
+        const randomImage = heroImages[Math.floor(Math.random() * heroImages.length)];
+        heroImageElement.src = randomImage;
+    
+        // Change taglines periodically
+        setInterval(() => {
+            taglineElement.classList.remove('fade-in');
+            taglineElement.classList.add('fade-out');
+    
+            setTimeout(() => {
+                currentTaglineIndex = (currentTaglineIndex + 1) % taglines.length;
+                taglineElement.textContent = taglines[currentTaglineIndex];
+                taglineElement.classList.remove('fade-out');
+                taglineElement.classList.add('fade-in');
+    
+                // Randomly change logo color
+                const randomChance = Math.random();
+                logoElement.style.color = randomChance < 0.3 ? 'red' : 'white';
+            }, 1000); // Matches transition duration
+        }, 5000);
+    }    
+    // Run the hero management code only if the relevant elements exist on the page
+    const heroSectionExists = document.querySelector('.hero-image img') && document.getElementById('dynamic-tagline') && document.querySelector('.logo span');
+    
+    if (heroSectionExists) {
+        manageHeroAndTaglines(); // Initialize only if hero section elements are present
+    } else {
+        console.info("Hero section elements not found on this page. Skipping hero management.");
+    }
+}
+
+// Truncate text for overview sections
+function truncateText(selector, maxLength) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(element => {
+        const originalText = element.textContent;
+        if (originalText.length > maxLength) {
+            const truncatedText = originalText.substring(0, maxLength).trim() + '...';
+            element.textContent = truncatedText;
+        }
+    });
+}
+// Adjust title font size dynamically based on overflow
+function adjustTitleFontSize() {
+    const movieCards = document.querySelectorAll('.movie-card');
+    movieCards.forEach(card => {
+        const titleContainer = card.querySelector('.titles');
+        if (titleContainer) {
+            const mainTitle = titleContainer.querySelector('.main-title');
+            const releaseYear = titleContainer.querySelector('.release-year');
+            
+            if (mainTitle && releaseYear) {
+                // Reset to default size
+                mainTitle.style.fontSize = '1.6em';
+                releaseYear.style.fontSize = '0.8em';
+                
+                // Check if the title overflows
+                if (titleContainer.scrollWidth > titleContainer.clientWidth) {
+                    let fontSize = parseFloat(window.getComputedStyle(mainTitle).fontSize);
+                    while (titleContainer.scrollWidth > titleContainer.clientWidth && fontSize > 0.8) {
+                        fontSize -= 0.1;
+                        mainTitle.style.fontSize = fontSize + 'em';
+                        releaseYear.style.fontSize = (fontSize * 0.7) + 'em';  // Adjust year proportionally
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Adjust the width of metadata elements dynamically
+function adjustMetadataWidth() {
+    const metadataElements = document.querySelectorAll('.movie-metadata');
+    metadataElements.forEach(metadata => {
+        const parentWidth = metadata.parentElement.clientWidth;
+        metadata.style.maxWidth = parentWidth + 'px';
+    });
+}
+
+
+// Function to update movie card background images based on screen size
+function updateMovieCardBackground() {
+const movieCards = document.querySelectorAll('.movie-card.poster-background');
+movieCards.forEach(card => {
+    const mobileImage = card.getAttribute('data-mobile-image');
+    const desktopImage = card.getAttribute('data-desktop-image');
+
+    // Set the correct background based on the screen size
+    if (window.innerWidth >= 1024) {
+        if (desktopImage) {
+            card.style.backgroundImage = `url(${desktopImage})`;
+        }
+    } else {
+        if (mobileImage) {
+            card.style.backgroundImage = `url(${mobileImage})`;
+        }
+    }
+});
+}
+--- File: static\js\main.js ---
+// File: static/js/main.js
+
+import { initializeSwiper } from './carousel.js';  // Example import
+import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilterActionButtons } from './filter.js'; 
+import { toggleViews } from './catalog.js'; 
+import { themeToggle } from './theme_toggle.js'; 
+
+document.addEventListener('DOMContentLoaded', function () {
+    initializeFilterDropdowns();  // Initialize dropdowns on page load
+    initializeSwiper(); // Initialize Swiper Carousel
+    initializeFilterPanelToggle(); // Initialize filter panel toggle
+    initializeFilterActionButtons(); // Initialize "Clear All" and "Show All Results" buttons
+    toggleViews();
+    themeToggle();
+
+});
+
+--- File: static\js\movie_details.js ---
+// File: static/js/movie_details.js
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Retrieve the movie folder name from the data attribute
+    const body = document.querySelector('body');
+    const movieFolder = body.getAttribute('data-folder');
+
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    
+
+    if (!movieFolder) {
+        console.error('No folder name found in data attributes.');
+        return;
+    }
+
+    // Fetch backdrop images
+    fetch(`/get_backdrop_images/${encodeURIComponent(movieFolder)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            let backdrops = data.images;
+            const swiperWrapper = document.querySelector('.swiper-wrapper');
+
+            if (backdrops.length === 0) {
+                console.warn('No backdrops found. Attempting to use poster images as backdrops.');
+                // Fetch poster images if no backdrops are available
+                return fetch(`/get_poster_images/${encodeURIComponent(movieFolder)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(posterData => {
+                        backdrops = posterData.images;
+                        if (backdrops.length === 0) {
+                            console.warn('No posters found to use as backdrops.');
+                            // Optionally, you can display a default backdrop here
+                            return;
+                        }
+                        // Use the posters as backdrops
+                        populateSwiper(backdrops, movieFolder, 'poster');
+                        initializeSwiper(); // Initialize Swiper after adding slides
+                    });
+            }
+
+            // Clear existing slides if any
+            swiperWrapper.innerHTML = '';
+
+            // Add backdrop slides
+            populateSwiper(backdrops, movieFolder, 'backdrop');
+            initializeSwiper(); // Initialize Swiper after adding slides
+        })
+        .catch(error => {
+            console.error('Error fetching backdrop images:', error);
+        });
+
+    /**
+     * Function to populate Swiper with images
+     */
+    function populateSwiper(images, folderName, type) {
+        const swiperWrapper = document.querySelector('.swiper-wrapper');
+        if (!swiperWrapper) {
+            console.error('Swiper wrapper not found.');
+            return;
+        }
+        images.forEach(image => {
+            const slide = document.createElement('div');
+            slide.className = 'swiper-slide';
+            const img = document.createElement('img');
+            img.src = `/movie_images/${encodeURIComponent(folderName)}/${type}/${encodeURIComponent(image)}`;
+            img.alt = `${type.charAt(0).toUpperCase() + type.slice(1)} Image`;
+            slide.appendChild(img);
+            swiperWrapper.appendChild(slide);
+        });
+    }
+    
+
+    /**
+     * Initialize Swiper Carousel
+     */
+    function initializeSwiper() {
+        var swiper = new Swiper('.swiper-container', {
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            slidesPerView: 1,
+            spaceBetween: 10,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
+    }
+    
+});
+
+--- File: static\js\navbar.js ---
+document.addEventListener('DOMContentLoaded', function () {
+    const navbar = document.querySelector('.navbar'); // Select the navbar element
+    let lastScrollTop = 0; // Track the previous scroll position
+    let debounceTimer = null; // Timer for debounce to limit function calls
+
+    // Function to handle scroll events
+    function handleScroll() {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+        // Show navbar at the top of the page
+        if (currentScroll <= 20) {
+            navbar.classList.remove('hide');
+            navbar.classList.add('show');
+        }
+        // Hide navbar on scroll down
+        else if (currentScroll > lastScrollTop) {
+            navbar.classList.add('hide');
+            navbar.classList.remove('show');
+        }
+        // Show navbar on scroll up
+        else {
+            navbar.classList.remove('hide');
+            navbar.classList.add('show');
+        }
+
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Update lastScrollTop
+    }
+
+    // Debounce function to limit the number of scroll events fired
+    function debounce(func, delay) {
+        return function (...args) {
+            clearTimeout(debounceTimer); // Clear the previous timer
+            debounceTimer = setTimeout(() => func.apply(this, args), delay); // Set a new timer
+        };
+    }
+
+    // Listen to scroll events with debounce applied
+    window.addEventListener('scroll', debounce(handleScroll, 100));
+});
+
+--- File: static\js\pagination.js ---
+// File: static/js/pagination.js
+
+import { topPaginationContainer, bottomPaginationContainer } from './entry.js';  // Import pagination containers
+import { updateFilters } from './filter.js';  // Import the updateFilters function
+
+/**
+ * Function to handle pagination updates for both top and bottom paginations
+ */
+export function updatePagination(currentPage, totalPages, totalMovies, columnsPerRow) {
+    [topPaginationContainer, bottomPaginationContainer].forEach(paginationContainer => {
+        if (!paginationContainer) return;
+
+        paginationContainer.innerHTML = "";  // Clear existing pagination buttons
+
+        // Create the "Previous" Button
+        let prevDisabledClass = currentPage <= 1 ? 'disabled' : '';
+        let prevDisabledAttr = currentPage <= 1 ? 'aria-disabled="true"' : '';
+        paginationContainer.innerHTML += `<li class="${prevDisabledClass}"><a href="#" data-page="${currentPage - 1}" ${prevDisabledAttr}>&laquo; Zurück</a></li>`;
+
+        // Determine if ellipsis is needed
+        const showStartEllipsis = currentPage > 3;
+        const showEndEllipsis = currentPage < totalPages - 2;
+
+        // Add first page and ellipsis if needed
+        if (showStartEllipsis) {
+            paginationContainer.innerHTML += `<li><a href="#" data-page="1">1</a></li>`;
+            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
+        }
+
+        // Generate page numbers around the current page
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        for (let p = startPage; p <= endPage; p++) {
+            if (p === currentPage) {
+                paginationContainer.innerHTML += `<li class="active"><span>${p}</span></li>`;  // Use <span> for active page
+            } else {
+                paginationContainer.innerHTML += `<li><a href="#" data-page="${p}">${p}</a></li>`;
+            }
+        }
+
+        // Add ellipsis and last page if needed
+        if (showEndEllipsis) {
+            paginationContainer.innerHTML += `<li class="ellipsis"><span>...</span></li>`;
+            paginationContainer.innerHTML += `<li><a href="#" data-page="${totalPages}">${totalPages}</a></li>`;
+        }
+
+        // Create the "Next" Button
+        let nextDisabledClass = currentPage >= totalPages ? 'disabled' : '';
+        let nextDisabledAttr = currentPage >= totalPages ? 'aria-disabled="true"' : '';
+        paginationContainer.innerHTML += `<li class="${nextDisabledClass}"><a href="#" data-page="${currentPage + 1}" ${nextDisabledAttr}>Nächste &raquo;</a></li>`;
+    });
+
+    attachPaginationEventListeners(columnsPerRow);
+}
+
+/**
+ * Function to attach click event listeners for pagination buttons
+ */
+export function attachPaginationEventListeners(columnsPerRow) {
+    const paginationLinks = document.querySelectorAll('.pagination nav ul li a[data-page]');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (this.parentElement.classList.contains('disabled')) {
+                return;  // Ignore clicks on disabled buttons
+            }
+            const page = parseInt(this.getAttribute('data-page'));
+            if (!isNaN(page)) updateFilters(page);  // Trigger filter update with selected page
+        });
+    });
+}
+
+--- File: static\js\theme_toggle.js ---
+// File: static/js/theme-toggle.js
+
+export function themeToggle() {
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+
+    // Function to apply theme
+    const applyTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            themeToggleBtn.classList.add('active');
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; // Change icon
+        } else {
+            themeToggleBtn.classList.remove('active');
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; // Change icon
+        }
+    };
+
+    // Initial theme application
+    applyTheme(currentTheme);
+
+    // Toggle theme on button click
+    themeToggleBtn.addEventListener('click', () => {
+        const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+
+    // Keyboard Accessibility for Theme Toggle Button
+    themeToggleBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            themeToggleBtn.click();
+        }
+    });
+}
+
+--- File: templates\catalog.html ---
+<!-- File: templates/catalog.html -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Katalog - FORMAT Filmkunst-Verleih</title>
+    <!-- Responsive Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fonts and Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <!-- Swiper.js CSS for Carousel -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Tippy.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <!-- Popper.js (required by Tippy.js) -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <!-- Tippy.js JS -->
+    <script src="https://unpkg.com/tippy.js@6"></script>
+
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
+                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
+            </div>
+            
+            <!-- Centered theme title in the navbar -->
+            <div class="nav-center-title">
+                <span class="theme-title">...{{ selected_theme }}</span>
+            </div>
+            
+            <div class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" role="button" tabindex="0">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <ul class="nav-links">
+                <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
+                <!-- Additional menu links can be placed here -->
+            </ul>
+            <!-- Add this inside the <nav class="navbar"> ... </nav> -->
+            <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Dark Mode" tabindex="0">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+        <!-- Separate link for mobile users -->
+        <div class="mobile-footer-link">
+            <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
+        </div>
+    </header>
+    
+    <main>
+        <!-- Movie Carousel Section -->
+        <section class="movie-carousel-section">
+            <!-- Swiper.js Carousel -->
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    {% for featured_movie in featured_movies %}
+                    <div class="swiper-slide">
+                        <div class="featured-movie-card">
+                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.avif') }}" 
+                                 alt="{{ featured_movie['main_title'] }}" 
+                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
+                                 loading="lazy">
+                            <div class="featured-movie-overlay">
+                                <h3>{{ featured_movie['main_title'] }}</h3>
+                                <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Navigation -->
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </section>
+
+
+        <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>einen Moment bitte, lade Filme...</p>
+        </div> 
+            
+
+        <!-- Catalog Search Section -->
+        <section class="catalog-search"> 
+            <div class="search-dropdown-container">
+                <!-- Search Box Container -->
+                <div class="search-container">
+                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                    <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
+                    <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
+                </div>
+
+                <form id="filter-form">
+                    <!-- Main Filters Container Wrapper -->
+                    <div class="main-filters-container-wrapper">
+                        <!-- Main Filters Container for Year, Genre, Country, Standort, Medium, Sort -->
+                        <div class="main-filters-container">
+                            <!-- Left Navigation Arrow -->
+                            <button class="filter-nav-arrow left hidden" aria-label="Scroll Left">
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <!-- Year Filter -->
+                            <div class="custom-dropdown" data-dropdown="year-dropdown">
+                                <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                            <span>Zeit</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Genre Filter -->
+                            <div class="custom-dropdown" data-dropdown="genre-dropdown">
+                                <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-film" aria-hidden="true"></i>
+                                            <span>Genre</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Country Filter -->
+                            <div class="custom-dropdown" data-dropdown="country-dropdown">
+                                <div class="dropdown-header" data-target="country-dropdown-list" aria-label="Länder" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-globe" aria-hidden="true"></i>
+                                            <span>Land</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Standort Filter -->
+                            <div class="custom-dropdown" data-dropdown="standort-dropdown">
+                                <div class="dropdown-header" data-target="standort-dropdown-list" aria-label="Standort" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                            <span>Regal</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Medium Filter -->
+                            <div class="custom-dropdown" data-dropdown="medium-dropdown">
+                                <div class="dropdown-header" data-target="medium-dropdown-list" aria-label="Medium" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-compact-disc" aria-hidden="true"></i>
+                                            <span>Medium</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sort By Dropdown -->
+                            <div class="custom-dropdown" data-dropdown="sort-dropdown">
+                                <div class="dropdown-header" data-target="sort-dropdown-list" aria-label="Sortieren nach" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-header-top">
+                                        <div class="header-label">
+                                            <i class="fas fa-sort" aria-hidden="true"></i>
+                                            <span>Ordnung</span>
+                                        </div>
+                                        <div class="dropdown-arrow">
+                                            <!-- Arrow Icon -->
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-header-bottom">
+                                        <span class="selection-badge">
+                                            <span class="badge-label"></span>
+                                        </span>
+                                        <!-- No clear icon for single-select dropdowns -->
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Clear All Filters Button -->
+                            <button type="button" id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
+                                <i class="fas fa-undo" aria-hidden="true"></i>
+                                <span class="sr-only">Alle Filter zurücksetzen</span>
+                            </button>  
+
+                        </div>
+                        <!-- Right Navigation Arrow -->
+                        <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
+                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Dropdown Lists Container -->
+            <div class="dropdown-lists-container">
+                <!-- Year Dropdown List -->
+                <div class="dropdown-list" id="year-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Genre Dropdown List -->
+                <div class="dropdown-list" id="genre-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Country Dropdown List -->
+                <div class="dropdown-list" id="country-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Standort Dropdown List -->
+                <div class="dropdown-list" id="standort-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Medium Dropdown List -->
+                <div class="dropdown-list" id="medium-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+                <!-- Sort Dropdown List -->
+                <div class="dropdown-list" id="sort-dropdown-list">
+                    <!-- Buttons populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Top Pagination Section -->
+        <section class="pagination top-pagination">
+         
+            <nav>
+                <ul>
+                    <!-- Pagination will be populated dynamically here -->
+                </ul>
+            </nav>
+        </section>
+        
+<!-- Toggle View Buttons Container with Headline -->
+<section class="view-toggle-section" style="padding: 20px; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+    <!-- Headline Left of Toggle Buttons -->
+    <div class="view-toggle-headline">
+        <h2 class="view-toggle-title"></h2>
+    </div>
+
+    <!-- Toggle Buttons Right of Headline -->
+    <div class="view-toggle-container">
+        <button id="grid-view-btn" class="view-toggle-btn active" aria-label="Grid View" aria-pressed="true">
+            <i class="fas fa-th"></i>
+        </button>
+        <button id="list-view-btn" class="view-toggle-btn" aria-label="List View" aria-pressed="false">
+            <i class="fas fa-list"></i>
+        </button>
+    </div>
+</section>
+
+
+    
+        <!-- Movie Listings Container -->
+        <!-- <section class="movie-listings-container" style="position: relative; background-color: var(--background-color);"> -->
+    
+            <!-- Movie Listings Section -->
+            <section class="movie-listings">
+                <!-- Movie cards will be dynamically populated here -->
+            </section>
+        <!-- </section> -->
+
+        <!-- Bottom Pagination Section -->
+        <section class="pagination bottom-pagination">
+            <nav>
+                <ul>
+                    <!-- Pagination will be populated dynamically here -->
+                </ul>
+            </nav>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V.</p>
+        </div>
+    </footer>
+
+    <!-- Swiper.js JS for Carousel -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- Scripts -->
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <!-- Toggle View JS -->
+    <script src="{{ url_for('static', filename='js/toggle-view.js') }}"></script>
+</body>
+</html>
+
+--- File: templates\index.html ---
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>FORMAT Filmkunst-Verleih - Home</title>
+    <!-- Responsive Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
+                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
+            </div>
+            <div class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" role="button" tabindex="0">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a></li>
+                <!-- Additional menu links can be placed here -->
+            </ul>
+        </nav>
+        <!-- Separate link for mobile users -->
+        <div class="mobile-footer-link">
+            <a href="https://verein.format-filmkunstverleih.de/">filmkunst-verleih</a>
+        </div>
+    </header>
+    
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-image">
+                <img src="images/backdrop_1.jpg" alt="Hero Image">
+            </div>
+            <div class="hero-overlay">
+                <h1 id="dynamic-tagline">Für eine Handvoll Dollar kannst du von den Möglichkeiten profitieren.</h1>
+            <!-- Place the button outside of the hero-overlay div -->
+                <a href="{{ url_for('catalog') }}" class="btn btn-primary">Katalog</a>
+            </div>
+
+        </section>
+        
+
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/hero.js') }}" type="module"></script>
+</body>
+</html>
+
+--- File: templates\movie_details.html ---
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ movie.title }} - FORMAT Filmkunst-Verleih</title>
+    <!-- Responsive Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Fonts and Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/movie_details.css') }}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <!-- Swiper.js CSS for Carousel -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Tippy.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <!-- Popper.js (required by Tippy.js) -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <!-- Tippy.js JS -->
+    <script src="https://unpkg.com/tippy.js@6"></script>
+</head>
+<body data-folder="{{ movie.folder_name }}">
+
+    <!-- Theme Application Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        });
+    </script>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
+                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
+            </div>
+            <div class="nav-center-title">
+                <span class="theme-title">{{ movie.format_titel }}</span>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <!-- Movie Details Section -->
+        <section class="movie-details">
+            <!-- Backdrop Carousel -->
+            {% if movie.backdrops %}
+            <div class="backdrop-carousel">
+                <!-- Swiper Carousel Wrapper -->
+                <div class="swiper-wrapper-container">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            {% for backdrop in movie.backdrops %}
+                            <div class="swiper-slide">
+                                <img src="{{ backdrop }}" alt="Backdrop Image for {{ movie.format_titel }}" loading="lazy">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Add Pagination -->
+                        <div class="swiper-pagination"></div>
+                        <!-- Add Navigation -->
+                        <button class="swiper-button-prev" aria-label="Previous Slide"><i class="fas fa-chevron-left"></i></button>
+                        <button class="swiper-button-next" aria-label="Next Slide"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Fallback if no backdrops or posters are available -->
+            <div class="backdrop-placeholder">
+                {% if movie.posters %}
+                <!-- Use the first poster as the backdrop -->
+                <img src="{{ movie.posters[0] }}" alt="Poster Image as Backdrop for {{ movie.format_titel }}" loading="lazy">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/default_backdrop.jpg') }}" alt="No Backdrop Available" loading="lazy">
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Poster and Content Container -->
+            <div class="poster-content-container">
+                <!-- Poster Image -->
+                {% if movie.posters %}
+                <div class="wrap-poster">
+                    <img src="{{ movie.posters[0] }}" alt="Poster Image for {{ movie.format_titel }}" loading="lazy">
+                    {% if movie.video_link %}
+                    <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.format_titel }}">
+                        <i class="fas fa-play"></i>
+                    </a>     
+                    {% endif %}                   
+                </div>
+                {% endif %}
+
+                <!-- Additional Information -->
+                <div class="content-wrap">
+                    <h1 class="movie-title">{{ movie.format_titel }} ({{ movie.release_date }})</h1>
+                    <h2 class="original-title">Original Title: {{ movie.original_title }}</h2>
+
+                    <div class="movie-info">
+                        <!-- Info Items -->
+                        <div class="info-item">
+                            <i class="fas fa-video"></i>
+                            <span class="director">
+                                {{ movie.directors | join(', ') }}
+                            </span>
+                        </div>   
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span class="info-text">{{ movie.runtime }} Minuten</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-star"></i>
+                            <span class="info-text">{{ movie.imdb_rating }}</span>
+                        </div>                            
+                        <div class="info-item">
+                            <i class="fas fa-tags"></i>
+                            <span class="info-text">
+                                {% for genre in movie.genres %}
+                                    {{ genre }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-globe"></i>
+                            <span class="info-text">
+                                {% for country in movie.countries %}
+                                    {{ country }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-building"></i>
+                            <span class="info-text">
+                                {{ movie.production_companies | join(', ') }}
+                            </span>
+                        </div>
+                        <!-- Awards -->
+                        {% if movie.awards %}
+                        <div class="info-item">
+                            <i class="fas fa-trophy"></i>
+                            <span class="info-text">
+                                {{ movie.awards | join(', ') }}
+                            </span>
+                        </div>                            
+                        {% endif %}    
+
+                        <!-- Spoken Languages -->
+                        {% if movie.spoken_languages %}
+                        <div class="info-item">
+                            <i class="fas fa-language"></i>
+                            <span class="info-text">
+                                {{ movie.spoken_languages | join(', ') }}
+                            </span>
+                        </div>    
+                        {% endif %}                           
+                        <!-- Formats -->
+                        {% if movie.formats %}
+                        <div class="info-item">
+                            <i class="fas fa-circle"></i>
+                            <span class="info-text">
+                                {{ movie.formats }}
+                            </span>
+                        </div>     
+                        {% endif %}                                
+                    </div>
+
+                    <!-- Additional Movie Information -->
+                    <div class="additional-info">
+                        {% if movie.overview %}
+                            <p class="overview">
+                                {{ movie.overview }}
+                            </p>
+                        {% endif %}
+
+                        {% if movie.actors %}
+                            <p class="actors">
+                                <i class="fas fa-users"></i>
+                                {{ movie.actors | join(', ') }}
+                            </p>
+                        {% endif %} 
+
+                        {% if movie.wiki_critics %}
+                            <p>
+                                <i class="fas fa-pen"></i>
+                                {{ movie.wiki_critics }}
+                            </p>
+                        {% endif %}     
+                        {% if movie.wiki_background %}
+                            <p class="wiki_background">
+                                <i class="fas fa-file-alt"></i>
+                                {{ movie.wiki_background }}
+                            </p>
+                        {% endif %}               
+                    </div>
+                </div> <!-- End of content-wrap -->
+            </div> <!-- End of poster-content-container -->
+
+        </section>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 FORMAT Filmkunst-Verleih e.V. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+    <!-- Swiper.js JS for Carousel -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
+
+</body>
+</html>
 
