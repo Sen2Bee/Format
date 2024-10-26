@@ -209,6 +209,7 @@ export function updateMovieListings(movies) {
                                 </div>                                        
                                 <div class="info-section">
                                     <div class="metadata">  
+                                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | <i class="fas fa-film"></i></strong> ${genres}</p>
                                         <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
                                         <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
                                         <!-- Inline Meta in List View -->
@@ -216,10 +217,13 @@ export function updateMovieListings(movies) {
                                             ${formatRuntimeHtml}                                        
                                             ${formatFskHtml}                                        
                                             ${formatRatingHtml}
+                                            <div class="meta-item">
+                                                <i class="fas fa-calendar" style="font-size:1.4em;"></i>
+                                                <span>${movie.release_date}</span>
+                                            </div>
                                         </div>
                                         <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.format_standort || 'N/A'} | <i class="fas fa-disc"></i></strong>${movie.formats}</p>
-                                        <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | ${movie.release_date}</p>
-                                        <p class="genres"><strong><i class="fas fa-film"></i></strong> ${genres}</p>
+
                                     </div>
                                 </div>
                             </div>
