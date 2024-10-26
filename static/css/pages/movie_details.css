@@ -1,19 +1,19 @@
 /* File: static/css/pages/movie_details.css */
 
-
 /* Body Background and Text Color based on Theme */
 body {
-    background-color: var(--background-color-light);
+    background-color: var(--background-color);
     color: var(--text-color);
+    font-family: var(--font-body);
+    transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease;
 }
-
 
 /* Movie Details Section */
 .movie-details {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 60px 20px;
+    padding: 60px 0;
     background-color: inherit; /* Inherit background from body */
     color: inherit; /* Inherit text color from body */
 }
@@ -22,13 +22,12 @@ body {
 .backdrop-carousel {
     position: relative;
     width: 100%;
-    max-width: 1200px;
     margin-bottom: 60px;
     overflow: visible; /* Changed from hidden to visible */
-    border-radius: 8px;
+    border-radius: var(--border-radius-medium);
     box-shadow: 0 4px 8px var(--shadow-color-light);
-    background-color: var(--background-color-light);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: var(--background-color);
+    transition: background-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
 }
 
 /* Intermediate Wrapper for Swiper to handle overflow and border-radius */
@@ -36,197 +35,364 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden; /* Ensures Swiper slides are clipped correctly */
-    border-radius: 8px;
+    border-radius: var(--border-radius-medium);
 }
 
 /* Swiper Container */
 .swiper-container {
     width: 100%;
     height: 100%;
+    position: relative; /* Establish stacking context for navigation buttons */
 }
 
+/* Swiper Slides */
 .swiper-slide {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Ensure images cover the slide */
 }
 
 .swiper-slide img {
     width: 100%;
     height: auto;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: var(--border-radius-medium);
+}
+
+/* Poster and Content Container */
+.poster-content-container {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    margin-top: -35%; /* Shift up by 25% of its own height to overlap */
+    padding-top: 25%; /* Create space for overlapping */
+    width: 100%;
+    z-index: 1;
+}
+
+/* Poster Image Styling */
+.poster-image-container {
+    left:20px;
+    width: 30%;
+    flex: 0 0 auto; /* Prevents poster from stretching */
+    border-radius: var(--border-radius-medium);
+    overflow: hidden;
+    box-shadow: 0 4px 8px var(--movie-card-hover-shadow);
+    background-color: var(--movie-card-background);
+    transition: box-shadow var(--transition-duration) ease, transform var(--transition-duration) ease;
+    margin-right: var(--spacing-medium);
+    margin-left: 5%;
+}
+
+.poster-image-container img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+}
+
+/* Content Container Styling */
+.content-container {
+    flex: 1; /* Takes up remaining space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: var(--spacing-medium);
+}
+
+/* Movie Title */
+.movie-title {
+    margin-top: 15%;
+    margin-bottom: var(--spacing-small);
+    font-family: var(--font-heading);
+    color: var(--text-color);
+    transition: color var(--transition-duration) ease, transform var(--transition-duration) ease;
+}
+
+/* Original Title */
+.original-title {
+    font-size: var(--meta-data-font-size);
+    /* color: var(--secondary-text-color); */
+    transition: color var(--transition-duration) ease, transform var(--transition-duration) ease;
+}
+
+/* Movie Information Styling */
+.movie-info {
+    margin-top: var(--spacing-medium);
+}
+
+.movie-info .info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-small);
+}
+
+.movie-info .info-item i {
+    margin-right: var(--spacing-small);
+    color: var(--accent-color);
+}
+
+.movie-info .info-text {
+    display: inline-block;
+    font-size: var(--font-size-base);
+    color: var(--text-color);
+    transition: color var(--transition-duration) ease;
+}
+
+/* Overview and Kritiken */
+.overview {
+    margin-top: var(--spacing-medium);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.kritiken {
+    margin-top: var(--spacing-small);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Additional Info Sections */
+.additional-info {
+    /* max-width: var(--catalog-width); */
+    width: 98%;
+    padding: var(--spacing-medium);
+}
+
+.additional-info h2 {
+    font-size: var(--font-size-lg);
+    margin-top: var(--spacing-medium);
+    margin-bottom: var(--spacing-small);
+    font-family: var(--font-heading);
+    color: var(--highlight-color);
+    transition: color var(--transition-duration) ease;
+}
+
+.additional-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.additional-info ul li {
+    margin-bottom: var(--spacing-small);
+    font-size: var(--font-size-base);
+    color: var(--text-color);
 }
 
 /* Swiper Navigation Buttons */
 .swiper-button-next,
 .swiper-button-prev {
-    color: var(--accent-color);
+    position: absolute;
+    top: 50%; /* Center vertically */
+    width: 44px;
+    height: 44px;
+    margin-top: -22px; /* Offset by half of the height to center */
+    z-index: 1000; /* Higher z-index to appear above other elements */
     cursor: pointer;
+    background-color: transparent; /* Ensure transparent background */
+    border: none; /* Remove any border */
+    border-radius: var(--border-radius-medium); /* Maintain border radius */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-duration) ease, opacity var(--transition-duration) ease;
     opacity: 0.7; /* Slightly transparent initially */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    color: var(--highlight-color); /* Icon color */
 }
+
+.swiper-button-next {
+    right: 10px; /* Position 10px from the right edge */
+}
+
+.swiper-button-prev {
+    left: 10px; /* Position 10px from the left edge */
+}
+
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    color: var(--secondary-color);
+    background-color: rgba(0, 0, 0, 0.5); /* Darker background on hover */
     opacity: 1; /* Fully opaque on hover */
 }
 
-
-
 /* Swiper Pagination Bullets */
+.swiper-pagination {
+    bottom: 10px !important; /* Position pagination 10px from bottom */
+    z-index: 1000; /* Higher z-index to appear above other elements */
+}
+
 .swiper-pagination-bullet {
-    background: var(--secondary-text-color-light);
+    background: var(--secondary-text-color);
     opacity: 0.7;
 }
 
-
 .swiper-pagination-bullet-active {
-    background: var(--accent-color-light);
+    background: var(--highlight-color);
     opacity: 1;
 }
 
-
-/* Poster Image Styling */
-.poster-image-container {
-    position: absolute;
-    bottom: -50px; /* Adjust as needed to overlap */
-    left: 20px; /* Adjust as needed */
-    width: 200px; /* Initial width */
-    z-index: 2;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px var(--shadow-color-light);
-    transition: all 0.3s ease;
-    background-color: var(--secondary-color);
-}
-
-
-.poster-image-container img {
-    width: 100%;
-    height: auto;
-    border: 5px solid var(--secondary-color); /* White border for contrast */
-    object-fit: cover;
-}
-
-/* Responsive Poster Image Adjustments */
-@media (min-width: 768px) {
-    .poster-image-container {
-        bottom: -70px;
-        left: 40px;
-        width: 250px;
-    }
-}
-
-@media (min-width: 1024px) {
-    .poster-image-container {
-        bottom: -100px;
-        left: 60px;
-        width: 300px;
-    }
-}
-
-/* Movie Information Styling */
-.movie-info {
-    max-width: 800px;
-    width: 100%;
-    padding-top: 50px; /* Space for the overlapping poster */
-    transition: padding-top 0.3s ease;
-}
-
-/* Movie Titles */
-.movie-info h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: var(--text-color);
-    transition: color 0.3s ease;
-}
-
-
-/* Movie Details Paragraphs */
-.movie-info p {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    line-height: 1.6;
-    color: var(--text-color);
-    transition: color 0.3s ease;
-}
-
-
-
-/* Movie Genres and Other Lists */
-.movie-info ul {
-    list-style: none;
-    padding: 0;
-}
-
-.movie-info ul li {
-    margin-bottom: 5px;
-    font-size: 1.1rem;
-}
-
-/* Headings for Sections */
-.movie-info h2 {
-    font-size: 1.5rem;
-    margin-top: 20px;
-    margin-bottom: 10px;
-    transition: color 0.3s ease;
-}
-
-
 /* Responsive Adjustments */
-@media (max-width: 768px) {
-    .backdrop-carousel {
-        margin-bottom: 15px;
+
+/* Large Screens */
+@media (min-width: var(--breakpoint-md)) {
+    .poster-content-container {
+        flex-direction: row;
+        margin-top: -25%; /* Ensure only 25% overlap */
+        padding-top: 25%; /* Space for overlapping */
     }
 
     .poster-image-container {
-        bottom: -40px;
-        left: 10px;
-        width: 180px;
+        width: 20%; /* Occupies 20% of the container's width */
+        margin-left: 20%; /* Positions the poster 20% from the left */
     }
 
-    .movie-info {
-        padding-top: 100px;
+    .content-container {
+        padding-left: var(--spacing-medium);
     }
 
-    .movie-info h1 {
-        font-size: 1.5rem;
+    .movie-title {
+        font-size: var(--font-size-xl); /* Increase font size for larger screens */
     }
 
-    .movie-info p,
-    .movie-info ul li {
-        font-size: 1rem;
+    .original-title {
+        font-size: var(--meta-data-font-size);
     }
 
-    .poster-image-container img {
-        border: 4px solid #fff;
-    }
+    /* Additional font size adjustments if necessary */
 }
 
-@media (max-width: 480px) {
+/* Medium Devices (Tablets) */
+@media (max-width: var(--breakpoint-md)) and (min-width: var(--breakpoint-sm)) {
+    .poster-content-container {
+        flex-direction: row;
+        margin-top: -20%; /* Adjust as needed */
+        padding-top: 20%; /* Space for overlapping */
+    }
+
     .poster-image-container {
-        bottom: -30px;
-        left: 5px;
-        width: 150px;
+        width: 200px; /* Adjust as needed */
+        margin-left: 20%; /* Maintain 20% from left */
     }
 
-    .movie-info {
-        padding-top: 80px;
+    .content-container {
+        padding-left: var(--spacing-small);
     }
 
-    .movie-info h1 {
+    .movie-title {
+        font-size: 1.8rem; /* Adjust as needed */
+    }
+
+    .original-title {
+        font-size: 1.2rem; /* Adjust as needed */
+    }
+
+    .additional-info {
+        padding: var(--spacing-small);
+    }
+
+    /* Hide some info items or adjust layout if necessary */
+}
+
+/* Small Devices (Mobile Phones) */
+@media (max-width: var(--breakpoint-sm)) {
+    .poster-content-container {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 0; /* Remove overlapping */
+        padding-top: 0; /* Remove padding */
+    }
+
+    .poster-image-container {
+        width: 150px; /* Smaller poster on mobile */
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: var(--spacing-medium);
+    }
+
+    .content-container {
+        align-items: center;
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .movie-title {
+        font-size: 1.6rem; /* Smaller font size for mobile */
+    }
+
+    .original-title {
+        font-size: 1rem; /* Smaller font size for mobile */
+    }
+
+    /* Hide text labels and show only icons in movie-info */
+    .movie-info .info-item .info-text {
+        display: none;
+    }
+
+    /* Adjust overview and kritiken */
+    .overview,
+    .kritiken {
+        text-align: center;
+    }
+
+    /* Adjust additional info */
+    .additional-info {
+        padding: var(--spacing-small);
+    }
+
+    .additional-info h2 {
         font-size: 1.3rem;
     }
 
-    .movie-info p,
-    .movie-info ul li {
+    /* Optionally, reduce padding or margins further */
+}
+
+/* Very Small Mobile (Max Width: 480px) */
+@media (max-width: var(--breakpoint-xs)) {
+    .poster-content-container {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    .poster-image-container {
+        width: 120px; /* Even smaller poster */
+        margin-bottom: var(--spacing-small);
+    }
+
+    .content-container {
+        align-items: center;
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .movie-title {
+        font-size: 1.4rem; /* Further reduced font size */
+    }
+
+    .original-title {
+        font-size: 0.9rem; /* Further reduced font size */
+    }
+
+    /* Hide text labels if necessary */
+    .movie-info .info-item .info-text {
+        display: none;
+    }
+
+    /* Adjust overview and kritiken for better readability */
+    .overview,
+    .kritiken {
         font-size: 0.9rem;
     }
 
-    .poster-image-container img {
-        border: 3px solid #fff;
+    /* Adjust additional info */
+    .additional-info {
+        padding: var(--spacing-xsmall);
+    }
+
+    .additional-info h2 {
+        font-size: 1.1rem;
     }
 }
 
@@ -238,20 +404,18 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--background-color-light);
+    background-color: var(--background-color);
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: var(--border-radius-medium);
     box-shadow: 0 4px 8px var(--shadow-color-light);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
 }
-
-
 
 .backdrop-placeholder img {
     width: 100%;
     height: auto;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: var(--border-radius-medium);
 }
 
 /* Tippy.js Tooltip Styles */
@@ -270,40 +434,20 @@ body {
 
 .tooltip-name {
     font-weight: bold;
-    color: var(--text-color-light);
+    color: var(--text-color);
 }
 
-
 /* Smooth Transitions for Theme Changes */
-.movie-details,
-.backdrop-carousel,
-.swiper-wrapper-container,
+.poster-content-container,
 .poster-image-container,
-.movie-info,
+.content-container,
+.movie-title,
+.original-title,
 .swiper-button-next,
 .swiper-button-prev,
 .swiper-pagination-bullet,
 .swiper-pagination-bullet-active,
-.tooltip-person-content img,
-.tooltip-name {
-    transition: all 0.3s ease;
-}
-
-/* Responsive Swiper Height */
-@media (min-width: 768px) {
-    .backdrop-carousel {
-        height: 500px;
-    }
-}
-
-@media (max-width: 767px) {
-    .backdrop-carousel {
-        height: 300px;
-    }
-}
-
-@media (max-width: 480px) {
-    .backdrop-carousel {
-        height: 200px;
-    }
+.menu-toggle,
+.menu-toggle i {
+    transition: all var(--transition-duration) ease;
 }

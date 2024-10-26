@@ -39,6 +39,7 @@
             <div class="nav-center-title">
                 <span class="theme-title">{{ movie.title }}</span>
             </div>
+
         </nav>
     </header>
     <main>
@@ -47,7 +48,7 @@
             <!-- Backdrop Carousel -->
             {% if movie.backdrops %}
             <div class="backdrop-carousel">
-                <!-- Intermediate Wrapper to Handle Overflow for Swiper -->
+                <!-- Swiper Carousel Wrapper -->
                 <div class="swiper-wrapper-container">
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
@@ -60,87 +61,143 @@
                         <!-- Add Pagination -->
                         <div class="swiper-pagination"></div>
                         <!-- Add Navigation -->
-                        <div class="swiper-button-prev"></div>
-                        <div class="swiper-button-next"></div>
+                        <button class="swiper-button-prev" aria-label="Previous Slide"></button>
+                        <button class="swiper-button-next" aria-label="Next Slide"></button>
                     </div>
                 </div>
 
-                <!-- Poster Image -->
-                {% if movie.posters %}
-                <div class="poster-image-container">
-                    <img src="{{ movie.posters[0] }}" alt="Poster Image">
+                <!-- Poster and Content Container -->
+                <div class="poster-content-container">
+                    <!-- Poster Image -->
+                    {% if movie.posters %}
+                    <div class="poster-image-container">
+                        <img src="{{ movie.posters[0] }}" alt="Poster Image" loading="lazy">
+                    </div>
+                    {% endif %}
+
+                    <!-- Content Container -->
+                    <div class="content-container">
+                        <!-- Titles -->
+                        <h1 class="movie-title">{{ movie.title }} ({{ movie.release_date }})</h1>
+                        <h2 class="original-title">Original Title: {{ movie.original_title }}</h2>
+
+                        <!-- Movie Information -->
+                        <div class="movie-info">
+                            <div class="info-item">
+                                <i class="fas fa-video"></i>
+                                <span class="info-text">
+                                    {{ movie.directors | join(', ') }}
+                                </span>
+                            </div>   
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span class="info-text">{{ movie.runtime }} minutes</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-tags"></i>
+                                <span class="info-text">
+                                    {% for genre in movie.genres %}
+                                        {{ genre }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-globe"></i>
+                                <span class="info-text">
+                                    {% for country in movie.countries %}
+                                        {{ country }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                          
+                            <div class="info-item">
+                                <i class="fas fa-building"></i>
+                                <span class="info-text">
+                                    {{ movie.production_companies | join(', ') }}
+                                </span>
+                            </div>
+                            <!-- Awards -->
+                            {% if movie.awards %}
+                            <div class="info-item">
+                                <i class="fas fa-trophy"></i>
+                                <span class="info-text">
+                                    {{ movie.awards | join(', ') }}
+                                </span>
+                            </div>                            
+                            {% endif %}    
+
+                            <!-- Spoken Languages -->
+                            {% if movie.spoken_languages %}
+                            <div class="info-item">
+                                <i class="fas fa-language"></i>
+                                <span class="info-text">
+                                    {{ movie.spoken_languages | join(', ') }}
+                                </span>
+                            </div>    
+                            {% endif %}                           
+ 
+                            <!-- Formats -->
+                            {% if movie.formats %}
+                            <div class="info-item">
+                                <i class="fas fa-film"></i>
+                                <span class="info-text">
+                                    {{ movie.formats}}
+                                </span>
+                            </div>     
+                            {% endif %}                                
+                                                  
+                        </div>
+                    </div>
                 </div>
-                {% endif %}
             </div>
             {% else %}
             <!-- Fallback if no backdrops or posters are available -->
             <div class="backdrop-placeholder">
                 {% if movie.posters %}
                 <!-- Use the first poster as the backdrop -->
-                <img src="{{ movie.posters[0] }}" alt="Poster Image as Backdrop">
+                <img src="{{ movie.posters[0] }}" alt="Poster Image as Backdrop" loading="lazy">
                 {% else %}
-                <img src="{{ url_for('static', filename='images/default_backdrop.jpg') }}" alt="No Backdrop Available">
+                <img src="{{ url_for('static', filename='images/default_backdrop.jpg') }}" alt="No Backdrop Available" loading="lazy">
                 {% endif %}
             </div>
             {% endif %}
 
-            <!-- Movie Information -->
-            <div class="movie-info">
-                <h1>{{ movie.title }}</h1>
-                <p><strong>Original Title:</strong> {{ movie.original_title }}</p>
-                <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
-                <p><strong>Runtime:</strong> {{ movie.runtime }} minutes</p>
-                <p><strong>Genres:</strong>
-                    {% for genre in movie.genres %}
-                        {{ genre.genre }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-                <p><strong>Countries:</strong>
-                    {% for country in movie.countries %}
-                        {{ country.country }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-                <p><strong>Production Companies:</strong>
-                    {% for company in movie.companies %}
-                        {{ company.company_name }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-                <p><strong>Overview:</strong> {{ movie.overview }}</p>
-                <!-- Display cast -->
-                <h2>Cast</h2>
-                <ul>
-                    {% for actor in movie.cast %}
-                    <li>{{ actor.name }} as {{ actor.role }}</li>
-                    {% endfor %}
-                </ul>
-                <!-- Display crew -->
-                <h2>Crew</h2>
-                <ul>
-                    {% for member in movie.crew %}
-                    <li>{{ member.name }} - {{ member.job }}</li>
-                    {% endfor %}
-                </ul>
-                <!-- Awards -->
-                <h2>Awards</h2>
-                <ul>
-                    {% for award in movie.awards %}
-                    <li>{{ award.award }}</li>
-                    {% endfor %}
-                </ul>
-                <!-- Certificates -->
-                <h2>Certificates</h2>
-                <ul>
-                    {% for cert in movie.certificates %}
-                    <li>{{ cert.country }}: {{ cert.rating }}</li>
-                    {% endfor %}
-                </ul>
-                <!-- Spoken Languages -->
-                <h2>Spoken Languages</h2>
-                <ul>
-                    {% for lang in movie.languages %}
-                    <li>{{ lang.language }}</li>
-                    {% endfor %}
-                </ul>
+            <!-- Additional Movie Information -->
+            <div class="additional-info">
+                {% if movie.actors %}
+                <div class="info-item">
+                    <p>
+                        <i class="fas fa-users"></i>
+                        <span class="info-text">
+                            {{ movie.actors | join(', ') }}
+                        </span>
+                    </p>
+                </div>   
+                {% endif %} 
+
+                {% if movie.overview %}
+                <div class="info-item">
+                    <p>
+                        <i class="fas fa-circle"></i> <!-- Icon for overview content -->
+                        <span class="info-text">{{ movie.overview }}</span> <!-- Overview text -->
+                    </p>
+                </div>
+                {% endif %}
+                                           
+   
+
+                {% if movie.wiki_critics %}
+                <div class="info-item">
+                    <p>
+                        <i class="fas fa-pen"></i> <!-- Icon for overview content -->
+                        <span class="info-text">{{ movie.wiki_critics }}</span> <!-- Overview text -->
+                    </p>
+                </div>
+                {% endif %}               
+
+
+
+
             </div>
         </section>
     </main>

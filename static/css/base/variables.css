@@ -33,6 +33,7 @@
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
     --meta-data-font-size: clamp(0.9rem, 1.2vw, 1.2rem); /* Adaptive font size */
+    --meta-data-font-size-small: clamp(0.7rem, 0.9vw, 0.9rem); /* Adaptive font size */
 
     /* Layout Variables */
     --header-height: 60px; /* Header height */

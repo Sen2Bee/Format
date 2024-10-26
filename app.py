@@ -86,6 +86,46 @@ def movie_details(movie_id):
         logging.warning(f"Movie with ID {movie_id} not found.")
         return "Movie not found", 404
 
+def get_movie_awards(cursor, movie_id):
+    query = """
+        SELECT award
+        FROM awards
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    awards = cursor.fetchall()
+    return [award['award'] for award in awards] if awards else []
+
+def get_movie_certificates(cursor, movie_id):
+    query = """
+        SELECT country, rating, additional_info
+        FROM certificates
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    certificates = cursor.fetchall()
+    return [{'country': cert['country'], 'rating': cert['rating'], 'additional_info': cert['additional_info']} for cert in certificates] if certificates else []
+
+def get_production_companies(cursor, movie_id):
+    query = """
+        SELECT company_name
+        FROM production_companies
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    companies = cursor.fetchall()
+    return [company['company_name'] for company in companies] if companies else []
+
+def get_spoken_languages(cursor, movie_id):
+    query = """
+        SELECT language
+        FROM spoken_languages
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    languages = cursor.fetchall()
+    return [lang['language'] for lang in languages] if languages else []
+
 def get_movie_details(movie_id):
     connection = connect_to_db()
     if not connection:
@@ -108,12 +148,12 @@ def get_movie_details(movie_id):
                 m.folder_name, 
                 m.overview, 
                 m.format_standort,
+                m.wiki_critics,
                 GROUP_CONCAT(DISTINCT c.country ORDER BY c.country SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre ORDER BY g.genre SEPARATOR ', ') AS genres,
-                (SELECT name 
+                (SELECT GROUP_CONCAT(name SEPARATOR ', ') 
                  FROM crew 
-                 WHERE movie_id = m.movie_id AND job = 'Director' 
-                 LIMIT 1) AS director,
+                 WHERE movie_id = m.movie_id AND job = 'Director') AS directors,
                 GROUP_CONCAT(DISTINCT movie_cast.name ORDER BY movie_cast.popularity DESC SEPARATOR ', ') AS actors,
                 TRIM(BOTH ', ' FROM CONCAT_WS(', ',
                     CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
@@ -135,14 +175,14 @@ def get_movie_details(movie_id):
         cursor.execute(query, (movie_id,))
         movie = cursor.fetchone()
 
-        # Convert 'countries' and 'genres' into lists
         if movie:
+            # Convert 'countries', 'genres', 'actors', 'directors' into lists
             movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
             movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
             movie['actors'] = movie['actors'].split(', ') if movie['actors'] else []
-            movie['director'] = movie['director'].split(', ') if movie['director'] else []
+            movie['directors'] = movie['directors'].split(', ') if movie['directors'] else []
 
-            # Retrieve backdrop images from the filesystem
+            # Retrieve backdrop and poster images from the filesystem
             backdrops = get_backdrop_images(movie['folder_name'])
             movie['backdrops'] = backdrops
             # Retrieve poster images
@@ -151,9 +191,25 @@ def get_movie_details(movie_id):
             # If no backdrops are available, use posters as backdrops
             if not movie['backdrops']:
                 logging.info(f"No backdrops found for movie ID {movie_id}. Using posters as backdrops.")
-                movie['backdrops'] = movie['posters']            
+                movie['backdrops'] = movie['posters']
 
-            print("*******"*10, movie['backdrops'])
+            # Retrieve additional details
+            movie['awards'] = get_movie_awards(cursor, movie_id)
+            movie['certificates'] = get_movie_certificates(cursor, movie_id)
+            movie['production_companies'] = get_production_companies(cursor, movie_id)
+            movie['spoken_languages'] = get_spoken_languages(cursor, movie_id)
+
+            # Optionally, retrieve other crew members (excluding directors)
+            query_other_crew = """
+                SELECT name, job
+                FROM crew
+                WHERE movie_id = %s AND job != 'Director'
+            """
+            cursor.execute(query_other_crew, (movie_id,))
+            crew_members = cursor.fetchall()
+            movie['crew_members'] = [{'name': member['name'], 'job': member['job']} for member in crew_members] if crew_members else []
+
+            print("*******" * 10, movie['backdrops'])
 
         cursor.close()
         connection.close()
@@ -165,7 +221,6 @@ def get_movie_details(movie_id):
         cursor.close()
         connection.close()
         return None
-
 
 @app.route('/get_backdrop_images/<path:movie_folder>')
 def get_backdrop_images_route(movie_folder):
