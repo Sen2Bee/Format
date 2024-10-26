@@ -20,7 +20,16 @@
     <!-- Tippy.js JS -->
     <script src="https://unpkg.com/tippy.js@6"></script>
 </head>
-<body data-folder="{{ movie.folder_name }}>
+<body data-folder="{{ movie.folder_name }}">
+
+    <!-- Theme Application Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        });
+    </script>
+
     <header>
         <nav class="navbar">
             <div class="logo">
@@ -30,7 +39,6 @@
             <div class="nav-center-title">
                 <span class="theme-title">{{ movie.title }}</span>
             </div>
-            <!-- Add your menu toggle and nav-links here if needed -->
         </nav>
     </header>
     <main>
@@ -39,20 +47,22 @@
             <!-- Backdrop Carousel -->
             {% if movie.backdrops %}
             <div class="backdrop-carousel">
-                <div class="swiper-container">
-                    <div class="swiper-wrapper">
-                        {% for backdrop in movie.backdrops %}
-
-                        <div class="swiper-slide">
-                            <img src="{{ backdrop }}" alt="Backdrop Image" loading="lazy">
+                <!-- Intermediate Wrapper to Handle Overflow for Swiper -->
+                <div class="swiper-wrapper-container">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            {% for backdrop in movie.backdrops %}
+                            <div class="swiper-slide">
+                                <img src="{{ backdrop }}" alt="Backdrop Image" loading="lazy">
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <!-- Add Pagination -->
+                        <div class="swiper-pagination"></div>
+                        <!-- Add Navigation -->
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
                     </div>
-                    <!-- Add Pagination -->
-                    <div class="swiper-pagination"></div>
-                    <!-- Add Navigation -->
-                    <div class="swiper-button-prev"></div>
-                    <div class="swiper-button-next"></div>
                 </div>
 
                 <!-- Poster Image -->
@@ -60,7 +70,7 @@
                 <div class="poster-image-container">
                     <img src="{{ movie.posters[0] }}" alt="Poster Image">
                 </div>
-                {% endif %} 
+                {% endif %}
             </div>
             {% else %}
             <!-- Fallback if no backdrops or posters are available -->
@@ -146,4 +156,3 @@
 
 </body>
 </html>
-

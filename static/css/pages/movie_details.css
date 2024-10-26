@@ -1,107 +1,116 @@
 /* File: static/css/pages/movie_details.css */
 
+
+/* Body Background and Text Color based on Theme */
+body {
+    background-color: var(--background-color-light);
+    color: var(--text-color);
+}
+
+
 /* Movie Details Section */
 .movie-details {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 60px 20px;
+    background-color: inherit; /* Inherit background from body */
+    color: inherit; /* Inherit text color from body */
 }
 
-.backdrop-carousel {
-    width: 100%;
-    max-width: 1200px;
-    margin-bottom: 20px;
-}
-
-.backdrop-carousel img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
-.movie-info {
-    max-width: 800px;
-    width: 100%;
-}
-
-.movie-info h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.movie-info p {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-}
-
-.movie-info h2 {
-    font-size: 1.5rem;
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-.movie-info ul {
-    list-style: none;
-    padding: 0;
-}
-
-.movie-info ul li {
-    margin-bottom: 5px;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .movie-details {
-        padding: 10px;
-    }
-
-    .movie-info h1 {
-        font-size: 1.5rem;
-    }
-
-    .movie-info p {
-        font-size: 1rem;
-    }
-}
-
-/* Backdrop Carousel */
+/* Swiper Carousel Styles */
 .backdrop-carousel {
     position: relative;
     width: 100%;
     max-width: 1200px;
-    margin-bottom: 20px;
-    overflow: hidden;
+    margin-bottom: 60px;
+    overflow: visible; /* Changed from hidden to visible */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow-color-light);
+    background-color: var(--background-color-light);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.backdrop-carousel .swiper-container {
+/* Intermediate Wrapper for Swiper to handle overflow and border-radius */
+.swiper-wrapper-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Ensures Swiper slides are clipped correctly */
+    border-radius: 8px;
+}
+
+/* Swiper Container */
+.swiper-container {
     width: 100%;
     height: 100%;
 }
 
-.backdrop-carousel img {
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Ensure images cover the slide */
+}
+
+.swiper-slide img {
     width: 100%;
     height: auto;
-    display: block;
+    object-fit: cover;
+    border-radius: 8px;
 }
+
+/* Swiper Navigation Buttons */
+.swiper-button-next,
+.swiper-button-prev {
+    color: var(--accent-color);
+    cursor: pointer;
+    opacity: 0.7; /* Slightly transparent initially */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    color: var(--secondary-color);
+    opacity: 1; /* Fully opaque on hover */
+}
+
+
+
+/* Swiper Pagination Bullets */
+.swiper-pagination-bullet {
+    background: var(--secondary-text-color-light);
+    opacity: 0.7;
+}
+
+
+.swiper-pagination-bullet-active {
+    background: var(--accent-color-light);
+    opacity: 1;
+}
+
 
 /* Poster Image Styling */
 .poster-image-container {
     position: absolute;
-    bottom: -50px; /* Adjust as needed */
-    left: 20px;    /* Adjust as needed */
-    width: 200px;  /* Adjust as needed */
-    z-index: 2;    /* Ensure the poster appears above the backdrop */
+    bottom: -50px; /* Adjust as needed to overlap */
+    left: 20px; /* Adjust as needed */
+    width: 200px; /* Initial width */
+    z-index: 2;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px var(--shadow-color-light);
+    transition: all 0.3s ease;
+    background-color: var(--secondary-color);
 }
+
 
 .poster-image-container img {
     width: 100%;
     height: auto;
-    border: 5px solid white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: 5px solid var(--secondary-color); /* White border for contrast */
+    object-fit: cover;
 }
 
-/* Responsive Adjustments */
+/* Responsive Poster Image Adjustments */
 @media (min-width: 768px) {
     .poster-image-container {
         bottom: -70px;
@@ -118,21 +127,183 @@
     }
 }
 
-/* Adjust the padding-top of the movie-info section to accommodate the overlapping poster */
+/* Movie Information Styling */
 .movie-info {
     max-width: 800px;
     width: 100%;
-    padding-top: 120px; /* Adjust to prevent overlap */
+    padding-top: 50px; /* Space for the overlapping poster */
+    transition: padding-top 0.3s ease;
 }
 
-@media (min-width: 768px) {
+/* Movie Titles */
+.movie-info h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+
+/* Movie Details Paragraphs */
+.movie-info p {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    line-height: 1.6;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+
+
+/* Movie Genres and Other Lists */
+.movie-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.movie-info ul li {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+/* Headings for Sections */
+.movie-info h2 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .backdrop-carousel {
+        margin-bottom: 15px;
+    }
+
+    .poster-image-container {
+        bottom: -40px;
+        left: 10px;
+        width: 180px;
+    }
+
     .movie-info {
-        padding-top: 150px;
+        padding-top: 100px;
+    }
+
+    .movie-info h1 {
+        font-size: 1.5rem;
+    }
+
+    .movie-info p,
+    .movie-info ul li {
+        font-size: 1rem;
+    }
+
+    .poster-image-container img {
+        border: 4px solid #fff;
     }
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 480px) {
+    .poster-image-container {
+        bottom: -30px;
+        left: 5px;
+        width: 150px;
+    }
+
     .movie-info {
-        padding-top: 200px;
+        padding-top: 80px;
+    }
+
+    .movie-info h1 {
+        font-size: 1.3rem;
+    }
+
+    .movie-info p,
+    .movie-info ul li {
+        font-size: 0.9rem;
+    }
+
+    .poster-image-container img {
+        border: 3px solid #fff;
+    }
+}
+
+/* Fallback for Swiper if no images are present */
+.backdrop-placeholder {
+    width: 100%;
+    max-width: 1200px;
+    height: 400px; /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color-light);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow-color-light);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+
+.backdrop-placeholder img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Tippy.js Tooltip Styles */
+.tooltip-person-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tooltip-person-content img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.tooltip-name {
+    font-weight: bold;
+    color: var(--text-color-light);
+}
+
+
+/* Smooth Transitions for Theme Changes */
+.movie-details,
+.backdrop-carousel,
+.swiper-wrapper-container,
+.poster-image-container,
+.movie-info,
+.swiper-button-next,
+.swiper-button-prev,
+.swiper-pagination-bullet,
+.swiper-pagination-bullet-active,
+.tooltip-person-content img,
+.tooltip-name {
+    transition: all 0.3s ease;
+}
+
+/* Responsive Swiper Height */
+@media (min-width: 768px) {
+    .backdrop-carousel {
+        height: 500px;
+    }
+}
+
+@media (max-width: 767px) {
+    .backdrop-carousel {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .backdrop-carousel {
+        height: 200px;
     }
 }

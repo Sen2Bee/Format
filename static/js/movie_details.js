@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const body = document.querySelector('body');
     const movieFolder = body.getAttribute('data-folder');
 
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    
+
     if (!movieFolder) {
         console.error('No folder name found in data attributes.');
         return;
@@ -61,6 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function populateSwiper(images, folderName, type) {
         const swiperWrapper = document.querySelector('.swiper-wrapper');
+        if (!swiperWrapper) {
+            console.error('Swiper wrapper not found.');
+            return;
+        }
         images.forEach(image => {
             const slide = document.createElement('div');
             slide.className = 'swiper-slide';
@@ -71,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
             swiperWrapper.appendChild(slide);
         });
     }
+    
 
     /**
      * Initialize Swiper Carousel
@@ -94,4 +103,5 @@ document.addEventListener('DOMContentLoaded', function () {
             },
         });
     }
+    
 });
