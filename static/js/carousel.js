@@ -60,27 +60,27 @@ export function initializeSwiper() {
             },
             1200: {
                 slidesPerView: 6,
-                spaceBetween: 6,
+                spaceBetween: 10,
             },
             1024: {
                 slidesPerView: 5,
-                spaceBetween: 8,
+                spaceBetween: 10,
             },
             900: {
-                slidesPerView: 4,
+                slidesPerView: 5,
                 spaceBetween: 10,
             },
             768: {
-                slidesPerView: 3,
-                spaceBetween: 12,
+                slidesPerView: 5,
+                spaceBetween: 10,
             },
             640: {
-                slidesPerView: 2.5,
-                spaceBetween: 14,
+                slidesPerView: 5,
+                spaceBetween: 10,
             },
             0: {
-                slidesPerView: 2.5,
-                spaceBetween: 16,
+                slidesPerView: 5,
+                spaceBetween: 10,
             },
         },
 
