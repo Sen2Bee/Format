@@ -499,8 +499,10 @@ def catalog():
 
 @cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/filter_movies', methods=['GET'])
+
 def filter_movies():
     try:
+        include_counts = request.args.get('include_counts', 'true').lower() == 'true'
         # **1. Retrieve Filter Parameters**
         start_time = time.time()
         selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
@@ -602,7 +604,7 @@ def filter_movies():
         rows_per_page = 3
         columns_per_row = 4
 
-        # Items per page should be columns_per_row * 10 (max 10 rows)
+        # Items per page should be columns_per_row * rows_per_page
         items_per_page = columns_per_row * rows_per_page
 
         # **5. Calculate total_pages**
@@ -682,25 +684,33 @@ def filter_movies():
                 movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
                 movie['director'] = movie['director'].split(', ') if movie['director'] else []
 
-            # **9. Fetch Counts for Dropdown Filters**
-            if counts_cached:
-                logging.info("Using cached counts for dropdown filters")
-                genre_counts, year_counts, country_counts, standorte_counts, media_counts = counts_cached
+            # **9. Fetch Counts for Dropdown Filters if include_counts is True**
+            if include_counts:
+                if counts_cached:
+                    logging.info("Using cached counts for dropdown filters")
+                    genre_counts, year_counts, country_counts, standorte_counts, media_counts = counts_cached
+                else:
+                    logging.info("Fetching counts for dropdown filters")
+
+                    # **Fetch Counts for Each Filter Field**
+                    genre_counts = get_counts(cursor, 'genre', where_clause, params)
+                    year_counts = get_counts(cursor, 'release_date', where_clause, params)
+                    country_counts = get_counts(cursor, 'country', where_clause, params)
+                    standorte_counts = get_counts(cursor, 'format_standort', where_clause, params)
+                    media_counts = get_counts(cursor, 'media', where_clause, params)
+
+                    # **Sort Years with Decades**
+                    year_counts = sort_years_with_decades(year_counts)
+
+                    # **Cache the Counts**
+                    cache.set(counts_cache_key, (genre_counts, year_counts, country_counts, standorte_counts, media_counts), timeout=300)
             else:
-                logging.info("Fetching counts for dropdown filters")
-
-                # **Fetch Counts for Each Filter Field**
-                genre_counts = get_counts(cursor, 'genre', where_clause, params)
-                year_counts = get_counts(cursor, 'release_date', where_clause, params)
-                country_counts = get_counts(cursor, 'country', where_clause, params)
-                standorte_counts = get_counts(cursor, 'format_standort', where_clause, params)
-                media_counts = get_counts(cursor, 'media', where_clause, params)
-
-                # **Sort Years with Decades**
-                year_counts = sort_years_with_decades(year_counts)
-
-                # **Cache the Counts**
-                cache.set(counts_cache_key, (genre_counts, year_counts, country_counts, standorte_counts, media_counts), timeout=300)
+                # Do not fetch counts
+                genre_counts = {}
+                year_counts = {}
+                country_counts = {}
+                standorte_counts = {}
+                media_counts = {}
 
             # **10. Close Cursor and Connection**
             cursor.close()
@@ -709,21 +719,28 @@ def filter_movies():
             end_time = time.time()
             logging.info(f"Filtered movies fetched in {end_time - start_time:.2f} seconds")
 
-            # **11. Return JSON Response**
-            return jsonify({
+            # **11. Prepare JSON Response**
+            response_data = {
                 'movies': filtered_movies,
-                'years': year_counts,
-                'genres': genre_counts,
-                'countries': country_counts,
-                'standorte': standorte_counts,
-                'media': media_counts,
                 'current_page': page,
                 'total_pages': total_pages,
                 'total_movies': total_movies,
                 'columns_per_row': columns_per_row,
                 'items_per_page': items_per_page,
                 'sort_options': sort_options
-            })
+            }
+
+            if include_counts:
+                response_data.update({
+                    'years': year_counts,
+                    'genres': genre_counts,
+                    'countries': country_counts,
+                    'standorte': standorte_counts,
+                    'media': media_counts
+                })
+
+            # **12. Return JSON Response**
+            return jsonify(response_data)
         
         except Exception as e:
             logging.error(f"Error occurred in filter_movies: {e}")

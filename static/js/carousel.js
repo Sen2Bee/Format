@@ -43,43 +43,47 @@ export function initializeSwiper() {
                 spaceBetween: 10,
             },
             2000: {
-                slidesPerView: 10,
+                slidesPerView: 14,
                 spaceBetween: 10,
             },
             1800: {
-                slidesPerView: 9,
+                slidesPerView: 10,
                 spaceBetween: 10,
             },
             1600: {
-                slidesPerView: 8,
+                slidesPerView: 9,
                 spaceBetween: 10,
             },
             1400: {
-                slidesPerView: 6.5,
+                slidesPerView: 8,
                 spaceBetween: 10,
             },
             1200: {
-                slidesPerView: 6,
+                slidesPerView: 7,
                 spaceBetween: 10,
             },
             1024: {
-                slidesPerView: 5,
-                spaceBetween: 10,
+                slidesPerView: 6.5,
+                spaceBetween: 5,
             },
             900: {
-                slidesPerView: 5,
+                slidesPerView: 6,
                 spaceBetween: 10,
             },
             768: {
-                slidesPerView: 5,
+                slidesPerView: 5.5,
                 spaceBetween: 10,
             },
             640: {
                 slidesPerView: 5,
                 spaceBetween: 10,
             },
+            450: {
+                slidesPerView: 4,
+                spaceBetween: 10,
+            },            
             0: {
-                slidesPerView: 5,
+                slidesPerView: 3.5,
                 spaceBetween: 10,
             },
         },

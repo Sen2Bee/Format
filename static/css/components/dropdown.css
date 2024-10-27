@@ -154,8 +154,8 @@
 
 /* Dropdown Lists Container */
 .dropdown-lists-container {
-    position: absolute; /* Position absolutely within the container */
-
+    position: relative; /* Position absolutely within the container */
+    /* top: ; */
     left: 0;
     width: 100%;
     background-color: var(--dropdown-background);

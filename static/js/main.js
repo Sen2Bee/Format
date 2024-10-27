@@ -6,11 +6,10 @@ import { toggleViews } from './catalog.js';
 import { themeToggle } from './theme_toggle.js'; 
 
 document.addEventListener('DOMContentLoaded', function () {
-    initializeFilterDropdowns();  // Initialize dropdowns on page load
+    initializeFilterDropdowns();  // Initialize dropdowns and fetch movies
     initializeSwiper(); // Initialize Swiper Carousel
     initializeFilterPanelToggle(); // Initialize filter panel toggle
     initializeFilterActionButtons(); // Initialize "Clear All" and "Show All Results" buttons
     toggleViews();
     themeToggle();
-
 });

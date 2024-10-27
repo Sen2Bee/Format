@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-10-26 21:09:51 ===
+=== Code Summary Generated at 2024-10-27 05:43:14 ===
 
 === Project Folder Structure ===
 
@@ -414,8 +414,20 @@ button {
 }
 
 --- File: static\css\base\variables.css ---
+/* variables.css */
+
+/*accent colors for light theme */
+
+
 :root {
+    --Warm-Terracotta: #D17A22;
+    --Muted-Teal: #3A8E8D;
+    --Deep-Olive-Green: #6B8F23;
+    --Soft-Burgundy: #A23E48;
+    --Dusty-Blue: #607780;  
+    --Gold: #846c1e;
     /* Color Variables */
+    --accent-color: var(--Gold); /* Muted terracotta */
     --primary-color: #FAF8F6; /* Soft off-white */
     --secondary-color: #3D3D3D; /* Dark charcoal gray */
     --background-color: #FFFDFB; /* Very light beige */
@@ -429,7 +441,7 @@ button {
     --background-dark: #DAD7D2; /* Darker background for sections */
     --secondary-text-color: #FFFFFF; /* White text on dark backgrounds */
     --secondary-secondary-text-color: #B5B2AD; /* Subtle light gray */
-    --accent-color: #846c1e; /* Muted terracotta */
+
     --dropdown-background: #FFFFFF; /* Dropdown background */
     --highlight-color: #846c1e; /* Same as accent */
     --movie-card-background: #FFFFFF; /* Movie card background */
@@ -490,9 +502,17 @@ button {
     --poster-width: 70%;
     --catalog-width: 1200px;
 }
+/*accent colors for light theme 
+Electric Blue (#4A90E2)
+Rich Burgundy (#B53A4B)
+Emerald Green (#2ECC71)
+Golden Amber (#D4A017)
+Burnt Orange (#E87D3E) */
+
 [data-theme="dark"] {
     /* Override Color Variables for Dark Theme */
     --primary-color: #1A1A1A; /* Dark charcoal */
+    --accent-color: #2ECC71;
     --secondary-color: #EAEAEA; /* Light gray text */
     --background-color: #121212; /* Near black */
     --text-color: #D6D6D6; /* Light gray */
@@ -2750,59 +2770,84 @@ footer .footer-content p {
 }
 
 --- File: static\css\pages\movie_details.css ---
-/* File: static/css/pages/movie_details.css */
-
-/* Body Background and Text Color based on Theme */
+/* Body Styling */
 body {
     background-color: var(--background-color);
     color: var(--text-color);
     font-family: var(--font-body);
     transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease;
+    overflow-x: hidden;
 }
+
 /* Flex container to hold header, main, and footer */
 .page-container {
     display: flex;
     flex-direction: column;
-    min-height: 100%;
+    min-height: 100vh;
+}
+
+/* Header Styling */
+header {
+    background-color: var(--header-background);
+    padding: var(--spacing-medium) var(--spacing-large);
+}
+
+
+
+.logo a {
+    font-family: var(--font-cursive);
+    font-size: 2rem;
+    color: var(--accent-color);
+    text-decoration: none;
+    margin-right: var(--spacing-large);
+}
+
+.sub-logo {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+  
+
+.nav-center-title .theme-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
 }
 
 /* Movie Details Section */
 .movie-details {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: inherit; /* Inherit background from body */
-    color: inherit; /* Inherit text color from body */
+    background-color: inherit;
+    color: inherit;
 }
 
-/* Swiper Carousel Styles */
+/* Backdrop Carousel */
 .backdrop-carousel {
     position: relative;
+    top: 10px;
     width: 100%;
-    height: 60vh; /* Set height to 60% of viewport height */
-    overflow: hidden; /* Hide overflow to maintain aspect ratio */
-    border-radius: var(--border-radius-medium);
-    box-shadow: 0 4px 8px var(--shadow-color-light);
+    height: 70vh;
+    overflow: hidden;
     background-color: var(--background-color);
-    transition: background-color var(--transition-duration) ease, box-shadow var(--transition-duration) ease;
 }
 
-/* Intermediate Wrapper for Swiper to handle overflow and border-radius */
 .swiper-wrapper-container {
     width: 100%;
     height: 100%;
-    overflow: hidden; /* Ensures Swiper slides are clipped correctly */
-    border-radius: var(--border-radius-medium);
+    overflow: hidden;
 }
 
-/* Swiper Container */
 .swiper-container {
     width: 100%;
     height: 100%;
-    position: relative; /* Establish stacking context for navigation buttons */
+    position: relative;
 }
 
-/* Swiper Slides */
 .swiper-slide {
     display: flex;
     justify-content: center;
@@ -2811,37 +2856,47 @@ body {
 
 .swiper-slide img {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    border-radius: var(--border-radius-medium);
+    object-position: top;
 }
 
+
+/* Poster and Content Container */
 .poster-content-container {
-    position:absolute;
-    left: 20%;
-    top: 60vh;
+    position: relative;
+    max-width: var(--catalog-width);
+    width: 100%;
+    margin: -20vh auto 0; /* Centers horizontally */
+    /* margin-left: 15px; */
+    display: flex;
+    align-items: flex-start;
+    padding: 0 var(--spacing-large);
+}
+
+
+
+/* Poster Styling */
+.wrap-poster {
+    flex: 0 0 300px;
+    margin-right: var(--spacing-large);
+    border-radius: var(--border-radius-medium);
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: var(--movie-card-background);
+    position: relative;
+    transition: transform var(--transition-duration) ease;
     z-index: 10;
 }
 
-/* Poster Wrap Styling */
-.wrap-poster {
-    float: left; /* Align the poster image to the left; change to 'right' if desired */
-    margin: 10px 20px 10px 0; /* Top, Right, Bottom, Left margins */
-    width: 30%; /* Occupies 30% of the container's width */
-    max-width: 300px; /* Optional: Set a max-width for larger screens */
-    border-radius: var(--border-radius-medium);
-    overflow: hidden;
-    box-shadow: 0 4px 8px var(--movie-card-hover-shadow);
-    background-color: var(--movie-card-background);
-    position: relative; /* For overlay positioning */
-    transition: box-shadow var(--transition-duration) ease, transform var(--transition-duration) ease;
+.wrap-poster img {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
-.wrap-poster img {
-    width: 100%; /* Ensure responsive sizing */
-    height: auto;
-    object-fit: cover;
-    display: block;
+.wrap-poster:hover {
+    transform: translateY(-10px);
 }
 
 /* Play Trailer Overlay */
@@ -2855,169 +2910,135 @@ body {
     justify-content: center;
     width: 70px;
     height: 70px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     border-radius: 50%;
     color: var(--secondary-text-color);
-    opacity: 0.7;
+    opacity: 0;
     transition: opacity var(--transition-duration) ease;
     text-decoration: none;
 }
 
-.play-trailer-overlay i {
-    font-size: 2.5em;
-}
-
-.wrap-poster:hover .play-trailer-overlay,
-.play-trailer-overlay:hover {
+.wrap-poster:hover .play-trailer-overlay {
     opacity: 1;
 }
 
-/* Content Wrap Styling */
-.content-wrap {
-    text-align: justify; /* Justify text for a clean look */
-    font-size: 1.2rem;
-    margin-left: 0; /* Reset margin to accommodate float */
-    width: 65%; /* Occupies 65% of the container's width */
-
-}
-.content-wrap {
-    flex: 1 0 auto;
+.play-trailer-overlay i {
+    font-size: 2.5rem;
 }
 
 
-/* Movie Title */
 .movie-title {
-    margin-top: 0;
-    margin-bottom: var(--spacing-small);
     font-family: var(--font-heading);
-    color: var(--text-color);
-    transition: color var(--transition-duration) ease, transform var(--transition-duration) ease;
+    font-size: 2.5rem;
+    margin-top: 20vh;
+    margin-bottom: var(--spacing-small);
 }
 
-/* Original Title */
+.release-year {
+    font-size: 1.5rem;
+    color: var(--secondary-secondary-text-color);
+}
+
 .original-title {
-    font-size: var(--meta-data-font-size);
-    transition: color var(--transition-duration) ease, transform var(--transition-duration) ease;
+    font-size: 1.2rem;
+    font-style: italic;
+    margin-bottom: var(--spacing-medium);
+    color: var(--secondary-secondary-text-color);
 }
 
-/* Movie Information Styling */
 .movie-info {
-    margin-top: var(--spacing-medium);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-medium);
+    margin-bottom: var(--spacing-large);
 }
 
-.movie-info .info-item {
+.info-item {
     display: flex;
     align-items: center;
-    margin-bottom: var(--spacing-small);
+    width: calc(50% - var(--spacing-medium));
 }
 
-.movie-info .info-item i {
+.info-item i {
     margin-right: var(--spacing-small);
     color: var(--accent-color);
 }
-
-.movie-info .info-text {
-    display: inline-block;
-    font-size: var(--meta-data-font-size-small);
-    color: var(--text-color);
-    transition: color var(--transition-duration) ease;
-}
-
-/* Overview and Kritiken */
-.additional-info .overview {
-    font-style: italic;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    margin-top: var(--spacing-medium);
-    font-size: var(--font-size-base);
-    line-height: 1.6;
+.info-item span {
     color: var(--text-color);
 }
 
-.additional-info .wiki_background {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    margin-top: var(--spacing-medium);
-    font-size: var(--meta-data-font-size-small);
-    line-height: 1.6;
+.info-text {
+    font-size: 1rem;
+    color: var(--background-color);
+}
+
+.additional-info {
+
+    font-size: 1.1rem;
+    line-height: 1.8;
+
+}
+
+.additional-info p {
+    margin-bottom: var(--spacing-medium);
     color: var(--text-color);
 }
 
-.additional-info .actors {
+.additional-info strong {
     color: var(--accent-color);
 }
 
-.kritiken {
-    margin-top: var(--spacing-small);
-    font-size: var(--font-size-base);
-    line-height: 1.6;
-    color: var(--text-color);
+.overview {
+    font-style: italic;
+    margin-bottom: var(--spacing-large);
 }
 
-/* Additional Info Sections */
-.additional-info {
-    width: 98%;
-    padding: var(--spacing-small); /* Reduced padding */
-    color: var(--text-color);
+.actors {
+    margin-bottom: var(--spacing-medium);
 }
 
-/* Additional Info Styles */
-.additional-info p {
-    color: var(--text-color);
-    opacity: 1;
-    font-size: var(--font-size-base);
-    line-height: 1.6;
-    margin: var(--spacing-small) 0;
-}
-
-.additional-info ul {
-    list-style: none;
-    padding: 0;
-}
-
-.additional-info ul li {
-    margin-bottom: var(--spacing-small);
-    font-size: var(--font-size-base);
-    color: var(--text-color);
+.wiki-critics,
+.wiki-background {
+    margin-bottom: var(--spacing-medium);
 }
 
 /* Swiper Navigation Buttons */
 .swiper-button-next,
 .swiper-button-prev {
     position: absolute;
-    top: 50%; /* Center vertically */
+    top: 50%;
     width: 44px;
     height: 44px;
-    margin-top: -22px; /* Offset by half of the height to center */
-    z-index: 1000; /* Higher z-index to appear above other elements */
+    margin-top: -22px;
+    z-index: 1000;
     cursor: pointer;
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.5);
     border: none;
-    border-radius: var(--border-radius-medium);
+    /* border-radius: 50%; */
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color var(--transition-duration) ease, opacity var(--transition-duration) ease;
-    opacity: 0.7;
+    color: var(--secondary-text-color);
+    transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease;
 }
 
 .swiper-button-next {
-    right: 10px; /* Position 10px from the right edge */
+    right: 20px;
 }
 
 .swiper-button-prev {
-    left: 10px; /* Position 10px from the left edge */
+    left: 20px;
 }
 
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    background-color: rgba(0, 0, 0, 0.5);
-    opacity: 1;
-    color: var(--primary-color);
+    background-color: rgba(0, 0, 0, 0.6);
+    color: var(--accent-color);
 }
 
-/* Swiper Pagination Bullets */
+/* Swiper Pagination */
 .swiper-pagination {
-    bottom: 10px !important;
-    z-index: 1000;
+    bottom: 20px !important;
 }
 
 .swiper-pagination-bullet {
@@ -3026,99 +3047,79 @@ body {
 }
 
 .swiper-pagination-bullet-active {
-    background: var(--highlight-color);
+    background: var(--accent-color);
     opacity: 1;
 }
 
-/* Responsive Adjustments */
+/* Footer Styling */
+footer {
+    background-color: var(--footer-background);
+    padding: var(--spacing-large);
+    text-align: center;
+    margin-top: auto;
+}
 
-/* Large Screens (Desktops) */
-@media (min-width: 992px) { /* Example breakpoint for large screens */
+.footer-content p {
+    margin: 0;
+    color: var(--secondary-secondary-text-color);
+}
+
+/* Responsive Styles */
+@media (max-width: 991px) {
+    .movie-title {
+        margin-top: 0px;
+    }
+    .poster-content-container {
+        flex-direction: column;
+        align-items: center;
+        margin-top: -10vh;
+        padding: 0 var(--spacing-medium);
+    }
+
     .wrap-poster {
-        /* position: absolute; */
-        top: -10vh;
-        float: left; /* Ensure the poster floats left */
-        margin: 10px 20px 10px 0; /* Adjust margins as needed */
-        width: 30%; /* Adjust width as needed */
-        max-width: 300px; /* Optional: Set a max-width */
+        margin-right: 0;
+        margin-bottom: var(--spacing-large);
     }
 
     .content-wrap {
-        width: 85%; /* Adjust width to accommodate float */
-        text-align: justify; /* Justify text for a clean look */
+        text-align: center;
     }
 
-    .movie-title {
-        font-size: 2.5rem; /* Adjust as needed */
+    .movie-info {
+        flex-direction: column;
+        align-items: center;
     }
 
-    .original-title {
-        font-size: 1.5rem; /* Adjust as needed */
-    }
-
-    /* Clear float if necessary */
-    .poster-content-container::after {
-        content: "";
-        /* display: table; */
-        clear: both;
+    .info-item {
+        width: 100%;
+        justify-content: center;
     }
 }
 
-/* Medium Screens (Tablets) */
-@media (max-width: 991.98px) and (min-width: 576px) { /* Example breakpoints for medium screens */
-    .wrap-poster {
-        float: left; /* Maintain float on medium screens */
-        margin: 10px 15px 10px 0; /* Adjust margins */
-        width: 30%; /* Adjust width */
-        max-width: 250px; /* Optional: Set a max-width */
-    }
-
-    .content-wrap {
-        width: 65%; /* Adjust width */
-        text-align: justify; /* Justify text */
-    }
-
+@media (max-width: 575px) {
     .movie-title {
-        font-size: 2rem; /* Adjust as needed */
+        font-size: 2rem;
+        margin-top: 0px;
+    }
+
+
+    .release-year {
+        font-size: 1.2rem;
     }
 
     .original-title {
-        font-size: 1.2rem; /* Adjust as needed */
+        font-size: 1rem;
     }
 
-    /* Clear float if necessary */
-    .poster-content-container::after {
-        content: "";
-        display: table;
-        clear: both;
-    }
-}
-
-/* Small Screens (Mobile Phones) */
-@media (max-width: 575.98px) { /* Example breakpoint for small screens */
-    .wrap-poster {
-        float: none; /* Remove float on small screens */
-        width: 100%; /* Full width for the image */
-        max-width: 100%; /* Remove max-width */
-        margin: 0 auto var(--spacing-medium); /* Center the image with bottom margin */
-    }
-
-    .content-wrap {
-        width: 100%; /* Full width for content */
-        text-align: left; /* Align text to the left */
-    }
-
-    .movie-title {
-        font-size: 1.8rem; /* Adjust as needed */
-    }
-
-    .original-title {
-        font-size: 1.1rem; /* Adjust as needed */
-    }
-
-    /* Adjust additional info for better readability */
     .additional-info {
-        padding: var(--spacing-small);
+        font-size: 1rem;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 36px;
+        height: 36px;
+        margin-top: -18px;
     }
 }
 
@@ -3185,27 +3186,27 @@ export function initializeSwiper() {
             },
             1200: {
                 slidesPerView: 6,
-                spaceBetween: 6,
+                spaceBetween: 10,
             },
             1024: {
                 slidesPerView: 5,
-                spaceBetween: 8,
+                spaceBetween: 10,
             },
             900: {
-                slidesPerView: 4,
+                slidesPerView: 5,
                 spaceBetween: 10,
             },
             768: {
-                slidesPerView: 3,
-                spaceBetween: 12,
+                slidesPerView: 5,
+                spaceBetween: 10,
             },
             640: {
-                slidesPerView: 2.5,
-                spaceBetween: 14,
+                slidesPerView: 5,
+                spaceBetween: 10,
             },
             0: {
-                slidesPerView: 2.5,
-                spaceBetween: 16,
+                slidesPerView: 5,
+                spaceBetween: 10,
             },
         },
 
@@ -5342,7 +5343,7 @@ export function themeToggle() {
     <!-- Responsive Meta Tag -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Fonts and Stylesheets -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cardo:ital@0;1&family=Lato:wght@300;400;700&family=Pinyon+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/movie_details.css') }}">
     <!-- Font Awesome -->
@@ -5423,15 +5424,15 @@ export function themeToggle() {
                     {% if movie.video_link %}
                     <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.format_titel }}">
                         <i class="fas fa-play"></i>
-                    </a>     
-                    {% endif %}                   
+                    </a>
+                    {% endif %}
                 </div>
                 {% endif %}
 
                 <!-- Additional Information -->
                 <div class="content-wrap">
-                    <h1 class="movie-title">{{ movie.format_titel }} ({{ movie.release_date }})</h1>
-                    <h2 class="original-title">Original Title: {{ movie.original_title }}</h2>
+                    <h1 class="movie-title">{{ movie.format_titel }} <span class="release-year">({{ movie.release_date }})</span></h1>
+                    <h2 class="original-title">Originaltitel: <em>{{ movie.original_title }}</em></h2>
 
                     <div class="movie-info">
                         <!-- Info Items -->
@@ -5440,7 +5441,7 @@ export function themeToggle() {
                             <span class="director">
                                 {{ movie.directors | join(', ') }}
                             </span>
-                        </div>   
+                        </div>
                         <div class="info-item">
                             <i class="fas fa-clock"></i>
                             <span class="info-text">{{ movie.runtime }} Minuten</span>
@@ -5448,7 +5449,7 @@ export function themeToggle() {
                         <div class="info-item">
                             <i class="fas fa-star"></i>
                             <span class="info-text">{{ movie.imdb_rating }}</span>
-                        </div>                            
+                        </div>
                         <div class="info-item">
                             <i class="fas fa-tags"></i>
                             <span class="info-text">
@@ -5478,8 +5479,8 @@ export function themeToggle() {
                             <span class="info-text">
                                 {{ movie.awards | join(', ') }}
                             </span>
-                        </div>                            
-                        {% endif %}    
+                        </div>
+                        {% endif %}
 
                         <!-- Spoken Languages -->
                         {% if movie.spoken_languages %}
@@ -5488,17 +5489,17 @@ export function themeToggle() {
                             <span class="info-text">
                                 {{ movie.spoken_languages | join(', ') }}
                             </span>
-                        </div>    
-                        {% endif %}                           
+                        </div>
+                        {% endif %}
                         <!-- Formats -->
                         {% if movie.formats %}
                         <div class="info-item">
-                            <i class="fas fa-circle"></i>
+                            <i class="fas fa-film"></i>
                             <span class="info-text">
                                 {{ movie.formats }}
                             </span>
-                        </div>     
-                        {% endif %}                                
+                        </div>
+                        {% endif %}
                     </div>
 
                     <!-- Additional Movie Information -->
@@ -5511,23 +5512,23 @@ export function themeToggle() {
 
                         {% if movie.actors %}
                             <p class="actors">
-                                <i class="fas fa-users"></i>
+                                <strong>Schauspieler:</strong>
                                 {{ movie.actors | join(', ') }}
                             </p>
-                        {% endif %} 
+                        {% endif %}
 
                         {% if movie.wiki_critics %}
-                            <p>
-                                <i class="fas fa-pen"></i>
+                            <p class="wiki-critics">
+                                <strong>Kritiken:</strong>
                                 {{ movie.wiki_critics }}
                             </p>
-                        {% endif %}     
+                        {% endif %}
                         {% if movie.wiki_background %}
-                            <p class="wiki_background">
-                                <i class="fas fa-file-alt"></i>
+                            <p class="wiki-background">
+                                <strong>Hintergrund:</strong>
                                 {{ movie.wiki_background }}
                             </p>
-                        {% endif %}               
+                        {% endif %}
                     </div>
                 </div> <!-- End of content-wrap -->
             </div> <!-- End of poster-content-container -->
@@ -5543,6 +5544,7 @@ export function themeToggle() {
 
 <!-- Swiper.js JS for Carousel -->
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
 <!-- Scripts -->
 <script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
 

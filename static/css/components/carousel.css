@@ -51,7 +51,7 @@
 /* Featured Movie Card */
 .featured-movie-card {
     position: relative;
-    width: 180px; /* Default size for larger screens */
+    width: 150px; /* Default size for larger screens */
     overflow: hidden;
     border-radius: 8px;
     transition: width 0.3s ease-in-out; /* Smooth resizing */
