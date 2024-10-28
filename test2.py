@@ -8,7 +8,6 @@ db_config = {
     'password': db_passwd,  # replace with your actual db_passwd
     'database': db_name   # replace with your actual db_name
 }
-import mysql.connector
 
 # Connect to the database
 def connect_to_db():
@@ -75,7 +74,8 @@ def test_query():
     year_param = 1916
 
     try:
-        query = "SELECT * FROM video_links LIMIT 10"
+        query = """SELECT Sum(est_price) from movies"""
+
         # cursor.execute(query, (year_param,))
         # query = "SELECT release_date FROM movies where release_date = 1916 LIMIT 10;"
         cursor.execute(query)

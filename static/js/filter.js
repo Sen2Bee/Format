@@ -105,7 +105,7 @@ export function initializeFilterActionButtons() {
 export function initializeFilterDropdowns() {
     // Handle filter updates triggered by custom dropdowns
     document.addEventListener('dropdownChange', () => {
-        // Do not call updateFilters here
+        updateFilters();
     });
 
     // Search box input event with debouncing
@@ -153,17 +153,18 @@ export function initializeFilterDropdowns() {
         console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
     }
 
+    
+
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
 
     // Initialize filter navigation arrows
     initializeFilterNavigationArrows();
 
-    // Initial filter update: Fetch movies first without counts
-    updateFilters(1, false);
+    // Initial filter update
+    triggerDropdownChangeEvent();
 
-    // After displaying movies, fetch and update filters
-    updateFilters(1, true);
+
 }
 
 /**
@@ -222,12 +223,6 @@ export function attachDropdownEventDelegation() {
 
         // Trigger filter update
         triggerDropdownChangeEvent();
-
-        // Fetch movies immediately after selection
-        updateFilters(1, false);
-
-        // Fetch and update filters
-        updateFilters(1, true);
     }
 
     // Function to clear selected items in a dropdown
@@ -245,12 +240,6 @@ export function attachDropdownEventDelegation() {
 
         // Trigger filter update
         triggerDropdownChangeEvent();
-
-        // Fetch movies immediately after clearing selection
-        updateFilters(1, false);
-
-        // Fetch and update filters
-        updateFilters(1, true);
     }
 
     // Attach event listeners to dropdown headers
@@ -424,12 +413,6 @@ function showAutocompleteSuggestions(suggestions) {
             searchBox.value = item.name;
             hideAutocompleteSuggestions();
             triggerDropdownChangeEvent();
-
-            // Fetch movies immediately after search selection
-            updateFilters(1, false);
-
-            // Fetch and update filters
-            updateFilters(1, true);
         });
 
         autocompleteList.appendChild(suggestionItem);
@@ -558,9 +541,8 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 /**
  * Function to update filters based on selected criteria and search query
  * @param {number} page - The current page number for pagination
- * @param {boolean} includeCounts - Whether to fetch and update filter counts
  */
-export function updateFilters(page = 1, includeCounts = true) {
+export function updateFilters(page = 1) {
     const selectedYears = getSelectedValues('year-dropdown-list');
     const selectedGenres = getSelectedValues('genre-dropdown-list');
     const selectedCountries = getSelectedValues('country-dropdown-list');
@@ -570,6 +552,10 @@ export function updateFilters(page = 1, includeCounts = true) {
     const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"]; // 'Zufall' means 'Random'
 
     const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+
+
+
 
     const params = new URLSearchParams();
     if (selectedYears.length) {
@@ -597,10 +583,7 @@ export function updateFilters(page = 1, includeCounts = true) {
     }
 
     params.append('page', page);
-    params.append('include_counts', includeCounts);
-
     let total_movies = 0;
-
     // Show the progress indicator before starting the fetch
     showProgressIndicator();
 
@@ -622,6 +605,14 @@ export function updateFilters(page = 1, includeCounts = true) {
                 columnsPerRow = 1;
             }
 
+            // Populate dropdowns based on the filtered data
+            populateDropdown('year-dropdown-list', years, selectedYears);
+            populateDropdown('genre-dropdown-list', genres, selectedGenres);
+            populateDropdown('country-dropdown-list', countries, selectedCountries);
+            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
+            populateDropdown('medium-dropdown-list', media, selectedMedia);
+            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
+                
             // Update the movie listings with the current number of movies
             updateMovieListings(movies);
 
@@ -640,16 +631,6 @@ export function updateFilters(page = 1, includeCounts = true) {
                 searchQuery, 
                 total_movies); // Pass selected genres and years
 
-            // Populate dropdowns based on the filtered data if includeCounts is true
-            if (includeCounts) {
-                populateDropdown('year-dropdown-list', years, selectedYears);
-                populateDropdown('genre-dropdown-list', genres, selectedGenres);
-                populateDropdown('country-dropdown-list', countries, selectedCountries);
-                populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
-                populateDropdown('medium-dropdown-list', media, selectedMedia);
-                populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
-            }
-
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);
@@ -659,6 +640,7 @@ export function updateFilters(page = 1, includeCounts = true) {
         })
         .finally(() => {
             hideProgressIndicator();
+
         });
 }
 

@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const theme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', theme);
-    
 
     if (!movieFolder) {
         console.error('No folder name found in data attributes.');
@@ -79,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
             swiperWrapper.appendChild(slide);
         });
     }
-    
 
     /**
      * Initialize Swiper Carousel
@@ -103,5 +101,85 @@ document.addEventListener('DOMContentLoaded', function () {
             },
         });
     }
-    
+
+    /**
+     * Initialize Tooltips for Director and Actors
+     */
+    initializeDirectorAndActorsTooltips();
+
+    function initializeDirectorAndActorsTooltips() {
+        // Fetch person images and set up tooltips
+        fetch(`/get_person_images/${encodeURIComponent(movieFolder)}`)
+            .then(response => response.json())
+            .then(data => {
+                const availableImages = data.images;
+
+                // Function to get person image by matching the name in availableImages
+                function getPersonImage(person) {
+                    for (const image of availableImages) {
+                        if (image.startsWith(person.trim())) {
+                            return `/movie_images/${encodeURIComponent(movieFolder)}/person/${encodeURIComponent(image)}`;
+                        }
+                    }
+                    return '/static/images/default_person.png'; // Fallback to default person image
+                }
+
+                // Select director and actors elements
+                const directorElements = document.querySelectorAll('.director .person-tooltip');
+                const actorElements = document.querySelectorAll('.actors .person-tooltip');
+
+                [...directorElements, ...actorElements].forEach(element => {
+                    const personName = element.getAttribute('data-person-name');
+                    const tmdbId = element.getAttribute('data-tmdb-id');
+                    const personImage = getPersonImage(personName);
+
+                    const tooltipContent = `
+                        <div class="tooltip-person-content">
+                            <a href="https://www.themoviedb.org/person/${tmdbId}" target="_blank">
+                                <img src="${personImage}" alt="${personName}" onerror="this.onerror=null; this.src='/static/images/default_person.png';">
+                                <span class="tooltip-name">${personName}</span>
+                            </a>
+                        </div>
+                    `;
+                    // Initialize Tippy.js tooltip
+                    tippy(element, {
+                        content: tooltipContent,
+                        allowHTML: true,
+                        interactive: true,
+                        theme: 'light-border',
+                        placement: 'top',
+                        arrow: true,
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching person images:', error);
+            });
+    }
+
+    // Event Listener for Filter Icons next to persons
+    document.addEventListener('click', function (event) {
+        if (event.target.matches('.filter-icon') || event.target.closest('.filter-icon')) {
+            event.preventDefault();
+            const personName = event.target.closest('.filter-icon').getAttribute('data-person-name');
+            // Redirect to catalog page with search query
+            window.location.href = `/catalog?search=${encodeURIComponent(personName)}`;
+        }
+    });
+
+    // Event Listener for Genres and Countries
+    document.addEventListener('click', function (event) {
+        if (event.target.matches('.genre-filter')) {
+            event.preventDefault();
+            const genre = event.target.getAttribute('data-genre');
+            // Redirect to catalog page with genre filter
+            window.location.href = `/catalog?genres=${encodeURIComponent(genre)}`;
+        } else if (event.target.matches('.country-filter')) {
+            event.preventDefault();
+            const country = event.target.getAttribute('data-country');
+            // Redirect to catalog page with country filter
+            window.location.href = `/catalog?countries=${encodeURIComponent(country)}`;
+        }
+    });
+
 });

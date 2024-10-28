@@ -160,101 +160,108 @@ def get_spoken_languages(cursor, movie_id):
     return [lang['language'] for lang in languages] if languages else []
 
 def get_movie_details(movie_id):
-    connection = connect_to_db()
-    if not connection:
-        return None
-
     try:
+        connection = connect_to_db()
         cursor = connection.cursor(dictionary=True)
-
-        # Existing query to fetch movie details
-        query = """
-            SELECT 
-                m.movie_id, 
-                m.title, 
-                m.format_titel, 
-                m.original_title, 
-                m.release_date, 
-                m.runtime, 
-                m.imdb_id, 
-                m.imdb_rating, 
-                m.format_fsk, 
-                m.folder_name, 
-                m.overview, 
-                m.format_standort,
-                m.wiki_critics,
-                m.wiki_background,
-                GROUP_CONCAT(DISTINCT c.country ORDER BY c.country SEPARATOR ', ') AS countries,
-                GROUP_CONCAT(DISTINCT g.genre ORDER BY g.genre SEPARATOR ', ') AS genres,
-                (SELECT GROUP_CONCAT(name SEPARATOR ', ') 
-                 FROM crew 
-                 WHERE movie_id = m.movie_id AND job = 'Director') AS directors,
-                GROUP_CONCAT(DISTINCT movie_cast.name ORDER BY movie_cast.popularity DESC SEPARATOR ', ') AS actors,
-                TRIM(BOTH ', ' FROM CONCAT_WS(', ',
-                    CASE WHEN m.format_vhs > 0 THEN CONCAT('VHS (', m.format_vhs, ')') ELSE NULL END, 
-                    CASE WHEN m.format_dvd > 0 THEN CONCAT('DVD (', m.format_dvd, ')') ELSE NULL END, 
-                    CASE WHEN m.format_blu > 0 THEN CONCAT('Blu-ray (', m.format_blu, ')') ELSE NULL END, 
-                    CASE WHEN m.format_blu3 > 0 THEN CONCAT('Blu-ray 3D (', m.format_blu3, ')') ELSE NULL END
-                )) AS formats
-            FROM 
-                movies m
-                LEFT JOIN genres g ON m.movie_id = g.movie_id
-                LEFT JOIN countries c ON m.movie_id = c.movie_id
-                LEFT JOIN movie_cast ON m.movie_id = movie_cast.movie_id
-                LEFT JOIN video_links ON m.movie_id = video_links.movie_id
-            WHERE 
-                m.movie_id = %s
-            GROUP BY 
-                m.movie_id
+        
+        # Fetch movie details
+        movie_query = """
+        SELECT m.*, 
+        GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
+        GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
+        GROUP_CONCAT(DISTINCT p.company_name SEPARATOR ', ') AS production_companies
+        FROM movies m
+        LEFT JOIN genres g ON m.movie_id = g.movie_id
+        LEFT JOIN countries c ON m.movie_id = c.movie_id
+        LEFT JOIN production_companies p ON m.movie_id = p.movie_id
+        WHERE m.movie_id = %s
+        GROUP BY m.movie_id
         """
-
-        cursor.execute(query, (movie_id,))
+        cursor.execute(movie_query, (movie_id,))
         movie = cursor.fetchone()
-
+        
         if movie:
-            # Convert 'countries', 'genres', 'actors', 'directors' into lists
-            movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
+            # Split genres and countries into lists
             movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
-            movie['actors'] = movie['actors'].split(', ') if movie['actors'] else []
-            movie['directors'] = movie['directors'].split(', ') if movie['directors'] else []
-            # movie['video_links'] = movie['video_links'].split(', ') if movie['video_links'] else []
+            movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
+            movie['production_companies'] = movie['production_companies'].split(', ') if movie['production_companies'] else []
 
-            # Retrieve backdrop and poster images from the filesystem
-            backdrops = get_backdrop_images(movie['folder_name'])
-            movie['backdrops'] = backdrops
-            # Retrieve poster images
+            # Fetch directors with tmdb_id
+            director_query = """
+            SELECT name, tmdb_id
+            FROM crew
+            WHERE movie_id = %s AND job = 'Director'
+            """
+            cursor.execute(director_query, (movie_id,))
+            directors = cursor.fetchall()
+            movie['directors'] = [{'name': d['name'], 'tmdb_id': d['tmdb_id']} for d in directors]
+            
+            # Fetch actors with tmdb_id
+            actor_query = """
+            SELECT name, tmdb_id
+            FROM movie_cast
+            WHERE movie_id = %s
+            ORDER BY popularity DESC
+            LIMIT 10
+            """
+            cursor.execute(actor_query, (movie_id,))
+            actors = cursor.fetchall()
+            movie['actors'] = [{'name': a['name'], 'tmdb_id': a['tmdb_id']} for a in actors]
+            
+            # Fetch awards
+            award_query = """
+            SELECT award
+            FROM awards
+            WHERE movie_id = %s
+            """
+            cursor.execute(award_query, (movie_id,))
+            awards = cursor.fetchall()
+            movie['awards'] = [a['award'] for a in awards]
+            
+            # Fetch spoken languages
+            lang_query = """
+            SELECT language
+            FROM spoken_languages
+            WHERE movie_id = %s
+            """
+            cursor.execute(lang_query, (movie_id,))
+            languages = cursor.fetchall()
+            movie['spoken_languages'] = [l['language'] for l in languages]
+            
+            # Fetch video links
+            video_query = """
+            SELECT video_link
+            FROM video_links
+            WHERE movie_id = %s LIMIT 1
+            """
+            cursor.execute(video_query, (movie_id,))
+            video_link = cursor.fetchone()
+            movie['video_link'] = video_link['video_link'] if video_link else None
+
+            # Add formats
+            formats = []
+            if movie.get('format_vhs', 0) > 0:
+                formats.append(f"VHS ({movie['format_vhs']})")
+            if movie.get('format_dvd', 0) > 0:
+                formats.append(f"DVD ({movie['format_dvd']})")
+            if movie.get('format_blu', 0) > 0:
+                formats.append(f"Blu-ray ({movie['format_blu']})")
+            if movie.get('format_blu3', 0) > 0:
+                formats.append(f"Blu-ray 3D ({movie['format_blu3']})")
+            movie['formats'] = ', '.join(formats)
+            
+            # Fetch posters and backdrops
             movie['posters'] = get_poster_images(movie['folder_name'])
-
-            # If no backdrops are available, use posters as backdrops
-            if not movie['backdrops']:
-                logging.info(f"No backdrops found for movie ID {movie_id}. Using posters as backdrops.")
-                movie['backdrops'] = movie['posters']
-
-            # Retrieve additional details
-            movie['awards'] = get_movie_awards(cursor, movie_id)
-            movie['certificates'] = get_movie_certificates(cursor, movie_id)
-            movie['production_companies'] = get_production_companies(cursor, movie_id)
-            movie['spoken_languages'] = get_spoken_languages(cursor, movie_id)
-            movie['video_link'] = get_movie_embeddable_video_link(cursor, movie_id)
-            # movie['video_link'] = get_movie_video_link(cursor, movie_id)
- 
-            # # Optionally, retrieve other crew members (excluding directors)
-            # query_other_crew = """
-            #     SELECT name, job
-            #     FROM crew
-            #     WHERE movie_id = %s AND job != 'Director'
-            # """
-            # cursor.execute(query_other_crew, (movie_id,))
-            # crew_members = cursor.fetchall()
-            # movie['crew_members'] = [{'name': member['name'], 'job': member['job']} for member in crew_members] if crew_members else []
-
-            print("*******" * 10, movie['video_link'])
-
-        cursor.close()
-        connection.close()
-
-        return movie
-
+            movie['backdrops'] = get_backdrop_images(movie['folder_name'])
+            
+            cursor.close()
+            connection.close()
+            
+            return movie
+        else:
+            cursor.close()
+            connection.close()
+            return None
     except Exception as e:
         logging.error(f"An error occurred while fetching movie details: {e}")
         cursor.close()

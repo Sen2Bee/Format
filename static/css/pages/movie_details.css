@@ -141,7 +141,7 @@ header {
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 50%;
     color: var(--secondary-text-color);
-    opacity: 0;
+    opacity: 0.9;
     transition: opacity var(--transition-duration) ease;
     text-decoration: none;
 }
@@ -152,6 +152,7 @@ header {
 
 .play-trailer-overlay i {
     font-size: 2.5rem;
+    color: var(--accent-color);
 }
 
 
@@ -349,4 +350,18 @@ footer {
         height: 36px;
         margin-top: -18px;
     }
+}
+
+.person-tooltip:hover::after {
+    content: attr(data-person-name);
+    position: absolute;
+    top: -30px; /* Adjust as needed to position above the link */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 1000; /* Ensure tooltip is above other elements */
 }
