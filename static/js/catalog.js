@@ -313,7 +313,7 @@ export function toggleViews() {
     const updateMovieListingsUI = () => {
         // Assuming you have a function or way to re-fetch and re-render movies
         // For example:
-        fetch('/get_movies') // Replace with your actual endpoint
+        fetch('/catalog') // Replace with your actual endpoint
             .then(response => response.json())
             .then(data => {
                 updateMovieListings(data.movies);
