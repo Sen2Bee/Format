@@ -102,61 +102,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /**
-     * Initialize Tooltips for Director and Actors
-     */
-    initializeDirectorAndActorsTooltips();
-
-    function initializeDirectorAndActorsTooltips() {
-        // Fetch person images and set up tooltips
-        fetch(`/get_person_images/${encodeURIComponent(movieFolder)}`)
-            .then(response => response.json())
-            .then(data => {
-                const availableImages = data.images;
-
-                // Function to get person image by matching the name in availableImages
-                function getPersonImage(person) {
-                    for (const image of availableImages) {
-                        if (image.startsWith(person.trim())) {
-                            return `/movie_images/${encodeURIComponent(movieFolder)}/person/${encodeURIComponent(image)}`;
-                        }
-                    }
-                    return '/static/images/default_person.png'; // Fallback to default person image
-                }
-
-                // Select director and actors elements
-                const directorElements = document.querySelectorAll('.director .person-tooltip');
-                const actorElements = document.querySelectorAll('.actors .person-tooltip');
-
-                [...directorElements, ...actorElements].forEach(element => {
-                    const personName = element.getAttribute('data-person-name');
-                    const tmdbId = element.getAttribute('data-tmdb-id');
-                    const personImage = getPersonImage(personName);
-
-                    const tooltipContent = `
-                        <div class="tooltip-person-content">
-                            <a href="https://www.themoviedb.org/person/${tmdbId}" target="_blank">
-                                <img src="${personImage}" alt="${personName}" onerror="this.onerror=null; this.src='/static/images/default_person.png';">
-                                <span class="tooltip-name">${personName}</span>
-                            </a>
-                        </div>
-                    `;
-                    // Initialize Tippy.js tooltip
-                    tippy(element, {
-                        content: tooltipContent,
-                        allowHTML: true,
-                        interactive: true,
-                        theme: 'light-border',
-                        placement: 'top',
-                        arrow: true,
-                    });
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching person images:', error);
-            });
-    }
-
     // Event Listener for Filter Icons next to persons
     document.addEventListener('click', function (event) {
         if (event.target.matches('.filter-icon') || event.target.closest('.filter-icon')) {
