@@ -676,8 +676,9 @@ def filter_movies():
             ORDER BY {sort_expression}
             LIMIT %s OFFSET %s
         """
-
-        base_params = params + [items_per_page, offset]
+        offset_value = max(0, offset) 
+        base_params = params + [items_per_page, offset_value]
+        print(base_query, base_params)
 
         try:
             # **Execute Base Query to Fetch Movies**

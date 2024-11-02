@@ -1,8 +1,10 @@
 // File: static/js/catalog.js
 
+import { triggerDropdownChangeEvent } from './filter.js';
+
 function getIconSizeByType(typeval, type = "rating") {
     const minSize = 1;   // 1em for the smallest value
-    const maxSize = 2.5;   // 2.5em for the largest value
+    const maxSize = 2.5; // 2.5em for the largest value
 
     let minVal, maxVal;
 
@@ -14,11 +16,11 @@ function getIconSizeByType(typeval, type = "rating") {
         minVal = 0;   // FSK can start from 0
         maxVal = 18;  // FSK goes up to 18
     } else if (type === "runtime") {
-        minVal = 60;   // Minimum runtime is 60 minutes (1 hour)
-        maxVal = 180;  // Maximum runtime is 180 minutes (3 hours)
+        minVal = 60;  // Minimum runtime is 60 minutes (1 hour)
+        maxVal = 180; // Maximum runtime is 180 minutes (3 hours)
     } else {
         console.warn(`Unknown type: ${type}. Using default rating scale.`);
-        minVal = 0;  // Default to the rating scale
+        minVal = 0;   // Default to the rating scale
         maxVal = 10;
     }
 
@@ -74,38 +76,47 @@ export function updateMovieListings(movies) {
                     <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
                     <span>${movie.imdb_rating}</span>
                 </div>
-            `;                    
+            `;                
 
-            // Map directors
-            const directors = Array.isArray(movie.director) && movie.director.length > 0 
-                ? movie.director.join(', ') 
+            // Map directors with TMDB links and filter icons
+            const directors = Array.isArray(movie.directors) && movie.directors.length > 0 
+                ? movie.directors.map(director => {
+                    return `
+                        <a href="https://www.themoviedb.org/person/${director.tmdb_id}" target="_blank">${director.name}</a>
+                        <a href="#" class="filter-icon" data-person-name="${director.name}" title="Filter by ${director.name}">
+                            <i class="fas fa-filter"></i>
+                        </a>
+                    `;
+                }).join(', ')
                 : "Unknown Director";
 
-            // Process actors
+            // Process actors with TMDB links and filter icons
             let actors = "Unknown Actors";
             if (movie.actors) {
+                let actorArray = [];
                 if (Array.isArray(movie.actors)) {
-                    actors = movie.actors.join(', ');
+                    actorArray = movie.actors;
                 } else if (typeof movie.actors === 'string') {
                     // Split the string into an array by commas
-                    const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
-                    actors = actorArray.join(', ');
+                    actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0).map(name => ({ name }));
                 }
-            }
-
-            // Limit the number of displayed actors
-            const maxActorsToShow = 5;
-            if (Array.isArray(movie.actors)) {
-                if (movie.actors.length > maxActorsToShow) {
-                    const displayedActors = movie.actors.slice(0, maxActorsToShow).join(', ');
-                    actors = `${displayedActors}, ...`;
-                }
-            } else if (typeof movie.actors === 'string') {
-                const actorArray = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0);
+                // Limit the number of displayed actors
+                const maxActorsToShow = 5;
                 if (actorArray.length > maxActorsToShow) {
-                    const displayedActors = actorArray.slice(0, maxActorsToShow).join(', ');
-                    actors = `${displayedActors}, ...`;
+                    actorArray = actorArray.slice(0, maxActorsToShow);
+                    actorArray.push({ name: '...' });
                 }
+                actors = actorArray.map(actor => {
+                    if (actor.name === '...') {
+                        return '...';
+                    }
+                    return `
+                        <a href="https://www.themoviedb.org/person/${actor.tmdb_id}" target="_blank">${actor.name}</a>
+                        <a href="#" class="filter-icon" data-person-name="${actor.name}" title="Filter by ${actor.name}">
+                            <i class="fas fa-filter"></i>
+                        </a>
+                    `;
+                }).join(', ');
             }
 
             const countries = Array.isArray(movie.countries) && movie.countries.length > 0
@@ -119,7 +130,7 @@ export function updateMovieListings(movies) {
             const maxLength = isListView ? 300 : 150; // 300 characters for list view, 150 for grid view
             if (content.length > maxLength) {
                 content = content.substring(0, maxLength) + '...';
-            }                    
+            }                
 
             movieCard.innerHTML = `
                 <div class="movie-content-wrapper">
@@ -161,6 +172,26 @@ export function updateMovieListings(movies) {
             `;
 
             movieContainer.appendChild(movieCard);
+        });
+
+        // Event Listener for Filter Icons
+        document.addEventListener('click', function (event) {
+            if (event.target.matches('.filter-icon') || event.target.closest('.filter-icon')) {
+                event.preventDefault();
+                const personName = event.target.closest('.filter-icon').getAttribute('data-person-name');
+                // Update the search box and trigger the search
+                const searchBox = document.getElementById('search-box');
+                if (searchBox) {
+                    searchBox.value = personName;
+                    const clearSearchBtn = document.getElementById('clear-search');
+                    if (clearSearchBtn) {
+                        clearSearchBtn.classList.add('visible');
+                    }
+                    triggerDropdownChangeEvent();
+                } else {
+                    window.location.href = `/catalog?search=${encodeURIComponent(personName)}`;
+                }
+            }
         });
     } else {
         movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;

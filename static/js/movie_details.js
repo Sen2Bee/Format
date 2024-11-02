@@ -87,44 +87,4 @@ document.addEventListener('DOMContentLoaded', function () {
             loop: true,
             autoplay: {
                 delay: 5000,
-                disableOnInteraction: false,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            slidesPerView: 1,
-            spaceBetween: 10,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-        });
-    }
-
-    // Event Listener for Filter Icons next to persons
-    document.addEventListener('click', function (event) {
-        if (event.target.matches('.filter-icon') || event.target.closest('.filter-icon')) {
-            event.preventDefault();
-            const personName = event.target.closest('.filter-icon').getAttribute('data-person-name');
-            // Redirect to catalog page with search query
-            window.location.href = `/catalog?search=${encodeURIComponent(personName)}`;
-        }
-    });
-
-    // Event Listener for Genres and Countries
-    document.addEventListener('click', function (event) {
-        if (event.target.matches('.genre-filter')) {
-            event.preventDefault();
-            const genre = event.target.getAttribute('data-genre');
-            // Redirect to catalog page with genre filter
-            window.location.href = `/catalog?genres=${encodeURIComponent(genre)}`;
-        } else if (event.target.matches('.country-filter')) {
-            event.preventDefault();
-            const country = event.target.getAttribute('data-country');
-            // Redirect to catalog page with country filter
-            window.location.href = `/catalog?countries=${encodeURIComponent(country)}`;
-        }
-    });
-
-});
+               
