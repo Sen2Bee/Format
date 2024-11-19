@@ -1,7 +1,8 @@
-// catalog.js
+// File: static/js/catalog.js
+
+import { triggerDropdownChangeEvent } from './filter.js';
 
 function getIconSizeByType(typeval, type = "rating") {
-    // Define the minimum and maximum sizes for the icon
     const minSize = 1;   // 1em for the smallest value
     const maxSize = 2.5; // 2.5em for the largest value
 

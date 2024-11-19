@@ -13,13 +13,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-    <!-- Tippy.js CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
-    <!-- Popper.js (required by Tippy.js) -->
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <!-- Tippy.js JS -->
-    <script src="https://unpkg.com/tippy.js@6"></script>
-
 </head>
 <body>
     <header>
@@ -82,13 +75,11 @@
             </div>
         </section>
 
-
         <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
             <div class="spinner" aria-hidden="true"></div>
             <p>einen Moment bitte, lade Filme...</p>
         </div> 
             
-
         <!-- Catalog Search Section -->
         <section class="catalog-search"> 
             <div class="search-dropdown-container">
@@ -277,11 +268,8 @@
             </div>
         </section>
 
-
-
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
-         
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
@@ -289,34 +277,28 @@
             </nav>
         </section>
         
-<!-- Toggle View Buttons Container with Headline -->
-<section class="view-toggle-section" style="padding: 20px; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-    <!-- Headline Left of Toggle Buttons -->
-    <div class="view-toggle-headline">
-        <h2 class="view-toggle-title"></h2>
-    </div>
+        <!-- Toggle View Buttons Container with Headline -->
+        <section class="view-toggle-section">
+            <!-- Headline Left of Toggle Buttons -->
+            <div class="view-toggle-headline">
+                <h2 class="view-toggle-title"></h2>
+            </div>
 
-    <!-- Toggle Buttons Right of Headline -->
-    <div class="view-toggle-container">
-        <button id="grid-view-btn" class="view-toggle-btn active" aria-label="Grid View" aria-pressed="true">
-            <i class="fas fa-th"></i>
-        </button>
-        <button id="list-view-btn" class="view-toggle-btn" aria-label="List View" aria-pressed="false">
-            <i class="fas fa-list"></i>
-        </button>
-    </div>
-</section>
+            <!-- Toggle Buttons Right of Headline -->
+            <div class="view-toggle-container">
+                <button id="grid-view-btn" class="view-toggle-btn active" aria-label="Grid View" aria-pressed="true">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button id="list-view-btn" class="view-toggle-btn" aria-label="List View" aria-pressed="false">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </section>
 
-
-    
-        <!-- Movie Listings Container -->
-        <!-- <section class="movie-listings-container" style="position: relative; background-color: var(--background-color);"> -->
-    
-            <!-- Movie Listings Section -->
-            <section class="movie-listings">
-                <!-- Movie cards will be dynamically populated here -->
-            </section>
-        <!-- </section> -->
+        <!-- Movie Listings Section -->
+        <section class="movie-listings">
+            <!-- Movie cards will be dynamically populated here -->
+        </section>
 
         <!-- Bottom Pagination Section -->
         <section class="pagination bottom-pagination">
