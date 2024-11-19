@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_from_directory, jsonify, url_for
 import mysql.connector
 from mysql.connector import pooling
-from vars import db_name, db_passwd, db_user, themes, search_conditions, movies_path
+from vars import db_name, db_passwd, db_user, themes, search_conditions
 import math
 import os
 import random
@@ -24,7 +24,13 @@ db_config = {
     'database': db_name
 }
 
-MOVIE_IMAGES_BASE_DIR = "e:/Format_FV/_Movies/_Movies_Fertig"
+import os
+
+# Define the base directory relative to the script's location
+relative_path = os.path.join(os.path.dirname(__file__), '../../Movies/Katalog')
+# Normalize the path to handle `..` and make it absolute
+MOVIE_IMAGES_BASE_DIR = os.path.abspath(os.path.normpath(relative_path))
+
 
 # Initialize the cache with SimpleCache
 app.config['CACHE_TYPE'] = 'SimpleCache'
@@ -63,6 +69,7 @@ def connect_to_db():
 @app.route('/movie_images/<path:filename>')
 def movie_images(filename):
     """Serve movie images from the specified directory."""
+    print(MOVIE_IMAGES_BASE_DIR, filename)
     return send_from_directory(MOVIE_IMAGES_BASE_DIR, filename)
 
 
@@ -75,90 +82,6 @@ def index():
 
 @cache.cached(timeout=300)  # Cache this route
 @app.route('/movie/<int:movie_id>')
-def movie_details(movie_id):
-    """Fetch and render details for a specific movie."""
-    logging.info(f"Fetching details for movie ID: {movie_id}")
-    movie = get_movie_details(movie_id)
-
-    if movie:
-        return render_template('movie_details.html', movie=movie)
-    else:
-        logging.warning(f"Movie with ID {movie_id} not found.")
-        return "Movie not found", 404
-
-def get_movie_awards(cursor, movie_id):
-    query = """
-        SELECT award
-        FROM awards
-        WHERE movie_id = %s
-    """
-    cursor.execute(query, (movie_id,))
-    awards = cursor.fetchall()
-    return [award['award'] for award in awards] if awards else []
-
-
-def get_movie_embeddable_video_link(cursor, movie_id):
-    # Fetch the video link for the movie
-    query = """
-        SELECT video_link
-        FROM video_links
-        WHERE movie_id = %s
-        LIMIT 1
-    """
-    cursor.execute(query, (movie_id,))
-    result = cursor.fetchone()
-    
-    # Check if a video link was found
-    if result and result['video_link']:
-        video_url = result['video_link']
-        
-        # Convert to embeddable format if it’s a YouTube link
-        if 'youtube.com/watch' in video_url:
-            video_id = video_url.split('v=')[1]
-            ampersand_position = video_id.find('&')
-            if ampersand_position != -1:
-                video_id = video_id[:ampersand_position]
-            embeddable_link = f'https://www.youtube.com/embed/{video_id}'
-        else:
-            # For non-YouTube URLs, return the original link
-            embeddable_link = video_url
-        
-        return embeddable_link
-    
-    # Return None if no video link exists
-    return None
-
-
-def get_movie_certificates(cursor, movie_id):
-    query = """
-        SELECT country, rating, additional_info
-        FROM certificates
-        WHERE movie_id = %s
-    """
-    cursor.execute(query, (movie_id,))
-    certificates = cursor.fetchall()
-    return [{'country': cert['country'], 'rating': cert['rating'], 'additional_info': cert['additional_info']} for cert in certificates] if certificates else []
-
-def get_production_companies(cursor, movie_id):
-    query = """
-        SELECT company_name
-        FROM production_companies
-        WHERE movie_id = %s
-    """
-    cursor.execute(query, (movie_id,))
-    companies = cursor.fetchall()
-    return [company['company_name'] for company in companies] if companies else []
-
-def get_spoken_languages(cursor, movie_id):
-    query = """
-        SELECT language
-        FROM spoken_languages
-        WHERE movie_id = %s
-    """
-    cursor.execute(query, (movie_id,))
-    languages = cursor.fetchall()
-    return [lang['language'] for lang in languages] if languages else []
-
 def get_movie_details(movie_id):
     try:
         connection = connect_to_db()
@@ -240,16 +163,29 @@ def get_movie_details(movie_id):
 
             # Add formats
             formats = []
-            if movie.get('format_vhs', 0) > 0:
-                formats.append(f"VHS ({movie['format_vhs']})")
-            if movie.get('format_dvd', 0) > 0:
-                formats.append(f"DVD ({movie['format_dvd']})")
-            if movie.get('format_blu', 0) > 0:
-                formats.append(f"Blu-ray ({movie['format_blu']})")
-            if movie.get('format_blu3', 0) > 0:
-                formats.append(f"Blu-ray 3D ({movie['format_blu3']})")
+
+            # Safely get values and handle None
+            format_vhs = movie.get('format_vhs') or 0
+            format_dvd = movie.get('format_dvd') or 0
+            format_blu = movie.get('format_blu') or 0
+            format_blu3 = movie.get('format_blu3') or 0
+
+            # Ensure values are integers
+            format_vhs = int(format_vhs)
+            format_dvd = int(format_dvd)
+            format_blu = int(format_blu)
+            format_blu3 = int(format_blu3)
+
+            if format_vhs > 0:
+                formats.append(f"VHS ({format_vhs})")
+            if format_dvd > 0:
+                formats.append(f"DVD ({format_dvd})")
+            if format_blu > 0:
+                formats.append(f"Blu-ray ({format_blu})")
+            if format_blu3 > 0:
+                formats.append(f"Blu-ray 3D ({format_blu3})")
             movie['formats'] = ', '.join(formats)
-            
+            print("movie['folder_name']", movie['folder_name'])
             # Fetch posters and backdrops
             movie['posters'] = get_poster_images(movie['folder_name'])
             movie['backdrops'] = get_backdrop_images(movie['folder_name'])
@@ -257,7 +193,7 @@ def get_movie_details(movie_id):
             cursor.close()
             connection.close()
             
-            return movie
+            return render_template('movie_details.html', movie=movie)
         else:
             cursor.close()
             connection.close()
@@ -268,9 +204,83 @@ def get_movie_details(movie_id):
         connection.close()
         return None
 
+def get_movie_awards(cursor, movie_id):
+    query = """
+        SELECT award
+        FROM awards
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    awards = cursor.fetchall()
+    return [award['award'] for award in awards] if awards else []
+
+
+def get_movie_embeddable_video_link(cursor, movie_id):
+    # Fetch the video link for the movie
+    query = """
+        SELECT video_link
+        FROM video_links
+        WHERE movie_id = %s
+        LIMIT 1
+    """
+    cursor.execute(query, (movie_id,))
+    result = cursor.fetchone()
+    
+    # Check if a video link was found
+    if result and result['video_link']:
+        video_url = result['video_link']
+        
+        # Convert to embeddable format if it’s a YouTube link
+        if 'youtube.com/watch' in video_url:
+            video_id = video_url.split('v=')[1]
+            ampersand_position = video_id.find('&')
+            if ampersand_position != -1:
+                video_id = video_id[:ampersand_position]
+            embeddable_link = f'https://www.youtube.com/embed/{video_id}'
+        else:
+            # For non-YouTube URLs, return the original link
+            embeddable_link = video_url
+        
+        return embeddable_link
+    
+    # Return None if no video link exists
+    return None
+
+
+def get_movie_certificates(cursor, movie_id):
+    query = """
+        SELECT country, rating, additional_info
+        FROM certificates
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    certificates = cursor.fetchall()
+    return [{'country': cert['country'], 'rating': cert['rating'], 'additional_info': cert['additional_info']} for cert in certificates] if certificates else []
+
+def get_production_companies(cursor, movie_id):
+    query = """
+        SELECT company_name
+        FROM production_companies
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    companies = cursor.fetchall()
+    return [company['company_name'] for company in companies] if companies else []
+
+def get_spoken_languages(cursor, movie_id):
+    query = """
+        SELECT language
+        FROM spoken_languages
+        WHERE movie_id = %s
+    """
+    cursor.execute(query, (movie_id,))
+    languages = cursor.fetchall()
+    return [lang['language'] for lang in languages] if languages else []
+
 @app.route('/get_backdrop_images/<path:movie_folder>')
 def get_backdrop_images_route(movie_folder):
     """API endpoint to retrieve backdrop images."""
+    print("get_backdrop_images_route", movie_folder)
     backdrops = get_backdrop_images(movie_folder)
     return jsonify({"images": [os.path.basename(url) for url in backdrops]})
 
@@ -280,20 +290,21 @@ def get_poster_images_route(movie_folder):
     posters = get_poster_images(movie_folder)
     return jsonify({"images": [os.path.basename(url) for url in posters]})
 
-def get_backdrop_images(movie_folder):
+def get_backdrop_images(folder_name):
     """Retrieve backdrop image URLs for a specific movie folder."""
     backdrops = []
-    folder_path = os.path.join(movies_path, movie_folder, 'backdrop')
+    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, folder_name, 'backdrop')
+    print(folder_path)
 
     if not os.path.exists(folder_path):
-        logging.warning(f"No backdrop directory found for folder: {movie_folder}")
+        logging.warning(f"No backdrop directory found for folder: {folder_path}")
         return backdrops  # Return an empty list if the directory doesn't exist
 
     # List all .avif files in the backdrop directory
     for filename in sorted(os.listdir(folder_path)):
         if filename.lower().endswith('.avif'):
             # Generate the URL for each backdrop image
-            backdrop_url = url_for('movie_images', filename=f"{movie_folder}/backdrop/{filename}")
+            backdrop_url = url_for('movie_images', filename=f"{folder_path}/backdrop/{filename}")
             backdrops.append(backdrop_url)
 
     return backdrops
@@ -301,7 +312,7 @@ def get_backdrop_images(movie_folder):
 def get_poster_images(movie_folder):
     """Retrieve poster image URLs for a specific movie folder."""
     posters = []
-    folder_path = os.path.join(movies_path, movie_folder, 'poster')
+    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, movie_folder, 'poster')
 
     if not os.path.exists(folder_path):
         logging.warning(f"No poster directory found for folder: {movie_folder}")
@@ -345,11 +356,11 @@ def catalog():
             m.release_date, 
             m.runtime, 
             m.imdb_id, 
-            m.imdb_rating, 
-            m.format_fsk, 
+            m.rating, 
+            m.fsk, 
             m.folder_name, 
             m.overview, 
-            m.format_standort,  
+            m.standort,  
             m.format_inhalt,  
             GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,
             GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
@@ -454,7 +465,7 @@ def catalog():
                     COALESCE(m.format_titel, m.title) AS main_title,  
                     m.original_title, 
                     m.release_date, 
-                    m.imdb_rating, 
+                    m.rating, 
                     m.folder_name, 
                     m.overview,
                     m.format_inhalt,
@@ -463,7 +474,7 @@ def catalog():
                     movies m
                     {theme_sql_condition}
                 GROUP BY m.movie_id
-                HAVING m.imdb_rating > 6.7 AND m.poster_images > 0
+                HAVING m.rating > 6.7 AND m.poster_images > 0
                 ORDER BY RAND()
                 LIMIT 20;
             """
@@ -530,7 +541,19 @@ def filter_movies():
 
         # **Apply Search Condition**
         if search_query:
-            where_clauses.append("(m.title LIKE %s OR m.original_title LIKE %s OR cr.name LIKE %s)")
+            where_clauses.append("""
+                                    (
+                                        m.title LIKE %s 
+                                        OR m.original_title LIKE %s 
+                                        OR cr.name LIKE %s 
+                                        OR EXISTS (
+                                            SELECT 1 
+                                            FROM movie_cast mc 
+                                            WHERE mc.movie_id = m.movie_id 
+                                            AND mc.name LIKE %s
+                                        )
+                                    )
+                                """)
             search_pattern = f"%{search_query}%"
             params.extend([search_pattern, search_pattern, search_pattern])
 
@@ -563,7 +586,7 @@ def filter_movies():
         # **Apply Standorte (Location) Filter**
         if standorte:
             standort_placeholders = ','.join(['%s'] * len(standorte))
-            where_clauses.append(f"m.format_standort IN ({standort_placeholders})")
+            where_clauses.append(f"m.standort IN ({standort_placeholders})")
             params.extend(standorte)
 
         # **Apply Media Filter**
@@ -598,12 +621,14 @@ def filter_movies():
             LEFT JOIN genres g ON m.movie_id = g.movie_id
             LEFT JOIN countries c ON m.movie_id = c.movie_id
             LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
+            LEFT JOIN movie_cast mc ON m.movie_id = mc.movie_id
             WHERE {where_clause}
         """
 
         # **Execute Count Query to Get total_movies**
         logging.info("Executing count query for total movies")
         cursor.execute(count_query, tuple(params))
+        logging.info("after count query for total movies")
         total_movies = cursor.fetchone()['total']
 
         # **4. Determine columns_per_row and items_per_page**
@@ -616,6 +641,7 @@ def filter_movies():
 
         # **5. Calculate total_pages**
         total_pages = math.ceil(total_movies / items_per_page) if items_per_page else 1
+        print("test", total_pages)
 
         # **6. Adjust Page Number if Out of Bounds**
         if page < 1:
@@ -649,11 +675,11 @@ def filter_movies():
                 m.release_date,
                 m.runtime,
                 m.imdb_id,
-                m.imdb_rating,
-                m.format_fsk,
+                m.rating,
+                m.fsk,
                 m.folder_name,
                 m.overview,
-                m.format_standort,
+                m.standort,
                 m.format_inhalt,
                 GROUP_CONCAT(DISTINCT CONCAT(c.country, ' (', c.country_code, ')') SEPARATOR ', ') AS countries,
                 GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
@@ -703,7 +729,7 @@ def filter_movies():
                     genre_counts = get_counts(cursor, 'genre', where_clause, params)
                     year_counts = get_counts(cursor, 'release_date', where_clause, params)
                     country_counts = get_counts(cursor, 'country', where_clause, params)
-                    standorte_counts = get_counts(cursor, 'format_standort', where_clause, params)
+                    standorte_counts = get_counts(cursor, 'standort', where_clause, params)
                     media_counts = get_counts(cursor, 'media', where_clause, params)
 
                     # **Sort Years with Decades**
@@ -771,8 +797,8 @@ def build_sort_expression(sort_option):
         "Titel desc": "m.title DESC",  # Descending order by movie title
         "Jahr asc": "m.release_date ASC",  # Ascending order by release date
         "Jahr desc": "m.release_date DESC",  # Descending order by release date
-        "Bewertung asc": "CAST(m.imdb_rating AS DECIMAL(3,1)) ASC",  # Ascending order by IMDb rating
-        "Bewertung desc": "CAST(m.imdb_rating AS DECIMAL(3,1)) DESC",  # Descending order by IMDb rating
+        "Bewertung asc": "CAST(m.rating AS DECIMAL(3,1)) ASC",  # Ascending order by IMDb rating
+        "Bewertung desc": "CAST(m.rating AS DECIMAL(3,1)) DESC",  # Descending order by IMDb rating
         "Regisseur asc": "director ASC",  # Ascending order by director's name
         "Regisseur desc": "director DESC",  # Descending order by director's name
         "Länge asc": "m.runtime ASC",  # Ascending order by runtime
@@ -857,7 +883,7 @@ def get_counts(cursor, field, where_clause, params):
             'format_blu3': result['format_blu3']
         }
     else:
-        # For other fields (genre, release_date, country, format_standort)
+        # For other fields (genre, release_date, country, standort)
         if field == "genre":
             group_field = "g.genre"
             join_clause = "LEFT JOIN genres g ON m.movie_id = g.movie_id"
@@ -867,8 +893,8 @@ def get_counts(cursor, field, where_clause, params):
         elif field == "release_date":
             group_field = "m.release_date"
             join_clause = ""
-        elif field == "format_standort":
-            group_field = "m.format_standort"
+        elif field == "standort":
+            group_field = "m.standort"
             join_clause = ""
         else:
             raise ValueError(f"Invalid field name: {field}")
@@ -886,7 +912,7 @@ def get_counts(cursor, field, where_clause, params):
         if field in ["genre", "country"]:
             count_query += f" GROUP BY {group_field} ORDER BY count DESC"
         else:
-            # For release_date and format_standort
+            # For release_date and standort
             count_query += f" GROUP BY {group_field} ORDER BY {group_field} DESC"
 
         cursor.execute(count_query, tuple(params))
@@ -922,26 +948,27 @@ def autocomplete():
 
             # Search in movie titles
             movie_query = """
-                SELECT movie_id, title 
+                SELECT DISTINCT title 
                 FROM movies 
-                WHERE title LIKE %s OR original_title LIKE %s
+                WHERE title LIKE %s OR original_title LIKE %s OR format_orig_titel LIKE %s
+                ORDER BY title
                 LIMIT 10
             """
             search_pattern = f"%{query}%"
-            cursor.execute(movie_query, (search_pattern, search_pattern))
+            cursor.execute(movie_query, (search_pattern,) * 3)
             movie_matches = cursor.fetchall()
             for movie in movie_matches:
                 suggestions.append({
                     'name': movie['title'],
-                    'type': 'Title',
-                    'movie_ids': [movie['movie_id']]
+                    'type': 'Title'
                 })
 
             # Search in cast names
             cast_query = """
-                SELECT movie_id, name 
+                SELECT DISTINCT name 
                 FROM movie_cast 
                 WHERE name LIKE %s
+                ORDER BY name
                 LIMIT 10
             """
             cursor.execute(cast_query, (search_pattern,))
@@ -949,15 +976,15 @@ def autocomplete():
             for cast_member in cast_matches:
                 suggestions.append({
                     'name': cast_member['name'],
-                    'type': 'Actor',
-                    'movie_ids': [cast_member['movie_id']]
+                    'type': 'Actor'
                 })
 
             # Search in crew names (e.g., directors)
             crew_query = """
-                SELECT movie_id, name 
+                SELECT DISTINCT name 
                 FROM crew 
                 WHERE name LIKE %s AND job = 'Director'
+                ORDER BY name
                 LIMIT 10
             """
             cursor.execute(crew_query, (search_pattern,))
@@ -965,8 +992,7 @@ def autocomplete():
             for crew_member in crew_matches:
                 suggestions.append({
                     'name': crew_member['name'],
-                    'type': 'Director',
-                    'movie_ids': [crew_member['movie_id']]
+                    'type': 'Director'
                 })
 
         except Exception as e:
@@ -976,13 +1002,15 @@ def autocomplete():
             cursor.close()
             connection.close()
 
+    print(suggestions)
+
     return jsonify(suggestions)
 
 
 @app.route('/get_person_images/<movie_folder>', methods=['GET'])
 def get_person_images(movie_folder):
     """Retrieve person images for a specific movie folder."""
-    folder_path = os.path.join(movies_path, movie_folder, 'person')
+    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, movie_folder, 'person')
     try:
         # List all files in the 'person' folder of the given movie
         available_images = [f for f in os.listdir(folder_path) if f.endswith('.avif')]

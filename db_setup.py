@@ -55,7 +55,7 @@ def drop_and_create_tables(cursor):
             format_titel VARCHAR(255),
             format_orig_titel VARCHAR(255),
             format_fsk INT,
-            format_standort VARCHAR(255),
+            standort VARCHAR(255),
             format_vhs INT,
             format_dvd INT,
             format_blu INT,

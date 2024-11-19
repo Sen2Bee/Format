@@ -57,7 +57,7 @@ Structure of table `movies`:
 ('format_titel', 'varchar(255)', 'YES', '', None, '')
 ('format_orig_titel', 'varchar(255)', 'YES', '', None, '')
 ('format_fsk', 'int', 'YES', '', None, '')
-('format_standort', 'varchar(255)', 'YES', '', None, '')
+('standort', 'varchar(255)', 'YES', '', None, '')
 ('format_vhs', 'int', 'YES', '', None, '')
 ('format_dvd', 'int', 'YES', '', None, '')
 ('format_blu', 'int', 'YES', '', None, '')

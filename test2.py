@@ -42,10 +42,10 @@ def test_query():
             m.runtime,
             m.imdb_id,
             m.imdb_rating,
-            m.format_fsk,
+            m.fsk,
             m.folder_name,
             m.overview,
-            m.format_standort,
+            m.standort,
             GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
             GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
             GROUP_CONCAT(DISTINCT cr.name SEPARATOR ', ') AS director,
@@ -68,13 +68,13 @@ def test_query():
         LIMIT 10;
     """
     #23254
-    query = "SELECT * FROM video_links LIMIT 10;"
+    query = "SELECT overview FROM movies LIMIT 22;"
 
     # Test year (e.g., 1916)
     year_param = 1916
 
     try:
-        query = """SELECT Sum(est_price) from movies"""
+        query = "SELECT title, movie_id FROM movies LIMIT 20;"
 
         # cursor.execute(query, (year_param,))
         # query = "SELECT release_date FROM movies where release_date = 1916 LIMIT 10;"
