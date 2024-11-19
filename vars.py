@@ -42,8 +42,8 @@ themes = [
 {'name': 'Christopher Nolan', 'sql_condition': "JOIN crew cr ON m.movie_id = cr.movie_id WHERE cr.name = 'Christopher Nolan' AND cr.job = 'Director'", 'css_class': 'theme-nolan'},
 # Preis-basierte Themen
 {'name': 'Oscar-Gewinner', 'sql_condition': "WHERE m.wiki_awards LIKE '%Oscar%'", 'css_class': 'theme-oscar'},
-{'name': 'Kritikerlieblinge', 'sql_condition': "WHERE m.imdb_rating > 8", 'css_class': 'theme-acclaimed'},
-{'name': 'Top-Filme', 'sql_condition': "WHERE m.imdb_rating > 8.5", 'css_class': 'theme-top-rated'},
+{'name': 'Kritikerlieblinge', 'sql_condition': "WHERE m.rating > 8", 'css_class': 'theme-acclaimed'},
+{'name': 'Top-Filme', 'sql_condition': "WHERE m.rating > 8.5", 'css_class': 'theme-top-rated'},
 # Gemischte Themen
 {'name': 'Romantische Komödien', 'sql_condition': "JOIN genres g1 ON m.movie_id = g1.movie_id JOIN genres g2 ON m.movie_id = g2.movie_id WHERE g1.genre = 'Romance' AND g2.genre = 'Comedy'", 'css_class': 'theme-rom-com'},
 {'name': 'Sci-Fi-Klassiker', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Sci-Fi' AND m.release_date < 1980", 'css_class': 'theme-sci-fi-classic'},

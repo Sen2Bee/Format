@@ -192,7 +192,6 @@ def get_movie_details(movie_id):
             
             cursor.close()
             connection.close()
-            
             return render_template('movie_details.html', movie=movie)
         else:
             cursor.close()
@@ -280,7 +279,6 @@ def get_spoken_languages(cursor, movie_id):
 @app.route('/get_backdrop_images/<path:movie_folder>')
 def get_backdrop_images_route(movie_folder):
     """API endpoint to retrieve backdrop images."""
-    print("get_backdrop_images_route", movie_folder)
     backdrops = get_backdrop_images(movie_folder)
     return jsonify({"images": [os.path.basename(url) for url in backdrops]})
 
@@ -290,40 +288,30 @@ def get_poster_images_route(movie_folder):
     posters = get_poster_images(movie_folder)
     return jsonify({"images": [os.path.basename(url) for url in posters]})
 
-def get_backdrop_images(folder_name):
-    """Retrieve backdrop image URLs for a specific movie folder."""
-    backdrops = []
-    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, folder_name, 'backdrop')
-    print(folder_path)
-
-    if not os.path.exists(folder_path):
-        logging.warning(f"No backdrop directory found for folder: {folder_path}")
-        return backdrops  # Return an empty list if the directory doesn't exist
-
-    # List all .avif files in the backdrop directory
-    for filename in sorted(os.listdir(folder_path)):
-        if filename.lower().endswith('.avif'):
-            # Generate the URL for each backdrop image
-            backdrop_url = url_for('movie_images', filename=f"{folder_path}/backdrop/{filename}")
-            backdrops.append(backdrop_url)
-
-    return backdrops
-
 def get_poster_images(movie_folder):
     """Retrieve poster image URLs for a specific movie folder."""
-    posters = []
-    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, movie_folder, 'poster')
+    return get_images(movie_folder, 'poster')
+
+def get_backdrop_images(movie_folder):
+    """Retrieve backdrop image URLs for a specific movie folder."""
+    # If you want to only include '.avif' files for backdrops, specify the extensions parameter
+    return get_images(movie_folder, 'backdrop', extensions=('.avif',))
+
+def get_images(movie_folder, image_type, extensions=('.avif', '.jpg', '.jpeg', '.png', '.webp')):
+    """Retrieve image URLs for a specific movie folder and image type ('poster' or 'backdrop')."""
+    images = []
+    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, movie_folder, image_type)
 
     if not os.path.exists(folder_path):
-        logging.warning(f"No poster directory found for folder: {movie_folder}")
-        return posters  # Return empty list if directory does not exist
+        logging.warning(f"No {image_type} directory found for folder: {movie_folder}")
+        return images  # Return empty list if directory does not exist
 
     for filename in sorted(os.listdir(folder_path)):
-        if filename.lower().endswith(('.avif', '.jpg', '.jpeg', '.png', '.webp')):
-            poster_url = url_for('movie_images', filename=f"{movie_folder}/poster/{filename}")
-            posters.append(poster_url)
+        if filename.lower().endswith(extensions):
+            image_url = url_for('movie_images', filename=f"{movie_folder}/{image_type}/{filename}")
+            images.append(image_url)
 
-    return posters
+    return images
 
 
 @cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters

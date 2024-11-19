@@ -78,7 +78,7 @@ def fetch_movie_data(cursor):
     cursor.execute("""
         SELECT 
             m.movie_id,
-            m.imdb_rating,
+            m.rating,
             m.imdb_votes,
             m.tmdb_rating,
             m.tmdb_votes,
