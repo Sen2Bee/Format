@@ -1,39 +1,41 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const navbar = document.querySelector('.navbar'); // Select the navbar element
-    let lastScrollTop = 0; // Track the previous scroll position
-    let debounceTimer = null; // Timer for debounce to limit function calls
+// File: static/js/navbar.js
 
-    // Function to handle scroll events
+document.addEventListener('DOMContentLoaded', function () {
+    const navbar = document.querySelector('.navbar');
+    let lastScrollTop = 0;
+    let ticking = false;
+
+    /**
+     * Handles the scroll event to show/hide the navbar
+     */
     function handleScroll() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
-        // Show navbar at the top of the page
         if (currentScroll <= 20) {
-            navbar.classList.remove('hide');
-            navbar.classList.add('show');
-        }
-        // Hide navbar on scroll down
-        else if (currentScroll > lastScrollTop) {
-            navbar.classList.add('hide');
-            navbar.classList.remove('show');
-        }
-        // Show navbar on scroll up
-        else {
-            navbar.classList.remove('hide');
-            navbar.classList.add('show');
+            // Always show navbar when near the top
+            navbar.classList.remove('hidden');
+        } else if (currentScroll < lastScrollTop) {
+            // Scrolling up - hide navbar
+            navbar.classList.add('hidden');
+        } else {
+            // Scrolling down - show navbar
+            navbar.classList.remove('hidden');
         }
 
-        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Update lastScrollTop
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For mobile or negative scrolling
+        ticking = false;
     }
 
-    // Debounce function to limit the number of scroll events fired
-    function debounce(func, delay) {
-        return function (...args) {
-            clearTimeout(debounceTimer); // Clear the previous timer
-            debounceTimer = setTimeout(() => func.apply(this, args), delay); // Set a new timer
-        };
+    /**
+     * Throttles the scroll event handler using requestAnimationFrame
+     */
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(handleScroll);
+            ticking = true;
+        }
     }
 
-    // Listen to scroll events with debounce applied
-    window.addEventListener('scroll', debounce(handleScroll, 100));
+    // Attach the throttled scroll handler
+    window.addEventListener('scroll', onScroll);
 });

@@ -8,7 +8,8 @@
     top: 0;
     left: 0;
     right: 0;
-    width: 100%;
+    width: 99.2%;
+    box-sizing: border-box; /* Includes padding/borders in width/height 
     height: 60px;  /* Default height */
     padding: 0 20px;
     z-index: 1000;
