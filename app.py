@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, send_from_directory, jsonify, url_for
 import mysql.connector
 from mysql.connector import pooling
-from vars import db_name, db_passwd, db_user, themes, search_conditions
+from vars import db_name, db_passwd, db_user, themes, search_conditions, IS_PRIVATE
 import math
 import os
 import random
@@ -280,6 +280,7 @@ def get_spoken_languages(cursor, movie_id):
 def get_backdrop_images_route(movie_folder):
     """API endpoint to retrieve backdrop images."""
     backdrops = get_backdrop_images(movie_folder)
+    print(backdrops)
     return jsonify({"images": [os.path.basename(url) for url in backdrops]})
 
 @app.route('/get_poster_images/<path:movie_folder>')
@@ -446,11 +447,11 @@ def catalog():
 
         # Fetch featured movies based on the selected theme's sql_condition
         if selected_theme:
-            theme_sql_condition = selected_theme['sql_condition']
+            theme_sql_condition = "" if IS_PRIVATE else selected_theme['sql_condition']
             featured_query = f"""
                 SELECT 
                     m.movie_id, 
-                    COALESCE(m.format_titel, m.title) AS main_title,  
+                    COALESCE(m.title, m.title) AS main_title,  
                     m.original_title, 
                     m.release_date, 
                     m.rating, 
@@ -466,9 +467,11 @@ def catalog():
                 ORDER BY RAND()
                 LIMIT 20;
             """
+            
             logging.info("Executing featured movies query")
             cursor.execute(featured_query, ())
             featured_movies = cursor.fetchall()
+            print("featured_movies2", featured_query)
 
             # Convert 'countries' and 'genres' from strings to lists if needed
             for movie in featured_movies:
@@ -476,6 +479,7 @@ def catalog():
                 movie['genres'] = movie['genres'].split(', ') if 'genres' in movie and movie['genres'] else []
         else:
             featured_movies = []
+        
 
         # Close cursor and database connection
         cursor.close()

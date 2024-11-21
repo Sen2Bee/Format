@@ -61,7 +61,7 @@
                                  loading="lazy">
                             <div class="featured-movie-overlay">
                                 <h3>{{ featured_movie['main_title'] }}</h3>
-                                <a href="{{ url_for('movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
+                                <a href="{{ url_for('get_movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
                             </div>
                         </div>
                     </div>

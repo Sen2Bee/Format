@@ -32,7 +32,7 @@
                 <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
             </div>
             <div class="nav-center-title">
-                <span class="theme-title">{{ movie.format_titel }}</span>
+                <span class="theme-title">{{ movie.title }}</span>
             </div>
         </nav>
     </header>
@@ -48,7 +48,7 @@
                         <div class="swiper-wrapper">
                             {% for backdrop in movie.backdrops %}
                             <div class="swiper-slide">
-                                <img src="{{ backdrop }}" alt="Backdrop Image for {{ movie.format_titel }}" loading="lazy">
+                                <img src="{{ backdrop }}" alt="Backdrop Image for {{ movie.title }}" loading="lazy">
                             </div>
                             {% endfor %}
                         </div>
@@ -65,7 +65,7 @@
             <div class="backdrop-placeholder">
                 {% if movie.posters %}
                 <!-- Use the first poster as the backdrop -->
-                <img src="{{ movie.posters[0] }}" alt="Poster Image as Backdrop for {{ movie.format_titel }}" loading="lazy">
+                <img src="{{ movie.posters[0] }}" alt="Poster Image as Backdrop for {{ movie.title }}" loading="lazy">
                 {% else %}
                 <img src="{{ url_for('static', filename='images/default_backdrop.jpg') }}" alt="No Backdrop Available" loading="lazy">
                 {% endif %}
@@ -77,9 +77,9 @@
                 <!-- Poster Image -->
                 {% if movie.posters %}
                 <div class="wrap-poster">
-                    <img src="{{ movie.posters[0] }}" alt="Poster Image for {{ movie.format_titel }}" loading="lazy">
+                    <img src="{{ movie.posters[0] }}" alt="Poster Image for {{ movie.title }}" loading="lazy">
                     {% if movie.video_link %}
-                    <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.format_titel }}">
+                    <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.title }}">
                         <i class="fas fa-play"></i>
                     </a>
                     {% endif %}
@@ -88,7 +88,7 @@
 
                 <!-- Additional Information -->
                 <div class="content-wrap">
-                    <h1 class="movie-title">{{ movie.format_titel }} <span class="release-year">({{ movie.release_date }})</span></h1>
+                    <h1 class="movie-title">{{ movie.title }} <span class="release-year">({{ movie.release_date }})</span></h1>
                     <h2 class="original-title">Originaltitel: <em>{{ movie.original_title }}</em></h2>
 
                     <div class="movie-info">

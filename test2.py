@@ -68,13 +68,46 @@ def test_query():
         LIMIT 10;
     """
     #23254
-    query = "SELECT overview FROM movies LIMIT 22;"
+    query =         """SELECT
+                    m.movie_id,
+                    COALESCE(m.title, m.title) AS main_title,
+                    m.original_title,
+                    m.release_date,
+                    m.rating,
+                    m.folder_name,
+                    m.overview,
+                    m.format_inhalt,
+                    m.poster_images
+                FROM
+                    movies m
+
+                GROUP BY m.movie_id
+                HAVING m.rating > 6.7 AND m.poster_images > 0
+                ORDER BY RAND()
+                LIMIT 20;"""
+    query =         """SELECT
+                    m.movie_id,
+                    COALESCE(m.title, m.title) AS main_title,
+                    m.original_title,
+                    m.release_date,
+                    m.rating,
+                    m.folder_name,
+                    m.overview,
+                    m.format_inhalt,
+                    m.poster_images
+                FROM
+                    movies m
+
+                GROUP BY m.movie_id
+                HAVING m.poster_images > 0
+                ORDER BY RAND()
+                LIMIT 20;"""
 
     # Test year (e.g., 1916)
     year_param = 1916
-
+    query = "select title from movies LIMIT 10;"
     try:
-        query = "SELECT title, movie_id FROM movies LIMIT 20;"
+
 
         # cursor.execute(query, (year_param,))
         # query = "SELECT release_date FROM movies where release_date = 1916 LIMIT 10;"

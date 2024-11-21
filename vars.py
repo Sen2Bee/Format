@@ -2,10 +2,13 @@ db_user="tom"  # Your MySQL username
 db_passwd="user"  # Your MySQL password
 db_name ="formatdb"  # Your MySQL database name
 
+IS_PRIVATE = True
+
 
 themes = [
     # Genre-based themes
-  {'name': 'Actionfilme', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Action'", 'css_class': 'theme-action'},
+{'name': 'Zufalle', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Action'", 'css_class': 'theme-action'},
+{'name': 'Actionfilme', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Action'", 'css_class': 'theme-action'},
 {'name': 'Komödien', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Comedy'", 'css_class': 'theme-comedy'},
 {'name': 'Dramen', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Drama'", 'css_class': 'theme-drama'},
 {'name': 'Sci-Fi-Filme', 'sql_condition': "JOIN genres g ON m.movie_id = g.movie_id WHERE g.genre = 'Sci-Fi'", 'css_class': 'theme-sci-fi'},
