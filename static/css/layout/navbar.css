@@ -1,23 +1,33 @@
 /* General Navbar Styles */
+/* General Navbar Styles */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--footer-background);  /* Use defined primary color */
+    background-color: var(--footer-background);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    width: 99.2%;
-    box-sizing: border-box; /* Includes padding/borders in width/height 
-    height: 60px;  /* Default height */
+    width: 99.3%;
+    box-sizing: border-box;
+    height: 40px;
     padding: 0 20px;
     z-index: 1000;
-    transition: height var(--transition-duration), top var(--transition-duration), box-shadow var(--transition-duration);
-    box-shadow: 0 4px 8px var(--shadow-color);  /* Use defined shadow color */
-    font-family: var(--font-body);  /* Use body font */
+    transition: transform 0.3s ease-in-out, box-shadow var(--transition-duration);
+    box-shadow: 0 4px 8px var(--shadow-color);
+    font-family: var(--font-body);
 }
 
+/* Hidden State */
+.navbar.hidden {
+    transform: translateY(-100%);  /* Slide navbar up to hide */
+}
+
+/* Ensure the navbar appears when hovering */
+.navbar:hover {
+    transform: translateY(0);
+}
 
 
 .theme-title {
@@ -36,10 +46,8 @@
     font-size: 1.2rem;  /* Reduce size when navbar is shrunk */
 }
 
-/* Hidden State */
-.navbar.hidden {
-    top: -60px;  /* Move navbar off-screen to hide */
-}
+
+
 
 /* Navbar Toggle Button for Mobile */
 .menu-toggle {
@@ -47,6 +55,7 @@
     cursor: pointer;
     transition: transform var(--transition-duration);  /* Smooth rotation animation */
 }
+
 
 .menu-toggle i {
     color: var(--text-light);

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory, jsonify, url_for
+from flask import Flask, render_template, request, send_from_directory, jsonify, url_for, send_file, abort
 import mysql.connector
 from mysql.connector import pooling
 from vars import db_name, db_passwd, db_user, themes, search_conditions, IS_PRIVATE
@@ -27,9 +27,9 @@ db_config = {
 import os
 
 # Define the base directory relative to the script's location
-relative_path = os.path.join(os.path.dirname(__file__), '../../Movies/Katalog')
+MOVIES_BASE_DIR = os.path.join(os.path.dirname(__file__), r'..\..\Movies\Katalog')
 # Normalize the path to handle `..` and make it absolute
-MOVIE_IMAGES_BASE_DIR = os.path.abspath(os.path.normpath(relative_path))
+MOVIE_IMAGES_BASE_DIR = os.path.abspath(os.path.normpath(MOVIES_BASE_DIR))
 
 
 # Initialize the cache with SimpleCache
@@ -69,7 +69,6 @@ def connect_to_db():
 @app.route('/movie_images/<path:filename>')
 def movie_images(filename):
     """Serve movie images from the specified directory."""
-    print(MOVIE_IMAGES_BASE_DIR, filename)
     return send_from_directory(MOVIE_IMAGES_BASE_DIR, filename)
 
 
@@ -185,11 +184,14 @@ def get_movie_details(movie_id):
             if format_blu3 > 0:
                 formats.append(f"Blu-ray 3D ({format_blu3})")
             movie['formats'] = ', '.join(formats)
-            print("movie['folder_name']", movie['folder_name'])
             # Fetch posters and backdrops
             movie['posters'] = get_poster_images(movie['folder_name'])
             movie['backdrops'] = get_backdrop_images(movie['folder_name'])
-            
+            # movie_folder_path = os.path.join(MOVIES_BASE_DIR, movie['folder_name'], movie['moviefilename'])
+            movie_file_path = validate_movie_file(movie)
+            movie['movie_file_url'] = url_for('serve_movie_file', movie_id=movie_id) if movie_file_path else None
+
+
             cursor.close()
             connection.close()
             return render_template('movie_details.html', movie=movie)
@@ -633,7 +635,7 @@ def filter_movies():
 
         # **5. Calculate total_pages**
         total_pages = math.ceil(total_movies / items_per_page) if items_per_page else 1
-        print("test", total_pages)
+       
 
         # **6. Adjust Page Number if Out of Bounds**
         if page < 1:
@@ -999,19 +1001,123 @@ def autocomplete():
 
     return jsonify(suggestions)
 
+def get_movie_file(MOVIE_FOLDER):
+    folder = os.path.join(MOVIE_FOLDER, movie_id)
+    if not os.path.exists(MOVIE_FOLDER):
+        return None
+    for file in os.listdir(folder):
+        if file.lower().endswith(('.mp4', '.mkv', '.avi', '.mov', '.webm', '.ogg')):
+            return os.path.join(folder, file)
+    return None
 
-@app.route('/get_person_images/<movie_folder>', methods=['GET'])
-def get_person_images(movie_folder):
-    """Retrieve person images for a specific movie folder."""
-    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, movie_folder, 'person')
+def get_subtitle_files(movie_id):
+    folder = os.path.join(MOVIE_FOLDER, movie_id)
+    subtitle_files = []
+    if not os.path.exists(folder):
+        return subtitle_files
+    for file in os.listdir(folder):
+        if file.lower().endswith(('.vtt', '.srt', '.ass')):
+            subtitle_files.append(file)
+    return subtitle_files
+
+def convert_subtitle_to_vtt(subtitle_path):
+    ext = os.path.splitext(subtitle_path)[1].lower()
+    vtt_path = subtitle_path + '.vtt'  # Temporary file
+    if ext == '.vtt':
+        return subtitle_path  # Already in VTT format
     try:
-        # List all files in the 'person' folder of the given movie
-        available_images = [f for f in os.listdir(folder_path) if f.endswith('.avif')]
-        return jsonify({"images": available_images})
+        with open(subtitle_path, 'r', encoding='utf-8') as infile:
+            content = infile.read()
+        # Basic conversion; for complex files, use a library like pysrt or pycaption
+        content = 'WEBVTT\n\n' + content.replace(',', '.')
+        with open(vtt_path, 'w', encoding='utf-8') as outfile:
+            outfile.write(content)
+        return vtt_path
     except Exception as e:
-        logging.error(f"Error fetching person images for folder {movie_folder}: {e}")
-        return jsonify({"error": str(e), "images": []}), 500
+        print(f"Error converting subtitle: {e}")
+        return None
 
+@app.route('/movie_file/<movie_id>')
+def serve_movie_file(movie_id):
+    movie_file_path = get_movie_file(movie_id)
+    if movie_file_path and os.path.isfile(movie_file_path):
+        return send_file(movie_file_path, mimetype='video/mp4', conditional=True)
+    else:
+        abort(404)
+
+@app.route('/subtitle_file/<movie_id>/<subtitle_name>')
+def serve_subtitle_file(movie_id, subtitle_name):
+    folder = os.path.join(MOVIE_FOLDER, movie_id)
+    subtitle_path = os.path.join(folder, subtitle_name)
+    if os.path.isfile(subtitle_path):
+        vtt_path = convert_subtitle_to_vtt(subtitle_path)
+        if vtt_path:
+            return send_file(vtt_path, mimetype='text/vtt')
+    abort(404)
+
+@app.route('/play_movie/<folder_name>/<filename>')
+def play_movie(folder_name, filename):
+    movie_path = os.path.join(MOVIES_BASE_DIR, folder_name, filename)
+    
+    if os.path.isfile(movie_path):
+        return send_file(movie_path, as_attachment=False)
+    else:
+        abort(404, description="Movie file not found")
+
+# app.py
+
+@app.route('/movie_player/<folder_name>/<filename>')
+def movie_player(folder_name, filename):
+    # Construct the full path to the movie folder
+    folder_path = os.path.join(MOVIES_BASE_DIR, folder_name)
+    movie_path = os.path.join(folder_path, filename)
+
+    # Verify that the movie file exists
+    if not os.path.isfile(movie_path):
+        abort(404, description="Movie file not found")
+
+    # Detect subtitle files in the same folder
+    subtitles = []
+    for file in os.listdir(folder_path):
+        if file.lower().endswith(('.srt', '.vtt')):
+            subtitles.append(file)
+    print(subtitles)
+    # Pass the subtitles list to the template
+    return render_template(
+        'movie_player.html',
+        folder_name=folder_name,
+        filename=filename,
+        subtitles=subtitles
+    )
+
+# app.py
+
+from flask import Response
+
+@app.route('/subtitle/<folder_name>/<subtitle_file>')
+def serve_subtitle(folder_name, subtitle_file):
+    subtitle_path = os.path.join(MOVIES_BASE_DIR, folder_name, subtitle_file)
+    if os.path.isfile(subtitle_path):
+        # If the subtitle is in SRT format, convert it to VTT
+        if subtitle_file.lower().endswith('.srt'):
+            vtt_content = convert_srt_to_vtt(subtitle_path)
+            return Response(vtt_content, mimetype='text/vtt')
+        else:
+            return send_file(subtitle_path, mimetype='text/vtt')
+    else:
+        abort(404, description="Subtitle file not found")
+
+def convert_srt_to_vtt(srt_path):
+    with open(srt_path, 'r', encoding='utf-8') as srt_file:
+        content = srt_file.read()
+    # Simple conversion: replace commas with periods in timestamps
+    content = content.replace(',', '.')
+    return 'WEBVTT\n\n' + content
+
+
+def validate_movie_file(movie):
+    movie_folder_path = os.path.join(MOVIES_BASE_DIR, movie['folder_name'], movie['moviefilename'])
+    return movie_folder_path if os.path.isfile(movie_folder_path) else None
 
 if __name__ == '__main__':
     app.run(debug=True)

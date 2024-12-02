@@ -126,7 +126,6 @@ header {
 .wrap-poster:hover {
     transform: translateY(-10px);
 }
-
 /* Play Trailer Overlay */
 .play-trailer-overlay {
     position: absolute;
@@ -138,22 +137,51 @@ header {
     justify-content: center;
     width: 70px;
     height: 70px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 50%;
-    color: var(--secondary-text-color);
+    background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+    border-radius: 50%; /* Circular shape */
+    color: var(--secondary-text-color); /* Icon/Text color */
     opacity: 0.9;
     transition: opacity var(--transition-duration) ease;
     text-decoration: none;
+    font-size: 2rem; /* Adjust icon size for better visibility */
 }
 
+/* Play Movie Overlay - Slightly Different Style */
+.play-movie-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px; /* Slightly larger than the trailer overlay */
+    height: 80px;
+    background-color: var(--accent-color); /* Red semi-transparent background */
+    border-radius: 50%; /* Circular shape */
+    color: var(--secondary-color); /* Icon/Text color */
+    opacity: 0.8;
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
+    text-decoration: none;
+    font-size: 2.2rem; /* Larger icon size */
+}
+
+/* Hover Effects */
 .wrap-poster:hover .play-trailer-overlay {
-    opacity: 1;
+    opacity: 1; /* Fully visible on hover */
 }
 
-.play-trailer-overlay i {
-    font-size: 2.5rem;
-    color: var(--accent-color);
+.wrap-poster:hover .play-movie-overlay {
+    opacity: 1; /* Fully visible on hover */
+    transform: translate(-50%, -50%) scale(1.1); /* Slight zoom-in effect */
 }
+
+/* Ensure play icons align perfectly */
+.play-trailer-overlay i,
+.play-movie-overlay i {
+    margin: 0;
+}
+
 
 
 .movie-title {
@@ -230,6 +258,12 @@ header {
 .wiki-background {
     margin-bottom: var(--spacing-medium);
 }
+/* Remove default Swiper button background images */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    display: none; /* Hide the pseudo-elements */
+    content: none; /* Ensure no content is displayed */
+}
 
 /* Swiper Navigation Buttons */
 .swiper-button-next,
@@ -238,19 +272,19 @@ header {
     top: 50%;
     width: 44px;
     height: 44px;
-    margin-top: -22px;
+    margin-top: -22px; /* Center vertically */
     z-index: 1000;
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: none;
-    /* border-radius: 50%; */
+    background: none; /* Remove any background */
+    border: none; /* Remove border */
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--secondary-text-color);
-    transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease;
+    color: var(--secondary-text-color); /* Icon color */
+    transition: color var(--transition-duration) ease;
 }
 
+/* Positioning */
 .swiper-button-next {
     right: 20px;
 }
@@ -259,10 +293,16 @@ header {
     left: 20px;
 }
 
+/* Hover Effects */
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: var(--accent-color);
+    color: var(--accent-color); /* Change icon color on hover */
+}
+
+/* Optional: Adjust Icon Size */
+.swiper-button-next i,
+.swiper-button-prev i {
+    font-size: 2rem; /* Adjust as needed */
 }
 
 /* Swiper Pagination */
@@ -364,4 +404,24 @@ footer {
     border-radius: 4px;
     white-space: nowrap;
     z-index: 1000; /* Ensure tooltip is above other elements */
+}
+
+.play-movie-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.play-movie-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff5722; /* Accent color */
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2em;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.play-movie-button:hover {
+    background-color: #e64a19;
 }

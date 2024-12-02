@@ -16,6 +16,9 @@ html, body {
     margin: 0;
     padding: 0;
 }
+body {
+    overflow-x: hidden;
+}
 
 /* Normalize link styles but allow color */
 a {
@@ -64,7 +67,7 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
+    background-color: var(--background-color);
     border-radius: 4px;
     transition: background-color 0.3s;
 }
@@ -76,5 +79,5 @@ body::-webkit-scrollbar-thumb:hover {
 /* Scrollbar styles for Firefox */
 body {
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) var(--background-color);
+    scrollbar-color: var(--secondary-color) var(--background-color);
 }

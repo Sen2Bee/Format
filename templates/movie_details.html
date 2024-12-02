@@ -78,7 +78,19 @@
                 {% if movie.posters %}
                 <div class="wrap-poster">
                     <img src="{{ movie.posters[0] }}" alt="Poster Image for {{ movie.title }}" loading="lazy">
-                    {% if movie.video_link %}
+                    
+                    {% if movie.movie_file_url %}
+                    <!-- Play Movie Button -->
+                    <!-- <a href="{{ movie.movie_file_url }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.title }}">
+                        <i class="fas fa-play"></i>
+                    </a>  -->
+                    <a href="{{ url_for('movie_player', folder_name=movie.folder_name, filename=movie.moviefilename) }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.title }}">
+                        <i class="fas fa-play"></i>
+                    </a>                            
+                    <!-- <a href="{{ url_for('movie_player', folder_name=movie.folder_name, filename=movie.moviefilename) }}"  class="play-movie-overlay" target="_blank" aria-label="Play Movie {{ movie.title }}">
+                        <i class="fas fa-play"></i>
+                    </a>                              -->
+                    {% elif movie.video_link %}
                     <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.title }}">
                         <i class="fas fa-play"></i>
                     </a>

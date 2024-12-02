@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ filename }} - Movie Player</title>
+
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+
+    <style>
+        /* Your existing styles */
+        body {
+            margin: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+        .video-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            background-color: #000;
+        }
+        #subtitleButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            font-size: 24px;
+        }
+        #subtitleButton:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+        }
+        #subtitleMenu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        #subtitleMenu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        #subtitleMenu li {
+            margin-bottom: 5px;
+        }
+        #subtitleMenu button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        #subtitleMenu button:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="moviePlayer" controls autoplay tabindex="0">
+            <source src="{{ url_for('play_movie', folder_name=folder_name, filename=filename) }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        {% if subtitles|length > 0 %}
+        <button id="subtitleButton" aria-label="Toggle Subtitles">
+            <i class="fas fa-closed-captioning"></i>
+        </button>
+        <div id="subtitleMenu">
+            <ul>
+                {% for subtitle in subtitles %}
+                <li>
+                    <button onclick="loadSubtitle('{{ subtitle }}')">{{ subtitle }}</button>
+                </li>
+                {% endfor %}
+                <li>
+                    <button onclick="removeSubtitles()">Disable Subtitles</button>
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // JavaScript for subtitle handling
+        const subtitleButton = document.getElementById('subtitleButton');
+        const subtitleMenu = document.getElementById('subtitleMenu');
+        const videoPlayer = document.getElementById('moviePlayer');
+
+        if (subtitleButton) {
+            subtitleButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                subtitleMenu.style.display = subtitleMenu.style.display === 'block' ? 'none' : 'block';
+            });
+        }
+
+        function loadSubtitle(subtitleFile) {
+            const tracks = videoPlayer.getElementsByTagName('track');
+            for (let i = tracks.length - 1; i >= 0; i--) {
+                videoPlayer.removeChild(tracks[i]);
+            }
+            const track = document.createElement('track');
+            track.kind = 'subtitles';
+            track.label = subtitleFile;
+            track.srclang = 'en';
+            track.src = `/subtitle/${encodeURIComponent('{{ folder_name }}')}/${encodeURIComponent(subtitleFile)}`;
+            track.default = true;
+            videoPlayer.appendChild(track);
+            subtitleMenu.style.display = 'none';
+        }
+
+        function removeSubtitles() {
+            const tracks = videoPlayer.getElementsByTagName('track');
+            for (let i = tracks.length - 1; i >= 0; i--) {
+                videoPlayer.removeChild(tracks[i]);
+            }
+            subtitleMenu.style.display = 'none';
+        }
+
+        // Hide the subtitle menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (subtitleMenu.style.display === 'block' && !subtitleMenu.contains(event.target) && event.target !== subtitleButton) {
+                subtitleMenu.style.display = 'none';
+            }
+        });
+
+        // Keyboard Controls
+        // Key codes mapping
+        const keyActions = {
+            32: 'togglePlay',        // Spacebar
+            37: 'seekBackward',      // Left arrow
+            39: 'seekForward',       // Right arrow
+            38: 'volumeUp',          // Up arrow
+            40: 'volumeDown',        // Down arrow
+            77: 'toggleMute',        // 'M' key
+            70: 'toggleFullscreen',  // 'F' key
+        };
+
+        // Event listener for keydown events
+        document.addEventListener('keydown', function(event) {
+            if (event.target.tagName.toLowerCase() === 'input' || event.target.isContentEditable) {
+                return;
+            }
+
+            const action = keyActions[event.keyCode];
+            if (action) {
+                event.preventDefault();
+                handleAction(action);
+            }
+        });
+
+        function handleAction(action) {
+            switch(action) {
+
+                case 'seekBackward':
+                    videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
+                    break;
+                case 'seekForward':
+                    videoPlayer.currentTime = Math.min(videoPlayer.currentTime + 5, videoPlayer.duration);
+                    break;
+                case 'volumeUp':
+                    videoPlayer.volume = Math.min(videoPlayer.volume + 0.1, 1);
+                    break;
+                case 'volumeDown':
+                    videoPlayer.volume = Math.max(videoPlayer.volume - 0.1, 0);
+                    break;
+                case 'toggleMute':
+                    videoPlayer.muted = !videoPlayer.muted;
+                    break;
+                case 'toggleFullscreen':
+                    toggleFullscreen();
+                    break;
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                if (videoPlayer.requestFullscreen) {
+                    videoPlayer.requestFullscreen();
+                } else if (videoPlayer.webkitRequestFullscreen) {
+                    videoPlayer.webkitRequestFullscreen();
+                } else if (videoPlayer.msRequestFullscreen) {
+                    videoPlayer.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
