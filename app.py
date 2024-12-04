@@ -549,7 +549,7 @@ def filter_movies():
                                     )
                                 """)
             search_pattern = f"%{search_query}%"
-            params.extend([search_pattern, search_pattern, search_pattern])
+            params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
 
         # **Apply Genre Filter**
         if selected_genres:
@@ -624,6 +624,7 @@ def filter_movies():
         cursor.execute(count_query, tuple(params))
         logging.info("after count query for total movies")
         total_movies = cursor.fetchone()['total']
+
 
         # **4. Determine columns_per_row and items_per_page**
         # Ensure a maximum of 10 rows, based on the number of columns per row
