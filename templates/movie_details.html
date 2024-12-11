@@ -103,12 +103,14 @@
                         {% if movie.directors %}
                         <div class="info-item">
                             <i class="fas fa-video"></i>
-                            <span class="director">
-                                {% for director in movie.directors %}
-                                    <a href="{{ url_for('catalog') }}?search_query={{ director.name }}">{{ director.name }}</a>
-                                    {% if not loop.last %}, {% endif %}
-                                {% endfor %}
-                            </span>
+                            <!-- <span class="director">
+                                {% for director in movie.director %}
+                                <a href="#" 
+                                   class="person-link" 
+                                   data-person-name="{{ director.name }}" 
+                                   data-person-id="{{ director.tmdb_id }}">{{ director.name }}</a>{% if not loop.last %}, {% endif %}
+                              {% endfor %}                                
+                            </span> -->
                         </div>
                         {% endif %}
                         <div class="info-item">
@@ -185,9 +187,11 @@
                             <p class="actors">
                                 <strong>Schauspieler:</strong>
                                 {% for actor in movie.actors %}
-                                    <a href="{{ url_for('catalog') }}?search_query={{ actor.name }}">{{ actor.name }}</a>
-                                    {% if not loop.last %}, {% endif %}
-                                {% endfor %}
+                                <a href="#" 
+                                   class="person-link" 
+                                   data-person-name="{{ actor.name }}" 
+                                   data-person-id="{{ actor.tmdb_id }}">{{ actor.name }}</a>{% if not loop.last %}, {% endif %}
+                              {% endfor %}
                             </p>
                         {% endif %}
 

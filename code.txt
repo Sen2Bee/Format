@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-12-02 20:57:48 ===
+=== Code Summary Generated at 2024-12-04 22:27:00 ===
 
 === Project Folder Structure ===
 
@@ -123,6 +123,9 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+}
+body {
+    overflow-x: hidden;
 }
 
 /* Normalize link styles but allow color */
@@ -2042,6 +2045,7 @@ footer .footer-content p {
 
 --- File: static\css\layout\navbar.css ---
 /* General Navbar Styles */
+/* General Navbar Styles */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -2051,9 +2055,9 @@ footer .footer-content p {
     top: 0;
     left: 0;
     right: 0;
-    width: 100%;
+    width: 99.3%;
     box-sizing: border-box;
-    height: 50px;
+    height: 40px;
     padding: 0 20px;
     z-index: 1000;
     transition: transform 0.3s ease-in-out, box-shadow var(--transition-duration);
@@ -2061,6 +2065,15 @@ footer .footer-content p {
     font-family: var(--font-body);
 }
 
+/* Hidden State */
+.navbar.hidden {
+    transform: translateY(-100%);  /* Slide navbar up to hide */
+}
+
+/* Ensure the navbar appears when hovering */
+.navbar:hover {
+    transform: translateY(0);
+}
 
 
 .theme-title {
@@ -2079,14 +2092,8 @@ footer .footer-content p {
     font-size: 1.2rem;  /* Reduce size when navbar is shrunk */
 }
 
-/* Hidden State */
-.navbar.hidden {
-    transform: translateY(-100%);  /* Slide navbar up to hide */
-}
-/* Ensure the navbar appears when hovering */
-.navbar:hover {
-    transform: translateY(0);
-}
+
+
 
 /* Navbar Toggle Button for Mobile */
 .menu-toggle {
@@ -3061,6 +3068,12 @@ header {
 .wiki-background {
     margin-bottom: var(--spacing-medium);
 }
+/* Remove default Swiper button background images */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    display: none; /* Hide the pseudo-elements */
+    content: none; /* Ensure no content is displayed */
+}
 
 /* Swiper Navigation Buttons */
 .swiper-button-next,
@@ -3069,19 +3082,19 @@ header {
     top: 50%;
     width: 44px;
     height: 44px;
-    margin-top: -22px;
+    margin-top: -22px; /* Center vertically */
     z-index: 1000;
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: none;
-    /* border-radius: 50%; */
+    background: none; /* Remove any background */
+    border: none; /* Remove border */
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--secondary-text-color);
-    transition: background-color var(--transition-duration) ease, color var(--transition-duration) ease;
+    color: var(--secondary-text-color); /* Icon color */
+    transition: color var(--transition-duration) ease;
 }
 
+/* Positioning */
 .swiper-button-next {
     right: 20px;
 }
@@ -3090,10 +3103,16 @@ header {
     left: 20px;
 }
 
+/* Hover Effects */
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: var(--accent-color);
+    color: var(--accent-color); /* Change icon color on hover */
+}
+
+/* Optional: Adjust Icon Size */
+.swiper-button-next i,
+.swiper-button-prev i {
+    font-size: 2rem; /* Adjust as needed */
 }
 
 /* Swiper Pagination */
@@ -4935,29 +4954,15 @@ document.addEventListener('DOMContentLoaded', function () {
     let lastScrollTop = 0;
     let ticking = false;
 
-    /**
-     * Handles the scroll event to show/hide the navbar
-     */
     function handleScroll() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-
-        const scrollHeight = document.documentElement.scrollHeight;
-        const clientHeight = document.documentElement.clientHeight;
-        const totalScrollableHeight = scrollHeight - clientHeight;
-        const scrollPercentage = currentScroll / totalScrollableHeight;
 
         if (currentScroll <= 20) {
             // Always show navbar when near the top
             navbar.classList.remove('hidden');
         } else if (currentScroll > lastScrollTop) {
-            // Scrolling down
-            if (scrollPercentage < 0.1) {
-                // If near the top 10%, show navbar
-                navbar.classList.remove('hidden');
-            } else {
-                // Else, hide navbar
-                navbar.classList.add('hidden');
-            }
+            // Scrolling down - hide navbar
+            navbar.classList.add('hidden');
         } else {
             // Scrolling up - show navbar
             navbar.classList.remove('hidden');
@@ -4967,9 +4972,6 @@ document.addEventListener('DOMContentLoaded', function () {
         ticking = false;
     }
 
-    /**
-     * Throttles the scroll event handler using requestAnimationFrame
-     */
     function onScroll() {
         if (!ticking) {
             window.requestAnimationFrame(handleScroll);
@@ -4977,7 +4979,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Attach the throttled scroll handler
     window.addEventListener('scroll', onScroll);
 
     // Show navbar when hovering near the top
@@ -5191,6 +5192,8 @@ export function themeToggle() {
                     <input id="search-box" type="text" placeholder="Suche (mind. 4 Zeichen)" aria-label="Suchfeld">
                     <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
                 </div>
+
+             
 
                 <form id="filter-form">
                     <!-- Main Filters Container Wrapper -->
@@ -5496,6 +5499,7 @@ export function themeToggle() {
 </html>
 
 --- File: templates\movie_details.html ---
+<!-- File: templates/movie_details.html -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -5579,15 +5583,9 @@ export function themeToggle() {
                     
                     {% if movie.movie_file_url %}
                     <!-- Play Movie Button -->
-                    <!-- <a href="{{ movie.movie_file_url }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.title }}">
+                    <a href="{{ url_for('movie_player', folder_name=movie.folder_name, filename=movie.moviefilename) }}" class="play-trailer-overlay" target="_blank" aria-label="Play Movie {{ movie.title }}">
                         <i class="fas fa-play"></i>
-                    </a>  -->
-                    <a href="{{ url_for('movie_player', folder_name=movie.folder_name, filename=movie.moviefilename) }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.title }}">
-                        <i class="fas fa-play"></i>
-                    </a>                            
-                    <!-- <a href="{{ url_for('movie_player', folder_name=movie.folder_name, filename=movie.moviefilename) }}"  class="play-movie-overlay" target="_blank" aria-label="Play Movie {{ movie.title }}">
-                        <i class="fas fa-play"></i>
-                    </a>                              -->
+                    </a>
                     {% elif movie.video_link %}
                     <a href="{{ movie.video_link }}" class="play-trailer-overlay" target="_blank" aria-label="Play Trailer for {{ movie.title }}">
                         <i class="fas fa-play"></i>
@@ -5608,10 +5606,7 @@ export function themeToggle() {
                             <i class="fas fa-video"></i>
                             <span class="director">
                                 {% for director in movie.directors %}
-                                    <a href="https://www.themoviedb.org/person/{{ director.tmdb_id }}" target="_blank">{{ director.name }}</a>
-                                    <a href="#" class="filter-icon" data-person-name="{{ director.name }}" title="Filter by {{ director.name }}">
-                                        <i class="fas fa-filter"></i>
-                                    </a>
+                                    <a href="{{ url_for('catalog') }}?search_query={{ director.name }}">{{ director.name }}</a>
                                     {% if not loop.last %}, {% endif %}
                                 {% endfor %}
                             </span>
@@ -5691,10 +5686,7 @@ export function themeToggle() {
                             <p class="actors">
                                 <strong>Schauspieler:</strong>
                                 {% for actor in movie.actors %}
-                                    <a href="https://www.themoviedb.org/person/{{ actor.tmdb_id }}" target="_blank">{{ actor.name }}</a>
-                                    <a href="#" class="filter-icon" data-person-name="{{ actor.name }}" title="Filter by {{ actor.name }}">
-                                        <i class="fas fa-filter"></i>
-                                    </a>
+                                    <a href="{{ url_for('catalog') }}?search_query={{ actor.name }}">{{ actor.name }}</a>
                                     {% if not loop.last %}, {% endif %}
                                 {% endfor %}
                             </p>

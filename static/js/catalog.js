@@ -89,21 +89,25 @@ export function updateMovieListings(movies) {
                 ? movie.director.join(', ')
                 : "Unknown Director";
 
-            // Process actors
-            let actors = "Unknown Actors";
-            if (movie.actors) {
-                if (Array.isArray(movie.actors)) {
-                    actors = movie.actors.join(', ');
-                } else if (typeof movie.actors === 'string') {
-                    actors = movie.actors.split(',').map(actor => actor.trim()).filter(actor => actor.length > 0).join(', ');
+            // Limit the number of displayed actors
+            let actors = '';
+            const maxActorsToShow = 2;
+            if (typeof movie.actors === 'string') {
+                const actorArray = movie.actors.split(',').map(actor => actor.trim());
+                if (actorArray.length > maxActorsToShow) {
+                    actors = `${actorArray.slice(0, maxActorsToShow).join(', ')}, ...`;
+                } else {
+                    actors = actorArray.join(', ');
                 }
             }
 
-            // Limit the number of displayed actors
-            const maxActorsToShow = 5;
+            console.log(actors);            
+            
             if (Array.isArray(movie.actors) && movie.actors.length > maxActorsToShow) {
                 actors = `${movie.actors.slice(0, maxActorsToShow).join(', ')}, ...`;
             }
+            console.log("Array.isArray(movie.actors)", Array.isArray(movie.actors)); // Sollte true sein
+            console.log(movie.actors); // Loggen Sie das Array zur Überprüfung  
 
             // Process countries
             const countries = Array.isArray(movie.countries) && movie.countries.length > 0
