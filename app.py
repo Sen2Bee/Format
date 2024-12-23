@@ -27,9 +27,10 @@ db_config = {
 import os
 
 # Define the base directory relative to the script's location
-MOVIES_BASE_DIR = os.path.join(os.path.dirname(__file__), r'..\..\Movies\Katalog')
-# Normalize the path to handle `..` and make it absolute
-MOVIE_IMAGES_BASE_DIR = os.path.abspath(os.path.normpath(MOVIES_BASE_DIR))
+MOVIES_BASE_DIRS = [
+    r"E:\Movies\Katalog",
+    r"F:\Katalog",
+]
 
 
 # Initialize the cache with SimpleCache
@@ -64,12 +65,44 @@ def connect_to_db():
     except mysql.connector.Error as err:
         logging.error(f"Error getting connection from pool: {err}")
         return None
-
+    
+# -------------------------------------------------------------------------
+# HELPER FUNCTIONS FOR MULTIPLE DIRECTORIES
+# -------------------------------------------------------------------------
+def find_file_in_base_dirs(rel_path: str) -> str:
+    """
+    Given a relative path (e.g. "folder_name/poster/poster_1.jpg"),
+    search each directory in MOVIES_BASE_DIRS and return the absolute file path
+    if it exists. Otherwise return None.
+    """
+    for base_dir in MOVIES_BASE_DIRS:
+        candidate = os.path.join(base_dir, rel_path)
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+def find_folder_in_base_dirs(rel_path: str) -> str:
+    """
+    Similar to find_file_in_base_dirs, but checks for a directory.
+    Return the first matching directory path or None if not found.
+    """
+    for base_dir in MOVIES_BASE_DIRS:
+        candidate = os.path.join(base_dir, rel_path)
+        if os.path.isdir(candidate):
+            return candidate
+    return None
 
 @app.route('/movie_images/<path:filename>')
 def movie_images(filename):
-    """Serve movie images from the specified directory."""
-    return send_from_directory(MOVIE_IMAGES_BASE_DIR, filename)
+    """
+    Serve movie images from whichever base directory they exist in.
+    The `filename` is a relative path: e.g. "SomeFolder/poster/poster_1.jpg".
+    """
+    abs_path = find_file_in_base_dirs(filename)
+    if not abs_path:
+        abort(404, description="Image file not found in any base directory.")
+    
+    # We can send the file directly:
+    return send_file(abs_path)
 
 
 @app.route('/')
@@ -101,6 +134,7 @@ def get_movie_details(movie_id):
         """
         cursor.execute(movie_query, (movie_id,))
         movie = cursor.fetchone()
+        print(movie)
         
         if movie:
             # Split genres and countries into lists
@@ -189,6 +223,7 @@ def get_movie_details(movie_id):
             movie['backdrops'] = get_backdrop_images(movie['folder_name'])
             # movie_folder_path = os.path.join(MOVIES_BASE_DIR, movie['folder_name'], movie['moviefilename'])
             movie_file_path = validate_movie_file(movie)
+            
             movie['movie_file_url'] = url_for('serve_movie_file', movie_id=movie_id) if movie_file_path else None
 
 
@@ -282,7 +317,6 @@ def get_spoken_languages(cursor, movie_id):
 def get_backdrop_images_route(movie_folder):
     """API endpoint to retrieve backdrop images."""
     backdrops = get_backdrop_images(movie_folder)
-    print(backdrops)
     return jsonify({"images": [os.path.basename(url) for url in backdrops]})
 
 @app.route('/get_poster_images/<path:movie_folder>')
@@ -301,17 +335,24 @@ def get_backdrop_images(movie_folder):
     return get_images(movie_folder, 'backdrop', extensions=('.avif',))
 
 def get_images(movie_folder, image_type, extensions=('.avif', '.jpg', '.jpeg', '.png', '.webp')):
-    """Retrieve image URLs for a specific movie folder and image type ('poster' or 'backdrop')."""
+    """
+    Retrieve image URLs for a specific movie folder & subdir type
+    ('poster' or 'backdrop'). We look for the subdirectory across all base dirs.
+    """
     images = []
-    folder_path = os.path.join(MOVIE_IMAGES_BASE_DIR, movie_folder, image_type)
-
-    if not os.path.exists(folder_path):
+    # 1) Find a matching subfolder in any of the base directories
+    subdir = find_folder_in_base_dirs(os.path.join(movie_folder, image_type))
+    if not subdir:
         logging.warning(f"No {image_type} directory found for folder: {movie_folder}")
-        return images  # Return empty list if directory does not exist
+        return images
 
-    for filename in sorted(os.listdir(folder_path)):
+    # 2) List all files in that subdir matching the given extensions
+    for filename in sorted(os.listdir(subdir)):
         if filename.lower().endswith(extensions):
-            image_url = url_for('movie_images', filename=f"{movie_folder}/{image_type}/{filename}")
+            # The relative path needed by the `movie_images` route:
+            rel_path = os.path.join(movie_folder, image_type, filename).replace("\\","/")
+            # Use `url_for('movie_images', filename=rel_path)`
+            image_url = url_for('movie_images', filename=rel_path)
             images.append(image_url)
 
     return images
@@ -1038,27 +1079,58 @@ def convert_subtitle_to_vtt(subtitle_path):
         print(f"Error converting subtitle: {e}")
         return None
 
-@app.route('/movie_file/<movie_id>')
+# A route to serve the actual movie file if it exists
+@app.route('/movie_file/<int:movie_id>')
 def serve_movie_file(movie_id):
-    movie_file_path = get_movie_file(movie_id)
-    if movie_file_path and os.path.isfile(movie_file_path):
-        return send_file(movie_file_path, mimetype='video/mp4', conditional=True)
-    else:
-        abort(404)
+    """
+    Return the movie file as an attachment or a streamed response if available.
+    """
+    # We need to look up the folder name + moviefilename in DB or fetch from context
+    connection = connect_to_db()
+    if not connection:
+        abort(500, "DB connection failed.")
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT folder_name, moviefilename FROM movies WHERE movie_id = %s", (movie_id,))
+        row = cursor.fetchone()
+        cursor.close()
+        connection.close()
+        if not row:
+            abort(404, "Movie not found in DB.")
 
-@app.route('/subtitle_file/<movie_id>/<subtitle_name>')
-def serve_subtitle_file(movie_id, subtitle_name):
-    folder = os.path.join(MOVIE_FOLDER, movie_id)
-    subtitle_path = os.path.join(folder, subtitle_name)
-    if os.path.isfile(subtitle_path):
-        vtt_path = convert_subtitle_to_vtt(subtitle_path)
-        if vtt_path:
-            return send_file(vtt_path, mimetype='text/vtt')
-    abort(404)
+        folder_name = row.get('folder_name', '')
+        moviefilename = row.get('moviefilename', '')
+        rel_path = os.path.join(folder_name, moviefilename)
+        abs_path = find_file_in_base_dirs(rel_path)
+        if abs_path and os.path.isfile(abs_path):
+            return send_file(abs_path, mimetype='video/mp4', conditional=True)
+        else:
+            abort(404, "Movie file not found on disk.")
+    except Exception as e:
+        logging.error(f"Error in serve_movie_file for ID {movie_id}: {e}")
+        abort(500, "Internal server error.")
+
+
+# Example route for a subtitle file
+@app.route('/subtitle/<folder_name>/<subtitle_file>')
+def serve_subtitle(folder_name, subtitle_file):
+    # We combine folder_name & subtitle_file -> then find in base dirs
+    rel_path = os.path.join(folder_name, subtitle_file)
+    abs_path = find_file_in_base_dirs(rel_path)
+    if not abs_path or not os.path.isfile(abs_path):
+        abort(404, description="Subtitle file not found")
+
+    # If the subtitle is in SRT format, convert it to VTT on the fly
+    if subtitle_file.lower().endswith('.srt'):
+        vtt_content = convert_srt_to_vtt(abs_path)
+        return Response(vtt_content, mimetype='text/vtt')
+    # Otherwise, just serve the file
+    return send_file(abs_path, mimetype='text/vtt')
 
 @app.route('/play_movie/<folder_name>/<filename>')
 def play_movie(folder_name, filename):
-    movie_path = os.path.join(MOVIES_BASE_DIR, folder_name, filename)
+    folder_path = find_folder_in_base_dirs(folder_name)
+    movie_path = os.path.join(folder_path, filename)
     
     if os.path.isfile(movie_path):
         return send_file(movie_path, as_attachment=False)
@@ -1069,11 +1141,16 @@ def play_movie(folder_name, filename):
 
 @app.route('/movie_player/<folder_name>/<filename>')
 def movie_player(folder_name, filename):
-    # Construct the full path to the movie folder
-    folder_path = os.path.join(MOVIES_BASE_DIR, folder_name)
-    movie_path = os.path.join(folder_path, filename)
+    """
+    Basic route to show a video player in a template,
+    optionally with subtitles in the same folder.
+    """
+    folder_path = find_folder_in_base_dirs(folder_name)
+    print("movie_player", movie_player)
+    if not folder_path:
+        abort(404, description="Movie folder not found in any base directory.")
 
-    # Verify that the movie file exists
+    movie_path = os.path.join(folder_path, filename)
     if not os.path.isfile(movie_path):
         abort(404, description="Movie file not found")
 
@@ -1082,8 +1159,8 @@ def movie_player(folder_name, filename):
     for file in os.listdir(folder_path):
         if file.lower().endswith(('.srt', '.vtt')):
             subtitles.append(file)
-    print(subtitles)
-    # Pass the subtitles list to the template
+    logging.info(f"Found subtitles: {subtitles}")
+
     return render_template(
         'movie_player.html',
         folder_name=folder_name,
@@ -1091,22 +1168,7 @@ def movie_player(folder_name, filename):
         subtitles=subtitles
     )
 
-# app.py
-
 from flask import Response
-
-@app.route('/subtitle/<folder_name>/<subtitle_file>')
-def serve_subtitle(folder_name, subtitle_file):
-    subtitle_path = os.path.join(MOVIES_BASE_DIR, folder_name, subtitle_file)
-    if os.path.isfile(subtitle_path):
-        # If the subtitle is in SRT format, convert it to VTT
-        if subtitle_file.lower().endswith('.srt'):
-            vtt_content = convert_srt_to_vtt(subtitle_path)
-            return Response(vtt_content, mimetype='text/vtt')
-        else:
-            return send_file(subtitle_path, mimetype='text/vtt')
-    else:
-        abort(404, description="Subtitle file not found")
 
 def convert_srt_to_vtt(srt_path):
     with open(srt_path, 'r', encoding='utf-8') as srt_file:
@@ -1115,10 +1177,20 @@ def convert_srt_to_vtt(srt_path):
     content = content.replace(',', '.')
     return 'WEBVTT\n\n' + content
 
-
+# For validating a single movie file:
 def validate_movie_file(movie):
-    movie_folder_path = os.path.join(MOVIES_BASE_DIR, movie['folder_name'], movie['moviefilename'])
-    return movie_folder_path if os.path.isfile(movie_folder_path) else None
+    """
+    Check if the movie file path is valid across the multiple directories.
+    `movie['folder_name']` and `movie['moviefilename']` are used to locate the file.
+    """
+    folder_name = movie.get('folder_name', '')
+    moviefilename = movie.get('moviefilename', '')
+    if not folder_name or not moviefilename:
+        return None
+
+    rel_path = os.path.join(folder_name, moviefilename)
+    found_path = find_file_in_base_dirs(rel_path)
+    return found_path if found_path and os.path.isfile(found_path) else None
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -105,7 +105,7 @@ def test_query():
 
     # Test year (e.g., 1916)
     year_param = 1916
-    query = "select count(movie_id) from countries;"
+    query = "select * from movie_cast limit 10;"
     try:
 
 
