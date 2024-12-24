@@ -2,6 +2,9 @@
 
 import { triggerDropdownChangeEvent } from './filter.js';
 
+/**
+ * Dynamically scale icon sizes (runtime, rating, fsk, etc.).
+ */
 function getIconSizeByType(typeval, type = "rating") {
     const minSize = 1;   // 1em for the smallest value
     const maxSize = 2.5; // 2.5em for the largest value
@@ -27,13 +30,34 @@ function getIconSizeByType(typeval, type = "rating") {
     // Clamp the value within the min and max range
     const clampedVal = Math.max(minVal, Math.min(typeval, maxVal));
 
-    // Calculate the size as a ratio between the value and the value range
+    // Calculate the size as a ratio of the value vs. the range
     const size = minSize + (clampedVal - minVal) * (maxSize - minSize) / (maxVal - minVal);
-
-    // Return the size in 'em' units, rounded to two decimal places
     return `${size.toFixed(2)}em`;
 }
 
+/**
+ * On DOM load, check for `?search=` param and auto-fill the #search-box if present.
+ * Then call `triggerDropdownChangeEvent()` so the catalog shows relevant results.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const searchQuery = params.get('search');
+
+    if (searchQuery) {
+        const searchBox = document.getElementById('search-box');
+        if (searchBox) {
+            console.log("Auto-filling search box with:", searchQuery);
+            searchBox.value = searchQuery;
+            // Trigger your existing filter logic to show results
+            triggerDropdownChangeEvent();
+        }
+    }
+});
+
+/**
+ * Renders movie listings in either list or grid view, depending on `.list-view` class.
+ * Called by e.g. `updateMovieListingsUI()` after fetching movies from server.
+ */
 export function updateMovieListings(movies) {
     const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
@@ -44,213 +68,159 @@ export function updateMovieListings(movies) {
     // Check if we are in list view or grid view
     const isListView = movieContainer.classList.contains('list-view');
 
-    movieContainer.innerHTML = "";  // Clear existing entries
+    // Clear old content
+    movieContainer.innerHTML = "";
 
-    if (movies.length > 0) {
-        movies.forEach(movie => {
-            const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
-            const defaultImagePath = '/static/images/default_movie.png';
-
-            const movieCard = document.createElement('div');
-            movieCard.className = 'movie-card';
-
-            // Prepare runtime display
-            let formatRuntimeHtml = '';
-            const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
-            formatRuntimeHtml = `
-                <div class="meta-item">
-                    <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
-                    <span>${movie.runtime}</span>
-                </div>
-            `;
-
-            // Prepare FSK display
-            let formatFskHtml = '';
-            const fskIconSize = getIconSizeByType(movie.fsk, "fsk");
-            formatFskHtml = `
-                <div class="meta-item">
-                    <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
-                    <span>${movie.fsk}</span>
-                </div>
-            `;
-
-            // Prepare rating display
-            let formatRatingHtml = '';
-            const ratingIconSize = getIconSizeByType(movie.rating, "rating");
-            formatRatingHtml = `
-                <div class="meta-item">
-                    <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
-                    <span>${movie.rating}</span>
-                </div>
-            `;
-
-            // Process directors
-            const directors = Array.isArray(movie.director) && movie.director.length > 0
-                ? movie.director.join(', ')
-                : "Unknown Director";
-
-            // Limit the number of displayed actors
-            let actors = '';
-            const maxActorsToShow = 2;
-            if (typeof movie.actors === 'string') {
-                const actorArray = movie.actors.split(',').map(actor => actor.trim());
-                if (actorArray.length > maxActorsToShow) {
-                    actors = `${actorArray.slice(0, maxActorsToShow).join(', ')}, ...`;
-                } else {
-                    actors = actorArray.join(', ');
-                }
-            }
-
-            console.log(actors);            
-            
-            if (Array.isArray(movie.actors) && movie.actors.length > maxActorsToShow) {
-                actors = `${movie.actors.slice(0, maxActorsToShow).join(', ')}, ...`;
-            }
-            console.log("Array.isArray(movie.actors)", Array.isArray(movie.actors)); // Sollte true sein
-            console.log(movie.actors); // Loggen Sie das Array zur Überprüfung  
-
-            // Process countries
-            const countries = Array.isArray(movie.countries) && movie.countries.length > 0
-                ? movie.countries.map(country => {
-                    const match = country.match(/(.*?)\s\((.*?)\)/);
-                    const fullName = match ? match[1] : country;
-                    const shortCode = match ? match[2] : country;
-                    return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
-                }).join(', ')
-                : "Unknown Countries";
-
-            // Process genres
-            const genres = Array.isArray(movie.genres) && movie.genres.length > 0 ? movie.genres.join(', ') : "Unknown Genres";
-
-            // Determine the content based on format_inhalt and overview
-            let content;
-
-            if (movie.format_inhalt && movie.format_inhalt.length >= 10) {
-                content = movie.format_inhalt;
-            } else if (movie.overview && movie.overview.length >= 10) {
-                content = movie.overview;
-            } else {
-                content = "Keine Inhaltsangabe verfügbar.";
-            }
-
-            // Truncate content based on view type
-            const maxLength = isListView ? 300 : 150; // 300 characters for list view, 150 for grid view
-            if (content.length > maxLength) {
-                content = content.substring(0, maxLength) + '...';
-            }
-
-            movieCard.innerHTML = `
-                <div class="movie-content-wrapper">
-                    <div class="image-container">
-                        <a href="/movie/${movie.movie_id}">
-                            <img src="${imagePath}" alt="${movie.main_title}" onerror="this.onerror=null; this.src='${defaultImagePath}';" loading="lazy">
-                        </a>
-
-                        <div class="hover-title">
-                            <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
-                        </div>
-                    </div>
-
-                    <div class="info-wrapper">
-                        <div class="title-section">
-                            <h2>${movie.main_title}</h2>
-                        </div>
-                        <div class="overview-section">
-                            <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
-                        </div>
-                        <div class="info-section">
-                            <div class="metadata">
-                                <p class="countries"><strong><i class="fas fa-globe"></i></strong> ${countries} | <strong><i class="fas fa-film"></i></strong> ${genres}</p>
-                                <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
-                                <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
-                                <!-- Inline Meta in List View -->
-                                <div class="inline-meta">
-                                    ${formatRuntimeHtml}
-                                    ${formatFskHtml}
-                                    ${formatRatingHtml}
-                                    <div class="meta-item">
-                                        <i class="fas fa-calendar" style="font-size:1.4em;"></i>
-                                        <span>${movie.release_date}</span>
-                                    </div>
-                                </div>
-                                <p class="standort"><strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort || 'N/A'} | <strong><i class="fas fa-disc"></i></strong> ${movie.formats}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            movieContainer.appendChild(movieCard);
-        });
-
-    } else {
+    if (movies.length === 0) {
         movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
-    }
-}
-
-
-// toggle-view.js
-
-export function toggleViews() {
-    const gridViewBtn = document.getElementById('grid-view-btn');
-    const listViewBtn = document.getElementById('list-view-btn');
-    const movieListings = document.querySelector('.movie-listings');
-
-    if (!gridViewBtn || !listViewBtn || !movieListings) {
-        console.error("toggleViews: One or more elements not found.");
         return;
     }
 
-    // Function to activate Grid View
-    const activateGridView = () => {
-        movieListings.classList.remove('list-view');
-        gridViewBtn.classList.add('active');
-        listViewBtn.classList.remove('active');
-        gridViewBtn.setAttribute('aria-pressed', 'true');
-        listViewBtn.setAttribute('aria-pressed', 'false');
-        updateMovieListingsUI();
-    };
+    // Render each movie
+    movies.forEach(movie => {
+        const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
+        const defaultImagePath = '/static/images/default_movie.png';
 
-    // Function to activate List View
-    const activateListView = () => {
-        movieListings.classList.add('list-view');
-        listViewBtn.classList.add('active');
-        gridViewBtn.classList.remove('active');
-        listViewBtn.setAttribute('aria-pressed', 'true');
-        gridViewBtn.setAttribute('aria-pressed', 'false');
-        updateMovieListingsUI();
-    };
+        const movieCard = document.createElement('div');
+        movieCard.className = 'movie-card';
 
-    // Event Listeners for Toggle Buttons
-    gridViewBtn.addEventListener('click', () => {
-        activateGridView();
-        localStorage.setItem('movieView', 'grid');
+        // Prepare runtime display
+        const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
+        const formatRuntimeHtml = `
+            <div class="meta-item">
+                <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
+                <span>${movie.runtime}</span>
+            </div>
+        `;
+
+        // FSK display
+        const fskIconSize = getIconSizeByType(movie.fsk, "fsk");
+        const formatFskHtml = `
+            <div class="meta-item">
+                <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
+                <span>${movie.fsk}</span>
+            </div>
+        `;
+
+        // Rating display
+        const ratingIconSize = getIconSizeByType(movie.rating, "rating");
+        const formatRatingHtml = `
+            <div class="meta-item">
+                <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
+                <span>${movie.rating}</span>
+            </div>
+        `;
+
+        // Directors
+        const directors = Array.isArray(movie.director) && movie.director.length > 0
+            ? movie.director.join(', ')
+            : "Unknown Director";
+
+        // Actors: 6 in list view, 2 in grid view
+        const maxActorsToShow = isListView ? 6 : 2;
+        let actors = '';
+        if (typeof movie.actors === 'string') {
+            const actorArray = movie.actors.split(',').map(a => a.trim());
+            actors = (actorArray.length > maxActorsToShow)
+                ? actorArray.slice(0, maxActorsToShow).join(', ') + ', ...'
+                : actorArray.join(', ');
+        } else if (Array.isArray(movie.actors)) {
+            if (movie.actors.length > maxActorsToShow) {
+                actors = movie.actors.slice(0, maxActorsToShow).join(', ') + ', ...';
+            } else {
+                actors = movie.actors.join(', ');
+            }
+        }
+
+        // Countries
+        let countries = "Unknown Countries";
+        if (Array.isArray(movie.countries) && movie.countries.length > 0) {
+            countries = movie.countries.map(country => {
+                const match = country.match(/(.*?)\s\((.*?)\)/);
+                const fullName = match ? match[1] : country;
+                const shortCode = match ? match[2] : country;
+                return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
+            }).join(', ');
+        }
+
+        // Genres
+        const genres = (Array.isArray(movie.genres) && movie.genres.length > 0)
+            ? movie.genres.join(', ')
+            : "Unknown Genres";
+
+        // Overviews / content
+        let content = "Keine Inhaltsangabe verfügbar.";
+        if (movie.format_inhalt && movie.format_inhalt.length >= 10) {
+            content = movie.format_inhalt;
+        } else if (movie.overview && movie.overview.length >= 10) {
+            content = movie.overview;
+        }
+
+        // Truncate content
+        const maxLength = isListView ? 300 : 150;
+        if (content.length > maxLength) {
+            content = content.substring(0, maxLength) + '...';
+        }
+
+        // Build the HTML for each card
+        movieCard.innerHTML = `
+            <div class="movie-content-wrapper">
+                <div class="image-container">
+                    <a href="/movie/${movie.movie_id}">
+                        <img src="${imagePath}" 
+                             alt="${movie.main_title}"
+                             onerror="this.onerror=null; this.src='${defaultImagePath}';"
+                             loading="lazy">
+                    </a>
+                    <div class="hover-title">
+                        <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
+                    </div>
+                </div>
+
+                <div class="info-wrapper">
+                    <div class="title-section">
+                        <h2>${movie.main_title}</h2>
+                    </div>
+                    <div class="overview-section">
+                        <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
+                    </div>
+                    <div class="info-section">
+                        <div class="metadata">
+                            <p class="countries">
+                                <strong><i class="fas fa-globe"></i></strong> ${countries}
+                                | <strong><i class="fas fa-film"></i></strong> ${genres}
+                            </p>
+                            <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
+                            <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                            
+                            <div class="inline-meta">
+                                ${formatRuntimeHtml}
+                                ${formatFskHtml}
+                                ${formatRatingHtml}
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar" style="font-size:1.4em;"></i>
+                                    <span>${movie.release_date}</span>
+                                </div>
+                            </div>
+                            
+                            <p class="standort">
+                                <strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort || 'N/A'}
+                                | <strong><i class="fas fa-disc"></i></strong> ${movie.formats}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        movieContainer.appendChild(movieCard);
     });
-
-    listViewBtn.addEventListener('click', () => {
-        activateListView();
-        localStorage.setItem('movieView', 'list');
-    });
-
-    // Function to update movie listings UI based on view type
-    const updateMovieListingsUI = () => {
-        // Assuming you have a function or way to re-fetch and re-render movies
-        // For example:
-        fetch('/get_movies') // Replace with your actual endpoint
-            .then(response => response.json())
-            .then(data => {
-                updateMovieListings(data.movies);
-            })
-            .catch(err => console.error('Error fetching movies:', err));
-    };
-
-    // Optional: Persist User Preference using LocalStorage
-    // Check if user has a saved preference
-    const savedView = localStorage.getItem('movieView');
-
-    if (savedView === 'list') {
-        activateListView();
-    } else {
-        activateGridView();
-    }
 }
+
+/**
+ * Optional: if you don't rely on toggleViews or fetch code here, 
+ * you can keep them separate. The main function is updateMovieListings(...) 
+ * plus the DOMContentLoaded block above.
+ */
+// File: static/js/toggle-view.js
+

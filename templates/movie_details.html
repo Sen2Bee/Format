@@ -103,14 +103,14 @@
                         {% if movie.directors %}
                         <div class="info-item">
                             <i class="fas fa-video"></i>
-                            <!-- <span class="director">
-                                {% for director in movie.director %}
+                            <span class="director">
+                                {% for director in movie.directors %}
                                 <a href="#" 
                                    class="person-link" 
                                    data-person-name="{{ director.name }}" 
                                    data-person-id="{{ director.tmdb_id }}">{{ director.name }}</a>{% if not loop.last %}, {% endif %}
                               {% endfor %}                                
-                            </span> -->
+                            </span>
                         </div>
                         {% endif %}
                         <div class="info-item">
@@ -120,7 +120,7 @@
                         <div class="info-item">
                             <i class="fas fa-star"></i>
                             <span class="info-text">
-                                <a href="https://www.imdb.com/title/tt{{ movie.imdb_id }}" target="_blank">{{ movie.imdb_rating }}</a>
+                                <a href="https://www.imdb.com/title/tt{{ movie.imdb_id }}" target="_blank">{{ movie.rating }}</a>
                             </span>
                         </div>
                         <div class="info-item">
@@ -140,9 +140,9 @@
                             </span>
                         </div>
                         <div class="info-item">
-                            <i class="fas fa-building"></i>
+                            <i class="fas fa-map-marker-alt"></i>
                             <span class="info-text">
-                                {{ movie.production_companies | join(', ') }}
+                                {{ movie.standort}}
                             </span>
                         </div>
                         <!-- Awards -->
