@@ -1,7 +1,10 @@
 // File: static/js/catalog.js
 
 import { triggerDropdownChangeEvent } from './filter.js';
+
+/** Module-level variable to store current movies so we can re-render without refetching. */
 export let currentMovies = [];
+
 /**
  * Dynamically scale icon sizes (runtime, rating, fsk, etc.).
  */
@@ -11,33 +14,33 @@ function getIconSizeByType(typeval, type = "rating") {
 
     let minVal, maxVal;
 
-    // Set value ranges based on the type
+    // Define ranges based on the type
     if (type === "rating") {
-        minVal = 5;   // Minimum rating
-        maxVal = 10;  // Maximum rating
+        minVal = 5;   // Minimum rating is 5
+        maxVal = 10;  // Maximum rating is 10
     } else if (type === "fsk") {
-        minVal = 0;   // Minimum FSK value
-        maxVal = 18;  // Maximum FSK value
+        minVal = 0;
+        maxVal = 18;
     } else if (type === "runtime") {
-        minVal = 60;   // Minimum runtime in minutes
-        maxVal = 180;  // Maximum runtime in minutes
+        minVal = 60;
+        maxVal = 180;
     } else {
-        console.warn(`Unknown type: ${type}. Using default rating scale.`);
+        console.warn(`Unknown type: ${type}. Using default rating scale 0-10.`);
         minVal = 0;
         maxVal = 10;
     }
 
-    // Clamp the value within the min and max range
+    // Clamp the actual value
     const clampedVal = Math.max(minVal, Math.min(typeval, maxVal));
 
-    // Calculate the size as a ratio of the value vs. the range
+    // Calculate the icon size as a ratio in 'em'
     const size = minSize + (clampedVal - minVal) * (maxSize - minSize) / (maxVal - minVal);
     return `${size.toFixed(2)}em`;
 }
 
 /**
- * On DOM load, check for `?search=` param and auto-fill the #search-box if present.
- * Then call `triggerDropdownChangeEvent()` so the catalog shows relevant results.
+ * On DOM load, parse ?search= from the URL.
+ * If present, insert it into #search-box and trigger filter logic.
  */
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
@@ -48,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (searchBox) {
             console.log("Auto-filling search box with:", searchQuery);
             searchBox.value = searchQuery;
-            // Trigger your existing filter logic to show results
+            // Trigger existing filter logic (if you want immediate search).
             triggerDropdownChangeEvent();
         }
     }
@@ -56,24 +59,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Renders movie listings in either list or grid view, depending on `.list-view` class.
- * Called by e.g. `updateMovieListingsUI()` after fetching movies from server.
+ * - Called after fetching movies from server or toggling view.
  */
 export function updateMovieListings(movies) {
+    // Store the current movies array globally
     currentMovies = movies;
-    console.log("updateMovieListings", currentMovies)
+    console.log("updateMovieListings -> currentMovies:", currentMovies);
 
+    // Identify the container
     const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
-        console.error("updateMovieListings: movieContainer element not found.");
+        console.error("updateMovieListings: movieContainer not found.");
         return;
     }
 
     // Check if we are in list view or grid view
     const isListView = movieContainer.classList.contains('list-view');
 
-    // Clear old content
+    // Clear previous content
     movieContainer.innerHTML = "";
 
+    // Handle empty list
     if (movies.length === 0) {
         movieContainer.innerHTML = `<p class="no-movies-message">No movies match the selected filters.</p>`;
         return;
@@ -81,14 +87,19 @@ export function updateMovieListings(movies) {
 
     // Render each movie
     movies.forEach(movie => {
+        // Prepare paths
         const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
         const defaultImagePath = '/static/images/default_movie.png';
 
+        // Create card
         const movieCard = document.createElement('div');
         movieCard.className = 'movie-card';
 
-        // Prepare runtime display
+        // Prepare icons for runtime/fsk/rating
         const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
+        const fskIconSize = getIconSizeByType(movie.fsk, "fsk");
+        const ratingIconSize = getIconSizeByType(movie.rating, "rating");
+
         const formatRuntimeHtml = `
             <div class="meta-item">
                 <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
@@ -96,8 +107,6 @@ export function updateMovieListings(movies) {
             </div>
         `;
 
-        // FSK display
-        const fskIconSize = getIconSizeByType(movie.fsk, "fsk");
         const formatFskHtml = `
             <div class="meta-item">
                 <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
@@ -105,8 +114,6 @@ export function updateMovieListings(movies) {
             </div>
         `;
 
-        // Rating display
-        const ratingIconSize = getIconSizeByType(movie.rating, "rating");
         const formatRatingHtml = `
             <div class="meta-item">
                 <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
@@ -115,18 +122,20 @@ export function updateMovieListings(movies) {
         `;
 
         // Directors
-        const directors = Array.isArray(movie.director) && movie.director.length > 0
+        const directors = (Array.isArray(movie.director) && movie.director.length > 0)
             ? movie.director.join(', ')
             : "Unknown Director";
 
-        // Actors: 6 in list view, 2 in grid view
+        // Actors: show 6 in list view, 2 in grid view
         const maxActorsToShow = isListView ? 6 : 2;
         let actors = '';
         if (typeof movie.actors === 'string') {
             const actorArray = movie.actors.split(',').map(a => a.trim());
-            actors = (actorArray.length > maxActorsToShow)
-                ? actorArray.slice(0, maxActorsToShow).join(', ') + ', ...'
-                : actorArray.join(', ');
+            if (actorArray.length > maxActorsToShow) {
+                actors = actorArray.slice(0, maxActorsToShow).join(', ') + ', ...';
+            } else {
+                actors = actorArray.join(', ');
+            }
         } else if (Array.isArray(movie.actors)) {
             if (movie.actors.length > maxActorsToShow) {
                 actors = movie.actors.slice(0, maxActorsToShow).join(', ') + ', ...';
@@ -164,15 +173,15 @@ export function updateMovieListings(movies) {
         if (content.length > maxLength) {
             content = content.substring(0, maxLength) + '...';
         }
-        // Truncate content
+
+        // Also truncate the main title
         maxLength = isListView ? 200 : 29;
-        let main_title = movie.main_title
+        let main_title = movie.main_title || "Untitled";
         if (main_title.length > maxLength) {
             main_title = main_title.substring(0, maxLength) + '...';
-        }        
+        }
 
-
-        // Build the HTML for each card
+        // Build HTML
         movieCard.innerHTML = `
             <div class="movie-content-wrapper">
                 <div class="image-container">
@@ -198,14 +207,18 @@ export function updateMovieListings(movies) {
                     <div class="info-section">
                         <div class="metadata">
                             ${
-                                    isListView 
-                                    ? `
+                                isListView 
+                                ? `
                                     <p class="countries">
                                         <strong><i class="fas fa-globe"></i></strong> ${countries}
                                         | <strong><i class="fas fa-film"></i></strong> ${genres}
                                     </p>
-                                    <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
-                                    <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                                    <p>
+                                      <strong><i class="fas fa-video"></i></strong> ${directors}
+                                    </p>
+                                    <p>
+                                      <strong><i class="fas fa-users"></i></strong> ${actors}
+                                    </p>
                                     <p class="standort">
                                         ${
                                             movie.standort 
@@ -223,9 +236,9 @@ export function updateMovieListings(movies) {
                                                 : ''
                                         }
                                     </p>                                    
-                                    `
-                                    : ''
-                                }
+                                `
+                                : ''
+                            }
                             
                             <div class="inline-meta">
                                 ${formatRuntimeHtml}
@@ -236,8 +249,6 @@ export function updateMovieListings(movies) {
                                     <span>${movie.release_date}</span>
                                 </div>
                             </div>
-                            
-
                         </div>
                     </div>
                 </div>
@@ -250,7 +261,7 @@ export function updateMovieListings(movies) {
 
 /**
  * Toggles between Grid view and List view, storing preference in localStorage.
- * Re-fetches the movies from an endpoint (/get_movies) for demonstration.
+ * Re-renders from currentMovies without refetching by default.
  */
 export function toggleViews() {
     const gridViewBtn = document.getElementById('grid-view-btn');
@@ -268,7 +279,7 @@ export function toggleViews() {
         listViewBtn.classList.remove('active');
         gridViewBtn.setAttribute('aria-pressed', 'true');
         listViewBtn.setAttribute('aria-pressed', 'false');
-        updateMovieListings(currentMovies);
+        updateMovieListings(currentMovies); // Re-render
     }
 
     function activateListView() {
@@ -277,10 +288,10 @@ export function toggleViews() {
         gridViewBtn.classList.remove('active');
         listViewBtn.setAttribute('aria-pressed', 'true');
         gridViewBtn.setAttribute('aria-pressed', 'false');
-        updateMovieListings(currentMovies);
+        updateMovieListings(currentMovies); // Re-render
     }
 
-    // Event Listeners
+    // Event Listeners for toggles
     gridViewBtn.addEventListener('click', () => {
         activateGridView();
         localStorage.setItem('movieView', 'grid');
@@ -291,19 +302,7 @@ export function toggleViews() {
         localStorage.setItem('movieView', 'list');
     });
 
-    // /**
-    //  * Example: fetch /get_movies, then call updateMovieListings() with the results.
-    //  */
-    // function updateMovieListingsUI() {
-    //     fetch('/get_movies')  // Adjust to your actual endpoint
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             updateMovieListings(data.movies);
-    //         })
-    //         .catch(err => console.error('Error fetching movies:', err));
-    // }
-
-    // Check localStorage for user preference
+    // On load, set the initial view from localStorage
     const savedView = localStorage.getItem('movieView');
     if (savedView === 'list') {
         activateListView();
