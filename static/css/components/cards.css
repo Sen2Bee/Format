@@ -169,6 +169,7 @@
 .metadata p {
     margin: 5px 0;
     color: var(--secondary-text-color);
+    opacity: 0.9;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
@@ -178,7 +179,7 @@
     flex-wrap: wrap;
     gap: var(--spacing-small);
     padding-top: var(--spacing-small);
-    opacity: 0.5;
+    opacity: 0.9;
 }
 
 .meta-item {

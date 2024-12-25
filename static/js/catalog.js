@@ -1,7 +1,7 @@
 // File: static/js/catalog.js
 
 import { triggerDropdownChangeEvent } from './filter.js';
-
+export let currentMovies = [];
 /**
  * Dynamically scale icon sizes (runtime, rating, fsk, etc.).
  */
@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
  * Called by e.g. `updateMovieListingsUI()` after fetching movies from server.
  */
 export function updateMovieListings(movies) {
+    currentMovies = movies;
+    console.log("updateMovieListings", currentMovies)
+
     const movieContainer = document.querySelector('.movie-listings');
     if (!movieContainer) {
         console.error("updateMovieListings: movieContainer element not found.");
@@ -157,10 +160,17 @@ export function updateMovieListings(movies) {
         }
 
         // Truncate content
-        const maxLength = isListView ? 300 : 150;
+        let maxLength = isListView ? 300 : 150;
         if (content.length > maxLength) {
             content = content.substring(0, maxLength) + '...';
         }
+        // Truncate content
+        maxLength = isListView ? 200 : 29;
+        let main_title = movie.main_title
+        if (main_title.length > maxLength) {
+            main_title = main_title.substring(0, maxLength) + '...';
+        }        
+
 
         // Build the HTML for each card
         movieCard.innerHTML = `
@@ -179,19 +189,43 @@ export function updateMovieListings(movies) {
 
                 <div class="info-wrapper">
                     <div class="title-section">
-                        <h2>${movie.main_title}</h2>
+                        <h2>${main_title}</h2>
                     </div>
                     <div class="overview-section">
                         <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
                     </div>
+                   
                     <div class="info-section">
                         <div class="metadata">
-                            <p class="countries">
-                                <strong><i class="fas fa-globe"></i></strong> ${countries}
-                                | <strong><i class="fas fa-film"></i></strong> ${genres}
-                            </p>
-                            <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
-                            <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                            ${
+                                    isListView 
+                                    ? `
+                                    <p class="countries">
+                                        <strong><i class="fas fa-globe"></i></strong> ${countries}
+                                        | <strong><i class="fas fa-film"></i></strong> ${genres}
+                                    </p>
+                                    <p><strong><i class="fas fa-video"></i></strong> ${directors}</p>
+                                    <p><strong><i class="fas fa-users"></i></strong> ${actors}</p>
+                                    <p class="standort">
+                                        ${
+                                            movie.standort 
+                                                ? `<strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort}`
+                                                : ''
+                                        }
+                                        ${
+                                            movie.standort && movie.formats 
+                                                ? ' | ' 
+                                                : ''
+                                        }
+                                        ${
+                                            movie.formats 
+                                                ? `<strong><i class="fas fa-disc"></i></strong> ${movie.formats}`
+                                                : ''
+                                        }
+                                    </p>                                    
+                                    `
+                                    : ''
+                                }
                             
                             <div class="inline-meta">
                                 ${formatRuntimeHtml}
@@ -203,10 +237,7 @@ export function updateMovieListings(movies) {
                                 </div>
                             </div>
                             
-                            <p class="standort">
-                                <strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort || 'N/A'}
-                                | <strong><i class="fas fa-disc"></i></strong> ${movie.formats}
-                            </p>
+
                         </div>
                     </div>
                 </div>
@@ -218,9 +249,65 @@ export function updateMovieListings(movies) {
 }
 
 /**
- * Optional: if you don't rely on toggleViews or fetch code here, 
- * you can keep them separate. The main function is updateMovieListings(...) 
- * plus the DOMContentLoaded block above.
+ * Toggles between Grid view and List view, storing preference in localStorage.
+ * Re-fetches the movies from an endpoint (/get_movies) for demonstration.
  */
-// File: static/js/toggle-view.js
+export function toggleViews() {
+    const gridViewBtn = document.getElementById('grid-view-btn');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const movieListings = document.querySelector('.movie-listings');
 
+    if (!gridViewBtn || !listViewBtn || !movieListings) {
+        console.error("toggleViews: One or more elements not found.");
+        return;
+    }
+
+    function activateGridView() {
+        movieListings.classList.remove('list-view');
+        gridViewBtn.classList.add('active');
+        listViewBtn.classList.remove('active');
+        gridViewBtn.setAttribute('aria-pressed', 'true');
+        listViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListings(currentMovies);
+    }
+
+    function activateListView() {
+        movieListings.classList.add('list-view');
+        listViewBtn.classList.add('active');
+        gridViewBtn.classList.remove('active');
+        listViewBtn.setAttribute('aria-pressed', 'true');
+        gridViewBtn.setAttribute('aria-pressed', 'false');
+        updateMovieListings(currentMovies);
+    }
+
+    // Event Listeners
+    gridViewBtn.addEventListener('click', () => {
+        activateGridView();
+        localStorage.setItem('movieView', 'grid');
+    });
+
+    listViewBtn.addEventListener('click', () => {
+        activateListView();
+        localStorage.setItem('movieView', 'list');
+    });
+
+    // /**
+    //  * Example: fetch /get_movies, then call updateMovieListings() with the results.
+    //  */
+    // function updateMovieListingsUI() {
+    //     fetch('/get_movies')  // Adjust to your actual endpoint
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             updateMovieListings(data.movies);
+    //         })
+    //         .catch(err => console.error('Error fetching movies:', err));
+    // }
+
+    // Check localStorage for user preference
+    const savedView = localStorage.getItem('movieView');
+    if (savedView === 'list') {
+        activateListView();
+    } else {
+        activateGridView();
+    }
+}
