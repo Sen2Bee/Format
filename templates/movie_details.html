@@ -29,8 +29,10 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="{{ url_for('index') }}"><span>FORMAT</span></a>
-                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
+                <a href="{{ url_for('catalog') }}" class="sub-logo" aria-label="Katalog">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                
             </div>
             <div class="nav-center-title">
                 <span class="theme-title">{{ movie.title }}</span>
