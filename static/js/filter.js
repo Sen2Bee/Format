@@ -408,6 +408,7 @@ function showAutocompleteSuggestions(suggestions) {
         suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
         suggestionItem.dataset.name = item.name;
         suggestionItem.dataset.type = item.type;
+        suggestionItem.dataset.id = item.id;
 
         suggestionItem.addEventListener('click', () => {
             searchBox.value = item.name;

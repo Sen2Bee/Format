@@ -1,7 +1,13 @@
 /* variables.css */
 
 /*accent colors for light theme */
-
+/* Import the font */
+@font-face {
+    font-family: 'Futura Cyrillic Book';
+    src: url('/static/assets/fonts/FuturaCyrillicBook.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 
 :root {
     --Warm-Terracotta: #D17A22;
@@ -38,7 +44,7 @@
     /* Font Variables */
     --font-family: 'Lato', sans-serif; /* Lato as the main font */
     --font-body: 'Lato', sans-serif; /* Body font family */
-    --font-heading: 'Cardo', serif; /* Heading font family */
+    --font-heading: 'Futura Cyrillic Book', sans-serif; /* Heading font family */
     --font-cursive: 'Pinyon Script', cursive;
 
     --font-size-base: 16px; /* Base font size */

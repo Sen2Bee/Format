@@ -985,7 +985,7 @@ def autocomplete():
 
             # Search in movie titles
             movie_query = """
-                SELECT DISTINCT title 
+                SELECT DISTINCT title, movie_id
                 FROM movies 
                 WHERE title LIKE %s OR original_title LIKE %s OR format_orig_titel LIKE %s
                 ORDER BY title
@@ -997,12 +997,13 @@ def autocomplete():
             for movie in movie_matches:
                 suggestions.append({
                     'name': movie['title'],
-                    'type': 'Title'
+                    'type': 'Title',
+                    'id': movie['movie_id']  # Include the actual movie_id
                 })
 
             # Search in cast names
             cast_query = """
-                SELECT DISTINCT name 
+                SELECT DISTINCT name, id
                 FROM movie_cast 
                 WHERE name LIKE %s
                 ORDER BY name
@@ -1013,12 +1014,13 @@ def autocomplete():
             for cast_member in cast_matches:
                 suggestions.append({
                     'name': cast_member['name'],
-                    'type': 'Actor'
+                    'type': 'Actor',
+                    'id': cast_member['id']  # Include the actual movie_id
                 })
 
             # Search in crew names (e.g., directors)
             crew_query = """
-                SELECT DISTINCT name 
+                SELECT DISTINCT name, id 
                 FROM crew 
                 WHERE name LIKE %s AND job = 'Director'
                 ORDER BY name
@@ -1029,7 +1031,8 @@ def autocomplete():
             for crew_member in crew_matches:
                 suggestions.append({
                     'name': crew_member['name'],
-                    'type': 'Director'
+                    'type': 'Director',
+                    'id': crew_member['id']  # Include the actual movie_id
                 })
 
         except Exception as e:
@@ -1127,15 +1130,23 @@ def serve_subtitle(folder_name, subtitle_file):
     # Otherwise, just serve the file
     return send_file(abs_path, mimetype='text/vtt')
 
-@app.route('/play_movie/<folder_name>/<filename>')
+from urllib.parse import unquote
+from flask import send_file
+@app.route("/play_movie/<path:folder_name>/<path:filename>")
 def play_movie(folder_name, filename):
+    folder_name = unquote(folder_name)
+    filename = unquote(filename)
     folder_path = find_folder_in_base_dirs(folder_name)
-    movie_path = os.path.join(folder_path, filename)
+    if not folder_path:
+        abort(404, description="Folder not found")
     
-    if os.path.isfile(movie_path):
-        return send_file(movie_path, as_attachment=False)
-    else:
-        abort(404, description="Movie file not found")
+    abs_path = os.path.join(folder_path, filename)
+    if not os.path.isfile(abs_path):
+        abort(404, description="File not found")
+
+    # Provide the correct MIME type, if known.
+    print("play_movie", abs_path)
+    return send_file(abs_path, mimetype="video/mp4")
 
 # app.py
 
@@ -1146,7 +1157,7 @@ def movie_player(folder_name, filename):
     optionally with subtitles in the same folder.
     """
     folder_path = find_folder_in_base_dirs(folder_name)
-    print("movie_player", movie_player)
+    print("movie_player", folder_path)
     if not folder_path:
         abort(404, description="Movie folder not found in any base directory.")
 
@@ -1160,6 +1171,8 @@ def movie_player(folder_name, filename):
         if file.lower().endswith(('.srt', '.vtt')):
             subtitles.append(file)
     logging.info(f"Found subtitles: {subtitles}")
+    # print(f"Folder: {folder_name}")
+    # print(f"Filename: {filename}")
 
     return render_template(
         'movie_player.html',

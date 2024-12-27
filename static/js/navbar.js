@@ -55,12 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Mobile Toggle for nav-links
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('show');
-            menuToggle.classList.toggle('active');
-        });
-    }
+
+        
 });
 </script>

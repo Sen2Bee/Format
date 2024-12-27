@@ -5,16 +5,16 @@
 /* Main Navbar Container */
 .navbar {
     display: flex;
-    justify-content: space-between; /* Ensure nav-links are right-aligned on desktop */
+    justify-content: space-between;
     align-items: center;
     background-color: var(--footer-background);
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    width: 99.3%;
+    width: 100%;
     box-sizing: border-box;
-    height: 40px;
+    height: 50px; /* Unified height for better mobile handling */
     padding: 0 20px;
     z-index: 1000;
     transition: transform 0.3s ease-in-out, box-shadow var(--transition-duration);
@@ -23,70 +23,59 @@
     will-change: transform; /* For smooth animations */
 }
 
-/* Hidden State - Slide Navbar Up */
+/* Navbar States */
 .navbar.hidden {
     transform: translateY(-100%);
 }
 
-/* Show the navbar on hover (if hidden) */
 .navbar:hover {
     transform: translateY(0);
 }
 
-/* Shrunk State */
 .navbar.shrunk {
-    height: 40px; /* If you plan to shrink it further on scroll or any other logic */
+    height: 40px;
 }
 
-/* Navbar Title for Themes, etc. */
-.theme-title {
-    font-size: 1.0rem;
+/* Logo Section */
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    margin-right: 5px;
+    transition: font-size var(--transition-duration);    
+}
+
+.logo a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-family: var(--font-heading);
+}
+
+
+
+.logo .sub-logo {
+    font-size: 2rem;
+    color: var(--accent-color);
+    text-transform: lowercase;
+}
+
+/* Theme Title */
+.nav-center-title .theme-title {
+    font-size: 1rem;
     color: var(--accent-color);
     text-transform: lowercase;
     transition: color var(--transition-duration);
 }
 
-.nav-center-title .theme-title {
-    font-size: 1.2rem;  /* Adjust size for a "shrunk" or center state */
+.nav-center-title {
+    flex-grow: 1;
+    text-align: center;
 }
 
-/* Menu Toggle for Mobile */
-.menu-toggle {
-    display: none; /* Hidden by default */
-    cursor: pointer;
-    transition: transform var(--transition-duration); /* Smooth rotation on toggle */
-}
-
-.menu-toggle i {
-    color: var(--text-light);
-    font-size: 1.5em;
-}
-
-/* Main Logo Styling */
-.logo {
-    display: flex;
-    align-items: center;
-}
-
-.logo span {
-    font-size: 2.5rem; /* Large main logo size on desktop */
-    color: var(--text-color);
-    font-family: var(--font-heading);
-    text-transform: lowercase;
-    margin-right: 5px;
-    transition: font-size var(--transition-duration);
-}
-
-.sub-logo span {
-    font-size: 1.5rem;
-    color: var(--accent-color);
-    text-transform: lowercase;
-}
-
-/* Navigation Links (Desktop) */
+/* Navigation Links */
 .nav-links {
-    display: flex;                /* Horizontal on desktop */
-    justify-content: flex-end;    /* Align to the right */
+    display: flex;
+    justify-content: flex-end;
     align-items: center;
     gap: 20px;
     list-style: none;
@@ -94,18 +83,15 @@
     margin: 0;
 }
 
-/* Each Nav Link */
-.nav-links li {
-    margin-left: 20px;
-}
 
-/* Nav Link A Styles */
+/* Adjust the navigation links */
 .nav-links li a {
     text-decoration: none;
-    color: var(--text-light);
+    color: var(--secondary-color);
     font-size: 1rem;
     font-family: var(--font-body);
     transition: color var(--transition-duration), transform var(--transition-duration);
+    margin-right: 20px; /* Add spacing between "verleih" and the toggle */
 }
 
 .nav-links li a:hover {
@@ -113,30 +99,51 @@
     transform: translateY(-2px);
 }
 
-/* Active Link */
 .nav-links li a.active {
     color: var(--link-color);
     font-weight: bold;
+}
+
+/* Menu Toggle (Hamburger Button) */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: transform var(--transition-duration);
+}
+
+.menu-toggle.active {
+    transform: rotate(90deg);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    cursor: pointer;
 }
 
 /* =========================
    RESPONSIVE STYLES
    ========================= */
 
-/* Mobile (max-width: 768px) */
+/* Mobile Styles (max-width: 768px) */
 @media (max-width: 768px) {
-    /* Show the toggle button on smaller screens */
     .menu-toggle {
         display: block;
     }
 
-    /* Hide nav-links by default (hamburger menu) */
     .nav-links {
         display: none;
         flex-direction: column;
         align-items: center;
         position: absolute;
-        top: 50px; /* Just below the navbar */
+        top: 50px;
         right: 0;
         width: 100%;
         background-color: var(--primary-color);
@@ -145,76 +152,36 @@
         padding: 10px 0;
     }
 
-    /* .show class for toggling in JS */
     .nav-links.show {
-        display: flex; /* Reveal links */
+        display: flex;
     }
 
     .nav-links li {
         margin: 10px 0;
     }
 
-    /* Shrink the logos for mobile */
-    .logo span {
-        font-size: 2rem; /* Smaller main logo for mobile */
+
+
+    .nav-center-title .theme-title {
+        font-size: 1rem;
     }
 
-    .sub-logo span {
-        font-size: 1.4rem;
-    }
-
-    /* Center the theme title on mobile */
-    .nav-center-title {
-        position: relative;
-        left: auto;
-        transform: none;
-        margin: 10px 0;
-        font-size: 1.0rem; /* Adjust the title size for mobile if needed */
-    }
-
-    /* Adjust navbar heights for mobile */
     .navbar {
         height: 50px;
     }
 
     .navbar.shrunk {
-        height: 35px;
+        height: 40px;
     }
 
     .navbar.hidden {
         top: -50px;
     }
-}
 
-/* Very Small Screens (max-width: 480px) */
-@media (max-width: 480px) {
-    .logo span {
-        font-size: 1.6rem;
-    }
-
-    .sub-logo span {
-        font-size: 1.2rem;
-    }
-
-    .nav-links li a {
-        font-size: 1.2rem; /* Larger text for better readability */
-    }
-
-    .theme-title {
-        font-size: 1.2rem;
-    }
-}
-
-/* Mobile Footer Link Styling */
-.mobile-footer-link {
-    display: none; /* Hidden by default */
-}
-
-@media (max-width: 768px) {
     .mobile-footer-link {
         display: block;
-        background-color: var(--primary-color);
         text-align: center;
+        background-color: var(--primary-color);
         padding: 10px 0;
     }
 
@@ -225,7 +192,21 @@
     }
 }
 
-/* Animation for Menu Toggle Button */
-.menu-toggle.active {
-    transform: rotate(90deg);
+/* Very Small Screens (max-width: 480px) */
+@media (max-width: 480px) {
+    .logo .main-logo {
+        font-size: 1.6rem;
+    }
+
+    .logo .sub-logo {
+        font-size: 1rem;
+    }
+
+    .nav-links li a {
+        font-size: 1.1rem;
+    }
+
+    .nav-center-title .theme-title {
+        font-size: 1.2rem;
+    }
 }
