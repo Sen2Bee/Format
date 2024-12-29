@@ -22,17 +22,17 @@
                 <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
             </div>
             
-<!-- Centered theme title in the navbar -->
-<div class="nav-center-title">
-    <img 
-        src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
-        alt="Looking Down" 
-        class="nav-center-image" 
-        id="theme-image" 
-        data-dark-src="{{ url_for('static', filename='images/looking_down_small.jpg') }}"
-        data-light-src="{{ url_for('static', filename='images/looking_down_small_light.jpg') }}">
-    <span class="theme-title">{{ selected_theme }}</span>
-</div>
+            <!-- Centered theme title in the navbar -->
+            <div class="nav-center-title">
+                <img 
+                    src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
+                    alt="Looking Down" 
+                    class="nav-center-image" 
+                    id="theme-image" 
+                    data-dark-src="{{ url_for('static', filename='images/looking_down_dark.png') }}"
+                    data-light-src="{{ url_for('static', filename='images/looking_down_light.png') }}">
+                <span class="theme-title">{{ selected_theme }}</span>
+            </div>
 
             
 

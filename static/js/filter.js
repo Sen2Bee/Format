@@ -130,28 +130,24 @@ export function initializeFilterDropdowns() {
         console.error("initializeFilterDropdowns: searchBox element not found.");
     }
 
-    // Clear search box button
-    if (clearSearchBtn && searchBox) {
-        clearSearchBtn.addEventListener('click', () => {
-            searchBox.value = '';
-            clearSearchBtn.classList.remove('visible');
-            triggerDropdownChangeEvent();
-            hideAutocompleteSuggestions();
-        });
-
-        // Keyboard accessibility for the clear button
-        clearSearchBtn.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                searchBox.value = '';
-                clearSearchBtn.classList.remove('visible');
-                triggerDropdownChangeEvent();
-                hideAutocompleteSuggestions();
-            }
-        });
-    } else {
-        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
-    }
+// In filter.js
+if (clearSearchBtn && searchBox) {
+    clearSearchBtn.addEventListener('click', () => {
+      // 1) Empty the search box
+      searchBox.value = '';
+  
+      // 2) Hide the clear icon itself
+      clearSearchBtn.classList.remove('visible');
+  
+      // 3) Hide any open autocomplete suggestions
+      hideAutocompleteSuggestions();
+  
+      // 4) Trigger an update, which calls updateFilters(),
+      //    and inside updateFilters() we call showProgressIndicator().
+      triggerDropdownChangeEvent();
+    });
+  }
+  
 
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
@@ -377,8 +373,20 @@ function handleAutocomplete() {
 
 /**
  * Show autocomplete suggestions
+ * (Updated to ensure only one result per unique person name)
  */
 function showAutocompleteSuggestions(suggestions) {
+    // Deduplicate by 'name'
+    const deduplicatedMap = new Map();
+    suggestions.forEach(item => {
+        // If the name is not in the map yet, set it
+        if (!deduplicatedMap.has(item.name)) {
+            deduplicatedMap.set(item.name, item);
+        }
+    });
+    // Convert map back to an array
+    const uniqueSuggestions = Array.from(deduplicatedMap.values());
+
     let autocompleteList = document.getElementById('autocomplete-list');
     if (!autocompleteList) {
         autocompleteList = document.createElement('div');
@@ -397,9 +405,10 @@ function showAutocompleteSuggestions(suggestions) {
 
     autocompleteList.innerHTML = '';
 
-    suggestions.forEach(item => {
+    uniqueSuggestions.forEach(item => {
         const suggestionItem = document.createElement('div');
         suggestionItem.className = 'autocomplete-item';
+        // item.type is optional; you can remove if not needed
         suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
         suggestionItem.dataset.name = item.name;
         suggestionItem.dataset.type = item.type;

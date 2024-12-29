@@ -29,6 +29,7 @@
     /* Additional Color Variables */
     --button-background: #FFFFFF; /* White */
     --background-dark: #DAD7D2; /* Darker background for sections */
+    --muted-color: #636262f5; /* Light gray text */
     --secondary-text-color: #FFFFFF; /* White text on dark backgrounds */
     --secondary-secondary-text-color: #B5B2AD; /* Subtle light gray */
 
@@ -112,7 +113,7 @@ Burnt Orange (#E87D3E) */
     --button-hover: #2A2A2A; /* Button hover */
 
     /* Additional Color Variables */
-    --button-background: #1F1F1F; /* Dark button background */
+    --button-background: #313131; /* Dark button background */
     --background-dark: #1C1C1C; /* For dark sections */
     --secondary-text-color: #FFFFFF; /* White text */
     --secondary-secondary-text-color: #A0A0A0; /* Light gray */

@@ -48,9 +48,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (searchQuery) {
         const searchBox = document.getElementById('search-box');
+        const clearSearchBtn = document.getElementById('clear-search');
         if (searchBox) {
             console.log("Auto-filling search box with:", searchQuery);
             searchBox.value = searchQuery;
+
+            // === NEW: Show the clear icon if the search box is not empty ===
+            if (clearSearchBtn) {
+                if (searchQuery.length > 0) {
+                    clearSearchBtn.classList.add('visible');
+                } else {
+                    clearSearchBtn.classList.remove('visible');
+                }
+            }
+            
             // Trigger existing filter logic (if you want immediate search).
             triggerDropdownChangeEvent();
         }
