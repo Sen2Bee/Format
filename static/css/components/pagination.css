@@ -1,16 +1,31 @@
-/* pagination.css */
-
-/* General Pagination Container */
-.pagination {
+/* Combined Top Bar Section */
+.top-bar {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--background-dark);
-    padding: 10px 0; /* Added padding for spacing */
-    color: var(--text-light);
-    border-top: 0.5px solid var(--button-background);
+    justify-content: space-between; /* Ensures even spacing between elements */
+    align-items: center; /* Align items vertically */
+    max-width: var(--catalog-width);
+    margin: 0 auto;
+    padding: 10px 20px; /* Add spacing as needed */
+}
+/* Headline Styling */
+.view-toggle-headline {
+    font-size: 0.7rem;
+    color: var(--text-color); /* White text */
+    margin: 0;
+    text-align: center;
 }
 
+/* Pagination Styling */
+.pagination {
+    display: flex;
+    justify-content: center; /* Center the pagination */
+    align-items: center;
+    background-color: var(--background-dark);
+    padding: 10px 0; /* Adjust padding */
+    color: var(--text-light);
+    border-top: 0.5px solid var(--button-background);
+    flex: 1; /* Allow pagination to occupy central space */
+}
 
 /* Pagination Navigation List */
 .pagination nav ul {
@@ -61,8 +76,8 @@
 /* Disabled State for Non-clickable Items */
 .pagination nav ul li.disabled span,
 .pagination ul li.disabled a {
-    background-color: var(--secondary-color); /* Muted color for disabled state */
-    color: var(---secondary-text-color);
+    background-color: var(--muted-color); /* Muted color for disabled state */
+    color: var(--secondary-text-color);
     cursor: not-allowed;
     border: 1px solid var(--border-color);
     pointer-events: none; /* Prevent interaction */
@@ -75,28 +90,57 @@
     cursor: default;
 }
 
-/* Highlighting for Previous and Next */
-.pagination nav ul li a.prev,
-.pagination nav ul li a.next {
-    font-weight: bold;
-    background-color: var(--accent-color);
+/* View Toggle Buttons Container */
+.view-toggle-container {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0; /* Prevent buttons from resizing */
+    justify-content: flex-end; /* Align buttons to the right */
+    align-items: center; /* Vertical alignment */
+    margin-left: auto; /* Push the buttons to the far right */
 }
 
-.pagination nav ul li a.prev:hover,
-.pagination nav ul li a.next:hover {
-    background-color: var(--button-hover-bg);
-    color: var(--text-light);
+/* Toggle Button Styles */
+.view-toggle-btn {
+    background-color: var(--button-background); /* Button background */
+    color: var(--button-text-color); /* Icon/text color */
+    border: none;
+    padding: 5px 15px;
+    border-radius: var(--border-radius-medium);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Responsive Adjustments */
+/* Active/Pressed Button */
+.view-toggle-btn.active,
+.view-toggle-btn[aria-pressed="true"] {
+    background-color: var(--highlight-color); /* Highlight for active button */
+    color: var(--secondary-text-color); /* Ensure contrasting text color */
+}
+
+/* Button Hover & Focus States */
+.view-toggle-btn:hover,
+.view-toggle-btn:focus {
+    background-color: var(--button-hover-background);
+    outline: none;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .pagination nav ul li {
-        margin: 0 3px; /* Reduced spacing on mobile */
+    .top-bar {
+        flex-direction: column; /* Stack pagination and toggle buttons */
+        align-items: center;
+        gap: 10px;
     }
 
-    .pagination nav ul li a,
-    .pagination nav ul li span {
-        padding: 6px 10px;
-        font-size: 0.9rem;
+    .pagination {
+        order: 1; /* Place pagination first */
+        margin-bottom: 10px; /* Add spacing */
+    }
+
+    .view-toggle-container {
+        display: none;
+        ;
     }
 }

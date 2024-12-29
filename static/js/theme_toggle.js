@@ -1,18 +1,26 @@
-// File: static/js/theme-toggle.js
-
 export function themeToggle() {
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeImage = document.getElementById('theme-image'); // Target the theme image
     const currentTheme = localStorage.getItem('theme') || 'light';
 
-    // Function to apply theme
+    // Function to apply theme and update the image source
     const applyTheme = (theme) => {
         document.documentElement.setAttribute('data-theme', theme);
+
+        // Update theme toggle button
         if (theme === 'dark') {
             themeToggleBtn.classList.add('active');
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; // Change icon
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; // Change to sun icon
         } else {
             themeToggleBtn.classList.remove('active');
-            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; // Change icon
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; // Change to moon icon
+        }
+
+        // Update theme-based image
+        if (themeImage) {
+            const darkSrc = themeImage.getAttribute('data-dark-src');
+            const lightSrc = themeImage.getAttribute('data-light-src');
+            themeImage.src = theme === 'dark' ? darkSrc : lightSrc;
         }
     };
 

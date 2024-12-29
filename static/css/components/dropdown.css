@@ -111,14 +111,14 @@
 
 /* Clear Icon */
 .clear-icon {
-    font-size: 1.4em;
+    font-size: 10.4em;
     bottom: -10px; /* Aligns it vertically in the middle of the header */
     cursor: pointer;
     color: var(--accent-color);
     flex-shrink: 0; /* Prevent shrinking */
     position: absolute;
     right: 10px; /* Align to the far right */
-    visibility: hidden;
+    visibility:visible;
     opacity: 0;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }

@@ -103,7 +103,8 @@ Burnt Orange (#E87D3E) */
     /* Override Color Variables for Dark Theme */
     --primary-color: #1A1A1A; /* Dark charcoal */
     --accent-color: #2ECC71;
-    --secondary-color: #EAEAEA; /* Light gray text */
+    --secondary-color: #f4f1f1f5; /* Light gray text */
+    --muted-color: #636262f5; /* Light gray text */
     --background-color: #121212; /* Near black */
     --text-color: #D6D6D6; /* Light gray */
     --header-background: #151515; /* Slight variation */

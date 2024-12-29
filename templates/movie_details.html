@@ -29,11 +29,11 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="{{ url_for('catalog') }}" class="sub-logo" aria-label="Katalog">
+                <a href="javascript:void(0);" class="sub-logo" aria-label="Go Back" onclick="window.history.back()">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                
             </div>
+            
             <div class="nav-center-title">
                 <span class="theme-title">{{ movie.title }}</span>
             </div>

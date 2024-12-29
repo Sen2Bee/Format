@@ -22,10 +22,18 @@
                 <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
             </div>
             
-            <!-- Centered theme title in the navbar -->
-            <div class="nav-center-title">
-                <span class="theme-title">...{{ selected_theme }}</span>
-            </div>
+<!-- Centered theme title in the navbar -->
+<div class="nav-center-title">
+    <img 
+        src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
+        alt="Looking Down" 
+        class="nav-center-image" 
+        id="theme-image" 
+        data-dark-src="{{ url_for('static', filename='images/looking_down_small.jpg') }}"
+        data-light-src="{{ url_for('static', filename='images/looking_down_small_light.jpg') }}">
+    <span class="theme-title">{{ selected_theme }}</span>
+</div>
+
             
 
             
@@ -266,23 +274,19 @@
                     <!-- Buttons populated dynamically -->
                 </div>
             </div>
+            <div class="view-toggle-headline">
+                <h2 class="view-toggle-title"></h2>
+            </div>              
         </section>
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
+            
             <nav>
                 <ul>
                     <!-- Pagination will be populated dynamically here -->
                 </ul>
             </nav>
-        </section>
-        
-        <!-- Toggle View Buttons Container with Headline -->
-        <section class="view-toggle-section">
-            <!-- Headline Left of Toggle Buttons -->
-            <div class="view-toggle-headline">
-                <h2 class="view-toggle-title"></h2>
-            </div>
 
             <!-- Toggle Buttons Right of Headline -->
             <div class="view-toggle-container">
@@ -292,7 +296,15 @@
                 <button id="list-view-btn" class="view-toggle-btn" aria-label="List View" aria-pressed="false">
                     <i class="fas fa-list"></i>
                 </button>
-            </div>
+            </div>                      
+        </section>
+        
+        <!-- Toggle View Buttons Container with Headline -->
+        <section class="view-toggle-section">
+            <!-- Headline Left of Toggle Buttons -->
+
+
+
         </section>
 
         <!-- Movie Listings Section -->
