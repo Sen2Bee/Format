@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-12-29 21:58:33 ===
+=== Code Summary Generated at 2024-12-30 09:40:40 ===
 
 === Project Folder Structure ===
 
@@ -82,6 +82,7 @@ FormatWeb/
             movie_details.js
             navbar.js
             pagination.js
+            test.js
             theme_toggle.js
     templates/
         catalog.html
@@ -239,66 +240,14 @@ body {
         display: block;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 100%;
-        margin-top: 10px;
-    }
 
-    .search-bar input {
-        width: 100%;
-    }
-
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 50vh;
-    }
-
-    .hero-carousel .overlay {
-        bottom: 10%;
-        left: 5%;
-        max-width: 90%;
-    }
 
     /* Sidebar */
     .sidebar {
         display: none; /* Hide sidebar on mobile */
     }
 
-    /* Movie Grid */
-    .movie-listing {
-        padding: 0;
-    }
 
-    .view-toggle {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 10px;
-    }
-
-    .movies.grid-view {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
-
-    .movie-card {
-        flex-direction: column;
-    }
-
-    /* Footer */
-    footer .container {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    footer .footer-links ul {
-        flex-direction: column;
-    }
-
-    footer .footer-social {
-        margin-top: 10px;
-    }
 }
 
 /* Small Devices (Tablet Portrait, 480px - 767px) */
@@ -317,26 +266,10 @@ body {
         width: auto;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 60%;
-    }
 
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 60vh;
-    }
 
-    /* Sidebar */
-    .sidebar {
-        width: 200px;
-    }
 
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 20px;
-    }
+
 }
 
 /* Medium Devices (Tablet Landscape, 768px - 1023px) */
@@ -346,27 +279,11 @@ body {
         padding: 15px;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 50%;
-    }
 
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 65vh;
-    }
 
-    /* Sidebar */
-    .sidebar {
-        display: block;
-        width: var(--sidebar-width);
-    }
 
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 25px;
-    }
+
+
 }
 
 /* Large Devices (Desktop, 1024px - 1199px) */
@@ -376,21 +293,9 @@ body {
         padding: 20px;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 40%;
-    }
 
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 70vh;
-    }
 
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 30px;
-    }
+
 }
 
 /* Extra Large Devices (Large Desktop, ≥1200px) */
@@ -400,21 +305,7 @@ body {
         padding: 25px;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 30%;
-    }
-
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 80vh;
-    }
-
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 35px;
-    }
+ 
 }
 
 --- File: static\css\base\typography.css ---
@@ -804,7 +695,7 @@ Burnt Orange (#E87D3E) */
 .movie-listings.list-view .movie-card {
     flex-direction: row;
     align-items: stretch;
-    height: 450px; /* Adjust as needed for larger screens */
+    height: 500px; /* Adjust as needed for larger screens */
 }
 
 /* Hover Overlay */
@@ -3092,6 +2983,7 @@ import { carouselTitle, genreFontMapping } from './entry.js';
 import { getSelectedValues } from './filter.js';
 
 export function initializeSwiper() {
+
     const swiperContainer = document.querySelector('.swiper-container');
     if (!swiperContainer) {
         console.error("initializeSwiper: Swiper container not found.");
@@ -3259,9 +3151,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (searchQuery) {
         const searchBox = document.getElementById('search-box');
+        const clearSearchBtn = document.getElementById('clear-search');
         if (searchBox) {
             console.log("Auto-filling search box with:", searchQuery);
             searchBox.value = searchQuery;
+
+            // === NEW: Show the clear icon if the search box is not empty ===
+            if (clearSearchBtn) {
+                if (searchQuery.length > 0) {
+                    clearSearchBtn.classList.add('visible');
+                } else {
+                    clearSearchBtn.classList.remove('visible');
+                }
+            }
+            
             // Trigger existing filter logic (if you want immediate search).
             triggerDropdownChangeEvent();
         }
@@ -3523,7 +3426,6 @@ export function toggleViews() {
 }
 
 
-
 --- File: static\js\entry.js ---
 // File: static/js/entry.js
 
@@ -3581,6 +3483,7 @@ export function hideProgressIndicator() {
 }
 
 --- File: static\js\filter.js ---
+
 // File: static/js/filter.js
 
 // Import necessary elements and functions
@@ -3713,28 +3616,24 @@ export function initializeFilterDropdowns() {
         console.error("initializeFilterDropdowns: searchBox element not found.");
     }
 
-    // Clear search box button
-    if (clearSearchBtn && searchBox) {
-        clearSearchBtn.addEventListener('click', () => {
-            searchBox.value = '';
-            clearSearchBtn.classList.remove('visible');
-            triggerDropdownChangeEvent();
-            hideAutocompleteSuggestions();
-        });
-
-        // Keyboard accessibility for the clear button
-        clearSearchBtn.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                searchBox.value = '';
-                clearSearchBtn.classList.remove('visible');
-                triggerDropdownChangeEvent();
-                hideAutocompleteSuggestions();
-            }
-        });
-    } else {
-        console.error("initializeFilterDropdowns: clearSearchBtn or searchBox element not found.");
-    }
+// In filter.js
+if (clearSearchBtn && searchBox) {
+    clearSearchBtn.addEventListener('click', () => {
+      // 1) Empty the search box
+      searchBox.value = '';
+  
+      // 2) Hide the clear icon itself
+      clearSearchBtn.classList.remove('visible');
+  
+      // 3) Hide any open autocomplete suggestions
+      hideAutocompleteSuggestions();
+  
+      // 4) Trigger an update, which calls updateFilters(),
+      //    and inside updateFilters() we call showProgressIndicator().
+      triggerDropdownChangeEvent();
+    });
+  }
+  
 
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
@@ -3960,8 +3859,20 @@ function handleAutocomplete() {
 
 /**
  * Show autocomplete suggestions
+ * (Updated to ensure only one result per unique person name)
  */
 function showAutocompleteSuggestions(suggestions) {
+    // Deduplicate by 'name'
+    const deduplicatedMap = new Map();
+    suggestions.forEach(item => {
+        // If the name is not in the map yet, set it
+        if (!deduplicatedMap.has(item.name)) {
+            deduplicatedMap.set(item.name, item);
+        }
+    });
+    // Convert map back to an array
+    const uniqueSuggestions = Array.from(deduplicatedMap.values());
+
     let autocompleteList = document.getElementById('autocomplete-list');
     if (!autocompleteList) {
         autocompleteList = document.createElement('div');
@@ -3980,9 +3891,10 @@ function showAutocompleteSuggestions(suggestions) {
 
     autocompleteList.innerHTML = '';
 
-    suggestions.forEach(item => {
+    uniqueSuggestions.forEach(item => {
         const suggestionItem = document.createElement('div');
         suggestionItem.className = 'autocomplete-item';
+        // item.type is optional; you can remove if not needed
         suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
         suggestionItem.dataset.name = item.name;
         suggestionItem.dataset.type = item.type;
@@ -4584,6 +4496,7 @@ import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilte
 import { themeToggle } from './theme_toggle.js'; 
 import { toggleViews } from './catalog.js'; 
 
+
 document.addEventListener('DOMContentLoaded', function () {
     initializeFilterDropdowns();  // Initialize dropdowns and fetch movies
     initializeSwiper(); // Initialize Swiper Carousel
@@ -4737,67 +4650,57 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 --- File: static\js\navbar.js ---
-<!-- Example HTML snippet showing usage:
-<button class="menu-toggle">
-    <i class="fas fa-bars"></i>
-</button>
-
-<ul class="nav-links">
-    <li><a href="#" class="active">Home</a></li>
-    <li><a href="#">Catalog</a></li>
-    <li><a href="#">Contact</a></li>
-</ul>
--->
-
-<script>
 document.addEventListener('DOMContentLoaded', function () {
     const navbar = document.querySelector('.navbar');
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-
     let lastScrollTop = 0;
     let ticking = false;
 
-    // Hide/Show Navbar on Scroll
+    console.log("Test1");
+    console.log("Page Height:", document.body.scrollHeight, "Viewport Height:", window.innerHeight);
+    console.log("Navbar element:", navbar);
+    window.scrollTo(0, 50);
+    console.log("Scrolled programmatically to trigger scroll event.");
+
+
     function handleScroll() {
         const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
+        console.log("Handling scroll:", currentScroll); // Debugging current scroll value
+
         if (currentScroll <= 20) {
-            // Always show navbar near the top
+            console.log("Near top, showing navbar");
             navbar.classList.remove('hidden');
         } else if (currentScroll > lastScrollTop) {
-            // Scrolling down -> hide navbar
+            console.log("Scrolling down, hiding navbar");
             navbar.classList.add('hidden');
         } else {
-            // Scrolling up -> show navbar
+            console.log("Scrolling up, showing navbar");
             navbar.classList.remove('hidden');
         }
 
-        lastScrollTop = Math.max(currentScroll, 0); // Avoid negative scroll
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For mobile or negative scrolling
         ticking = false;
     }
 
     function onScroll() {
+        console.log("Scroll detected"); // Confirming scroll event is fired
         if (!ticking) {
             window.requestAnimationFrame(handleScroll);
             ticking = true;
         }
     }
 
+    console.log("Scroll listener attached to window");
     window.addEventListener('scroll', onScroll);
 
-    // Reveal navbar on hover near the top
+    // Show navbar when hovering near the top
     document.addEventListener('mousemove', function (event) {
-        // If mouse is within 50px from top edge, show the navbar
         if (event.clientY < 50) {
+            console.log("Mouse near top, showing navbar");
             navbar.classList.remove('hidden');
         }
     });
-
-
-        
 });
-</script>
 
 --- File: static\js\pagination.js ---
 // File: static/js/pagination.js
@@ -4872,6 +4775,9 @@ export function attachPaginationEventListeners(columnsPerRow) {
     });
 }
 
+--- File: static\js\test.js ---
+console.log("Test module loaded in Chrome");
+
 --- File: static\js\theme_toggle.js ---
 export function themeToggle() {
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -4934,6 +4840,7 @@ export function themeToggle() {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
 </head>
 <body>
     <header>
@@ -4943,17 +4850,17 @@ export function themeToggle() {
                 <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
             </div>
             
-<!-- Centered theme title in the navbar -->
-<div class="nav-center-title">
-    <img 
-        src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
-        alt="Looking Down" 
-        class="nav-center-image" 
-        id="theme-image" 
-        data-dark-src="{{ url_for('static', filename='images/looking_down_dark.png') }}"
-        data-light-src="{{ url_for('static', filename='images/looking_down_light.png') }}">
-    <span class="theme-title">{{ selected_theme }}</span>
-</div>
+            <!-- Centered theme title in the navbar -->
+            <div class="nav-center-title">
+                <img 
+                    src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
+                    alt="Looking Down" 
+                    class="nav-center-image" 
+                    id="theme-image" 
+                    data-dark-src="{{ url_for('static', filename='images/looking_down_dark.png') }}"
+                    data-light-src="{{ url_for('static', filename='images/looking_down_light.png') }}">
+                <span class="theme-title">{{ selected_theme }}</span>
+            </div>
 
             
 
@@ -5253,10 +5160,10 @@ export function themeToggle() {
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <!-- Scripts -->
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    <!-- Toggle View JS -->
-    <script src="{{ url_for('static', filename='js/toggle-view.js') }}"></script>
+    
+
+
 </body>
 </html>
 
@@ -5551,10 +5458,9 @@ export function themeToggle() {
     </footer>
 </div>
 
-<!-- Swiper.js JS for Carousel -->
+
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-<!-- Scripts -->
 <script src="{{ url_for('static', filename='js/movie_details.js') }}"></script>
 
 </body>

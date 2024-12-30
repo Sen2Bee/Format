@@ -12,12 +12,8 @@ html {
     box-sizing: border-box;
 }
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-body {
-    overflow-x: hidden;
+    min-height: 100%;
+    height: auto;
 }
 
 /* Normalize link styles but allow color */
@@ -38,12 +34,7 @@ ul, ol {
     margin-left: 0;
 }
 
-/* Prevent overflow issues */
-html, body {
-    overflow-x: hidden;
-    font-family: 'Open Sans', sans-serif;
-    background-color: var(--background-dark);
-}
+
 
 /* Screen-reader only text */
 .sr-only {

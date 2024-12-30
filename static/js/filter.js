@@ -1,3 +1,4 @@
+
 // File: static/js/filter.js
 
 // Import necessary elements and functions

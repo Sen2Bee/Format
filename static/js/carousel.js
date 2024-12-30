@@ -4,6 +4,7 @@ import { carouselTitle, genreFontMapping } from './entry.js';
 import { getSelectedValues } from './filter.js';
 
 export function initializeSwiper() {
+
     const swiperContainer = document.querySelector('.swiper-container');
     if (!swiperContainer) {
         console.error("initializeSwiper: Swiper container not found.");

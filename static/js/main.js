@@ -5,6 +5,7 @@ import { initializeFilterDropdowns, initializeFilterPanelToggle, initializeFilte
 import { themeToggle } from './theme_toggle.js'; 
 import { toggleViews } from './catalog.js'; 
 
+
 document.addEventListener('DOMContentLoaded', function () {
     initializeFilterDropdowns();  // Initialize dropdowns and fetch movies
     initializeSwiper(); // Initialize Swiper Carousel

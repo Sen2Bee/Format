@@ -22,7 +22,7 @@
 .movie-listings.list-view .movie-card {
     flex-direction: row;
     align-items: stretch;
-    height: 450px; /* Adjust as needed for larger screens */
+    height: 500px; /* Adjust as needed for larger screens */
 }
 
 /* Hover Overlay */

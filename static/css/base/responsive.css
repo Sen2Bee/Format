@@ -27,66 +27,14 @@
         display: block;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 100%;
-        margin-top: 10px;
-    }
 
-    .search-bar input {
-        width: 100%;
-    }
-
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 50vh;
-    }
-
-    .hero-carousel .overlay {
-        bottom: 10%;
-        left: 5%;
-        max-width: 90%;
-    }
 
     /* Sidebar */
     .sidebar {
         display: none; /* Hide sidebar on mobile */
     }
 
-    /* Movie Grid */
-    .movie-listing {
-        padding: 0;
-    }
 
-    .view-toggle {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 10px;
-    }
-
-    .movies.grid-view {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
-
-    .movie-card {
-        flex-direction: column;
-    }
-
-    /* Footer */
-    footer .container {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    footer .footer-links ul {
-        flex-direction: column;
-    }
-
-    footer .footer-social {
-        margin-top: 10px;
-    }
 }
 
 /* Small Devices (Tablet Portrait, 480px - 767px) */
@@ -105,26 +53,10 @@
         width: auto;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 60%;
-    }
 
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 60vh;
-    }
 
-    /* Sidebar */
-    .sidebar {
-        width: 200px;
-    }
 
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 20px;
-    }
+
 }
 
 /* Medium Devices (Tablet Landscape, 768px - 1023px) */
@@ -134,27 +66,11 @@
         padding: 15px;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 50%;
-    }
 
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 65vh;
-    }
 
-    /* Sidebar */
-    .sidebar {
-        display: block;
-        width: var(--sidebar-width);
-    }
 
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 25px;
-    }
+
+
 }
 
 /* Large Devices (Desktop, 1024px - 1199px) */
@@ -164,21 +80,9 @@
         padding: 20px;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 40%;
-    }
 
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 70vh;
-    }
 
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 30px;
-    }
+
 }
 
 /* Extra Large Devices (Large Desktop, ≥1200px) */
@@ -188,19 +92,5 @@
         padding: 25px;
     }
 
-    /* Search Bar */
-    .search-bar {
-        width: 30%;
-    }
-
-    /* Hero Carousel */
-    .hero-carousel {
-        height: 80vh;
-    }
-
-    /* Movie Grid */
-    .movies.grid-view {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 35px;
-    }
+ 
 }
