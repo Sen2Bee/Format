@@ -169,9 +169,7 @@
         padding: 10px 0;
     }
 
-     .nav-center-title .theme-title {
-        font-size: 0.5rem;
-    }
+
 
     .navbar {
         height: 50px;
@@ -198,8 +196,8 @@
         text-decoration: none;
     }
     .nav-center-title .theme-title {
-        display: none;
-      }    
+        font-size: 1rem;
+    }   
 
 }
 
@@ -218,6 +216,6 @@
     }
 
     .nav-center-title .theme-title {
-        font-size: 1.2rem;
+        font-size: 0.7rem;
     }
 }
