@@ -60,18 +60,25 @@
 }
 
 /* Center Title Container */
+/* Centered theme title */
 .nav-center-title {
-    display: flex; /* Enable Flexbox for horizontal alignment */
+    position: absolute; /* Take it out of the normal flow */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for perfect centering */
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff; /* Adjust as needed */
+    white-space: nowrap; /* Prevent wrapping */
     align-items: flex-end; /* Align image and title to the bottom */
-    justify-content: center; /* Center the entire content horizontally */
-    gap: 10px; /* Add spacing between the image and the title */
 }
 
-/* Image Styling */
-.nav-center-image {
-    height: 40px; /* Adjust the height of the image */
+
+/* Image adapts to navbar size */
+.logo-image {
+    height: 100%; /* Match the height of the navbar */
     width: auto; /* Maintain aspect ratio */
-    object-fit: contain; /* Ensure the image scales properly */
+    object-fit: contain; /* Ensure the image doesn't stretch */
+    max-height: 50px; /* Add a limit for very large images */
 }
 
 /* Theme Title Container */
