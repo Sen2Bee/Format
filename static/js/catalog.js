@@ -105,6 +105,12 @@ export function updateMovieListings(movies) {
         // Create card
         const movieCard = document.createElement('div');
         movieCard.className = 'movie-card';
+        // If in list view, set the background to the backdrop
+        if (isListView) {
+            // For example, if your backdrops are: /movie_images/<folder_name>/backdrop/backdrop_1.avif
+            const backdropPath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/backdrop/backdrop_1.avif`;
+            movieCard.style.backgroundImage = `url('${backdropPath}')`;
+        }        
 
         // Prepare icons for runtime/fsk/rating
         const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");

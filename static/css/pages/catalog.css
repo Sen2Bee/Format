@@ -12,14 +12,14 @@
   
     /* optional:
        Set a maximum width if you want to avoid overly wide grids on huge displays */
-    max-width: 1800px;
+    max-width: 2800px;
     margin: 0 auto; /* center if you want margins on large screens */
   }
 
 /* Media Query to Limit to 4 Columns on Large Screens */
 @media (min-width: var(--breakpoint-lg)) {
     .movie-listings {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(6, 1fr);
     }
 }
 

@@ -18,6 +18,7 @@
     --Gold: #846c1e;
     /* Color Variables */
     --accent-color: var(--Gold); /* Muted terracotta */
+    --overview-color: #f7ba7d; /* Soft off-white */
     --primary-color: #FAF8F6; /* Soft off-white */
     --secondary-color: #3D3D3D; /* Dark charcoal gray */
     --background-color: #FFFDFB; /* Very light beige */
@@ -37,7 +38,7 @@
     --highlight-color: #846c1e; /* Same as accent */
     --movie-card-background: #FFFFFF; /* Movie card background */
     --movie-card-hover-shadow: rgba(0, 0, 0, 0.1); /* Soft shadow */
-    --overlay-background: rgba(0, 0, 0, 0.5); /* Overlay background */
+    --overlay-background: rgba(56, 56, 56, 0.4); /* Overlay background */
     --tooltip-background: #3D3D3D; /* Dark tooltip background */
     --tooltip-text-color: #FFFFFF; /* Tooltip text color */
     --missing-poster-border: #846c1e; /* Accent color */
@@ -51,6 +52,7 @@
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
+    --meta-data-font-size-big: clamp(1.2rem, 1.3vw, 1.4rem); /* Adaptive font size */
     --meta-data-font-size: clamp(0.9rem, 1.2vw, 1.2rem); /* Adaptive font size */
     --meta-data-font-size-small: clamp(0.7rem, 0.9vw, 0.9rem); /* Adaptive font size */
 
@@ -122,7 +124,7 @@ Burnt Orange (#E87D3E) */
     --highlight-color: #B58B4B; /* Same as accent */
     --movie-card-background: #1F1F1F; /* Movie card background */
     --movie-card-hover-shadow: rgba(255, 255, 255, 0.1); /* Light shadow */
-    --overlay-background: rgba(0, 0, 0, 0.7); /* Overlay */
+    --overlay-background: rgba(0, 0, 0, 0.6); /* Overlay */
     --tooltip-background: #EAEAEA; /* Light tooltip background */
     --tooltip-text-color: #1A1A1A; /* Tooltip text color */
     --missing-poster-border: #B58B4B; /* Accent color */
