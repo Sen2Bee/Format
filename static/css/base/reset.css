@@ -12,9 +12,14 @@ html {
     box-sizing: border-box;
 }
 html, body {
+    /* Remove strict height: 100%; */
     min-height: 100%;
     height: auto;
-}
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Keep horizontal overflow hidden if you want */
+  }
+  
 
 /* Normalize link styles but allow color */
 a {
