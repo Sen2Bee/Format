@@ -241,22 +241,27 @@ export function attachDropdownEventDelegation() {
     // 1) Dropdown header click: ONLY toggles open/close (no search triggered here)
     dropdownHeaders.forEach(header => {
         header.addEventListener('click', (event) => {
+            // Prevent the click from bubbling up into any "filter-button" logic
             event.stopPropagation();
+    
             const targetDropdownId = header.getAttribute('data-target');
             const targetDropdown = document.getElementById(targetDropdownId);
             toggleDropdown(targetDropdown, header);
         });
-
-        // Keyboard accessibility (Space/Enter)
+    
+        // (Optional) For keyboard accessibility
         header.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
+                event.stopPropagation();
+    
                 const targetDropdownId = header.getAttribute('data-target');
                 const targetDropdown = document.getElementById(targetDropdownId);
                 toggleDropdown(targetDropdown, header);
             }
         });
     });
+    
 
     // 2) Filter-button clicks inside the dropdown
     dropdownLists.forEach(dropdownList => {

@@ -59,26 +59,32 @@
     text-transform: lowercase;
 }
 
-/* Center Title Container */
-/* Centered theme title */
+/* Centered container */
 .nav-center-title {
-    position: absolute; /* Take it out of the normal flow */
-    left: 50%; /* Center horizontally */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute; /* Centers it relative to navbar */
+    left: 50%; /* Centers horizontally */
     transform: translateX(-50%); /* Adjust for perfect centering */
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff; /* Adjust as needed */
-    white-space: nowrap; /* Prevent wrapping */
-    align-items: flex-end; /* Align image and title to the bottom */
+    gap: 10px; /* Space between the image and title */
 }
 
-
-/* Image adapts to navbar size */
+/* Logo image styling */
 .logo-image {
-    height: 100%; /* Match the height of the navbar */
-    width: auto; /* Maintain aspect ratio */
-    object-fit: contain; /* Ensure the image doesn't stretch */
-    max-height: 50px; /* Add a limit for very large images */
+    height: 40px; /* Adjust as needed for proper size */
+    width: auto;
+    display: block;
+}
+
+/* Theme title styling */
+.theme-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--secondary-color);
+    text-align: center;
+    font-family: var(--font-heading, 'Arial', sans-serif);
+    white-space: nowrap; /* Prevent wrapping */
 }
 
 /* Theme Title Container */
@@ -87,13 +93,7 @@
     align-items: flex-end; /* Align the title to the bottom of the container */
 }
 
-/* Theme Title Styling */
-.theme-title {
-    font-size: 1rem;
-    color: var(--secondary-color);
-    text-transform: lowercase;
-    transition: color var(--transition-duration);
-}
+
 
 
 /* Navigation Links */
@@ -223,6 +223,6 @@
     }
 
     .nav-center-title .theme-title {
-        font-size: 0.7rem;
+        font-size: 1rem;
     }
 }
