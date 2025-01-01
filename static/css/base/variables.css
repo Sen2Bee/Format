@@ -52,9 +52,9 @@
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
-    --meta-data-font-size-big: clamp(1.2rem, 1.3vw, 1.4rem); /* Adaptive font size */
-    --meta-data-font-size: clamp(0.9rem, 1.2vw, 1.2rem); /* Adaptive font size */
-    --meta-data-font-size-small: clamp(0.7rem, 0.9vw, 0.9rem); /* Adaptive font size */
+    --meta-data-font-size: clamp(0.9rem, 1.2vw, 2.5rem); /* Adaptive font size */
+    --meta-data-font-size-big: clamp(1.2rem, 2vw, 3rem); /* Adaptive font size */
+
 
     /* Layout Variables */
     --header-height: 60px; /* Header height */
@@ -92,8 +92,8 @@
     --button-hover-background: #E0DED9; /* Very Light Gray */
     --button-active-background: #D3D0CB; /* Light Gray */
 
-    --poster-width: 70%;
-    --catalog-width: 1200px;
+    --poster-width: 100%;
+    --catalog-width: 2200px;
 }
 /*accent colors for light theme 
 Electric Blue (#4A90E2)
@@ -124,7 +124,7 @@ Burnt Orange (#E87D3E) */
     --highlight-color: #B58B4B; /* Same as accent */
     --movie-card-background: #1F1F1F; /* Movie card background */
     --movie-card-hover-shadow: rgba(255, 255, 255, 0.1); /* Light shadow */
-    --overlay-background: rgba(0, 0, 0, 0.6); /* Overlay */
+    --overlay-background: rgba(56, 56, 56, 0.4); /* Overlay background */
     --tooltip-background: #EAEAEA; /* Light tooltip background */
     --tooltip-text-color: #1A1A1A; /* Tooltip text color */
     --missing-poster-border: #B58B4B; /* Accent color */

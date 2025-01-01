@@ -17,13 +17,14 @@
 </head>
 <body data-folder="{{ movie.folder_name }}">
 
-    <!-- Theme Application Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const theme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', theme);
-        });
-    </script>
+<!-- Theme Application Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const theme = localStorage.getItem('theme') || 'light';
+        console.log("theme", theme)
+        document.documentElement.setAttribute('data-theme', theme);
+    });
+</script>
 
 <div class="page-container">
     <header>

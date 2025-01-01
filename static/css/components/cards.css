@@ -33,12 +33,12 @@
     top: 0; left: 0;
     width: 100%; height: 100%;
     background: var(--overlay-background);
-    opacity: 0;
+    opacity: 1;
     transition: opacity var(--transition-duration) ease;
     z-index: 1;
 }
 .movie-card:hover::before {
-    opacity: 1;
+    opacity: 0;
 }
 
 /* Content Wrapper */
@@ -143,7 +143,7 @@
 }
 
 .overview-section {
-    font-size: var(--meta-data-font-size); /* Uses a CSS variable for font size */
+
     padding: 15px;                        /* Provides spacing inside the section */
     background: var(--overlay-background);
     border-radius: var(--border-radius-small); /* Rounded corners */
@@ -151,7 +151,7 @@
     line-height: 1.4;                     /* Improves readability with a 1.4 line height */
     position: relative;                   /* Allows for positioning relative to parent */
     
-    font-size: var(--meta-data-font-size-big);
+    font-size: var(--meta-data-font-size);
     font-style: italic;
 }
 

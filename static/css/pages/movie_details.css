@@ -24,7 +24,7 @@ header {
 
 .logo a {
     font-family: var(--font-cursive);
-    font-size: 2rem;
+    font-size: var(--meta-data-font-size-big);
     color: var(--accent-color);
     text-decoration: none;
     margin-right: var(--spacing-large);
@@ -32,7 +32,7 @@ header {
 
 .sub-logo {
     font-family: var(--font-heading);
-    font-size: 1rem;
+    font-size: var(--meta-data-font-size-big);
     color: var(--secondary-color);
     text-decoration: none;
 }
@@ -41,7 +41,7 @@ header {
 
 .nav-center-title .theme-title {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: var(--meta-data-font-size-big);
 }
 
 /* Movie Details Section */
@@ -93,20 +93,21 @@ header {
 /* Poster and Content Container */
 .poster-content-container {
     position: relative;
-    max-width: var(--catalog-width);
+    /* max-width: var(--catalog-width); */
     width: 100%;
     margin: -20vh auto 0; /* Centers horizontally */
     /* margin-left: 15px; */
     display: flex;
     align-items: flex-start;
-    padding: 0 var(--spacing-large);
+    padding: 0 calc(var(--spacing-large) * 2); /* Increases horizontal padding */
 }
 
 
 
 /* Poster Styling */
 .wrap-poster {
-    flex: 0 0 300px;
+    flex: 0 0 clamp(20%, 300px, 25%); /* Adapts based on screen size and zoom */
+    max-width: 25%; /* Keeps poster size relative to the parent container */
     margin-right: var(--spacing-large);
     border-radius: var(--border-radius-medium);
     overflow: hidden;
@@ -143,7 +144,7 @@ header {
     opacity: 0.9;
     transition: opacity var(--transition-duration) ease;
     text-decoration: none;
-    font-size: 2rem; /* Adjust icon size for better visibility */
+    font-size: var(--meta-data-font-size);
 }
 
 /* Play Movie Overlay - Slightly Different Style */
@@ -163,7 +164,7 @@ header {
     opacity: 0.8;
     transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
     text-decoration: none;
-    font-size: 2.2rem; /* Larger icon size */
+    font-size: var(--meta-data-font-size-big);
 }
 
 /* Hover Effects */
@@ -186,18 +187,18 @@ header {
 
 .movie-title {
     font-family: var(--font-heading);
-    font-size: 2.5rem;
+    font-size: var(--meta-data-font-size-big);
     margin-top: 20vh;
     margin-bottom: var(--spacing-small);
 }
 
 .release-year {
-    font-size: 1.5rem;
+    font-size: var(--meta-data-font-size-big);
     color: var(--secondary-secondary-text-color);
 }
 
 .original-title {
-    font-size: 1.2rem;
+    font-size: var(--meta-data-font-size);
     font-style: italic;
     margin-bottom: var(--spacing-medium);
     color: var(--secondary-secondary-text-color);
@@ -221,17 +222,19 @@ header {
     color: var(--accent-color);
 }
 .info-item span {
-    color: var(--text-color);
+    font-size: var(--meta-data-font-size); /* Unifies font size */
+    color: var(--text-color); /* Ensures consistent color */
+    line-height: 1.4; /* Improves readability */
 }
 
 .info-text {
-    font-size: 1rem;
+    font-size: var(--meta-data-font-size);
     color: var(--background-color);
 }
 
 .additional-info {
 
-    font-size: 1.1rem;
+    font-size: var(--meta-data-font-size); /* Adaptive font size */
     line-height: 1.8;
 
 }
@@ -302,7 +305,7 @@ header {
 /* Optional: Adjust Icon Size */
 .swiper-button-next i,
 .swiper-button-prev i {
-    font-size: 2rem; /* Adjust as needed */
+    font-size: var(--meta-data-font-size);
 }
 
 /* Swiper Pagination */
@@ -360,6 +363,7 @@ footer {
     }
 
     .info-item {
+        font-size: var(--meta-data-font-size);
         width: 100%;
         justify-content: center;
     }
@@ -367,21 +371,21 @@ footer {
 
 @media (max-width: 575px) {
     .movie-title {
-        font-size: 2rem;
+        font-size: var(--meta-data-font-size);
         margin-top: 0px;
     }
 
 
     .release-year {
-        font-size: 1.2rem;
+        font-size: var(--meta-data-font-size);
     }
 
     .original-title {
-        font-size: 1rem;
+        font-size: var(--meta-data-font-size);
     }
 
     .additional-info {
-        font-size: 1rem;
+        font-size: var(--meta-data-font-size);
     }
 
     .swiper-button-next,
@@ -417,7 +421,7 @@ footer {
     background-color: #ff5722; /* Accent color */
     color: #fff;
     text-decoration: none;
-    font-size: 1.2em;
+    font-size: var(--meta-data-font-size);
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }

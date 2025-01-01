@@ -8,7 +8,7 @@
        The auto-fill approach will create new columns as long as there's room 
        for at least minmax(...) wide. 
      */
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   
     /* optional:
        Set a maximum width if you want to avoid overly wide grids on huge displays */
