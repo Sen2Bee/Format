@@ -258,13 +258,13 @@ export function updateMovieListings(movies) {
                             }
                             
                             <div class="inline-meta">
-                                ${formatRuntimeHtml}
-                                ${formatFskHtml}
-                                ${formatRatingHtml}
                                 <div class="meta-item">
                                     <i class="fas fa-calendar" style="font-size:1.4em;"></i>
                                     <span>${movie.release_date}</span>
-                                </div>
+                                </div>         
+                                ${formatRatingHtml}                   
+                                ${formatRuntimeHtml}
+                                ${formatFskHtml}
                             </div>
                         </div>
                     </div>

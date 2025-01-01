@@ -26,6 +26,7 @@
     height: 500px; /* Adjust as needed for larger screens */
 }
 
+
 /* Hover Overlay */
 .movie-card::before {
     content: '';
@@ -144,7 +145,10 @@
 
 .overview-section {
 
-    padding: 15px;                        /* Provides spacing inside the section */
+    padding-top: 2;
+    padding-left: 2px;                        /* Provides spacing inside the section */    
+    padding-right: 2px; 
+    padding-bottom: 2px;                        /* Provides spacing inside the section */
     background: var(--overlay-background);
     border-radius: var(--border-radius-small); /* Rounded corners */
     color: var(--overview-color);           /* Sets text color to an accent color */
@@ -182,7 +186,7 @@
     flex-direction: column;
     gap: var(--spacing-small);
     font-size: var(--meta-data-font-size);
-    background-color: rgba(0, 0, 0, 0.6);
+    /* background-color: rgba(0, 0, 0, 0.6); */
     padding: var(--spacing-medium);
     border-radius: var(--border-radius-small);
 }
@@ -195,7 +199,7 @@
 .metadata p {
     margin: 5px 0;
     color: var(--secondary-text-color);
-    opacity: 0.9;
+    opacity: 1;
 }
 
 /* Inline Meta (Runtime, FSK, Rating, Release Date) */
@@ -212,6 +216,7 @@
     align-items: center;
     font-size: var(--meta-data-font-size);
     margin-right: var(--spacing-small);
+    opacity: 0.9;
 }
 
 .meta-item i {

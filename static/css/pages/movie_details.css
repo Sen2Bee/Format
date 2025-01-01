@@ -106,8 +106,8 @@ header {
 
 /* Poster Styling */
 .wrap-poster {
-    flex: 0 0 clamp(20%, 300px, 25%); /* Adapts based on screen size and zoom */
-    max-width: 25%; /* Keeps poster size relative to the parent container */
+    flex: 0 0 clamp(25%, 100px, 35%); /* Adapts based on screen size and zoom */
+    max-width: 55%; /* Keeps poster size relative to the parent container */
     margin-right: var(--spacing-large);
     border-radius: var(--border-radius-medium);
     overflow: hidden;
@@ -136,8 +136,8 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
     border-radius: 50%; /* Circular shape */
     color: var(--secondary-text-color); /* Icon/Text color */
@@ -334,6 +334,7 @@ footer {
 .footer-content p {
     margin: 0;
     color: var(--secondary-secondary-text-color);
+    font-size: var(--meta-data-font-size);
 }
 
 /* Responsive Styles */
@@ -394,6 +395,11 @@ footer {
         height: 36px;
         margin-top: -18px;
     }
+    /* Poster Styling */
+    .wrap-poster {
+        flex: 0 0 50%;
+
+    }    
 }
 
 .person-tooltip:hover::after {
