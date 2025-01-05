@@ -55,6 +55,15 @@
     border: 1px solid var(--accent-color);
 }
 
+.dropdown-header.has-selection {
+    /* Use your accent color (var(--accent-color)) 
+       or some subtle highlight to show it's selected */
+    outline: 2px solid var(--accent-color);
+    /* Or change the background color, text color, etc. */
+    background-color: rgba(255, 192, 0, 0.2); /* just an example */
+}
+
+
 .custom-dropdown.dropdown-open .dropdown-header {
     border-color: var(--accent-color);
 }
@@ -128,26 +137,11 @@
     opacity: 1;
 }
 
-/* Selection Badge */
-.selection-badge {
-    position: absolute;
-    bottom: 5px; /* Aligns it vertically in the middle of the header */
-    right: 35px; /* Adjust distance from the right to make more space for the clear icon */
-    color: var(--accent-color);
-    font-size: 0.8em;
-    /* border-radius: 12px; */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1; /* Ensure the text is vertically centered */
-    z-index: 4500; /* Ensure it appears above other elements */
-}
-
 
 
 /* Show Clear Icon and Badge When Items Are Selected */
 .dropdown-header.has-selection .clear-icon,
-.dropdown-header.has-selection .selection-badge {
+.dropdown-header.has-selection {
     visibility: visible;
     opacity: 1;
 }
@@ -188,3 +182,17 @@
 .dropdown-list::-webkit-scrollbar {
     display: none;
 }
+
+.filter-button.selected {
+    background-color: var(--accent-color);
+    color: #fff;
+    border-color: var(--accent-color); 
+  }
+
+  .filter-button.used-up {
+    opacity: 0.5;
+    pointer-events: none;
+    background-color: #aaa;
+    /* or fully hide: display: none; */
+  }
+  
