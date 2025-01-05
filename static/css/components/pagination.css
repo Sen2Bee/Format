@@ -10,7 +10,7 @@
 /* Headline Styling */
 .view-toggle-headline {
     font-size: 0.7rem;
-    color: var(--text-color); /* White text */
+    color: var(--accent-color); /* White text */
     margin: 0;
     text-align: center;
 }
