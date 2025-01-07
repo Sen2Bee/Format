@@ -3,13 +3,13 @@
 /* Main Filters Container */
 .main-filters-container {
     display: flex;
-    flex-direction: row;
+    /* flex-direction: row; */
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
     overflow-x: auto;
     width: 100%;
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
     font-family: var(--font-body);
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -39,7 +39,7 @@
     background-color: var(--background-dark); /* Adjust background color */
     color: var(--secondary-color); /* Use lighter text for better contrast */
     cursor: pointer;
-    font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
+    font-size: clamp(0.9em, 1.1vw, 1.3em); /* Responsive font size */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     font-family: var(--font-body);
     position: relative;

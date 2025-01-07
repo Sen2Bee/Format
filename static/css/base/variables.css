@@ -53,6 +53,7 @@
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
     --meta-data-font-size: clamp(0.8rem, 1.1vw, 2rem); /* Adaptive font size */
+    --meta-data-font-size-medium: clamp(1rem, 1.5vw, 2.2rem); /* Adaptive font size */
     --meta-data-font-size-big: clamp(1.2rem, 2vw, 3rem); /* Adaptive font size */
 
 
@@ -60,7 +61,7 @@
     --header-height: 60px; /* Header height */
     --footer-height: 200px; /* Footer height */
     --sidebar-width: 250px; /* Sidebar width */
-    --big-button-height: 50px; /* Height for larger buttons or dropdown headers */
+    --big-button-height: 40px; /* Height for larger buttons or dropdown headers */
 
     /* Transition Variables */
     --transition-duration: 0.3s; /* Standard transition duration */

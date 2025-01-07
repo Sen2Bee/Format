@@ -96,173 +96,179 @@ export function updateMovieListings(movies) {
         return;
     }
 
-    // Render each movie
     movies.forEach(movie => {
         // Prepare paths
         const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
         const defaultImagePath = '/static/images/default_movie.png';
-
-        // Create card
+    
+        // Are we in list view or grid view?
+        const isListView = movieContainer.classList.contains('list-view');
+    
+        // Create a clickable link wrapper
+        const movieLink = document.createElement('a');
+        movieLink.href = `/movie/${movie.movie_id}`;
+        // Optional: add a class for styling or hover effects
+        movieLink.className = 'movie-card-link';
+        // Optional: add an ARIA label for accessibility
+        movieLink.setAttribute('aria-label', `Details for ${movie.main_title}`);
+    
+        // Create the movie card
         const movieCard = document.createElement('div');
         movieCard.className = 'movie-card';
-        // If in list view, set the background to the backdrop
+    
+        // If in list view, set background to the backdrop
         if (isListView) {
-            // For example, if your backdrops are: /movie_images/<folder_name>/backdrop/backdrop_1.avif
             const backdropPath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/backdrop/backdrop_1.avif`;
             movieCard.style.backgroundImage = `url('${backdropPath}')`;
-        }        
-
-        // Prepare icons for runtime/fsk/rating
+        }
+    
+        // Icon sizes
         const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
-        const fskIconSize = getIconSizeByType(movie.fsk, "fsk");
-        const ratingIconSize = getIconSizeByType(movie.rating, "rating");
-
+        const fskIconSize     = getIconSizeByType(movie.fsk, "fsk");
+        const ratingIconSize  = getIconSizeByType(movie.rating, "rating");
+    
         const formatRuntimeHtml = `
             <div class="meta-item">
                 <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
                 <span>${movie.runtime}</span>
             </div>
         `;
-
         const formatFskHtml = `
             <div class="meta-item">
                 <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
                 <span>${movie.fsk}</span>
             </div>
         `;
-
         const formatRatingHtml = `
             <div class="meta-item">
                 <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
                 <span>${movie.rating}</span>
             </div>
         `;
-
+    
         // Directors
         const directors = (Array.isArray(movie.director) && movie.director.length > 0)
             ? movie.director.join(', ')
             : "Unknown Director";
-
-        // Actors: show 6 in list view, 2 in grid view
+    
+        // Actors: show 6 if list view, otherwise 2
         const maxActorsToShow = isListView ? 6 : 2;
-        let actors = '';
+        let actors = "";
         if (typeof movie.actors === 'string') {
             const actorArray = movie.actors.split(',').map(a => a.trim());
-            if (actorArray.length > maxActorsToShow) {
-                actors = actorArray.slice(0, maxActorsToShow).join(', ') + ', ...';
-            } else {
-                actors = actorArray.join(', ');
-            }
+            actors = (actorArray.length > maxActorsToShow)
+                ? actorArray.slice(0, maxActorsToShow).join(', ') + ', ...'
+                : actorArray.join(', ');
         } else if (Array.isArray(movie.actors)) {
-            if (movie.actors.length > maxActorsToShow) {
-                actors = movie.actors.slice(0, maxActorsToShow).join(', ') + ', ...';
-            } else {
-                actors = movie.actors.join(', ');
-            }
+            actors = (movie.actors.length > maxActorsToShow)
+                ? movie.actors.slice(0, maxActorsToShow).join(', ') + ', ...'
+                : movie.actors.join(', ');
         }
-
+    
         // Countries
         let countries = "Unknown Countries";
         if (Array.isArray(movie.countries) && movie.countries.length > 0) {
             countries = movie.countries.map(country => {
                 const match = country.match(/(.*?)\s\((.*?)\)/);
-                const fullName = match ? match[1] : country;
+                const fullName  = match ? match[1] : country;
                 const shortCode = match ? match[2] : country;
                 return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
             }).join(', ');
         }
-
+    
         // Genres
         const genres = (Array.isArray(movie.genres) && movie.genres.length > 0)
             ? movie.genres.join(', ')
             : "Unknown Genres";
-
-        // Overviews / content
+    
+        // Content
         let content = "Keine Inhaltsangabe verfügbar.";
         if (movie.format_inhalt && movie.format_inhalt.length >= 10) {
             content = movie.format_inhalt;
         } else if (movie.overview && movie.overview.length >= 10) {
             content = movie.overview;
         }
-
+    
         // Truncate content
         let maxLength = isListView ? 300 : 150;
         if (content.length > maxLength) {
             content = content.substring(0, maxLength) + '...';
         }
-
-        // Also truncate the main title
-        maxLength = isListView ? 200 : 29;
+    
+        // Truncate main title
+        maxLength = isListView ? 200 : 100;
         let main_title = movie.main_title || "Untitled";
         if (main_title.length > maxLength) {
             main_title = main_title.substring(0, maxLength) + '...';
         }
-
-        // Build HTML
+    
+        // Build the card's inner HTML
         movieCard.innerHTML = `
             <div class="movie-content-wrapper">
                 <div class="image-container">
-                    <a href="/movie/${movie.movie_id}">
-                        <img src="${imagePath}" 
-                             alt="${movie.main_title}"
-                             onerror="this.onerror=null; this.src='${defaultImagePath}';"
-                             loading="lazy">
-                    </a>
+                    <!-- Removed the <a> around the image so the entire card can be linked -->
+                    <img src="${imagePath}" 
+                         alt="${movie.main_title}"
+                         onerror="this.onerror=null; this.src='${defaultImagePath}';"
+                         loading="lazy">
                     <div class="hover-title">
                         <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
                     </div>
                 </div>
-
+    
                 <div class="info-wrapper">
                     <div class="title-section">
-                        <h2>${main_title}</h2>
+                        <h2>${main_title} (${movie.release_date})</h2>
                     </div>
-                    <div class="overview-section">
-                        <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
-                    </div>
-                   
+                    ${
+                        isListView
+                        ? `
+                        <div class="overview-section">
+                            <p>${content} 
+                                <!-- 'mehr' link still points to details if you want it -->
+                                <a href="/movie/${movie.movie_id}" class="more-link">mehr</a>
+                            </p>
+                        </div>
+                        `
+                        : ''
+                    }
                     <div class="info-section">
                         <div class="metadata">
+                            <p class="countries">
+                                <strong><i class="fas fa-globe"></i></strong> ${countries}
+                                | <strong><i class="fas fa-film"></i></strong> ${genres}
+                            </p>
                             ${
                                 isListView 
                                 ? `
-                                    <p class="countries">
-                                        <strong><i class="fas fa-globe"></i></strong> ${countries}
-                                        | <strong><i class="fas fa-film"></i></strong> ${genres}
-                                    </p>
-                                    <p>
-                                      <strong><i class="fas fa-video"></i></strong> ${directors}
-                                    </p>
-                                    <p>
-                                      <strong><i class="fas fa-users"></i></strong> ${actors}
-                                    </p>
-                                    <p class="standort">
-                                        ${
-                                            movie.standort 
-                                                ? `<strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort}`
-                                                : ''
-                                        }
-                                        ${
-                                            movie.standort && movie.formats 
-                                                ? ' | ' 
-                                                : ''
-                                        }
-                                        ${
-                                            movie.formats 
-                                                ? `<strong><i class="fas fa-disc"></i></strong> ${movie.formats}`
-                                                : ''
-                                        }
-                                    </p>                                    
+                                <p>
+                                    <strong><i class="fas fa-video"></i></strong> ${directors}
+                                </p>
+                                <p>
+                                    <strong><i class="fas fa-users"></i></strong> ${actors}
+                                </p>
+                                <p class="standort">
+                                    ${
+                                        movie.standort 
+                                            ? `<strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort}`
+                                            : ''
+                                    }
+                                    ${
+                                        movie.standort && movie.formats 
+                                            ? ' | ' 
+                                            : ''
+                                    }
+                                    ${
+                                        movie.formats 
+                                            ? `<strong><i class="fas fa-disc"></i></strong> ${movie.formats}`
+                                            : ''
+                                    }
+                                </p>
                                 `
                                 : ''
                             }
-                            
                             <div class="inline-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar" style="font-size:1.4em;"></i>
-                                    <span>${movie.release_date}</span>
-                                </div>         
-                                ${formatRatingHtml}                   
+                                ${formatRatingHtml}
                                 ${formatRuntimeHtml}
                                 ${formatFskHtml}
                             </div>
@@ -271,9 +277,14 @@ export function updateMovieListings(movies) {
                 </div>
             </div>
         `;
-
-        movieContainer.appendChild(movieCard);
+    
+        // Append the .movie-card to the clickable link
+        movieLink.appendChild(movieCard);
+    
+        // Finally, append the link to the container
+        movieContainer.appendChild(movieLink);
     });
+    
 }
 
 /**

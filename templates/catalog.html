@@ -8,46 +8,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Fonts and Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <!-- Your Main CSS (updated with overlay logic) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
+    <!-- Icons and Additional Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-
 </head>
 <body>
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="https://verein.format-filmkunstverleih.de" class="sub-logo"><span>Katalog</span></a>
-
-
+                <a href="https://verein.format-filmkunstverleih.de" class="sub-logo">
+                    <span>Katalog</span>
+                </a>
             </div>
             
-<!-- Centered theme title in the navbar -->
-<div class="nav-center-title">
-    <a href="https://verein.format-filmkunstverleih.de" class="logo">
-        <img 
-            src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
-            alt="Looking Down" 
-            class="logo-image" 
-            id="theme-image" 
-            data-dark-src="{{ url_for('static', filename='images/looking_down_dark.png') }}"
-            data-light-src="{{ url_for('static', filename='images/looking_down_light.png') }}">
-    </a>
-    <span class="theme-title">{{ selected_theme }}</span>
-</div>
+            <!-- Centered theme title in the navbar -->
+            <div class="nav-center-title">
+                <a href="https://verein.format-filmkunstverleih.de" class="logo">
+                    <img 
+                        src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
+                        alt="Looking Down" 
+                        class="logo-image" 
+                        id="theme-image" 
+                        data-dark-src="{{ url_for('static', filename='images/looking_down_dark.png') }}"
+                        data-light-src="{{ url_for('static', filename='images/looking_down_light.png') }}">
+                </a>
+                <span class="theme-title">{{ selected_theme }}</span>
+            </div>
 
-            
-
-            
-
-            
             <ul class="nav-links">
-                <!-- <li><a href="https://verein.format-filmkunstverleih.de/">verleih</a></li> -->
-                <!-- Additional menu links can be placed here -->
+                <!-- Additional menu links can be placed here, if desired -->
             </ul>
-            <!-- Add this inside the <nav class="navbar"> ... </nav> -->
+
+            <!-- Dark Mode Toggle -->
             <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Dark Mode" tabindex="0">
                 <i class="fas fa-moon"></i>
             </button>
@@ -66,27 +62,33 @@
                 <div class="swiper-wrapper">
                     {% for featured_movie in featured_movies %}
                     <div class="swiper-slide">
-                        <div class="featured-movie-card">
-                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.avif') }}" 
-                                 alt="{{ featured_movie['main_title'] }}" 
-                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
-                                 loading="lazy">
-                            <div class="featured-movie-overlay">
-                                <h3>{{ featured_movie['main_title'] }}</h3>
-                                <a href="{{ url_for('get_movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
+                        <!-- Entire card clickable -->
+                        <a href="{{ url_for('get_movie_details', movie_id=featured_movie['movie_id']) }}" class="featured-movie-card-link">
+                            <div class="featured-movie-card">
+                                <img 
+                                    src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.avif') }}" 
+                                    alt="{{ featured_movie['main_title'] }}"
+                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';"
+                                    loading="lazy"
+                                >
+                                <div class="featured-movie-overlay">
+                                    <h3>{{ featured_movie['main_title'] }}</h3>
+                                    <span class="btn btn-secondary">Mehr erfahren</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     {% endfor %}
                 </div>
-                <!-- Add Pagination -->
+                <!-- Swiper Pagination -->
                 <div class="swiper-pagination"></div>
-                <!-- Add Navigation -->
+                <!-- Swiper Navigation -->
                 <div class="swiper-button-prev"></div>
                 <div class="swiper-button-next"></div>
             </div>
         </section>
 
+        <!-- Progress Indicator -->
         <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
             <div class="spinner" aria-hidden="true"></div>
             <p>einen Moment bitte, lade Filme...</p>
@@ -102,8 +104,6 @@
                     <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
                 </div>
 
-             
-
                 <form id="filter-form">
                     <!-- Main Filters Container Wrapper -->
                     <div class="main-filters-container-wrapper">
@@ -113,6 +113,7 @@
                             <button class="filter-nav-arrow left hidden" aria-label="Scroll Left">
                                 <i class="fas fa-chevron-left" aria-hidden="true"></i>
                             </button>
+
                             <!-- Year Filter -->
                             <div class="custom-dropdown" data-dropdown="year-dropdown">
                                 <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
@@ -121,12 +122,9 @@
                                             <i class="fas fa-hourglass-half" aria-hidden="true"></i>
                                             <span>Zeit</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -138,12 +136,9 @@
                                             <i class="fas fa-theater-masks" aria-hidden="true"></i>
                                             <span>Genre</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -155,12 +150,9 @@
                                             <i class="fas fa-globe" aria-hidden="true"></i>
                                             <span>Land</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -172,12 +164,9 @@
                                             <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                                             <span>Regal</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -189,12 +178,9 @@
                                             <i class="fas fa-compact-disc" aria-hidden="true"></i>
                                             <span>Medium</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -206,25 +192,29 @@
                                             <i class="fas fa-sort" aria-hidden="true"></i>
                                             <span>Ordnung</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
+
                             <!-- Clear All Filters Button -->
-                            <button type="button" id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
+                            <button 
+                                type="button" 
+                                id="clear-all-filters-button" 
+                                class="filter-action-button" 
+                                aria-label="Alle Filter zurücksetzen" 
+                                tabindex="0"
+                            >
                                 <i class="fas fa-undo" aria-hidden="true"></i>
                                 <span class="sr-only">Alle Filter zurücksetzen</span>
-                            </button>  
+                            </button>
 
+                            <!-- Right Navigation Arrow -->
+                            <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
                         </div>
-                        <!-- Right Navigation Arrow -->
-                        <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
-                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                        </button>
                     </div>
                 </form>
             </div>
@@ -232,45 +222,33 @@
             <!-- Dropdown Lists Container -->
             <div class="dropdown-lists-container">
                 <!-- Year Dropdown List -->
-                <div class="dropdown-list" id="year-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="year-dropdown-list"></div>
                 <!-- Genre Dropdown List -->
-                <div class="dropdown-list" id="genre-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="genre-dropdown-list"></div>
                 <!-- Country Dropdown List -->
-                <div class="dropdown-list" id="country-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="country-dropdown-list"></div>
                 <!-- Standort Dropdown List -->
-                <div class="dropdown-list" id="standort-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="standort-dropdown-list"></div>
                 <!-- Medium Dropdown List -->
-                <div class="dropdown-list" id="medium-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="medium-dropdown-list"></div>
                 <!-- Sort Dropdown List -->
-                <div class="dropdown-list" id="sort-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="sort-dropdown-list"></div>
             </div>
+
             <div class="view-toggle-headline">
                 <h2 class="view-toggle-title"></h2>
-            </div>              
+            </div>
         </section>
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
-            
             <nav>
                 <ul>
-                    <!-- Pagination will be populated dynamically here -->
+                    <!-- Pagination dynamically populated -->
                 </ul>
             </nav>
 
-            <!-- Toggle Buttons Right of Headline -->
+            <!-- Toggle Buttons -->
             <div class="view-toggle-container">
                 <button id="grid-view-btn" class="view-toggle-btn active" aria-label="Grid View" aria-pressed="true">
                     <i class="fas fa-th"></i>
@@ -278,27 +256,25 @@
                 <button id="list-view-btn" class="view-toggle-btn" aria-label="List View" aria-pressed="false">
                     <i class="fas fa-list"></i>
                 </button>
-            </div>                      
+            </div>
         </section>
         
-        <!-- Toggle View Buttons Container with Headline -->
+        <!-- Toggle View Section -->
         <section class="view-toggle-section">
-            <!-- Headline Left of Toggle Buttons -->
-
-
-
+            <!-- Optional: Additional headline or controls -->
         </section>
 
-        <!-- Movie Listings Section -->
+        <!-- Movie Listings Section (populated by JS) -->
         <section class="movie-listings">
-            <!-- Movie cards will be dynamically populated here -->
+            <!-- The JS code will dynamically create each movie card here.
+                 Remember to place .inline-meta inside .image-container for grid overlay. -->
         </section>
 
         <!-- Bottom Pagination Section -->
         <section class="pagination bottom-pagination">
             <nav>
                 <ul>
-                    <!-- Pagination will be populated dynamically here -->
+                    <!-- Pagination dynamically populated -->
                 </ul>
             </nav>
         </section>
@@ -312,11 +288,8 @@
 
     <!-- Swiper.js JS for Carousel -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <!-- Scripts -->
+    <!-- Your Scripts -->
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    
-
-
 </body>
 </html>

@@ -133,7 +133,7 @@
 }
 
 /* Title, Overview, Metadata, etc. */
-.title-section h2 {
+.title-section.list-view {
     margin: 0;
     font-family: var(--font-heading);
     text-transform: uppercase;
@@ -142,7 +142,27 @@
     overflow: hidden;
     white-space: nowrap;
 }
+.title-section:not(.list-view) .movie-card {
 
+    font-size: var(--font-size-base);
+    white-space: normal;
+}
+/* 3) Overlay the main title at the top of the poster in grid view */
+.movie-listings:not(.list-view) .movie-card .title-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: var(--spacing-small);
+    text-align: center;
+    z-index: 5;
+
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--secondary-text-color);
+    text-transform: uppercase;
+    font-size: var(--meta-data-font-size);
+}
 .overview-section {
 
     padding-top: 2;
@@ -155,7 +175,7 @@
     line-height: 1.4;                     /* Improves readability with a 1.4 line height */
     position: relative;                   /* Allows for positioning relative to parent */
     
-    font-size: var(--meta-data-font-size);
+    font-size: var(--meta-data-font-size-medium);
     font-style: italic;
 }
 
@@ -187,7 +207,7 @@
     gap: var(--spacing-small);
     font-size: var(--meta-data-font-size);
     /* background-color: rgba(0, 0, 0, 0.6); */
-    padding: var(--spacing-medium);
+    padding: 3px;
     border-radius: var(--border-radius-small);
 }
 
@@ -228,7 +248,7 @@
 }
 
 /* Grid View: place .inline-meta inside poster, absolute */
-.movie-listings:not(.list-view) .movie-card .inline-meta {
+/* .movie-listings:not(.list-view) .movie-card .inline-meta {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -240,7 +260,7 @@
     border-radius: var(--border-radius-small);
     z-index: 3;
     width: 25%;
-}
+} */
 .movie-listings:not(.list-view) .movie-card .image-container {
     position: relative;
 }
@@ -250,8 +270,8 @@
     position: static;
     background: none;
     border: none;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    /* padding-top: 5px;
+    padding-bottom: 5px; */
     margin: 0;
     width: 100%;
     border-top: 1px solid var(--button-border-color);
