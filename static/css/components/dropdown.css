@@ -26,21 +26,22 @@
     max-width: 800px;
     position: relative;
     font-family: var(--font-body);
-    background-color: var(--button-background);
+
     border-radius: 3px;
     /* border: 1px solid var(--button-background); */
 }
 
 /* Dropdown Header */
 .dropdown-header {
-    display: flex;
+    
     justify-content: flex-start; /* Aligns the clear icon and badge to the left */
     flex-direction: column; /* For two-row layout */
     background-color: var(--background-dark); /* Adjust background color */
     color: var(--secondary-color); /* Use lighter text for better contrast */
+    border-radius: 15px;
     cursor: pointer;
-    font-size: clamp(0.9em, 1.1vw, 1.3em); /* Responsive font size */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: clamp(1em, 0.9vw, 1.1em); /* Responsive font size */
+    
     font-family: var(--font-body);
     position: relative;
     height: var(--big-button-height); /* Let height adjust based on content */
@@ -95,7 +96,7 @@
 /* Dropdown Arrow */
 .dropdown-header::after {
     visibility: visible;
-    content: '\f078'; /* FontAwesome Unicode for down arrow (chevron) */
+
     font-family: 'Font Awesome 5 Free'; /* Ensure FontAwesome is used */
     font-weight: 900; /* Necessary to display the correct solid version of FontAwesome */
     font-size: clamp(1.1em, 1vw, 1.3em);

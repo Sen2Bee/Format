@@ -669,7 +669,7 @@ export function updateHeadline(
     }
     // Years
     if (selectedYears.length > 0) {
-        appendTextWithIcon('fa fas fa-hourglass-half', selectedYears.join(', '));
+        appendTextWithIcon('fas fa-hourglass-half', selectedYears.join(', '));
     }
     // Countries
     if (selectedCountries.length > 0) {

@@ -142,11 +142,7 @@
     overflow: hidden;
     white-space: nowrap;
 }
-.title-section:not(.list-view) .movie-card {
 
-    font-size: var(--font-size-base);
-    white-space: normal;
-}
 /* 3) Overlay the main title at the top of the poster in grid view */
 .movie-listings:not(.list-view) .movie-card .title-section {
     position: absolute;
@@ -162,6 +158,9 @@
     color: var(--secondary-text-color);
     text-transform: uppercase;
     font-size: var(--meta-data-font-size);
+    font-size: var(--font-size-sm);
+    white-space: normal;
+    opacity: 1;    
 }
 .overview-section {
 

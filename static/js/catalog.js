@@ -86,6 +86,7 @@ export function updateMovieListings(movies) {
 
     // Check if we are in list view or grid view
     const isListView = movieContainer.classList.contains('list-view');
+    
 
     // Clear previous content
     movieContainer.innerHTML = "";
@@ -126,6 +127,13 @@ export function updateMovieListings(movies) {
         const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
         const fskIconSize     = getIconSizeByType(movie.fsk, "fsk");
         const ratingIconSize  = getIconSizeByType(movie.rating, "rating");
+
+        const formatYearHtml = `
+            <div class="meta-item">
+                <i class="fas fa-hourglass-halfF" style="font-size:12;"></i>
+                <span>${movie.release_date}</span>
+            </div>
+        `;        
     
         const formatRuntimeHtml = `
             <div class="meta-item">
@@ -217,12 +225,13 @@ export function updateMovieListings(movies) {
                 </div>
     
                 <div class="info-wrapper">
-                    <div class="title-section">
-                        <h2>${main_title} (${movie.release_date})</h2>
-                    </div>
+
                     ${
                         isListView
                         ? `
+                    <div class="title-section">
+                        <h2>${main_title}</h2>
+                    </div>                        
                         <div class="overview-section">
                             <p>${content} 
                                 <!-- 'mehr' link still points to details if you want it -->
@@ -268,6 +277,7 @@ export function updateMovieListings(movies) {
                                 : ''
                             }
                             <div class="inline-meta">
+                                ${formatYearHtml}
                                 ${formatRatingHtml}
                                 ${formatRuntimeHtml}
                                 ${formatFskHtml}
