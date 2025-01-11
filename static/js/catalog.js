@@ -10,7 +10,7 @@ export let currentMovies = [];
  */
 function getIconSizeByType(typeval, type = "rating") {
     const minSize = 1;   // 1em for the smallest value
-    const maxSize = 2.5; // 2.5em for the largest value
+    const maxSize = 2.1; // 2.5em for the largest value
 
     let minVal, maxVal;
 
@@ -129,11 +129,12 @@ export function updateMovieListings(movies) {
         const ratingIconSize  = getIconSizeByType(movie.rating, "rating");
 
         const formatYearHtml = `
-            <div class="meta-item">
-                <i class="fas fa-hourglass-halfF" style="font-size:12;"></i>
-                <span>${movie.release_date}</span>
-            </div>
-        `;        
+        <div class="meta-item">
+            <i class="fas fa-hourglass-half" style="font-size:15px;"></i>
+            <span>${movie.release_date}</span>
+        </div>
+    `;
+         
     
         const formatRuntimeHtml = `
             <div class="meta-item">
@@ -277,11 +278,12 @@ export function updateMovieListings(movies) {
                                 : ''
                             }
                             <div class="inline-meta">
-                                ${formatYearHtml}
                                 ${formatRatingHtml}
                                 ${formatRuntimeHtml}
                                 ${formatFskHtml}
+                                ${formatYearHtml}
                             </div>
+
                         </div>
                     </div>
                 </div>
