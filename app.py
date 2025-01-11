@@ -30,6 +30,7 @@ import os
 MOVIES_BASE_DIRS = [
     r"E:\Movies\Katalog",
     r"F:\Katalog",
+    r"e:\Format_FV\_Movies\_Movies_Fertig",
 ]
 
 
@@ -69,6 +70,25 @@ def connect_to_db():
 # -------------------------------------------------------------------------
 # HELPER FUNCTIONS FOR MULTIPLE DIRECTORIES
 # -------------------------------------------------------------------------
+
+def find_movie_file_in_folder(folder_name: str, valid_extensions=('.mp4', '.mkv', '.avi', '.mov', '.wmv', '.flv')) -> str:
+    """
+    Given a folder_name and the list MOVIES_BASE_DIRS, iterate over these base directories,
+    append the folder_name, and search for a file that ends with one of the valid extensions.
+    Return the absolute file path of the first match, or None if not found.
+    """
+    for base_dir in MOVIES_BASE_DIRS:
+        candidate_folder = os.path.join(base_dir, folder_name)
+        # Log the candidate folder for debugging
+        print(f"Checking candidate folder: {candidate_folder}")
+        if os.path.isdir(candidate_folder):
+            for filename in os.listdir(candidate_folder):
+                if filename.lower().endswith(valid_extensions):
+                    candidate_path = os.path.join(candidate_folder, filename)
+                    if os.path.isfile(candidate_path):
+                        return candidate_path
+    return None
+
 def find_file_in_base_dirs(rel_path: str) -> str:
     """
     Given a relative path (e.g. "folder_name/poster/poster_1.jpg"),
@@ -121,20 +141,20 @@ def get_movie_details(movie_id):
         
         # Fetch movie details
         movie_query = """
-        SELECT m.*, 
-        GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
-        GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
-        GROUP_CONCAT(DISTINCT p.company_name SEPARATOR ', ') AS production_companies
+        SELECT 
+            m.*,
+            GROUP_CONCAT(DISTINCT g.genre SEPARATOR ', ') AS genres,
+            GROUP_CONCAT(DISTINCT c.country SEPARATOR ', ') AS countries,
+            GROUP_CONCAT(DISTINCT p.company_name SEPARATOR ', ') AS production_companies
         FROM movies m
         LEFT JOIN genres g ON m.movie_id = g.movie_id
         LEFT JOIN countries c ON m.movie_id = c.movie_id
         LEFT JOIN production_companies p ON m.movie_id = p.movie_id
         WHERE m.movie_id = %s
-        GROUP BY m.movie_id
-        """
+        GROUP BY m.movie_id;"""
+
         cursor.execute(movie_query, (movie_id,))
         movie = cursor.fetchone()
-        print(movie)
         
         if movie:
             # Split genres and countries into lists
@@ -222,13 +242,21 @@ def get_movie_details(movie_id):
             movie['posters'] = get_poster_images(movie['folder_name'])
             movie['backdrops'] = get_backdrop_images(movie['folder_name'])
             # movie_folder_path = os.path.join(MOVIES_BASE_DIR, movie['folder_name'], movie['moviefilename'])
-            movie_file_path = validate_movie_file(movie)
-            
-            movie['movie_file_url'] = url_for('serve_movie_file', movie_id=movie_id) if movie_file_path else None
-
-
             cursor.close()
             connection.close()
+            movie_file_path = validate_movie_file(movie)  # Returns the full file path or None
+            movie['movie_file_path'] = movie_file_path
+            if movie_file_path:
+                # Include the validated file path as a query parameter
+                movie['movie_file_url'] = url_for('serve_movie_file', file_path=movie_file_path)
+                
+            else:
+                movie['movie_file_url'] = None
+
+            print(f"movie_file_url: {movie['movie_file_url']}")
+            print(movie)
+
+
             return render_template('movie_details.html', movie=movie)
         else:
             cursor.close()
@@ -549,7 +577,6 @@ def catalog():
         logging.error(f"An error occurred while fetching catalog: {e}")
         return jsonify({'error': str(e)}), 500
         
-
 @cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/filter_movies', methods=['GET'])
 
@@ -562,7 +589,9 @@ def filter_movies():
         selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
         selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
         search_query = request.args.get('search', '').strip()
-        standorte = request.args.get('standorte', '').split(',') if request.args.get('standorte') else []
+
+        standorte = request.args.get('standorte', '').split(',') if request.args.get('standorte') else (['local', 'extern'] if IS_PRIVATE else [])
+
         media = request.args.get('media', '').split(',') if request.args.get('media') else []
         sort_by = request.args.get('sort_by', 'Zufall')  # Default sort by 'Zufall' (random)
         page = int(request.args.get('page', 1))
@@ -1046,24 +1075,24 @@ def autocomplete():
 
     return jsonify(suggestions)
 
-def get_movie_file(MOVIE_FOLDER):
-    folder = os.path.join(MOVIE_FOLDER, movie_id)
-    if not os.path.exists(MOVIE_FOLDER):
-        return None
-    for file in os.listdir(folder):
-        if file.lower().endswith(('.mp4', '.mkv', '.avi', '.mov', '.webm', '.ogg')):
-            return os.path.join(folder, file)
-    return None
+# def get_movie_file(MOVIE_FOLDER):
+#     folder = os.path.join(MOVIE_FOLDER, movie_id)
+#     if not os.path.exists(MOVIE_FOLDER):
+#         return None
+#     for file in os.listdir(folder):
+#         if file.lower().endswith(('.mp4', '.mkv', '.avi', '.mov', '.webm', '.ogg')):
+#             return os.path.join(folder, file)
+#     return None
 
-def get_subtitle_files(movie_id):
-    folder = os.path.join(MOVIE_FOLDER, movie_id)
-    subtitle_files = []
-    if not os.path.exists(folder):
-        return subtitle_files
-    for file in os.listdir(folder):
-        if file.lower().endswith(('.vtt', '.srt', '.ass')):
-            subtitle_files.append(file)
-    return subtitle_files
+# def get_subtitle_files(movie_id):
+#     folder = os.path.join(MOVIE_FOLDER, movie_id)
+#     subtitle_files = []
+#     if not os.path.exists(folder):
+#         return subtitle_files
+#     for file in os.listdir(folder):
+#         if file.lower().endswith(('.vtt', '.srt', '.ass')):
+#             subtitle_files.append(file)
+#     return subtitle_files
 
 def convert_subtitle_to_vtt(subtitle_path):
     ext = os.path.splitext(subtitle_path)[1].lower()
@@ -1082,35 +1111,28 @@ def convert_subtitle_to_vtt(subtitle_path):
         print(f"Error converting subtitle: {e}")
         return None
 
-# A route to serve the actual movie file if it exists
-@app.route('/movie_file/<int:movie_id>')
-def serve_movie_file(movie_id):
+@app.route('/serve_movie_file')
+def serve_movie_file():
     """
-    Return the movie file as an attachment or a streamed response if available.
+    Serve the movie file directly based on the pre-validated file path.
+    The `file_path` parameter must be passed as a query string and validated.
     """
-    # We need to look up the folder name + moviefilename in DB or fetch from context
-    connection = connect_to_db()
-    if not connection:
-        abort(500, "DB connection failed.")
-    try:
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute("SELECT folder_name, moviefilename FROM movies WHERE movie_id = %s", (movie_id,))
-        row = cursor.fetchone()
-        cursor.close()
-        connection.close()
-        if not row:
-            abort(404, "Movie not found in DB.")
+    # Extract the file path from the query string
+    movie_file_path = request.args.get('file_path')
+    if not movie_file_path:
+        abort(400, "Missing 'file_path' parameter.")
+    
+    # Validate the file path (ensure it's within allowed directories)
+    movie_file_path = unquote(movie_file_path)
+    movie_file_path = os.path.abspath(movie_file_path)  # Get absolute path
+    allowed = any(movie_file_path.startswith(base_dir) for base_dir in MOVIES_BASE_DIRS)
+    if not allowed or not os.path.isfile(movie_file_path):
+        abort(404, "Invalid or non-existent movie file.")
 
-        folder_name = row.get('folder_name', '')
-        moviefilename = row.get('moviefilename', '')
-        rel_path = os.path.join(folder_name, moviefilename)
-        abs_path = find_file_in_base_dirs(rel_path)
-        if abs_path and os.path.isfile(abs_path):
-            return send_file(abs_path, mimetype='video/mp4', conditional=True)
-        else:
-            abort(404, "Movie file not found on disk.")
+    try:
+        return send_file(movie_file_path, mimetype='video/mp4', conditional=True)
     except Exception as e:
-        logging.error(f"Error in serve_movie_file for ID {movie_id}: {e}")
+        logging.error(f"Error serving file {movie_file_path}: {e}")
         abort(500, "Internal server error.")
 
 
@@ -1130,56 +1152,46 @@ def serve_subtitle(folder_name, subtitle_file):
     # Otherwise, just serve the file
     return send_file(abs_path, mimetype='text/vtt')
 
-from urllib.parse import unquote
-from flask import send_file
-@app.route("/play_movie/<path:folder_name>/<path:filename>")
-def play_movie(folder_name, filename):
-    folder_name = unquote(folder_name)
-    filename = unquote(filename)
-    folder_path = find_folder_in_base_dirs(folder_name)
-    if not folder_path:
-        abort(404, description="Folder not found")
-    
-    abs_path = os.path.join(folder_path, filename)
-    if not os.path.isfile(abs_path):
-        abort(404, description="File not found")
+@app.route('/movie_player/<movie_file_path>')
+def movie_player(movie_file_path):
+    print(f"Received file path: {movie_file_path}")
 
-    # Provide the correct MIME type, if known.
-    print("play_movie", abs_path)
-    return send_file(abs_path, mimetype="video/mp4")
-
-# app.py
-
-@app.route('/movie_player/<folder_name>/<filename>')
-def movie_player(folder_name, filename):
     """
     Basic route to show a video player in a template,
     optionally with subtitles in the same folder.
     """
-    folder_path = find_folder_in_base_dirs(folder_name)
-    print("movie_player", folder_path)
-    if not folder_path:
-        abort(404, description="Movie folder not found in any base directory.")
 
-    movie_path = os.path.join(folder_path, filename)
-    if not os.path.isfile(movie_path):
-        abort(404, description="Movie file not found")
+    if not movie_file_path:
+        abort(404, description="Movie path not found in any base directory.")
 
     # Detect subtitle files in the same folder
+    # Extract the directory path
+    directory_path = os.path.dirname(movie_file_path)
     subtitles = []
-    for file in os.listdir(folder_path):
+    for file in os.listdir(directory_path):
         if file.lower().endswith(('.srt', '.vtt')):
             subtitles.append(file)
     logging.info(f"Found subtitles: {subtitles}")
-    # print(f"Folder: {folder_name}")
+    print(f"movie_file_path: {movie_file_path}")
     # print(f"Filename: {filename}")
 
     return render_template(
         'movie_player.html',
-        folder_name=folder_name,
-        filename=filename,
+        movie_file_path=movie_file_path,
         subtitles=subtitles
     )
+
+from urllib.parse import unquote
+@app.route("/play_movie/<path:movie_file_path>")
+def play_movie(movie_file_path):
+    movie_file_path = unquote(movie_file_path)
+    if not os.path.isfile(movie_file_path):
+        abort(404, description="File not found")
+
+    # Provide the correct MIME type, if known.
+    print("play_movie", movie_file_path, "!"*20)
+    return send_file(movie_file_path, mimetype="video/mp4")
+
 
 from flask import Response
 
@@ -1197,13 +1209,14 @@ def validate_movie_file(movie):
     `movie['folder_name']` and `movie['moviefilename']` are used to locate the file.
     """
     folder_name = movie.get('folder_name', '')
-    moviefilename = movie.get('moviefilename', '')
-    if not folder_name or not moviefilename:
+
+    if not folder_name:
         return None
 
-    rel_path = os.path.join(folder_name, moviefilename)
-    found_path = find_file_in_base_dirs(rel_path)
-    return found_path if found_path and os.path.isfile(found_path) else None
+    found_path = find_movie_file_in_folder(folder_name)
+
+    
+    return found_path
 
 if __name__ == '__main__':
     app.run(debug=True)

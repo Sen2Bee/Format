@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
     <style>
-        /* Your existing styles */
         body {
             margin: 0;
             background-color: #000;
@@ -88,11 +87,18 @@
 </head>
 <body>
     <div class="video-container">
+        <!-- 
+            1) The <video> references our /play_movie route, 
+               which actually streams the MP4 file from disk.
+        -->
         <video id="moviePlayer" controls autoplay tabindex="0">
-            <source src="{{ url_for('play_movie', folder_name=folder_name, filename=filename) }}" type="video/mp4">
+            <source src="{{ url_for('play_movie', movie_file_path=movie_file_path) }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
 
+        <!-- 
+            2) Subtitle Selection (only shown if subtitles are present).
+        -->
         {% if subtitles|length > 0 %}
         <button id="subtitleButton" aria-label="Toggle Subtitles">
             <i class="fas fa-closed-captioning"></i>
@@ -101,7 +107,13 @@
             <ul>
                 {% for subtitle in subtitles %}
                 <li>
-                    <button onclick="loadSubtitle('{{ subtitle }}')">{{ subtitle }}</button>
+                    <!-- 
+                        Instead of embedding {{ folder_name }} in a string, we pass it 
+                        via function argument loadSubtitle(folder_name, subtitleFile).
+                    -->
+                    <button onclick="loadSubtitle('{{ folder_name }}','{{ subtitle }}')">
+                        {{ subtitle }}
+                    </button>
                 </li>
                 {% endfor %}
                 <li>
@@ -125,21 +137,31 @@
             });
         }
 
-        function loadSubtitle(subtitleFile) {
+        // 
+        // loadSubtitle(folder, subtitleFile)
+        //   - dynamically adds a <track> for the chosen subtitle
+        //
+        function loadSubtitle(folder, subtitleFile) {
+            // Remove any existing <track>
             const tracks = videoPlayer.getElementsByTagName('track');
             for (let i = tracks.length - 1; i >= 0; i--) {
                 videoPlayer.removeChild(tracks[i]);
             }
+            // Create new track element
             const track = document.createElement('track');
             track.kind = 'subtitles';
             track.label = subtitleFile;
             track.srclang = 'en';
-            track.src = `/subtitle/${encodeURIComponent('{{ folder_name }}')}/${encodeURIComponent(subtitleFile)}`;
+            // Use /subtitle/folderName/subtitleFile
+            track.src = `/subtitle/${encodeURIComponent(folder)}/${encodeURIComponent(subtitleFile)}`;
             track.default = true;
             videoPlayer.appendChild(track);
+
+            // Hide menu after choosing
             subtitleMenu.style.display = 'none';
         }
 
+        // removeSubtitles() - removes any <track> from the <video>
         function removeSubtitles() {
             const tracks = videoPlayer.getElementsByTagName('track');
             for (let i = tracks.length - 1; i >= 0; i--) {
@@ -150,13 +172,13 @@
 
         // Hide the subtitle menu when clicking outside
         document.addEventListener('click', function(event) {
-            if (subtitleMenu.style.display === 'block' && !subtitleMenu.contains(event.target) && event.target !== subtitleButton) {
+            if (subtitleMenu.style.display === 'block' && !subtitleMenu.contains(event.target) 
+                && event.target !== subtitleButton) {
                 subtitleMenu.style.display = 'none';
             }
         });
 
-        // Keyboard Controls
-        // Key codes mapping
+        // Keyboard controls
         const keyActions = {
             32: 'togglePlay',        // Spacebar
             37: 'seekBackward',      // Left arrow
@@ -167,12 +189,11 @@
             70: 'toggleFullscreen',  // 'F' key
         };
 
-        // Event listener for keydown events
         document.addEventListener('keydown', function(event) {
+            // Avoid interfering with input fields
             if (event.target.tagName.toLowerCase() === 'input' || event.target.isContentEditable) {
                 return;
             }
-
             const action = keyActions[event.keyCode];
             if (action) {
                 event.preventDefault();
@@ -182,7 +203,13 @@
 
         function handleAction(action) {
             switch(action) {
-
+                case 'togglePlay':
+                    if (videoPlayer.paused) {
+                        videoPlayer.play();
+                    } else {
+                        videoPlayer.pause();
+                    }
+                    break;
                 case 'seekBackward':
                     videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
                     break;

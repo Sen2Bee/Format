@@ -85,31 +85,60 @@ def test_query():
                 HAVING m.rating > 6.7 AND m.poster_images > 0
                 ORDER BY RAND()
                 LIMIT 20;"""
-    query =         """SELECT
-                    m.movie_id,
-                    COALESCE(m.title, m.title) AS main_title,
-                    m.original_title,
-                    m.release_date,
-                    m.rating,
-                    m.folder_name,
-                    m.overview,
-                    m.format_inhalt,
-                    m.poster_images
-                FROM
-                    movies m
+    query =         """        SELECT 
+            m.movie_id,
+            m.title,
+            m.imdb_id,
+            m.original_title,
+            m.release_date,
+            m.runtime,
+            m.aspect_ratio,
+            m.color_info,
+            m.sound_mix,
+            m.overview,
+            m.poster_images,
+            m.person_images,
+            m.backdrop_images,
+            m.wiki_critics,
+            m.wiki_awards,
+            m.wiki_background,
+            m.wiki_url,
+            m.format_titel,
+            m.format_orig_titel,
+            m.standort,
+            m.format_vhs,
+            m.format_dvd,
+            m.format_blu,
+            m.format_blu3,
+            m.format_minmedium,
+            m.format_ausleihen,
+            m.format_alpha,
+            m.format_aufindex,
+            m.format_inhalt,
+            m.folder_name,
+            m.full_folder_path,
+            m.moviefilename,
+            m.movie_exist,
+            m.rating,
+            m.imdb_votes,
+            m.tmdb_id,
+            m.tmdb_rating,
+            m.tmdb_votes,
+            m.original_air_date,
+            m.fsk
 
-                GROUP BY m.movie_id
-                HAVING m.poster_images > 0
-                ORDER BY RAND()
-                LIMIT 20;"""
+        FROM movies m
+
+        Limit 10;
+        """
 
     # Test year (e.g., 1916)
-    year_param = 1916
-    query = "select * from movie_cast limit 10;"
+    movieid = 49521
+    query = "SELECT folder_name, movie_exist, moviefilename FROM movies WHERE movie_id = 49521;"
     try:
 
 
-        # cursor.execute(query, (year_param,))
+        # cursor.execute(query, (movieid,))
         # query = "SELECT release_date FROM movies where release_date = 1916 LIMIT 10;"
         cursor.execute(query)
 

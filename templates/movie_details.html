@@ -85,7 +85,7 @@
                     
                     {% if movie.movie_file_url %}
                     <!-- Play Movie Button -->
-                    <a href="{{ url_for('movie_player', folder_name=movie.folder_name, filename=movie.moviefilename) }}" class="play-trailer-overlay" target="_blank" aria-label="Play Movie {{ movie.title }}">
+                    <a href="{{ url_for('movie_player', movie_file_path=movie.movie_file_path) }}" class="play-trailer-overlay" target="_blank" aria-label="Play Movie {{ movie.title }}">
                         <i class="fas fa-play"></i>
                     </a>
                     {% elif movie.video_link %}
