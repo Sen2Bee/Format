@@ -68,14 +68,14 @@ Structure of table `movies`:
 ('format_inhalt', 'text', 'YES', '', None, '')
 ('folder_name', 'varchar(255)', 'YES', '', None, '')
 ('full_folder_path', 'varchar(500)', 'YES', '', None, '')
+('moviefilename', 'varchar(255)', 'YES', '', None, '')
+('movie_exist', 'tinyint(1)', 'YES', '', None, '')
 ('rating', 'decimal(3,1)', 'YES', '', None, '')
 ('imdb_votes', 'varchar(100)', 'YES', '', None, '')
 ('tmdb_id', 'varchar(20)', 'YES', '', None, '')
 ('tmdb_rating', 'varchar(20)', 'YES', '', None, '')
 ('tmdb_votes', 'varchar(100)', 'YES', '', None, '')
 ('original_air_date', 'varchar(255)', 'YES', '', None, '')
-('movie_exist', 'tinyint(1)', 'YES', '', None, '')
-('moviefilename', 'varchar(255)', 'YES', '', None, '')
 ('fsk', 'int', 'YES', '', None, '')
 
 Structure of table `production_companies`:

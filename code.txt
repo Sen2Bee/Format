@@ -1,4 +1,4 @@
-=== Code Summary Generated at 2024-12-30 09:40:40 ===
+=== Code Summary Generated at 2025-01-12 19:03:52 ===
 
 === Project Folder Structure ===
 
@@ -140,13 +140,14 @@ html {
     box-sizing: border-box;
 }
 html, body {
-    height: 100%;
+    /* Remove strict height: 100%; */
+    min-height: 100%;
+    height: auto;
     margin: 0;
     padding: 0;
-}
-body {
-    overflow-x: hidden;
-}
+    overflow-x: hidden; /* Keep horizontal overflow hidden if you want */
+  }
+  
 
 /* Normalize link styles but allow color */
 a {
@@ -166,12 +167,7 @@ ul, ol {
     margin-left: 0;
 }
 
-/* Prevent overflow issues */
-html, body {
-    overflow-x: hidden;
-    font-family: 'Open Sans', sans-serif;
-    background-color: var(--background-dark);
-}
+
 
 /* Screen-reader only text */
 .sr-only {
@@ -372,6 +368,7 @@ button {
     --Gold: #846c1e;
     /* Color Variables */
     --accent-color: var(--Gold); /* Muted terracotta */
+    --overview-color: #f7ba7d; /* Soft off-white */
     --primary-color: #FAF8F6; /* Soft off-white */
     --secondary-color: #3D3D3D; /* Dark charcoal gray */
     --background-color: #FFFDFB; /* Very light beige */
@@ -391,7 +388,7 @@ button {
     --highlight-color: #846c1e; /* Same as accent */
     --movie-card-background: #FFFFFF; /* Movie card background */
     --movie-card-hover-shadow: rgba(0, 0, 0, 0.1); /* Soft shadow */
-    --overlay-background: rgba(0, 0, 0, 0.5); /* Overlay background */
+    --overlay-background: rgba(56, 56, 56, 0.4); /* Overlay background */
     --tooltip-background: #3D3D3D; /* Dark tooltip background */
     --tooltip-text-color: #FFFFFF; /* Tooltip text color */
     --missing-poster-border: #846c1e; /* Accent color */
@@ -405,14 +402,16 @@ button {
     --font-size-base: 16px; /* Base font size */
     --font-size-lg: 1.25rem; /* Large font size */
     --font-size-sm: 0.875rem; /* Small font size */
-    --meta-data-font-size: clamp(0.9rem, 1.2vw, 1.2rem); /* Adaptive font size */
-    --meta-data-font-size-small: clamp(0.7rem, 0.9vw, 0.9rem); /* Adaptive font size */
+    --meta-data-font-size: clamp(0.8rem, 0.8vw, 1.4rem); /* Adaptive font size */
+    --meta-data-font-size-medium: clamp(1rem, 1.5vw, 2.2rem); /* Adaptive font size */
+    --meta-data-font-size-big: clamp(1.2rem, 2vw, 3rem); /* Adaptive font size */
+
 
     /* Layout Variables */
     --header-height: 60px; /* Header height */
     --footer-height: 200px; /* Footer height */
     --sidebar-width: 250px; /* Sidebar width */
-    --big-button-height: 50px; /* Height for larger buttons or dropdown headers */
+    --big-button-height: 40px; /* Height for larger buttons or dropdown headers */
 
     /* Transition Variables */
     --transition-duration: 0.3s; /* Standard transition duration */
@@ -444,8 +443,8 @@ button {
     --button-hover-background: #E0DED9; /* Very Light Gray */
     --button-active-background: #D3D0CB; /* Light Gray */
 
-    --poster-width: 70%;
-    --catalog-width: 1200px;
+    --poster-width: 100%;
+    --catalog-width: 2200px;
 }
 /*accent colors for light theme 
 Electric Blue (#4A90E2)
@@ -476,7 +475,7 @@ Burnt Orange (#E87D3E) */
     --highlight-color: #B58B4B; /* Same as accent */
     --movie-card-background: #1F1F1F; /* Movie card background */
     --movie-card-hover-shadow: rgba(255, 255, 255, 0.1); /* Light shadow */
-    --overlay-background: rgba(0, 0, 0, 0.7); /* Overlay */
+    --overlay-background: rgba(56, 56, 56, 0.4); /* Overlay background */
     --tooltip-background: #EAEAEA; /* Light tooltip background */
     --tooltip-text-color: #1A1A1A; /* Tooltip text color */
     --missing-poster-border: #B58B4B; /* Accent color */
@@ -671,6 +670,7 @@ Burnt Orange (#E87D3E) */
 }
 
 --- File: static\css\components\cards.css ---
+
 /* =========================
    MOVIE CARD BASE STYLES
    ========================= */
@@ -698,6 +698,7 @@ Burnt Orange (#E87D3E) */
     height: 500px; /* Adjust as needed for larger screens */
 }
 
+
 /* Hover Overlay */
 .movie-card::before {
     content: '';
@@ -705,12 +706,12 @@ Burnt Orange (#E87D3E) */
     top: 0; left: 0;
     width: 100%; height: 100%;
     background: var(--overlay-background);
-    opacity: 0;
+    opacity: 1;
     transition: opacity var(--transition-duration) ease;
     z-index: 1;
 }
 .movie-card:hover::before {
-    opacity: 1;
+    opacity: 0;
 }
 
 /* Content Wrapper */
@@ -804,7 +805,7 @@ Burnt Orange (#E87D3E) */
 }
 
 /* Title, Overview, Metadata, etc. */
-.title-section h2 {
+.title-section.list-view {
     margin: 0;
     font-family: var(--font-heading);
     text-transform: uppercase;
@@ -814,17 +815,50 @@ Burnt Orange (#E87D3E) */
     white-space: nowrap;
 }
 
-/* Overview Section */
-.overview-section {
+/* 3) Overlay the main title at the top of the poster in grid view */
+.movie-listings:not(.list-view) .movie-card .title-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: var(--spacing-small);
+    text-align: center;
+    z-index: 5;
+
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--secondary-text-color);
+    text-transform: uppercase;
     font-size: var(--meta-data-font-size);
-    padding: 15px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: var(--border-radius-small);
-    color: var(--accent-color);
-    line-height: 1.4;
-    position: relative;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    font-size: var(--font-size-sm);
+    white-space: normal;
+    opacity: 1;    
 }
+.overview-section {
+
+    padding-top: 2;
+    padding-left: 2px;                        /* Provides spacing inside the section */    
+    padding-right: 2px; 
+    padding-bottom: 2px;                        /* Provides spacing inside the section */
+    background: var(--overlay-background);
+    border-radius: var(--border-radius-small); /* Rounded corners */
+    color: var(--overview-color);           /* Sets text color to an accent color */
+    line-height: 1.4;                     /* Improves readability with a 1.4 line height */
+    position: relative;                   /* Allows for positioning relative to parent */
+    
+    font-size: var(--meta-data-font-size-medium);
+    font-style: italic;
+}
+
+.movie-listings.list-view .movie-card .overview-section::before {
+
+    background-color: var(--overlay-background);
+    border-radius: var(--border-radius-small); /* Match parent border radius */
+    color: var(--overview-color);
+
+}
+
+
 .overview-section p {
     margin: 0;
     color: var(--accent-color);
@@ -835,9 +869,7 @@ Burnt Orange (#E87D3E) */
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
-.overview-section a:hover {
-    text-decoration: underline;
-}
+
 
 /* Metadata Section */
 .metadata {
@@ -845,19 +877,20 @@ Burnt Orange (#E87D3E) */
     flex-direction: column;
     gap: var(--spacing-small);
     font-size: var(--meta-data-font-size);
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: var(--spacing-medium);
+    /* background-color: rgba(0, 0, 0, 0.6); */
+    padding: 3px;
     border-radius: var(--border-radius-small);
 }
 
 .movie-listings.list-view .metadata {
     padding: var(--spacing-small);
+    background-color: var(--overlay-background);
 }
 
 .metadata p {
     margin: 5px 0;
     color: var(--secondary-text-color);
-    opacity: 0.9;
+    opacity: 1;
 }
 
 /* Inline Meta (Runtime, FSK, Rating, Release Date) */
@@ -874,6 +907,7 @@ Burnt Orange (#E87D3E) */
     align-items: center;
     font-size: var(--meta-data-font-size);
     margin-right: var(--spacing-small);
+    opacity: 0.9;
 }
 
 .meta-item i {
@@ -885,7 +919,7 @@ Burnt Orange (#E87D3E) */
 }
 
 /* Grid View: place .inline-meta inside poster, absolute */
-.movie-listings:not(.list-view) .movie-card .inline-meta {
+/* .movie-listings:not(.list-view) .movie-card .inline-meta {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -897,7 +931,7 @@ Burnt Orange (#E87D3E) */
     border-radius: var(--border-radius-small);
     z-index: 3;
     width: 25%;
-}
+} */
 .movie-listings:not(.list-view) .movie-card .image-container {
     position: relative;
 }
@@ -907,8 +941,8 @@ Burnt Orange (#E87D3E) */
     position: static;
     background: none;
     border: none;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    /* padding-top: 5px;
+    padding-bottom: 5px; */
     margin: 0;
     width: 100%;
     border-top: 1px solid var(--button-border-color);
@@ -1164,13 +1198,13 @@ Burnt Orange (#E87D3E) */
 /* Main Filters Container */
 .main-filters-container {
     display: flex;
-    flex-direction: row;
+    /* flex-direction: row; */
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
     overflow-x: auto;
     width: 100%;
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
     font-family: var(--font-body);
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -1187,21 +1221,22 @@ Burnt Orange (#E87D3E) */
     max-width: 800px;
     position: relative;
     font-family: var(--font-body);
-    background-color: var(--button-background);
+
     border-radius: 3px;
     /* border: 1px solid var(--button-background); */
 }
 
 /* Dropdown Header */
 .dropdown-header {
-    display: flex;
+    
     justify-content: flex-start; /* Aligns the clear icon and badge to the left */
     flex-direction: column; /* For two-row layout */
     background-color: var(--background-dark); /* Adjust background color */
-    color: var(--text-color); /* Use lighter text for better contrast */
+    color: var(--secondary-color); /* Use lighter text for better contrast */
+    border-radius: 15px;
     cursor: pointer;
-    font-size: clamp(0.9em, 1.5vw, 1.3em); /* Responsive font size */
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-size: clamp(1em, 0.9vw, 1.1em); /* Responsive font size */
+    
     font-family: var(--font-body);
     position: relative;
     height: var(--big-button-height); /* Let height adjust based on content */
@@ -1215,6 +1250,15 @@ Burnt Orange (#E87D3E) */
 .dropdown-header:hover {
     border: 1px solid var(--accent-color);
 }
+
+.dropdown-header.has-selection {
+    /* Use your accent color (var(--accent-color)) 
+       or some subtle highlight to show it's selected */
+    outline: 2px solid var(--accent-color);
+    /* Or change the background color, text color, etc. */
+    background-color: rgba(255, 192, 0, 0.2); /* just an example */
+}
+
 
 .custom-dropdown.dropdown-open .dropdown-header {
     border-color: var(--accent-color);
@@ -1247,11 +1291,11 @@ Burnt Orange (#E87D3E) */
 /* Dropdown Arrow */
 .dropdown-header::after {
     visibility: visible;
-    content: '\f078'; /* FontAwesome Unicode for down arrow (chevron) */
+
     font-family: 'Font Awesome 5 Free'; /* Ensure FontAwesome is used */
     font-weight: 900; /* Necessary to display the correct solid version of FontAwesome */
     font-size: clamp(1.1em, 1vw, 1.3em);
-    color: var(--secondary-text-color);
+    color: var(--secondary-color);
     position: absolute;
     right: 12px;
     transition: transform var(--transition-duration) ease, color var(--transition-duration) ease;
@@ -1289,26 +1333,11 @@ Burnt Orange (#E87D3E) */
     opacity: 1;
 }
 
-/* Selection Badge */
-.selection-badge {
-    position: absolute;
-    bottom: 5px; /* Aligns it vertically in the middle of the header */
-    right: 35px; /* Adjust distance from the right to make more space for the clear icon */
-    color: var(--accent-color);
-    font-size: 0.8em;
-    /* border-radius: 12px; */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1; /* Ensure the text is vertically centered */
-    z-index: 4500; /* Ensure it appears above other elements */
-}
-
 
 
 /* Show Clear Icon and Badge When Items Are Selected */
 .dropdown-header.has-selection .clear-icon,
-.dropdown-header.has-selection .selection-badge {
+.dropdown-header.has-selection {
     visibility: visible;
     opacity: 1;
 }
@@ -1349,6 +1378,20 @@ Burnt Orange (#E87D3E) */
 .dropdown-list::-webkit-scrollbar {
     display: none;
 }
+
+.filter-button.selected {
+    background-color: var(--accent-color);
+    color: #fff;
+    border-color: var(--accent-color); 
+  }
+
+  .filter-button.used-up {
+    opacity: 0.5;
+    pointer-events: none;
+    background-color: #aaa;
+    /* or fully hide: display: none; */
+  }
+  
 
 --- File: static\css\components\filter.css ---
 /* filter.css */
@@ -1454,7 +1497,7 @@ label span.required {
 /* Headline Styling */
 .view-toggle-headline {
     font-size: 0.7rem;
-    color: var(--text-color); /* White text */
+    color: var(--accent-color); /* White text */
     margin: 0;
     text-align: center;
 }
@@ -1880,10 +1923,10 @@ footer .footer-content p {
     top: 0;
     left: 0;
     right: 0;
-    width: 99.2%;
+    width: 100;
     box-sizing: border-box;
     height: 50px; /* Unified height for better mobile handling */
-    padding: 0 20px;
+    padding: 0 10px;
     z-index: 1000;
     transition: transform 0.3s ease-in-out, box-shadow var(--transition-duration);
     box-shadow: 0 4px 8px var(--shadow-color);
@@ -1927,19 +1970,32 @@ footer .footer-content p {
     text-transform: lowercase;
 }
 
-/* Center Title Container */
+/* Centered container */
 .nav-center-title {
-    display: flex; /* Enable Flexbox for horizontal alignment */
-    align-items: flex-end; /* Align image and title to the bottom */
-    justify-content: center; /* Center the entire content horizontally */
-    gap: 10px; /* Add spacing between the image and the title */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute; /* Centers it relative to navbar */
+    left: 50%; /* Centers horizontally */
+    transform: translateX(-50%); /* Adjust for perfect centering */
+    gap: 10px; /* Space between the image and title */
 }
 
-/* Image Styling */
-.nav-center-image {
-    height: 40px; /* Adjust the height of the image */
-    width: auto; /* Maintain aspect ratio */
-    object-fit: contain; /* Ensure the image scales properly */
+/* Logo image styling */
+.logo-image {
+    height: 40px; /* Adjust as needed for proper size */
+    width: auto;
+    display: block;
+}
+
+/* Theme title styling */
+.theme-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--secondary-color);
+    text-align: center;
+    font-family: var(--font-heading, 'Arial', sans-serif);
+    white-space: nowrap; /* Prevent wrapping */
 }
 
 /* Theme Title Container */
@@ -1948,13 +2004,7 @@ footer .footer-content p {
     align-items: flex-end; /* Align the title to the bottom of the container */
 }
 
-/* Theme Title Styling */
-.theme-title {
-    font-size: 1rem;
-    color: var(--secondary-color);
-    text-transform: lowercase;
-    transition: color var(--transition-duration);
-}
+
 
 
 /* Navigation Links */
@@ -2037,19 +2087,7 @@ footer .footer-content p {
         padding: 10px 0;
     }
 
-    .nav-links.show {
-        display: flex;
-    }
 
-    .nav-links li {
-        margin: 10px 0;
-    }
-
-
-
-    .nav-center-title .theme-title {
-        font-size: 1rem;
-    }
 
     .navbar {
         height: 50px;
@@ -2075,6 +2113,10 @@ footer .footer-content p {
         font-size: 1rem;
         text-decoration: none;
     }
+    .nav-center-title .theme-title {
+        font-size: 1rem;
+    }   
+
 }
 
 /* Very Small Screens (max-width: 480px) */
@@ -2092,7 +2134,7 @@ footer .footer-content p {
     }
 
     .nav-center-title .theme-title {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 }
 
@@ -2260,19 +2302,23 @@ footer .footer-content p {
 /* Container for Movie Listings */
 .movie-listings {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 0 20px;
-    max-width: var(--catalog-width); /* Adjust as needed */
-    margin: 0 auto;
-    transition: all var(--transition-duration) ease;
-    background-color: var(--background-dark); /* Black/gray background */
-}
+    gap: 20px; /* spacing between cards */
+    /* 
+       The auto-fill approach will create new columns as long as there's room 
+       for at least minmax(...) wide. 
+     */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  
+    /* optional:
+       Set a maximum width if you want to avoid overly wide grids on huge displays */
+    max-width: 98%;
+    margin: 0 auto; /* center if you want margins on large screens */
+  }
 
 /* Media Query to Limit to 4 Columns on Large Screens */
-@media (min-width: var(--breakpoint-lg)) {
+@media (min-width: var(--breakint-lg)) {
     .movie-listings {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(8, 1fr);
     }
 }
 
@@ -2574,7 +2620,7 @@ header {
 
 .logo a {
     font-family: var(--font-cursive);
-    font-size: 2rem;
+    font-size: var(--meta-data-font-size-big);
     color: var(--accent-color);
     text-decoration: none;
     margin-right: var(--spacing-large);
@@ -2582,7 +2628,7 @@ header {
 
 .sub-logo {
     font-family: var(--font-heading);
-    font-size: 1rem;
+    font-size: var(--meta-data-font-size-big);
     color: var(--secondary-color);
     text-decoration: none;
 }
@@ -2591,7 +2637,7 @@ header {
 
 .nav-center-title .theme-title {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: var(--meta-data-font-size-big);
 }
 
 /* Movie Details Section */
@@ -2643,20 +2689,21 @@ header {
 /* Poster and Content Container */
 .poster-content-container {
     position: relative;
-    max-width: var(--catalog-width);
+    /* max-width: var(--catalog-width); */
     width: 100%;
     margin: -20vh auto 0; /* Centers horizontally */
     /* margin-left: 15px; */
     display: flex;
     align-items: flex-start;
-    padding: 0 var(--spacing-large);
+    padding: 0 calc(var(--spacing-large) * 2); /* Increases horizontal padding */
 }
 
 
 
 /* Poster Styling */
 .wrap-poster {
-    flex: 0 0 300px;
+    flex: 0 0 clamp(25%, 100px, 35%); /* Adapts based on screen size and zoom */
+    max-width: 55%; /* Keeps poster size relative to the parent container */
     margin-right: var(--spacing-large);
     border-radius: var(--border-radius-medium);
     overflow: hidden;
@@ -2685,15 +2732,15 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
     border-radius: 50%; /* Circular shape */
     color: var(--secondary-text-color); /* Icon/Text color */
     opacity: 0.9;
     transition: opacity var(--transition-duration) ease;
     text-decoration: none;
-    font-size: 2rem; /* Adjust icon size for better visibility */
+    font-size: var(--meta-data-font-size);
 }
 
 /* Play Movie Overlay - Slightly Different Style */
@@ -2713,7 +2760,7 @@ header {
     opacity: 0.8;
     transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
     text-decoration: none;
-    font-size: 2.2rem; /* Larger icon size */
+    font-size: var(--meta-data-font-size-big);
 }
 
 /* Hover Effects */
@@ -2736,18 +2783,18 @@ header {
 
 .movie-title {
     font-family: var(--font-heading);
-    font-size: 2.5rem;
+    font-size: var(--meta-data-font-size-big);
     margin-top: 20vh;
     margin-bottom: var(--spacing-small);
 }
 
 .release-year {
-    font-size: 1.5rem;
+    font-size: var(--meta-data-font-size-big);
     color: var(--secondary-secondary-text-color);
 }
 
 .original-title {
-    font-size: 1.2rem;
+    font-size: var(--meta-data-font-size);
     font-style: italic;
     margin-bottom: var(--spacing-medium);
     color: var(--secondary-secondary-text-color);
@@ -2771,17 +2818,19 @@ header {
     color: var(--accent-color);
 }
 .info-item span {
-    color: var(--text-color);
+    font-size: var(--meta-data-font-size); /* Unifies font size */
+    color: var(--text-color); /* Ensures consistent color */
+    line-height: 1.4; /* Improves readability */
 }
 
 .info-text {
-    font-size: 1rem;
+    font-size: var(--meta-data-font-size);
     color: var(--background-color);
 }
 
 .additional-info {
 
-    font-size: 1.1rem;
+    font-size: var(--meta-data-font-size); /* Adaptive font size */
     line-height: 1.8;
 
 }
@@ -2852,7 +2901,7 @@ header {
 /* Optional: Adjust Icon Size */
 .swiper-button-next i,
 .swiper-button-prev i {
-    font-size: 2rem; /* Adjust as needed */
+    font-size: var(--meta-data-font-size);
 }
 
 /* Swiper Pagination */
@@ -2881,6 +2930,7 @@ footer {
 .footer-content p {
     margin: 0;
     color: var(--secondary-secondary-text-color);
+    font-size: var(--meta-data-font-size);
 }
 
 /* Responsive Styles */
@@ -2910,6 +2960,7 @@ footer {
     }
 
     .info-item {
+        font-size: var(--meta-data-font-size);
         width: 100%;
         justify-content: center;
     }
@@ -2917,21 +2968,21 @@ footer {
 
 @media (max-width: 575px) {
     .movie-title {
-        font-size: 2rem;
+        font-size: var(--meta-data-font-size);
         margin-top: 0px;
     }
 
 
     .release-year {
-        font-size: 1.2rem;
+        font-size: var(--meta-data-font-size);
     }
 
     .original-title {
-        font-size: 1rem;
+        font-size: var(--meta-data-font-size);
     }
 
     .additional-info {
-        font-size: 1rem;
+        font-size: var(--meta-data-font-size);
     }
 
     .swiper-button-next,
@@ -2940,6 +2991,11 @@ footer {
         height: 36px;
         margin-top: -18px;
     }
+    /* Poster Styling */
+    .wrap-poster {
+        flex: 0 0 50%;
+
+    }    
 }
 
 .person-tooltip:hover::after {
@@ -2967,7 +3023,7 @@ footer {
     background-color: #ff5722; /* Accent color */
     color: #fff;
     text-decoration: none;
-    font-size: 1.2em;
+    font-size: var(--meta-data-font-size);
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
@@ -3113,7 +3169,7 @@ export let currentMovies = [];
  */
 function getIconSizeByType(typeval, type = "rating") {
     const minSize = 1;   // 1em for the smallest value
-    const maxSize = 2.5; // 2.5em for the largest value
+    const maxSize = 2.1; // 2.5em for the largest value
 
     let minVal, maxVal;
 
@@ -3189,6 +3245,7 @@ export function updateMovieListings(movies) {
 
     // Check if we are in list view or grid view
     const isListView = movieContainer.classList.contains('list-view');
+    
 
     // Clear previous content
     movieContainer.innerHTML = "";
@@ -3199,178 +3256,206 @@ export function updateMovieListings(movies) {
         return;
     }
 
-    // Render each movie
     movies.forEach(movie => {
         // Prepare paths
         const imagePath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/poster/poster_1.avif`;
         const defaultImagePath = '/static/images/default_movie.png';
-
-        // Create card
+    
+        // Are we in list view or grid view?
+        const isListView = movieContainer.classList.contains('list-view');
+    
+        // Create a clickable link wrapper
+        const movieLink = document.createElement('a');
+        movieLink.href = `/movie/${movie.movie_id}`;
+        // Optional: add a class for styling or hover effects
+        movieLink.className = 'movie-card-link';
+        // Optional: add an ARIA label for accessibility
+        movieLink.setAttribute('aria-label', `Details for ${movie.main_title}`);
+    
+        // Create the movie card
         const movieCard = document.createElement('div');
         movieCard.className = 'movie-card';
-
-        // Prepare icons for runtime/fsk/rating
+    
+        // If in list view, set background to the backdrop
+        if (isListView) {
+            const backdropPath = `/movie_images/${encodeURIComponent(movie.folder_name || 'default')}/backdrop/backdrop_1.avif`;
+            movieCard.style.backgroundImage = `url('${backdropPath}')`;
+        }
+    
+        // Icon sizes
         const runtimeIconSize = getIconSizeByType(movie.runtime, "runtime");
-        const fskIconSize = getIconSizeByType(movie.fsk, "fsk");
-        const ratingIconSize = getIconSizeByType(movie.rating, "rating");
+        const fskIconSize     = getIconSizeByType(movie.fsk, "fsk");
+        const ratingIconSize  = getIconSizeByType(movie.rating, "rating");
 
+        const formatYearHtml = `
+        <div class="meta-item">
+            <i class="fas fa-hourglass-half" style="font-size:15px;"></i>
+            <span>${movie.release_date}</span>
+        </div>
+    `;
+         
+    
         const formatRuntimeHtml = `
             <div class="meta-item">
                 <i class="fas fa-clock" style="font-size:${runtimeIconSize};"></i>
                 <span>${movie.runtime}</span>
             </div>
         `;
-
         const formatFskHtml = `
             <div class="meta-item">
                 <i class="fas fa-child" style="font-size:${fskIconSize};"></i>
                 <span>${movie.fsk}</span>
             </div>
         `;
-
         const formatRatingHtml = `
             <div class="meta-item">
                 <i class="fas fa-star" style="font-size:${ratingIconSize};"></i>
                 <span>${movie.rating}</span>
             </div>
         `;
-
+    
         // Directors
         const directors = (Array.isArray(movie.director) && movie.director.length > 0)
             ? movie.director.join(', ')
             : "Unknown Director";
-
-        // Actors: show 6 in list view, 2 in grid view
+    
+        // Actors: show 6 if list view, otherwise 2
         const maxActorsToShow = isListView ? 6 : 2;
-        let actors = '';
+        let actors = "";
         if (typeof movie.actors === 'string') {
             const actorArray = movie.actors.split(',').map(a => a.trim());
-            if (actorArray.length > maxActorsToShow) {
-                actors = actorArray.slice(0, maxActorsToShow).join(', ') + ', ...';
-            } else {
-                actors = actorArray.join(', ');
-            }
+            actors = (actorArray.length > maxActorsToShow)
+                ? actorArray.slice(0, maxActorsToShow).join(', ') + ', ...'
+                : actorArray.join(', ');
         } else if (Array.isArray(movie.actors)) {
-            if (movie.actors.length > maxActorsToShow) {
-                actors = movie.actors.slice(0, maxActorsToShow).join(', ') + ', ...';
-            } else {
-                actors = movie.actors.join(', ');
-            }
+            actors = (movie.actors.length > maxActorsToShow)
+                ? movie.actors.slice(0, maxActorsToShow).join(', ') + ', ...'
+                : movie.actors.join(', ');
         }
-
+    
         // Countries
         let countries = "Unknown Countries";
         if (Array.isArray(movie.countries) && movie.countries.length > 0) {
             countries = movie.countries.map(country => {
                 const match = country.match(/(.*?)\s\((.*?)\)/);
-                const fullName = match ? match[1] : country;
+                const fullName  = match ? match[1] : country;
                 const shortCode = match ? match[2] : country;
                 return `<span class="country-tooltip" data-country="${fullName}">${shortCode}</span>`;
             }).join(', ');
         }
-
+    
         // Genres
         const genres = (Array.isArray(movie.genres) && movie.genres.length > 0)
             ? movie.genres.join(', ')
             : "Unknown Genres";
-
-        // Overviews / content
+    
+        // Content
         let content = "Keine Inhaltsangabe verfügbar.";
         if (movie.format_inhalt && movie.format_inhalt.length >= 10) {
             content = movie.format_inhalt;
         } else if (movie.overview && movie.overview.length >= 10) {
             content = movie.overview;
         }
-
+    
         // Truncate content
         let maxLength = isListView ? 300 : 150;
         if (content.length > maxLength) {
             content = content.substring(0, maxLength) + '...';
         }
-
-        // Also truncate the main title
-        maxLength = isListView ? 200 : 29;
+    
+        // Truncate main title
+        maxLength = isListView ? 200 : 100;
         let main_title = movie.main_title || "Untitled";
         if (main_title.length > maxLength) {
             main_title = main_title.substring(0, maxLength) + '...';
         }
-
-        // Build HTML
+    
+        // Build the card's inner HTML
         movieCard.innerHTML = `
             <div class="movie-content-wrapper">
                 <div class="image-container">
-                    <a href="/movie/${movie.movie_id}">
-                        <img src="${imagePath}" 
-                             alt="${movie.main_title}"
-                             onerror="this.onerror=null; this.src='${defaultImagePath}';"
-                             loading="lazy">
-                    </a>
+                    <!-- Removed the <a> around the image so the entire card can be linked -->
+                    <img src="${imagePath}" 
+                         alt="${movie.main_title}"
+                         onerror="this.onerror=null; this.src='${defaultImagePath}';"
+                         loading="lazy">
                     <div class="hover-title">
                         <span><i class="fas fa-file-alt"></i> ${movie.original_title}</span>
                     </div>
                 </div>
-
+    
                 <div class="info-wrapper">
+
+                    ${
+                        isListView
+                        ? `
                     <div class="title-section">
                         <h2>${main_title}</h2>
-                    </div>
-                    <div class="overview-section">
-                        <p>${content} <a href="/movie/${movie.movie_id}" class="more-link">mehr</a></p>
-                    </div>
-                   
+                    </div>                        
+                        <div class="overview-section">
+                            <p>${content} 
+                                <!-- 'mehr' link still points to details if you want it -->
+                                <a href="/movie/${movie.movie_id}" class="more-link">mehr</a>
+                            </p>
+                        </div>
+                        `
+                        : ''
+                    }
                     <div class="info-section">
                         <div class="metadata">
+                            <p class="countries">
+                                <strong><i class="fas fa-globe"></i></strong> ${countries}
+                                | <strong><i class="fas fa-film"></i></strong> ${genres}
+                            </p>
                             ${
                                 isListView 
                                 ? `
-                                    <p class="countries">
-                                        <strong><i class="fas fa-globe"></i></strong> ${countries}
-                                        | <strong><i class="fas fa-film"></i></strong> ${genres}
-                                    </p>
-                                    <p>
-                                      <strong><i class="fas fa-video"></i></strong> ${directors}
-                                    </p>
-                                    <p>
-                                      <strong><i class="fas fa-users"></i></strong> ${actors}
-                                    </p>
-                                    <p class="standort">
-                                        ${
-                                            movie.standort 
-                                                ? `<strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort}`
-                                                : ''
-                                        }
-                                        ${
-                                            movie.standort && movie.formats 
-                                                ? ' | ' 
-                                                : ''
-                                        }
-                                        ${
-                                            movie.formats 
-                                                ? `<strong><i class="fas fa-disc"></i></strong> ${movie.formats}`
-                                                : ''
-                                        }
-                                    </p>                                    
+                                <p>
+                                    <strong><i class="fas fa-video"></i></strong> ${directors}
+                                </p>
+                                <p>
+                                    <strong><i class="fas fa-users"></i></strong> ${actors}
+                                </p>
+                                <p class="standort">
+                                    ${
+                                        movie.standort 
+                                            ? `<strong><i class="fas fa-map-marker-alt"></i></strong> ${movie.standort}`
+                                            : ''
+                                    }
+                                    ${
+                                        movie.standort && movie.formats 
+                                            ? ' | ' 
+                                            : ''
+                                    }
+                                    ${
+                                        movie.formats 
+                                            ? `<strong><i class="fas fa-disc"></i></strong> ${movie.formats}`
+                                            : ''
+                                    }
+                                </p>
                                 `
                                 : ''
                             }
-                            
                             <div class="inline-meta">
+                                ${formatRatingHtml}
                                 ${formatRuntimeHtml}
                                 ${formatFskHtml}
-                                ${formatRatingHtml}
-                                <div class="meta-item">
-                                    <i class="fas fa-calendar" style="font-size:1.4em;"></i>
-                                    <span>${movie.release_date}</span>
-                                </div>
+                                ${formatYearHtml}
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         `;
-
-        movieContainer.appendChild(movieCard);
+    
+        // Append the .movie-card to the clickable link
+        movieLink.appendChild(movieCard);
+    
+        // Finally, append the link to the container
+        movieContainer.appendChild(movieLink);
     });
+    
 }
 
 /**
@@ -3483,7 +3568,6 @@ export function hideProgressIndicator() {
 }
 
 --- File: static\js\filter.js ---
-
 // File: static/js/filter.js
 
 // Import necessary elements and functions
@@ -3519,26 +3603,31 @@ export function initializeFilterPanelToggle() {
 export function clearAllFilters() {
     // Clear selections in all dropdowns
     const filterButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
-    filterButtons.forEach(button => button.classList.remove('selected'));
+    filterButtons.forEach(button => {
+        button.classList.remove('selected');
+        button.disabled = false; // Re-enable if we previously disabled them
+        button.classList.remove('used-up');
+    });
 
-    // Hide clear icons
+    // Hide all clear icons if any
     const clearIcons = document.querySelectorAll('.clear-icon');
     clearIcons.forEach(icon => {
         icon.classList.remove('visible');
     });
 
-    // Reset and hide selection badges
-    const selectionBadges = document.querySelectorAll('.selection-badge');
-    selectionBadges.forEach(badge => {
-        badge.textContent = '';
-        badge.classList.remove('visible');
+    // If you had any "badge" elements to reset, do it here
+    // e.g., .selection-badge or highlight on the dropdown header
+    document.querySelectorAll('.dropdown-header.has-selection').forEach(header => {
+        header.classList.remove('has-selection');
     });
 
-    // For single-select dropdowns, ensure "Random" (Zufall) or first option is selected
+    // For single-select dropdowns, re-select default if desired
     const singleSelectDropdowns = document.querySelectorAll('.dropdown-list.single-select');
     singleSelectDropdowns.forEach(dropdownList => {
         const buttonsContainer = dropdownList.querySelector('.filter-buttons-container');
+        if (!buttonsContainer) return;
         const optionsArray = Array.from(buttonsContainer.children).map(btn => btn.dataset.value);
+        // Example: look for 'Zufall' or default to first
         const defaultOption = optionsArray.find(label => label.toLowerCase() === 'zufall');
         const buttonToSelect = defaultOption
             ? buttonsContainer.querySelector(`.filter-button[data-value="${defaultOption}"]`)
@@ -3546,8 +3635,8 @@ export function clearAllFilters() {
 
         if (buttonToSelect) {
             buttonToSelect.classList.add('selected');
-            const badge = dropdownList.parentElement.querySelector('.selection-badge');
-            updateSelectionBadge([buttonToSelect.dataset.value], badge, dropdownList.id);
+            buttonToSelect.disabled = false;
+            buttonToSelect.classList.remove('used-up');
         }
     });
 
@@ -3616,32 +3705,25 @@ export function initializeFilterDropdowns() {
         console.error("initializeFilterDropdowns: searchBox element not found.");
     }
 
-// In filter.js
-if (clearSearchBtn && searchBox) {
-    clearSearchBtn.addEventListener('click', () => {
-      // 1) Empty the search box
-      searchBox.value = '';
-  
-      // 2) Hide the clear icon itself
-      clearSearchBtn.classList.remove('visible');
-  
-      // 3) Hide any open autocomplete suggestions
-      hideAutocompleteSuggestions();
-  
-      // 4) Trigger an update, which calls updateFilters(),
-      //    and inside updateFilters() we call showProgressIndicator().
-      triggerDropdownChangeEvent();
-    });
-  }
-  
+    // Clear icon click
+    if (clearSearchBtn && searchBox) {
+        clearSearchBtn.addEventListener('click', () => {
+            // 1) Empty the search box
+            searchBox.value = '';
+            // 2) Hide the clear icon
+            clearSearchBtn.classList.remove('visible');
+            // 3) Hide autocomplete
+            hideAutocompleteSuggestions();
+            // 4) Trigger update
+            triggerDropdownChangeEvent();
+        });
+    }
 
     // Attach event listeners to dropdowns using event delegation
     attachDropdownEventDelegation();
 
-    // Initialize filter navigation arrows
-    initializeFilterNavigationArrows();
-
-    // Trigger initial filter update on page load
+    // We no longer need arrow-based filter navigation => remove or comment out
+    // triggerDropdownChangeEvent() on page load
     triggerDropdownChangeEvent();
 }
 
@@ -3662,7 +3744,8 @@ export function attachDropdownEventDelegation() {
             // Close other open dropdowns
             document.querySelectorAll('.dropdown-list.show').forEach(list => {
                 list.classList.remove('show');
-                document.querySelector(`.dropdown-header[data-target="${list.id}"]`)
+                document
+                    .querySelector(`.dropdown-header[data-target="${list.id}"]`)
                     ?.setAttribute('aria-expanded', 'false');
             });
             targetDropdown.classList.add('show');
@@ -3673,72 +3756,76 @@ export function attachDropdownEventDelegation() {
     // Handle selection of dropdown items
     function handleDropdownSelection(dropdownList, target) {
         const isSingleSelect = dropdownList.classList.contains('single-select');
-        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
-        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-        const clearButton = dropdownHeader.querySelector('.clear-icon');
-
-        // Single-select vs. multi-select
         if (isSingleSelect) {
-            dropdownList.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('selected'));
+            dropdownList.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('selected');
+                btn.disabled = false;
+                btn.classList.remove('used-up');
+            });
             target.classList.add('selected');
         } else {
             target.classList.toggle('selected');
         }
 
-        // Update the selection badge
-        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
-        const selectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
-        updateSelectionBadge(selectedValues, selectionBadge, dropdownList.id);
-
-        // Update the clear button's visibility
-        if (isSingleSelect) {
-            if (clearButton) clearButton.style.display = 'none';
+        // Optionally disable the button if selected
+        if (target.classList.contains('selected')) {
+            target.disabled = true;
+            target.classList.add('used-up'); // visually indicate it's used
         } else {
-            if (selectedValues.length > 0) {
-                clearButton.classList.add('visible');
-            } else {
-                clearButton.classList.remove('visible');
-            }
+            target.disabled = false;
+            target.classList.remove('used-up');
         }
 
-        // **Trigger** the search/filter update only after a selection
+        // Highlight the dropdown header if there's a selection
+        const selectedValues = getSelectedValuesFromDOM(dropdownList);
+        toggleHeaderHighlight(dropdownList, selectedValues);
+
+        // Trigger an update
         triggerDropdownChangeEvent();
     }
 
-    // Handle clearing of dropdown selections
+    function getSelectedValuesFromDOM(dropdownList) {
+        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+        return Array.from(selectedButtons).map(btn => btn.dataset.value);
+    }
+
+    // Clear all selected items in a dropdown (if you have a dedicated "clear" button)
     function clearDropdownSelection(dropdownList) {
-        const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
-        const selectionBadge = dropdownHeader.querySelector('.selection-badge');
-        const clearButton = dropdownHeader.querySelector('.clear-icon');
+        const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
+        selectedButtons.forEach(button => {
+            button.classList.remove('selected');
+            button.disabled = false;
+            button.classList.remove('used-up');
+        });
 
-        // Deselect all
-        dropdownList.querySelectorAll('.filter-button.selected')
-                   .forEach(button => button.classList.remove('selected'));
+        const selectedValues = [];
+        toggleHeaderHighlight(dropdownList, selectedValues);
 
-        // Clear badge & hide clear icon
-        updateSelectionBadge([], selectionBadge, dropdownList.id);
-        if (clearButton) clearButton.classList.remove('visible');
-
-        // Trigger the update after clearing
+        // Trigger an update after clearing
         triggerDropdownChangeEvent();
     }
 
-    // 1) Dropdown header click: ONLY toggles open/close (no search triggered here)
+    // 1) Dropdown header click: ONLY toggles open/close
     dropdownHeaders.forEach(header => {
         header.addEventListener('click', (event) => {
             event.stopPropagation();
             const targetDropdownId = header.getAttribute('data-target');
             const targetDropdown = document.getElementById(targetDropdownId);
-            toggleDropdown(targetDropdown, header);
+            if (targetDropdown) {
+                toggleDropdown(targetDropdown, header);
+            }
         });
 
-        // Keyboard accessibility (Space/Enter)
+        // (Optional) Keyboard accessibility
         header.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
+                event.stopPropagation();
                 const targetDropdownId = header.getAttribute('data-target');
                 const targetDropdown = document.getElementById(targetDropdownId);
-                toggleDropdown(targetDropdown, header);
+                if (targetDropdown) {
+                    toggleDropdown(targetDropdown, header);
+                }
             }
         });
     });
@@ -3753,7 +3840,7 @@ export function attachDropdownEventDelegation() {
             }
         });
 
-        // 3) Clear button (for multi-select only)
+        // If you have a separate clear button inside the dropdown header
         const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
         const clearButton = dropdownHeader?.querySelector('.clear-icon');
 
@@ -3763,7 +3850,6 @@ export function attachDropdownEventDelegation() {
                 clearDropdownSelection(dropdownList);
             });
 
-            // Keyboard accessibility for the clear button
             clearButton.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
@@ -3773,11 +3859,11 @@ export function attachDropdownEventDelegation() {
         }
     });
 
-    // 4) Close dropdowns when clicking outside
+    // 3) Close dropdowns when clicking outside
     document.addEventListener('click', (event) => {
         dropdownLists.forEach(dropdownList => {
             const header = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
-            if (!dropdownList.contains(event.target) && !header.contains(event.target)) {
+            if (header && !header.contains(event.target) && !dropdownList.contains(event.target)) {
                 dropdownList.classList.remove('show');
                 header.setAttribute('aria-expanded', 'false');
             }
@@ -3786,35 +3872,15 @@ export function attachDropdownEventDelegation() {
 }
 
 /**
- * Function to update selection badges based on selected values
- * @param {Array} selectedValues - The selected filter values
- * @param {HTMLElement} badgeElement - Badge to display selected items
- * @param {string} dropdownListId - ID of the dropdown list
+ * Highlights/unhighlights the dropdown header if there are selected values.
  */
-export function updateSelectionBadge(selectedValues, badgeElement, dropdownListId) {
-    if (!badgeElement) return;
-
+function toggleHeaderHighlight(dropdownList, selectedValues) {
+    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownList.id}"]`);
+    if (!dropdownHeader) return;
     if (selectedValues.length > 0) {
-        badgeElement.textContent = selectedValues.join(', ');
-        badgeElement.classList.add('visible');
-        badgeElement.style.display = 'inline-block';
+        dropdownHeader.classList.add('has-selection');
     } else {
-        badgeElement.textContent = '';
-        badgeElement.classList.remove('visible');
-        badgeElement.style.display = 'none';
-    }
-    checkSelections();
-}
-
-/**
- * Checks if any selections exist to enable/disable "Clear All" button
- */
-function checkSelections() {
-    const selectedButtons = document.querySelectorAll('.dropdown-list .filter-button.selected');
-    if (selectedButtons.length > 0) {
-        clearAllFiltersButton.removeAttribute('disabled');
-    } else {
-        clearAllFiltersButton.setAttribute('disabled', 'true');
+        dropdownHeader.classList.remove('has-selection');
     }
 }
 
@@ -3827,15 +3893,22 @@ export function getSelectedValues(dropdownListId) {
 }
 
 /**
+ * Dispatch a 'dropdownChange' event so updateFilters() will be called
+ */
+export function triggerDropdownChangeEvent() {
+    const event = new CustomEvent('dropdownChange');
+    console.log("Dispatching dropdownChange event");
+    document.dispatchEvent(event);
+}
+
+/**
  * Autocomplete for cast/director names
  */
 function handleAutocomplete() {
-    const searchQuery = searchBox.value.trim();
-
-    if (searchQuery.length >= AUTOCOMPLETE_MIN_DIGITS) {
-        showProgressIndicator(); // Show loading spinner
-
-        fetch(`/autocomplete?query=${encodeURIComponent(searchQuery)}`)
+    const query = searchBox.value.trim();
+    if (query.length >= AUTOCOMPLETE_MIN_DIGITS) {
+        showProgressIndicator();
+        fetch(`/autocomplete?query=${encodeURIComponent(query)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -3859,18 +3932,14 @@ function handleAutocomplete() {
 
 /**
  * Show autocomplete suggestions
- * (Updated to ensure only one result per unique person name)
  */
 function showAutocompleteSuggestions(suggestions) {
-    // Deduplicate by 'name'
     const deduplicatedMap = new Map();
     suggestions.forEach(item => {
-        // If the name is not in the map yet, set it
         if (!deduplicatedMap.has(item.name)) {
             deduplicatedMap.set(item.name, item);
         }
     });
-    // Convert map back to an array
     const uniqueSuggestions = Array.from(deduplicatedMap.values());
 
     let autocompleteList = document.getElementById('autocomplete-list');
@@ -3881,25 +3950,21 @@ function showAutocompleteSuggestions(suggestions) {
         document.body.appendChild(autocompleteList);
     }
 
-    // Position it below the search box
     const searchBoxRect = searchBox.getBoundingClientRect();
     autocompleteList.style.position = 'absolute';
     autocompleteList.style.top = `${searchBoxRect.bottom + window.scrollY}px`;
     autocompleteList.style.left = `${searchBoxRect.left + window.scrollX}px`;
     autocompleteList.style.width = `${searchBoxRect.width}px`;
     autocompleteList.style.zIndex = '10000';
-
     autocompleteList.innerHTML = '';
 
     uniqueSuggestions.forEach(item => {
         const suggestionItem = document.createElement('div');
         suggestionItem.className = 'autocomplete-item';
-        // item.type is optional; you can remove if not needed
-        suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type})</small>`;
+        suggestionItem.innerHTML = `<strong>${item.name}</strong> <small>(${item.type || ''})</small>`;
         suggestionItem.dataset.name = item.name;
         suggestionItem.dataset.type = item.type;
 
-        // On click, fill searchBox & trigger search
         suggestionItem.addEventListener('click', () => {
             searchBox.value = item.name;
             hideAutocompleteSuggestions();
@@ -3910,19 +3975,17 @@ function showAutocompleteSuggestions(suggestions) {
     });
 }
 
-/**
- * Hide autocomplete suggestions
- */
 function hideAutocompleteSuggestions() {
-    const autocompleteList = document.getElementById('autocomplete-list');
-    if (autocompleteList) {
-        autocompleteList.parentNode.removeChild(autocompleteList);
+    const list = document.getElementById('autocomplete-list');
+    if (list) {
+        list.remove();
     }
     hideProgressIndicator();
 }
 
 /**
  * Populate a dropdown list (years, genres, countries, etc.)
+ * and highlight any pre-selected items if needed.
  */
 export function populateDropdown(dropdownListId, options, selectedValues = [], singleSelect = false, showCounts = true) {
     const dropdownList = document.getElementById(dropdownListId);
@@ -3941,12 +4004,11 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
     }
 
     let optionsArray = [];
-
     if (typeof options === 'object' && !Array.isArray(options)) {
-        // options is an object => { label: count }
+        // { label: count }
         optionsArray = Object.entries(options).map(([label, count]) => ({ label, count }));
     } else if (Array.isArray(options)) {
-        // array => [label1, label2, ...]
+        // [label1, label2, ...]
         optionsArray = options.map(label => ({ label }));
     } else {
         console.error(`populateDropdown: 'options' should be an object or array. Received:`, options);
@@ -3963,13 +4025,11 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
         const extendedOptionsArray = [];
         optionsArray.forEach(option => {
             if (option.label.toLowerCase() === 'zufall') {
-                // "Random" (Zufall) w/o icons
                 extendedOptionsArray.push({
                     label: option.label,
                     value: option.label
                 });
             } else {
-                // ascending or descending icons
                 extendedOptionsArray.push({
                     value: option.label,
                     label: option.label.includes("asc")
@@ -3987,10 +4047,11 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
     // Build each filter button
     optionsArray.forEach(option => {
-        const button = document.createElement("button");
+        const button = document.createElement('button');
         button.type = "button";
         button.className = "filter-button";
 
+        // If showCounts is enabled, e.g. "Action (34)"
         if (showCounts && option.count !== undefined) {
             button.innerHTML = `${option.label} (${option.count})`;
         } else {
@@ -4001,34 +4062,33 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
 
         if (selectedValues.includes(option.value || option.label)) {
             button.classList.add('selected');
+            // Optionally disable or mark it as used
+            // button.disabled = true;
+            // button.classList.add('used-up');
         }
         buttonsContainer.appendChild(button);
     });
 
     dropdownList.appendChild(buttonsContainer);
 
-    // Update the Selection Badge
-    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
-    const selectionBadge = dropdownHeader.querySelector('.selection-badge');
+    // Highlight the dropdown header if any values are selected
     const selectedButtons = dropdownList.querySelectorAll('.filter-button.selected');
     const updatedSelectedValues = Array.from(selectedButtons).map(btn => btn.dataset.value);
-    updateSelectionBadge(updatedSelectedValues, selectionBadge, dropdownList.id);
+    toggleHeaderHighlight(dropdownList, updatedSelectedValues);
 
-    // Hide clear icon if single-select
+    // Hide or show clear icon if single-select or multi-select
+    const dropdownHeader = document.querySelector(`.dropdown-header[data-target="${dropdownListId}"]`);
+    if (!dropdownHeader) return;
     const clearButton = dropdownHeader.querySelector('.clear-icon');
-    if (singleSelect) {
-        if (clearButton) {
-            clearButton.style.display = 'none';
-        }
-    } else {
-        if (clearButton) {
-            clearButton.style.display = '';
-        }
+    if (singleSelect && clearButton) {
+        clearButton.style.display = 'none';
+    } else if (!singleSelect && clearButton) {
+        clearButton.style.display = '';
     }
 }
 
 /**
- * Update filters (triggers a fetch for updated movie data) based on selected criteria
+ * Update filters (fetches updated movie data) based on selected criteria
  */
 export function updateFilters(page = 1) {
     const selectedYears = getSelectedValues('year-dropdown-list');
@@ -4037,47 +4097,38 @@ export function updateFilters(page = 1) {
     const selectedStandorte = getSelectedValues('standort-dropdown-list');
     const selectedMedia = getSelectedValues('medium-dropdown-list');
     const selectedSortByValues = getSelectedValues('sort-dropdown-list');
-    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"]; // default: 'Zufall'
+    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
 
-    // Search query from the box
     const searchQuery = searchBox ? searchBox.value.trim() : '';
 
     // Build URL params
     const params = new URLSearchParams();
-    if (selectedYears.length) {
-        params.append('years', selectedYears.join(','));
-    }
-    if (selectedGenres.length) {
-        params.append('genres', selectedGenres.join(','));
-    }
-    if (selectedCountries.length) {
-        params.append('countries', selectedCountries.join(','));
-    }
-    if (selectedStandorte.length) {
-        params.append('standorte', selectedStandorte.join(','));
-    }
-    if (selectedMedia.length) {
-        params.append('media', selectedMedia.join(','));
-    }
-    if (selectedSortBy.length) {
-        params.append('sort_by', selectedSortBy[0]);
-    }
-
-    // Include search query
-    if (searchQuery.length > 0) {
-        params.append('search', searchQuery);
-    }
-
-    // Pagination
+    if (selectedYears.length) params.append('years', selectedYears.join(','));
+    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
+    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
+    if (selectedStandorte.length) params.append('standorte', selectedStandorte.join(','));
+    if (selectedMedia.length) params.append('media', selectedMedia.join(','));
+    if (selectedSortBy.length) params.append('sort_by', selectedSortBy[0]);
+    if (searchQuery.length > 0) params.append('search', searchQuery);
     params.append('page', page);
 
-    // Show progress indicator
     showProgressIndicator();
 
     fetch(`/filter_movies?${params.toString()}`)
         .then(response => response.json())
         .then(data => {
-            const { years, genres, countries, standorte, media, sort_options, movies, current_page, total_pages, total_movies } = data;
+            const {
+                years,
+                genres,
+                countries,
+                standorte,
+                media,
+                sort_options,
+                movies,
+                current_page,
+                total_pages,
+                total_movies
+            } = data;
 
             // Re-populate the dropdowns with updated filters
             populateDropdown('year-dropdown-list', years, selectedYears);
@@ -4090,22 +4141,18 @@ export function updateFilters(page = 1) {
             // Render the movies
             updateMovieListings(movies);
 
-            // Determine columns for layout based on total_movies
+            // Basic columns logic
             let columnsPerRow = 1;
-            if (total_movies > 100) {
-                columnsPerRow = 5;
-            } else if (total_movies > 60) {
-                columnsPerRow = 4;
-            } else if (total_movies > 20) {
-                columnsPerRow = 3;
-            }
+            if (total_movies > 100) columnsPerRow = 5;
+            else if (total_movies > 60) columnsPerRow = 4;
+            else if (total_movies > 20) columnsPerRow = 3;
 
             setGridLayout(columnsPerRow);
 
             // Update pagination
             updatePagination(current_page, total_pages, total_movies, columnsPerRow);
 
-            // Update headline (e.g., "Genres: x | Years: y ... ")
+            // Update the headline (like "Genres: x | Years: y ... ")
             updateHeadline(
                 selectedGenres,
                 selectedYears,
@@ -4133,11 +4180,7 @@ export function updateFilters(page = 1) {
  */
 function setGridLayout(columns) {
     if (!movieContainer) return;
-
-    // Remove any existing column classes
     movieContainer.classList.remove('columns-1', 'columns-3', 'columns-4', 'columns-5');
-
-    // Add the appropriate class
     switch (columns) {
         case 3:
             movieContainer.classList.add('columns-3');
@@ -4154,93 +4197,15 @@ function setGridLayout(columns) {
 }
 
 /**
- * Initialize filter navigation (scrolling with arrows)
- */
-function initializeFilterNavigationArrows() {
-    const leftArrow = document.querySelector('.filter-nav-arrow.left');
-    const rightArrow = document.querySelector('.filter-nav-arrow.right');
-    const mainFiltersContainer = document.querySelector('.main-filters-container');
-
-    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
-        console.error("Filter navigation arrows or main filters container not found.");
-        return;
-    }
-
-    leftArrow.addEventListener('click', () => {
-        mainFiltersContainer.scrollBy({
-            left: -200,
-            behavior: 'smooth'
-        });
-    });
-
-    rightArrow.addEventListener('click', () => {
-        mainFiltersContainer.scrollBy({
-            left: 200,
-            behavior: 'smooth'
-        });
-    });
-
-    // Update arrow visibility on scroll
-    mainFiltersContainer.addEventListener('scroll', () => {
-        updateFilterNavigationArrowsVisibility();
-    });
-
-    // Update arrow visibility on window resize
-    window.addEventListener('resize', () => {
-        updateFilterNavigationArrowsVisibility();
-    });
-
-    // Initial check
-    updateFilterNavigationArrowsVisibility();
-}
-
-/**
- * Check if the container is scrolled to the ends and hide/show arrows
- */
-function updateFilterNavigationArrowsVisibility() {
-    const leftArrow = document.querySelector('.filter-nav-arrow.left');
-    const rightArrow = document.querySelector('.filter-nav-arrow.right');
-    const mainFiltersContainer = document.querySelector('.main-filters-container');
-
-    if (!leftArrow || !rightArrow || !mainFiltersContainer) {
-        return;
-    }
-
-    const scrollLeft = mainFiltersContainer.scrollLeft;
-    const maxScrollLeft = mainFiltersContainer.scrollWidth - mainFiltersContainer.clientWidth;
-
-    if (scrollLeft <= 0) {
-        leftArrow.classList.add('hidden');
-    } else {
-        leftArrow.classList.remove('hidden');
-    }
-
-    if (scrollLeft >= maxScrollLeft - 1) {
-        rightArrow.classList.add('hidden');
-    } else {
-        rightArrow.classList.remove('hidden');
-    }
-}
-
-/**
- * Dispatch a 'dropdownChange' event so updateFilters() will be called
- */
-export function triggerDropdownChangeEvent() {
-    const event = new CustomEvent('dropdownChange');
-    console.log("Dispatching dropdownChange event");
-    document.dispatchEvent(event);
-}
-
-/**
- * Update headline text (e.g., "Auswahl: ...") with selected filters
+ * Update the "view-toggle-title" with selected filters
  */
 export function updateHeadline(
-    selectedGenres = [], 
-    selectedYears = [], 
-    selectedCountries = [], 
-    selectedStandorte = [], 
-    selectedMedia = [], 
-    selectedSortByValues = [], 
+    selectedGenres = [],
+    selectedYears = [],
+    selectedCountries = [],
+    selectedStandorte = [],
+    selectedMedia = [],
+    selectedSortByValues = [],
     searchQuery,
     total_movies
 ) {
@@ -4249,10 +4214,9 @@ export function updateHeadline(
         console.error('Element with class .view-toggle-title not found');
         return;
     }
-    // Clear previous content
     headlineElement.innerHTML = '';
 
-    // Helper: add text with icon and optional separator
+    // Helper to add text + icon
     const appendTextWithIcon = (iconClass, text) => {
         const span = document.createElement('span');
         const icon = document.createElement('i');
@@ -4269,58 +4233,38 @@ export function updateHeadline(
     if (searchQuery) {
         appendTextWithIcon('fa fa-search', searchQuery);
     }
-
-    // Genres
+    // Genre
     if (selectedGenres.length > 0) {
-        appendTextWithIcon('fa fa-film', selectedGenres.join(', '));
+        appendTextWithIcon('fa fa-theater-masks', selectedGenres.join(', '));
     }
-
     // Years
     if (selectedYears.length > 0) {
-        appendTextWithIcon('fa fa-calendar-alt', selectedYears.join(', '));
+        appendTextWithIcon('fas fa-hourglass-half', selectedYears.join(', '));
     }
-
     // Countries
     if (selectedCountries.length > 0) {
         appendTextWithIcon('fa fa-globe', selectedCountries.join(', '));
     }
-
     // Standort
     if (selectedStandorte.length > 0) {
         appendTextWithIcon('fa fa-map-marker-alt', selectedStandorte.join(', '));
     }
-
     // Media
     if (selectedMedia.length > 0) {
         appendTextWithIcon('fa fa-compact-disc', selectedMedia.join(', '));
     }
-
-    // Sort Options
+    // Sort
     if (selectedSortByValues.length > 0) {
         appendTextWithIcon('fa fa-sort', selectedSortByValues.join(', '));
     }
-
     // Movie count
     if (total_movies !== undefined && total_movies > 0) {
         const formattedTotal = total_movies.toLocaleString('de-DE');
-        const label = (formattedTotal === '1') ? 'Film gefunden' : 'Filme gefunden';
+        const label = ''; // e.g. 'Filme gefunden'
         appendTextWithIcon('fa fa-film', `${formattedTotal} ${label}`);
     }
-
-    // If nothing is selected & no results
-    if (
-        !searchQuery && 
-        selectedGenres.length === 0 && 
-        selectedYears.length === 0 && 
-        selectedCountries.length === 0 && 
-        selectedStandorte.length === 0 && 
-        selectedMedia.length === 0 && 
-        selectedSortByValues.length === 0 && 
-        total_movies === 0
-    ) {
-        headlineElement.textContent = ''; // or "Keine Auswahl"
-    }
 }
+
 
 --- File: static\js\hero.js ---
 document.addEventListener('DOMContentLoaded', function () {
@@ -4835,41 +4779,42 @@ export function themeToggle() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Fonts and Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <!-- Your Main CSS (updated with overlay logic) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=1.0">
+    <!-- Icons and Additional Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <!-- Swiper.js CSS for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-
 </head>
 <body>
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="https://verein.format-filmkunstverleih.de"class="logo"><span>Format</span></a>
-                <a href="{{ url_for('catalog') }}" class="sub-logo"><span>Katalog</span></a>
+                <a href="https://verein.format-filmkunstverleih.de" class="sub-logo">
+                    <span>Katalog</span>
+                </a>
             </div>
             
             <!-- Centered theme title in the navbar -->
             <div class="nav-center-title">
-                <img 
-                    src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
-                    alt="Looking Down" 
-                    class="nav-center-image" 
-                    id="theme-image" 
-                    data-dark-src="{{ url_for('static', filename='images/looking_down_dark.png') }}"
-                    data-light-src="{{ url_for('static', filename='images/looking_down_light.png') }}">
+                <a href="https://verein.format-filmkunstverleih.de" class="logo">
+                    <img 
+                        src="{{ url_for('static', filename='images/looking_down_small.jpg') }}" 
+                        alt="Looking Down" 
+                        class="logo-image" 
+                        id="theme-image" 
+                        data-dark-src="{{ url_for('static', filename='images/looking_down_dark.png') }}"
+                        data-light-src="{{ url_for('static', filename='images/looking_down_light.png') }}">
+                </a>
                 <span class="theme-title">{{ selected_theme }}</span>
             </div>
 
-            
-
-            
             <ul class="nav-links">
-                <!-- <li><a href="https://verein.format-filmkunstverleih.de/">verleih</a></li> -->
-                <!-- Additional menu links can be placed here -->
+                <!-- Additional menu links can be placed here, if desired -->
             </ul>
-            <!-- Add this inside the <nav class="navbar"> ... </nav> -->
+
+            <!-- Dark Mode Toggle -->
             <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Dark Mode" tabindex="0">
                 <i class="fas fa-moon"></i>
             </button>
@@ -4888,27 +4833,33 @@ export function themeToggle() {
                 <div class="swiper-wrapper">
                     {% for featured_movie in featured_movies %}
                     <div class="swiper-slide">
-                        <div class="featured-movie-card">
-                            <img src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.avif') }}" 
-                                 alt="{{ featured_movie['main_title'] }}" 
-                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';" 
-                                 loading="lazy">
-                            <div class="featured-movie-overlay">
-                                <h3>{{ featured_movie['main_title'] }}</h3>
-                                <a href="{{ url_for('get_movie_details', movie_id=featured_movie['movie_id']) }}" class="btn btn-secondary">Mehr erfahren</a>
+                        <!-- Entire card clickable -->
+                        <a href="{{ url_for('get_movie_details', movie_id=featured_movie['movie_id']) }}" class="featured-movie-card-link">
+                            <div class="featured-movie-card">
+                                <img 
+                                    src="{{ url_for('movie_images', filename=featured_movie['folder_name'] + '/poster/poster_1.avif') }}" 
+                                    alt="{{ featured_movie['main_title'] }}"
+                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/default_movie.png') }}';"
+                                    loading="lazy"
+                                >
+                                <div class="featured-movie-overlay">
+                                    <h3>{{ featured_movie['main_title'] }}</h3>
+                                    <span class="btn btn-secondary">Mehr erfahren</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     {% endfor %}
                 </div>
-                <!-- Add Pagination -->
+                <!-- Swiper Pagination -->
                 <div class="swiper-pagination"></div>
-                <!-- Add Navigation -->
+                <!-- Swiper Navigation -->
                 <div class="swiper-button-prev"></div>
                 <div class="swiper-button-next"></div>
             </div>
         </section>
 
+        <!-- Progress Indicator -->
         <div id="progress-indicator" class="progress-indicator" role="status" aria-live="polite" aria-hidden="true">
             <div class="spinner" aria-hidden="true"></div>
             <p>einen Moment bitte, lade Filme...</p>
@@ -4924,8 +4875,6 @@ export function themeToggle() {
                     <span id="clear-search" class="clear-icon" role="button" tabindex="0" aria-label="Suchfeld leeren">&times;</span>
                 </div>
 
-             
-
                 <form id="filter-form">
                     <!-- Main Filters Container Wrapper -->
                     <div class="main-filters-container-wrapper">
@@ -4935,24 +4884,18 @@ export function themeToggle() {
                             <button class="filter-nav-arrow left hidden" aria-label="Scroll Left">
                                 <i class="fas fa-chevron-left" aria-hidden="true"></i>
                             </button>
+
                             <!-- Year Filter -->
                             <div class="custom-dropdown" data-dropdown="year-dropdown">
                                 <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                                     <div class="dropdown-header-top">
                                         <div class="header-label">
-                                            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                            <i class="fas fa-hourglass-half" aria-hidden="true"></i>
                                             <span>Zeit</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                        <span class="selection-badge">
-                                            <span class="badge-label"></span>
-                                        </span>
-                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Jahresfilter löschen">&times;</span>
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -4961,19 +4904,12 @@ export function themeToggle() {
                                 <div class="dropdown-header" data-target="genre-dropdown-list" aria-label="Genres" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                                     <div class="dropdown-header-top">
                                         <div class="header-label">
-                                            <i class="fas fa-film" aria-hidden="true"></i>
+                                            <i class="fas fa-theater-masks" aria-hidden="true"></i>
                                             <span>Genre</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                        <span class="selection-badge">
-                                            <span class="badge-label"></span>
-                                        </span>
-                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Genrefilter löschen">&times;</span>
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -4985,16 +4921,9 @@ export function themeToggle() {
                                             <i class="fas fa-globe" aria-hidden="true"></i>
                                             <span>Land</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                        <span class="selection-badge">
-                                            <span class="badge-label"></span>
-                                        </span>
-                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Länderfilter löschen">&times;</span>
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -5006,16 +4935,9 @@ export function themeToggle() {
                                             <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                                             <span>Regal</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                        <span class="selection-badge">
-                                            <span class="badge-label"></span>
-                                        </span>
-                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Standortfilter löschen">&times;</span>
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -5027,16 +4949,9 @@ export function themeToggle() {
                                             <i class="fas fa-compact-disc" aria-hidden="true"></i>
                                             <span>Medium</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                        <span class="selection-badge">
-                                            <span class="badge-label"></span>
-                                        </span>
-                                        <span class="clear-icon" role="button" tabindex="0" aria-label="Mediumfilter löschen">&times;</span>
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
 
@@ -5048,29 +4963,29 @@ export function themeToggle() {
                                             <i class="fas fa-sort" aria-hidden="true"></i>
                                             <span>Ordnung</span>
                                         </div>
-                                        <div class="dropdown-arrow">
-                                            <!-- Arrow Icon -->
-                                        </div>
+                                        <div class="dropdown-arrow"></div>
                                     </div>
-                                    <div class="dropdown-header-bottom">
-                                        <span class="selection-badge">
-                                            <span class="badge-label"></span>
-                                        </span>
-                                        <!-- No clear icon for single-select dropdowns -->
-                                    </div>
+                                    <div class="dropdown-header-bottom"></div>
                                 </div>
                             </div>
+
                             <!-- Clear All Filters Button -->
-                            <button type="button" id="clear-all-filters-button" class="filter-action-button" aria-label="Alle Filter zurücksetzen" tabindex="0">
+                            <button 
+                                type="button" 
+                                id="clear-all-filters-button" 
+                                class="filter-action-button" 
+                                aria-label="Alle Filter zurücksetzen" 
+                                tabindex="0"
+                            >
                                 <i class="fas fa-undo" aria-hidden="true"></i>
                                 <span class="sr-only">Alle Filter zurücksetzen</span>
-                            </button>  
+                            </button>
 
+                            <!-- Right Navigation Arrow -->
+                            <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
                         </div>
-                        <!-- Right Navigation Arrow -->
-                        <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">
-                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                        </button>
                     </div>
                 </form>
             </div>
@@ -5078,45 +4993,33 @@ export function themeToggle() {
             <!-- Dropdown Lists Container -->
             <div class="dropdown-lists-container">
                 <!-- Year Dropdown List -->
-                <div class="dropdown-list" id="year-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="year-dropdown-list"></div>
                 <!-- Genre Dropdown List -->
-                <div class="dropdown-list" id="genre-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="genre-dropdown-list"></div>
                 <!-- Country Dropdown List -->
-                <div class="dropdown-list" id="country-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="country-dropdown-list"></div>
                 <!-- Standort Dropdown List -->
-                <div class="dropdown-list" id="standort-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="standort-dropdown-list"></div>
                 <!-- Medium Dropdown List -->
-                <div class="dropdown-list" id="medium-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="medium-dropdown-list"></div>
                 <!-- Sort Dropdown List -->
-                <div class="dropdown-list" id="sort-dropdown-list">
-                    <!-- Buttons populated dynamically -->
-                </div>
+                <div class="dropdown-list" id="sort-dropdown-list"></div>
             </div>
+
             <div class="view-toggle-headline">
                 <h2 class="view-toggle-title"></h2>
-            </div>              
+            </div>
         </section>
 
         <!-- Top Pagination Section -->
         <section class="pagination top-pagination">
-            
             <nav>
                 <ul>
-                    <!-- Pagination will be populated dynamically here -->
+                    <!-- Pagination dynamically populated -->
                 </ul>
             </nav>
 
-            <!-- Toggle Buttons Right of Headline -->
+            <!-- Toggle Buttons -->
             <div class="view-toggle-container">
                 <button id="grid-view-btn" class="view-toggle-btn active" aria-label="Grid View" aria-pressed="true">
                     <i class="fas fa-th"></i>
@@ -5124,27 +5027,25 @@ export function themeToggle() {
                 <button id="list-view-btn" class="view-toggle-btn" aria-label="List View" aria-pressed="false">
                     <i class="fas fa-list"></i>
                 </button>
-            </div>                      
+            </div>
         </section>
         
-        <!-- Toggle View Buttons Container with Headline -->
+        <!-- Toggle View Section -->
         <section class="view-toggle-section">
-            <!-- Headline Left of Toggle Buttons -->
-
-
-
+            <!-- Optional: Additional headline or controls -->
         </section>
 
-        <!-- Movie Listings Section -->
+        <!-- Movie Listings Section (populated by JS) -->
         <section class="movie-listings">
-            <!-- Movie cards will be dynamically populated here -->
+            <!-- The JS code will dynamically create each movie card here.
+                 Remember to place .inline-meta inside .image-container for grid overlay. -->
         </section>
 
         <!-- Bottom Pagination Section -->
         <section class="pagination bottom-pagination">
             <nav>
                 <ul>
-                    <!-- Pagination will be populated dynamically here -->
+                    <!-- Pagination dynamically populated -->
                 </ul>
             </nav>
         </section>
@@ -5158,12 +5059,9 @@ export function themeToggle() {
 
     <!-- Swiper.js JS for Carousel -->
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <!-- Scripts -->
+    <!-- Your Scripts -->
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    
-
-
 </body>
 </html>
 
@@ -5253,13 +5151,14 @@ export function themeToggle() {
 </head>
 <body data-folder="{{ movie.folder_name }}">
 
-    <!-- Theme Application Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const theme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', theme);
-        });
-    </script>
+<!-- Theme Application Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const theme = localStorage.getItem('theme') || 'light';
+        console.log("theme", theme)
+        document.documentElement.setAttribute('data-theme', theme);
+    });
+</script>
 
 <div class="page-container">
     <header>
@@ -5320,7 +5219,7 @@ export function themeToggle() {
                     
                     {% if movie.movie_file_url %}
                     <!-- Play Movie Button -->
-                    <a href="{{ url_for('movie_player', folder_name=movie.folder_name, filename=movie.moviefilename) }}" class="play-trailer-overlay" target="_blank" aria-label="Play Movie {{ movie.title }}">
+                    <a href="{{ url_for('movie_player', movie_file_path=movie.movie_file_path) }}" class="play-trailer-overlay" target="_blank" aria-label="Play Movie {{ movie.title }}">
                         <i class="fas fa-play"></i>
                     </a>
                     {% elif movie.video_link %}
@@ -5477,7 +5376,6 @@ export function themeToggle() {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
     <style>
-        /* Your existing styles */
         body {
             margin: 0;
             background-color: #000;
@@ -5557,11 +5455,18 @@ export function themeToggle() {
 </head>
 <body>
     <div class="video-container">
+        <!-- 
+            1) The <video> references our /play_movie route, 
+               which actually streams the MP4 file from disk.
+        -->
         <video id="moviePlayer" controls autoplay tabindex="0">
-            <source src="{{ url_for('play_movie', folder_name=folder_name, filename=filename) }}" type="video/mp4">
+            <source src="{{ url_for('play_movie', movie_file_path=movie_file_path) }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
 
+        <!-- 
+            2) Subtitle Selection (only shown if subtitles are present).
+        -->
         {% if subtitles|length > 0 %}
         <button id="subtitleButton" aria-label="Toggle Subtitles">
             <i class="fas fa-closed-captioning"></i>
@@ -5570,7 +5475,13 @@ export function themeToggle() {
             <ul>
                 {% for subtitle in subtitles %}
                 <li>
-                    <button onclick="loadSubtitle('{{ subtitle }}')">{{ subtitle }}</button>
+                    <!-- 
+                        Instead of embedding {{ folder_name }} in a string, we pass it 
+                        via function argument loadSubtitle(folder_name, subtitleFile).
+                    -->
+                    <button onclick="loadSubtitle('{{ folder_name }}','{{ subtitle }}')">
+                        {{ subtitle }}
+                    </button>
                 </li>
                 {% endfor %}
                 <li>
@@ -5594,21 +5505,31 @@ export function themeToggle() {
             });
         }
 
-        function loadSubtitle(subtitleFile) {
+        // 
+        // loadSubtitle(folder, subtitleFile)
+        //   - dynamically adds a <track> for the chosen subtitle
+        //
+        function loadSubtitle(folder, subtitleFile) {
+            // Remove any existing <track>
             const tracks = videoPlayer.getElementsByTagName('track');
             for (let i = tracks.length - 1; i >= 0; i--) {
                 videoPlayer.removeChild(tracks[i]);
             }
+            // Create new track element
             const track = document.createElement('track');
             track.kind = 'subtitles';
             track.label = subtitleFile;
             track.srclang = 'en';
-            track.src = `/subtitle/${encodeURIComponent('{{ folder_name }}')}/${encodeURIComponent(subtitleFile)}`;
+            // Use /subtitle/folderName/subtitleFile
+            track.src = `/subtitle/${encodeURIComponent(folder)}/${encodeURIComponent(subtitleFile)}`;
             track.default = true;
             videoPlayer.appendChild(track);
+
+            // Hide menu after choosing
             subtitleMenu.style.display = 'none';
         }
 
+        // removeSubtitles() - removes any <track> from the <video>
         function removeSubtitles() {
             const tracks = videoPlayer.getElementsByTagName('track');
             for (let i = tracks.length - 1; i >= 0; i--) {
@@ -5619,13 +5540,13 @@ export function themeToggle() {
 
         // Hide the subtitle menu when clicking outside
         document.addEventListener('click', function(event) {
-            if (subtitleMenu.style.display === 'block' && !subtitleMenu.contains(event.target) && event.target !== subtitleButton) {
+            if (subtitleMenu.style.display === 'block' && !subtitleMenu.contains(event.target) 
+                && event.target !== subtitleButton) {
                 subtitleMenu.style.display = 'none';
             }
         });
 
-        // Keyboard Controls
-        // Key codes mapping
+        // Keyboard controls
         const keyActions = {
             32: 'togglePlay',        // Spacebar
             37: 'seekBackward',      // Left arrow
@@ -5636,12 +5557,11 @@ export function themeToggle() {
             70: 'toggleFullscreen',  // 'F' key
         };
 
-        // Event listener for keydown events
         document.addEventListener('keydown', function(event) {
+            // Avoid interfering with input fields
             if (event.target.tagName.toLowerCase() === 'input' || event.target.isContentEditable) {
                 return;
             }
-
             const action = keyActions[event.keyCode];
             if (action) {
                 event.preventDefault();
@@ -5651,7 +5571,13 @@ export function themeToggle() {
 
         function handleAction(action) {
             switch(action) {
-
+                case 'togglePlay':
+                    if (videoPlayer.paused) {
+                        videoPlayer.play();
+                    } else {
+                        videoPlayer.pause();
+                    }
+                    break;
                 case 'seekBackward':
                     videoPlayer.currentTime = Math.max(videoPlayer.currentTime - 5, 0);
                     break;

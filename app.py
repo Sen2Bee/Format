@@ -518,7 +518,22 @@ def catalog():
 
         # Fetch featured movies based on the selected theme's sql_condition
         if selected_theme:
-            theme_sql_condition = "" if IS_PRIVATE else selected_theme['sql_condition']
+            print("selected_theme", selected_theme)
+            theme_sql_condition = selected_theme['sql_condition']
+            # Construct the featured query with dynamic conditions based on IS_PRIVATE
+            where_conditions = "1=1"  # Default condition to ensure valid SQL
+            having_conditions = "m.rating > 6.7"
+
+            if IS_PRIVATE:
+                # Add standort condition to WHERE clause
+                where_conditions += " AND (m.standort = 'extern' OR m.standort = 'local')"
+
+            # Check if theme_sql_condition already includes a WHERE clause
+            if "WHERE" in theme_sql_condition.upper():
+                query_conditions = theme_sql_condition + f" AND {where_conditions}"
+            else:
+                query_conditions = f"{theme_sql_condition} WHERE {where_conditions}"
+
             featured_query = f"""
                 SELECT 
                     m.movie_id, 
@@ -528,21 +543,26 @@ def catalog():
                     m.rating, 
                     m.folder_name, 
                     m.overview,
-                    m.format_inhalt,
-                    m.poster_images
+                    m.format_inhalt
                 FROM 
                     movies m
-                    {theme_sql_condition}
-                GROUP BY m.movie_id
-                HAVING m.rating > 6.7 AND m.poster_images > 0
-                ORDER BY RAND()
+                    {query_conditions}  -- Dynamic theme conditions and where clause
+                GROUP BY 
+                    m.movie_id
+                HAVING 
+                    {having_conditions}  -- Keep HAVING for aggregated filters like rating
+                ORDER BY 
+                    RAND()
                 LIMIT 20;
             """
+
+
             
             logging.info("Executing featured movies query")
+            print("featured_movies2", featured_query)
             cursor.execute(featured_query, ())
             featured_movies = cursor.fetchall()
-            print("featured_movies2", featured_query)
+
 
             # Convert 'countries' and 'genres' from strings to lists if needed
             for movie in featured_movies:
