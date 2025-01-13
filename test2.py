@@ -113,7 +113,8 @@ def test_query():
 
 
         # cursor.execute(query, (movieid,))
-        # query = "SELECT m.standort FROM movies m LIMIT 10;"
+        query = "SELECT m.keywords, title FROM movies m LIMIT 10;"
+        query = "SELECT count(title) FROM movies;"
         cursor.execute(query)
 
         results = cursor.fetchall()

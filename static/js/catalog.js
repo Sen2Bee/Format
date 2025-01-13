@@ -44,8 +44,19 @@ function getIconSizeByType(typeval, type = "rating") {
  */
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
-    const searchQuery = params.get('search');
 
+    // 1) If there's `similar=...`, let 'updateFilters()' handle it
+    const similarId = params.get('similar');
+    if (similarId) {
+        // We want to call updateFilters(1) anyway:
+        // That function will see `similar=...` in the URL
+        // and do a fetch to /filter_movies?similar=...
+        triggerDropdownChangeEvent();
+        return;
+    }
+
+    // 2) Otherwise, normal path:
+    const searchQuery = params.get('search');
     if (searchQuery) {
         const searchBox = document.getElementById('search-box');
         const clearSearchBtn = document.getElementById('clear-search');
@@ -53,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Auto-filling search box with:", searchQuery);
             searchBox.value = searchQuery;
 
-            // === NEW: Show the clear icon if the search box is not empty ===
             if (clearSearchBtn) {
                 if (searchQuery.length > 0) {
                     clearSearchBtn.classList.add('visible');
@@ -61,12 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     clearSearchBtn.classList.remove('visible');
                 }
             }
-            
-            // Trigger existing filter logic (if you want immediate search).
-            triggerDropdownChangeEvent();
         }
     }
+
+    // Trigger a normal filter update
+    triggerDropdownChangeEvent();
 });
+
 
 /**
  * Renders movie listings in either list or grid view, depending on `.list-view` class.

@@ -197,6 +197,16 @@
                               {% endfor %}
                             </p>
                         {% endif %}
+                        {% if movie.keywords %}
+                        <p class="keyword-list">
+                            <strong>Schlagwörter:</strong>
+                            {% set kw_list = movie.keywords.split(',') %}
+                            {% for kw in kw_list %}
+                                {% set kw_trimmed = kw.strip() %}
+                                <a href="{{ url_for('catalog') }}?search={{ kw_trimmed|urlencode }}">{{ kw_trimmed }}</a>{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                        {% endif %}                        
 
                         {% if movie.wiki_critics %}
                             <p class="wiki-critics">
@@ -211,6 +221,11 @@
                             </p>
                         {% endif %}
                     </div>
+                    <div class="similar-movies-section">
+                        <a href="{{ url_for('catalog') }}?similar={{ movie.movie_id }}" class="find-similar-button">
+                            Ähnliche Filme suchen
+                        </a>
+                    </div>                   
                 </div> <!-- End of content-wrap -->
             </div> <!-- End of poster-content-container -->
 

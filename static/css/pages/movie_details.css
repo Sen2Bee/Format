@@ -182,6 +182,28 @@ header {
 .play-movie-overlay i {
     margin: 0;
 }
+/* Similar Movies Button Styling */
+.find-similar-button {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: var(--secondary-color); /* Uses your accent color variable */
+    color: var(--accent-color);
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 20px;
+}
+
+.find-similar-button:hover,
+.find-similar-button:focus {
+    background-color: var(--highlight-color); /* A contrasting shade defined in your variables */
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
 
 

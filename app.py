@@ -599,59 +599,118 @@ def catalog():
         
 @cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
 @app.route('/filter_movies', methods=['GET'])
-
 def filter_movies():
     try:
+
+        # 1) Check if a "similar" search is requested
+        similar_id = request.args.get('similar', '').strip()
+        print("filter_movies 2323", similar_id)
+        if similar_id:
+            # -- SIMILAR MOVIES LOGIC --
+            connection = connect_to_db()
+            if not connection:
+                return jsonify({"error": "Database connection failed"}), 500
+
+            cursor = connection.cursor(dictionary=True)
+
+            # 1a) Fetch the target movie's keywords
+            cursor.execute("SELECT keywords FROM movies WHERE movie_id = %s", (similar_id,))
+            target_row = cursor.fetchone()
+            if not target_row or not target_row.get('keywords'):
+                cursor.close()
+                connection.close()
+                return jsonify({'error': 'Movie not found or has no keywords'}), 404
+
+            # 1b) Build similarity expression
+            keywords_str = target_row['keywords']
+            # e.g. "Bunker,Überleben,Paranoia,Ausbruch,Kammerspiel"
+            keyword_list = [k.strip() for k in keywords_str.split(',') if k.strip()]
+            if not keyword_list:
+                cursor.close()
+                connection.close()
+                return jsonify({'error': 'No valid keywords for similarity'}), 404
+
+            # We build e.g. (CASE WHEN m.keywords LIKE %s THEN 1 ELSE 0 END) + ...
+            similarity_expr = " + ".join(["(CASE WHEN m.keywords LIKE %s THEN 1 ELSE 0 END)" for _ in keyword_list])
+            score_params = [f"%{kw}%" for kw in keyword_list]  # param for each LIKE
+
+            # We'll exclude the current movie from the results
+            similarity_query = f"""
+                SELECT 
+                    m.*,
+                    ({similarity_expr}) AS similarity_score
+                FROM movies m
+                WHERE m.movie_id <> %s
+                  AND m.keywords IS NOT NULL
+                HAVING similarity_score > 0
+                ORDER BY similarity_score DESC, m.rating DESC
+                LIMIT 50
+            """
+            final_params = score_params + [similar_id]
+
+            cursor.execute(similarity_query, tuple(final_params))
+            results = cursor.fetchall()
+            cursor.close()
+            connection.close()
+
+            return jsonify({
+                'mode': 'similar_search',
+                'similar_id': similar_id,
+                'count': len(results),
+                'movies': results
+            })
+            # -- END SIMILAR MOVIES LOGIC --
+
+        # 2) Normal filtering if no 'similar' parameter
         include_counts = request.args.get('include_counts', 'true').lower() == 'true'
-        # **1. Retrieve Filter Parameters**
         start_time = time.time()
+
+        # Retrieve Filter Parameters
         selected_years = request.args.get('years', '').split(',') if request.args.get('years') else []
         selected_genres = request.args.get('genres', '').split(',') if request.args.get('genres') else []
         selected_countries = request.args.get('countries', '').split(',') if request.args.get('countries') else []
         search_query = request.args.get('search', '').strip()
-
         standorte = request.args.get('standorte', '').split(',') if request.args.get('standorte') else (['local', 'extern'] if IS_PRIVATE else [])
-
         media = request.args.get('media', '').split(',') if request.args.get('media') else []
-        sort_by = request.args.get('sort_by', 'Zufall')  # Default sort by 'Zufall' (random)
+        sort_by = request.args.get('sort_by', 'Zufall')
         page = int(request.args.get('page', 1))
-        
-        logging.info("Filtering movies")
+
+        logging.info("Filtering movies (normal mode)")
         logging.info(f"Parameters - Years: {selected_years}, Genres: {selected_genres}, Countries: {selected_countries}, Search Query: '{search_query}', Standorte: {standorte}, Media: {media}, Sort By: {sort_by}, Page: {page}")
 
-        # **Build the filters and parameters**
         where_clauses = []
         params = []
 
-        # **Apply Search Condition**
+        # **Apply Search Condition** (title, original_title, keywords, director, cast)
         if search_query:
             where_clauses.append("""
-                                    (
-                                        m.title LIKE %s 
-                                        OR m.original_title LIKE %s 
-                                        OR cr.name LIKE %s 
-                                        OR EXISTS (
-                                            SELECT 1 
-                                            FROM movie_cast mc 
-                                            WHERE mc.movie_id = m.movie_id 
-                                            AND mc.name LIKE %s
-                                        )
-                                    )
-                                """)
+                (
+                    m.title LIKE %s
+                    OR m.original_title LIKE %s
+                    OR m.keywords LIKE %s
+                    OR cr.name LIKE %s
+                    OR EXISTS (
+                        SELECT 1 
+                        FROM movie_cast mc 
+                        WHERE mc.movie_id = m.movie_id 
+                          AND mc.name LIKE %s
+                    )
+                )
+            """)
             search_pattern = f"%{search_query}%"
-            params.extend([search_pattern, search_pattern, search_pattern, search_pattern])
+            params.extend([search_pattern]*5)
 
-        # **Apply Genre Filter**
+        # Genre Filter
         if selected_genres:
-            genre_placeholders = ','.join(['%s'] * len(selected_genres))
-            where_clauses.append(f"m.movie_id IN (SELECT movie_id FROM genres WHERE genre IN ({genre_placeholders}))")
+            placeholders = ','.join(['%s'] * len(selected_genres))
+            where_clauses.append(f"m.movie_id IN (SELECT movie_id FROM genres WHERE genre IN ({placeholders}))")
             params.extend(selected_genres)
 
-        # **Apply Year Filter**
+        # Year Filter (supports e.g. '1990...1999')
         if selected_years:
             year_filters = []
             for year in selected_years:
-                if "..." in year:  # Handle decade ranges
+                if "..." in year:
                     start_year = int(year.split("...")[0])
                     end_year = start_year + 9
                     year_filters.append("m.release_date BETWEEN %s AND %s")
@@ -661,96 +720,71 @@ def filter_movies():
                     params.append(int(year))
             where_clauses.append(f"({' OR '.join(year_filters)})")
 
-        # **Apply Country Filter**
+        # Country Filter
         if selected_countries:
-            country_placeholders = ','.join(['%s'] * len(selected_countries))
-            where_clauses.append(f"m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({country_placeholders}))")
+            placeholders = ','.join(['%s'] * len(selected_countries))
+            where_clauses.append(f"m.movie_id IN (SELECT movie_id FROM countries WHERE country IN ({placeholders}))")
             params.extend(selected_countries)
 
-        # **Apply Standorte (Location) Filter**
+        # Standort Filter
         if standorte:
-            standort_placeholders = ','.join(['%s'] * len(standorte))
-            where_clauses.append(f"m.standort IN ({standort_placeholders})")
+            placeholders = ','.join(['%s'] * len(standorte))
+            where_clauses.append(f"m.standort IN ({placeholders})")
             params.extend(standorte)
 
-        # **Apply Media Filter**
+        # Media Filter (vhs, dvd, blu, blu3)
         if media:
-            media_filters = [f"m.{medium} > 0" for medium in media]
+            # e.g. for media=['format_vhs','format_dvd']
+            media_filters = [f"m.{m} > 0" for m in media]
             where_clauses.append(f"({' OR '.join(media_filters)})")
 
-        # **Construct WHERE Clause for Queries**
+        # Construct WHERE
         where_clause = " AND ".join(where_clauses) if where_clauses else "1=1"
 
-        # **Generate a Hash for the Current Filters**
         filters_string = f"{selected_years}_{selected_genres}_{selected_countries}_{search_query}_{standorte}_{media}"
         filters_hash = hashlib.md5(filters_string.encode('utf-8')).hexdigest()
-
-        # **Generate Cache Key for Counts**
         counts_cache_key = f"counts_{filters_hash}"
-
-        # **Check if Counts are Cached**
         counts_cached = cache.get(counts_cache_key)
 
-        # **2. Establish Database Connection**
+        # 2) Connect DB
         connection = connect_to_db()
         if not connection:
             return jsonify({"error": "Database connection failed"}), 500
-
         cursor = connection.cursor(dictionary=True)
 
-        # **3. Build the Count Query to Get total_movies**
+        # 3) Count
         count_query = f"""
-            SELECT COUNT(DISTINCT m.movie_id) as total 
-            FROM movies m 
+            SELECT COUNT(DISTINCT m.movie_id) AS total
+            FROM movies m
             LEFT JOIN genres g ON m.movie_id = g.movie_id
             LEFT JOIN countries c ON m.movie_id = c.movie_id
             LEFT JOIN crew cr ON m.movie_id = cr.movie_id AND cr.job = 'Director'
             LEFT JOIN movie_cast mc ON m.movie_id = mc.movie_id
             WHERE {where_clause}
         """
-
-        # **Execute Count Query to Get total_movies**
-        logging.info("Executing count query for total movies")
         cursor.execute(count_query, tuple(params))
-        logging.info("after count query for total movies")
         total_movies = cursor.fetchone()['total']
 
-
-        # **4. Determine columns_per_row and items_per_page**
-        # Ensure a maximum of 10 rows, based on the number of columns per row
+        # 4) rows_per_page, columns_per_row, items_per_page
         rows_per_page = 3
         columns_per_row = 4
+        items_per_page = rows_per_page * columns_per_row
 
-        # Items per page should be columns_per_row * rows_per_page
-        items_per_page = columns_per_row * rows_per_page
-
-        # **5. Calculate total_pages**
+        # 5) total_pages
         total_pages = math.ceil(total_movies / items_per_page) if items_per_page else 1
-       
 
-        # **6. Adjust Page Number if Out of Bounds**
-        if page < 1:
+        # 6) clamp page
+        if page < 1: 
             page = 1
         elif page > total_pages:
             page = total_pages
 
-        # **7. Calculate OFFSET for Pagination**
+        # 7) offset
         offset = (page - 1) * items_per_page
 
-        # Detailed log
-        logging.info(f"""
-        Pagination Debugging Log:
-        --------------------------
-        Selected Page: {page}
-        Items Per Page: {items_per_page}
-        Total Movies: {total_movies}
-        Total Pages: {total_pages}
-        Calculated Offset: {offset}
-        Columns Per Row: {columns_per_row}
-        --------------------------
-        """)
+        logging.info(f"Page: {page}, total_movies: {total_movies}, items_per_page: {items_per_page}, offset: {offset}, total_pages: {total_pages}")
 
-        # **8. Build the Base Query to Fetch Movies with Filters and Pagination**
+        # 8) Build main query
         sort_expression, sort_options = build_sort_expression(sort_by)
         base_query = f"""
             SELECT
@@ -787,88 +821,70 @@ def filter_movies():
             ORDER BY {sort_expression}
             LIMIT %s OFFSET %s
         """
-        offset_value = max(0, offset) 
-        base_params = params + [items_per_page, offset_value]
-        print(base_query, base_params)
+        base_params = params + [items_per_page, offset]
 
-        try:
-            # **Execute Base Query to Fetch Movies**
-            logging.info("Executing base query for filtered movies")
-            cursor.execute(base_query, tuple(base_params))
-            filtered_movies = cursor.fetchall()
+        cursor.execute(base_query, tuple(base_params))
+        filtered_movies = cursor.fetchall()
 
-            # **Convert 'countries' and 'genres' from Strings to Lists**
-            for movie in filtered_movies:
-                movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
-                movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
-                movie['director'] = movie['director'].split(', ') if movie['director'] else []
+        # Convert 'countries' & 'genres' from comma-string -> list
+        for movie in filtered_movies:
+            movie['countries'] = movie['countries'].split(', ') if movie['countries'] else []
+            movie['genres'] = movie['genres'].split(', ') if movie['genres'] else []
+            movie['director'] = movie['director'].split(', ') if movie['director'] else []
 
-            # **9. Fetch Counts for Dropdown Filters if include_counts is True**
-            if include_counts:
-                if counts_cached:
-                    logging.info("Using cached counts for dropdown filters")
-                    genre_counts, year_counts, country_counts, standorte_counts, media_counts = counts_cached
-                else:
-                    logging.info("Fetching counts for dropdown filters")
-
-                    # **Fetch Counts for Each Filter Field**
-                    genre_counts = get_counts(cursor, 'genre', where_clause, params)
-                    year_counts = get_counts(cursor, 'release_date', where_clause, params)
-                    country_counts = get_counts(cursor, 'country', where_clause, params)
-                    standorte_counts = get_counts(cursor, 'standort', where_clause, params)
-                    media_counts = get_counts(cursor, 'media', where_clause, params)
-
-                    # **Sort Years with Decades**
-                    year_counts = sort_years_with_decades(year_counts)
-
-                    # **Cache the Counts**
-                    cache.set(counts_cache_key, (genre_counts, year_counts, country_counts, standorte_counts, media_counts), timeout=300)
+        # 9) Possibly fetch counts for dropdown if include_counts
+        if include_counts:
+            if counts_cached:
+                (genre_counts, year_counts, country_counts, standorte_counts, media_counts) = counts_cached
             else:
-                # Do not fetch counts
-                genre_counts = {}
-                year_counts = {}
-                country_counts = {}
-                standorte_counts = {}
-                media_counts = {}
+                logging.info("Fetching counts for dropdown filters...")
+                genre_counts = get_counts(cursor, 'genre', where_clause, params)
+                year_counts = get_counts(cursor, 'release_date', where_clause, params)
+                country_counts = get_counts(cursor, 'country', where_clause, params)
+                standorte_counts = get_counts(cursor, 'standort', where_clause, params)
+                media_counts = get_counts(cursor, 'media', where_clause, params)
 
-            # **10. Close Cursor and Connection**
-            cursor.close()
-            connection.close()
+                # Optionally sort years with decades
+                year_counts = sort_years_with_decades(year_counts)
 
-            end_time = time.time()
-            logging.info(f"Filtered movies fetched in {end_time - start_time:.2f} seconds")
+                # Cache them
+                cache.set(counts_cache_key, (genre_counts, year_counts, country_counts, standorte_counts, media_counts), timeout=300)
+        else:
+            genre_counts = {}
+            year_counts = {}
+            country_counts = {}
+            standorte_counts = {}
+            media_counts = {}
 
-            # **11. Prepare JSON Response**
-            response_data = {
-                'movies': filtered_movies,
-                'current_page': page,
-                'total_pages': total_pages,
-                'total_movies': total_movies,
-                'columns_per_row': columns_per_row,
-                'items_per_page': items_per_page,
-                'sort_options': sort_options
-            }
+        cursor.close()
+        connection.close()
 
-            if include_counts:
-                response_data.update({
-                    'years': year_counts,
-                    'genres': genre_counts,
-                    'countries': country_counts,
-                    'standorte': standorte_counts,
-                    'media': media_counts
-                })
+        end_time = time.time()
+        logging.info(f"Filter completed in {(end_time - start_time):.2f} seconds")
 
-            # **12. Return JSON Response**
-            return jsonify(response_data)
-        
-        except Exception as e:
-            logging.error(f"Error occurred in filter_movies: {e}")
-            cursor.close()
-            connection.close()
-            return jsonify({'error': str(e)}), 500
-        
+        # Return final JSON
+        response_data = {
+            'mode': 'normal_filter',
+            'movies': filtered_movies,
+            'current_page': page,
+            'total_pages': total_pages,
+            'total_movies': total_movies,
+            'columns_per_row': columns_per_row,
+            'items_per_page': items_per_page,
+            'sort_options': sort_options
+        }
+        if include_counts:
+            response_data.update({
+                'years': year_counts,
+                'genres': genre_counts,
+                'countries': country_counts,
+                'standorte': standorte_counts,
+                'media': media_counts
+            })
+        return jsonify(response_data)
+
     except Exception as e:
-        logging.error(f"Error occurred in filter_movies: {e}")
+        logging.error(f"Error in filter_movies: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -1012,13 +1028,9 @@ def get_counts(cursor, field, where_clause, params):
         return counts
 
 
-@cache.cached(timeout=300, query_string=True)  # Cache this route with query string parameters
+@cache.cached(timeout=300, query_string=True)
 @app.route('/autocomplete')
 def autocomplete():
-    """
-    Handle autocomplete AJAX requests by searching in movies, movie_cast, and crew.
-    Returns suggestions with associated movie_ids for efficient filtering.
-    """
     query = request.args.get('query', '').strip()
     suggestions = []
 
@@ -1032,28 +1044,29 @@ def autocomplete():
         try:
             cursor = connection.cursor(dictionary=True)
 
-            # Search in movie titles
+            search_pattern = f"%{query}%"
+
+            # 1) Search in movie titles (existing)
             movie_query = """
                 SELECT DISTINCT title, movie_id
-                FROM movies 
+                FROM movies
                 WHERE title LIKE %s OR original_title LIKE %s OR format_orig_titel LIKE %s
                 ORDER BY title
                 LIMIT 10
             """
-            search_pattern = f"%{query}%"
-            cursor.execute(movie_query, (search_pattern,) * 3)
+            cursor.execute(movie_query, (search_pattern,)*3)
             movie_matches = cursor.fetchall()
             for movie in movie_matches:
                 suggestions.append({
                     'name': movie['title'],
                     'type': 'Title',
-                    'id': movie['movie_id']  # Include the actual movie_id
+                    'id': movie['movie_id']
                 })
 
-            # Search in cast names
+            # 2) Search in cast names (existing)
             cast_query = """
                 SELECT DISTINCT name, id
-                FROM movie_cast 
+                FROM movie_cast
                 WHERE name LIKE %s
                 ORDER BY name
                 LIMIT 10
@@ -1064,14 +1077,14 @@ def autocomplete():
                 suggestions.append({
                     'name': cast_member['name'],
                     'type': 'Actor',
-                    'id': cast_member['id']  # Include the actual movie_id
+                    'id': cast_member['id']
                 })
 
-            # Search in crew names (e.g., directors)
+            # 3) Search in crew names (existing)
             crew_query = """
-                SELECT DISTINCT name, id 
-                FROM crew 
-                WHERE name LIKE %s AND job = 'Director'
+                SELECT DISTINCT name, id
+                FROM crew
+                WHERE name LIKE %s
                 ORDER BY name
                 LIMIT 10
             """
@@ -1081,7 +1094,25 @@ def autocomplete():
                 suggestions.append({
                     'name': crew_member['name'],
                     'type': 'Director',
-                    'id': crew_member['id']  # Include the actual movie_id
+                    'id': crew_member['id']
+                })
+
+            # 4) Search in m.keywords
+            keywords_query = """
+                SELECT movie_id, keywords
+                FROM movies
+                WHERE keywords LIKE %s
+                LIMIT 10
+            """
+            cursor.execute(keywords_query, (search_pattern,))
+            keyword_matches = cursor.fetchall()
+            for row in keyword_matches:
+                # Because 'keywords' might be a long comma-separated string, 
+                # you can just show the entire chunk, or something simpler:
+                suggestions.append({
+                    'name': row['keywords'],
+                    'type': 'Keywords',
+                    'id': row['movie_id']
                 })
 
         except Exception as e:
@@ -1091,28 +1122,8 @@ def autocomplete():
             cursor.close()
             connection.close()
 
-    print(suggestions)
-
     return jsonify(suggestions)
 
-# def get_movie_file(MOVIE_FOLDER):
-#     folder = os.path.join(MOVIE_FOLDER, movie_id)
-#     if not os.path.exists(MOVIE_FOLDER):
-#         return None
-#     for file in os.listdir(folder):
-#         if file.lower().endswith(('.mp4', '.mkv', '.avi', '.mov', '.webm', '.ogg')):
-#             return os.path.join(folder, file)
-#     return None
-
-# def get_subtitle_files(movie_id):
-#     folder = os.path.join(MOVIE_FOLDER, movie_id)
-#     subtitle_files = []
-#     if not os.path.exists(folder):
-#         return subtitle_files
-#     for file in os.listdir(folder):
-#         if file.lower().endswith(('.vtt', '.srt', '.ass')):
-#             subtitle_files.append(file)
-#     return subtitle_files
 
 def convert_subtitle_to_vtt(subtitle_path):
     ext = os.path.splitext(subtitle_path)[1].lower()
