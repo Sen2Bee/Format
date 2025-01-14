@@ -521,78 +521,135 @@ export function populateDropdown(dropdownListId, options, selectedValues = [], s
  * Update filters (fetches updated movie data) based on selected criteria
  */
 export function updateFilters(page = 1) {
-    const selectedYears = getSelectedValues('year-dropdown-list');
-    const selectedGenres = getSelectedValues('genre-dropdown-list');
-    const selectedCountries = getSelectedValues('country-dropdown-list');
-    const selectedStandorte = getSelectedValues('standort-dropdown-list');
-    const selectedMedia = getSelectedValues('medium-dropdown-list');
-    const selectedSortByValues = getSelectedValues('sort-dropdown-list');
-    const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
+    // 1) Check if there's a 'similar' param in the URL
+    const currentUrlParams = new URLSearchParams(window.location.search);
+    const similarId = currentUrlParams.get('similar');
 
-    const searchQuery = searchBox ? searchBox.value.trim() : '';
+    let requestUrl = "/filter_movies?";
+    const finalParams = new URLSearchParams(); // We'll build the query here
 
-    // Build URL params
-    const params = new URLSearchParams();
-    if (selectedYears.length) params.append('years', selectedYears.join(','));
-    if (selectedGenres.length) params.append('genres', selectedGenres.join(','));
-    if (selectedCountries.length) params.append('countries', selectedCountries.join(','));
-    if (selectedStandorte.length) params.append('standorte', selectedStandorte.join(','));
-    if (selectedMedia.length) params.append('media', selectedMedia.join(','));
-    if (selectedSortBy.length) params.append('sort_by', selectedSortBy[0]);
-    if (searchQuery.length > 0) params.append('search', searchQuery);
-    params.append('page', page);
+    if (similarId) {
+        console.log("similarId", similarId)
+        // -- SIMILAR-MODE --
+        finalParams.append('similar', similarId);
+        finalParams.append('page', page);
+
+        // After you've processed the similar parameter,
+        // remove it from the URL so it won't be picked up on the next reload.
+        const url = new URL(window.location.href);
+        url.searchParams.delete('similar');
+        window.history.replaceState({}, document.title, url);        
+    } else {
+        // -- NORMAL FILTER-MODE --
+        const selectedYears = getSelectedValues('year-dropdown-list');
+        const selectedGenres = getSelectedValues('genre-dropdown-list');
+        const selectedCountries = getSelectedValues('country-dropdown-list');
+        const selectedStandorte = getSelectedValues('standort-dropdown-list');
+        const selectedMedia = getSelectedValues('medium-dropdown-list');
+        const selectedSortByValues = getSelectedValues('sort-dropdown-list');
+        const selectedSortBy = selectedSortByValues.length > 0 ? selectedSortByValues : ["Zufall"];
+
+        const searchQuery = searchBox ? searchBox.value.trim() : '';
+
+        // Build normal filter params
+        if (selectedYears.length) finalParams.append('years', selectedYears.join(','));
+        if (selectedGenres.length) finalParams.append('genres', selectedGenres.join(','));
+        if (selectedCountries.length) finalParams.append('countries', selectedCountries.join(','));
+        if (selectedStandorte.length) finalParams.append('standorte', selectedStandorte.join(','));
+        if (selectedMedia.length) finalParams.append('media', selectedMedia.join(','));
+        if (selectedSortBy.length) finalParams.append('sort_by', selectedSortBy[0]);
+        if (searchQuery.length > 0) finalParams.append('search', searchQuery);
+        finalParams.append('page', page);
+    }
 
     showProgressIndicator();
 
-    fetch(`/filter_movies?${params.toString()}`)
+    // 2) Actually fetch the data
+    fetch(requestUrl + finalParams.toString())
         .then(response => response.json())
         .then(data => {
-            const {
-                years,
-                genres,
-                countries,
-                standorte,
-                media,
-                sort_options,
-                movies,
-                current_page,
-                total_pages,
-                total_movies
-            } = data;
+            // We handle normal or similar mode based on data.mode
+            console.log("Filter response data:", data);
 
-            // Re-populate the dropdowns with updated filters
-            populateDropdown('year-dropdown-list', years, selectedYears);
-            populateDropdown('genre-dropdown-list', genres, selectedGenres);
-            populateDropdown('country-dropdown-list', countries, selectedCountries);
-            populateDropdown('standort-dropdown-list', standorte, selectedStandorte);
-            populateDropdown('medium-dropdown-list', media, selectedMedia);
-            populateDropdown('sort-dropdown-list', sort_options, selectedSortBy, true, false);
+            // For normal filter, your JSON fields might be:
+            // { mode: 'normal_filter', movies, current_page, total_pages, total_movies, ... }
+            // For similar, your JSON might be:
+            // { mode: 'similar_search', similar_id, movies, current_page, total_pages, total_movies, ... }
 
-            // Render the movies
-            updateMovieListings(movies);
+            if (data.mode === 'similar_search') {
+                // 2A) Similar mode
+                // No need to repopulate drop-downs for normal filters, etc.
+                // Just update your listing, pagination, and .view-toggle-title to reflect "Ähnliche Filme"
+                
+                // Render the movies
+                updateMovieListings(data.movies);
 
-            // Basic columns logic
-            let columnsPerRow = 1;
-            if (total_movies > 100) columnsPerRow = 5;
-            else if (total_movies > 60) columnsPerRow = 4;
-            else if (total_movies > 20) columnsPerRow = 3;
+                // Update pagination
+                updatePagination(
+                    data.current_page,   // current
+                    data.total_pages,    // total
+                    data.total_movies,   // total item count
+                    4                    // columnsPerRow (or read from data.columns_per_row if your server returns it)
+                );
 
-            setGridLayout(columnsPerRow);
+                // Update the headline to something like "Ähnliche Filme (XX)"
+                const headlineElement = document.querySelector('.view-toggle-title');
+                if (headlineElement) {
+                    headlineElement.textContent = `Ähnliche Filme (${data.total_movies})`;
+                }
 
-            // Update pagination
-            updatePagination(current_page, total_pages, total_movies, columnsPerRow);
+            } else {
+                // 2B) Normal filter mode
+                const {
+                    years,
+                    genres,
+                    countries,
+                    standorte,
+                    media,
+                    sort_options,
+                    movies,
+                    current_page,
+                    total_pages,
+                    total_movies
+                } = data;
 
-            // Update the headline (like "Genres: x | Years: y ... ")
-            updateHeadline(
-                selectedGenres,
-                selectedYears,
-                selectedCountries,
-                selectedStandorte,
-                selectedMedia,
-                selectedSortByValues,
-                searchQuery,
-                total_movies
-            );
+                // Re-populate the dropdowns with updated filters
+                // (only if your server is still returning them)
+                populateDropdown('year-dropdown-list', years);
+                populateDropdown('genre-dropdown-list', genres);
+                populateDropdown('country-dropdown-list', countries);
+                populateDropdown('standort-dropdown-list', standorte);
+                populateDropdown('medium-dropdown-list', media);
+                populateDropdown('sort-dropdown-list', sort_options, [], true, false);
+
+                // Render the movies
+                updateMovieListings(movies);
+
+                // Basic columns logic
+                let columnsPerRow = 1;
+                if (total_movies > 100) columnsPerRow = 5;
+                else if (total_movies > 60) columnsPerRow = 4;
+                else if (total_movies > 20) columnsPerRow = 3;
+
+                setGridLayout(columnsPerRow);
+
+                // Update pagination
+                updatePagination(current_page, total_pages, total_movies, columnsPerRow);
+
+                // Update the normal "view-toggle-title" with filters
+                // We might do your updateHeadline(...) call here
+                // If you want to keep it:
+                updateHeadline(
+                    getSelectedValues('genre-dropdown-list'),
+                    getSelectedValues('year-dropdown-list'),
+                    getSelectedValues('country-dropdown-list'),
+                    getSelectedValues('standort-dropdown-list'),
+                    getSelectedValues('medium-dropdown-list'),
+                    getSelectedValues('sort-dropdown-list'),
+                    searchBox ? searchBox.value.trim() : '',
+                    total_movies
+                );
+            }
         })
         .catch(error => {
             console.error('Error fetching filter data:', error);

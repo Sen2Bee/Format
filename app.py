@@ -602,40 +602,43 @@ def catalog():
 def filter_movies():
     try:
 
-        # 1) Check if a "similar" search is requested
+       # First, see if we have a 'similar' param
         similar_id = request.args.get('similar', '').strip()
-        print("filter_movies 2323", similar_id)
+        page = int(request.args.get('page', 1))
+        rows_per_page = 3
+        columns_per_row = 4
+        items_per_page = rows_per_page * columns_per_row
+
         if similar_id:
-            # -- SIMILAR MOVIES LOGIC --
+            # === SIMILAR MOVIES FLOW ===
             connection = connect_to_db()
             if not connection:
                 return jsonify({"error": "Database connection failed"}), 500
-
             cursor = connection.cursor(dictionary=True)
 
-            # 1a) Fetch the target movie's keywords
+            # 1) Get the target movie's keywords
             cursor.execute("SELECT keywords FROM movies WHERE movie_id = %s", (similar_id,))
-            target_row = cursor.fetchone()
-            if not target_row or not target_row.get('keywords'):
+            row = cursor.fetchone()
+            if not row or not row.get('keywords'):
                 cursor.close()
                 connection.close()
                 return jsonify({'error': 'Movie not found or has no keywords'}), 404
 
-            # 1b) Build similarity expression
-            keywords_str = target_row['keywords']
-            # e.g. "Bunker,Überleben,Paranoia,Ausbruch,Kammerspiel"
-            keyword_list = [k.strip() for k in keywords_str.split(',') if k.strip()]
+            # 2) Build the LIKE-based similarity expression
+            keywords_str = row['keywords']
+            keyword_list = [kw.strip() for kw in keywords_str.split(',') if kw.strip()]
             if not keyword_list:
                 cursor.close()
                 connection.close()
                 return jsonify({'error': 'No valid keywords for similarity'}), 404
 
-            # We build e.g. (CASE WHEN m.keywords LIKE %s THEN 1 ELSE 0 END) + ...
+            # e.g. "(CASE WHEN m.keywords LIKE %s THEN 1 ELSE 0 END) + ..."
             similarity_expr = " + ".join(["(CASE WHEN m.keywords LIKE %s THEN 1 ELSE 0 END)" for _ in keyword_list])
-            score_params = [f"%{kw}%" for kw in keyword_list]  # param for each LIKE
+            score_params = [f"%{kw}%" for kw in keyword_list]
 
-            # We'll exclude the current movie from the results
-            similarity_query = f"""
+            # We set a maximum of 50 potential matches, but we still want pagination
+            # so let's fetch them *all* (up to 50) then do the slicing ourselves.
+            sql = f"""
                 SELECT 
                     m.*,
                     ({similarity_expr}) AS similarity_score
@@ -647,19 +650,38 @@ def filter_movies():
                 LIMIT 50
             """
             final_params = score_params + [similar_id]
+            cursor.execute(sql, tuple(final_params))
+            all_matches = cursor.fetchall()  # up to 50
 
-            cursor.execute(similarity_query, tuple(final_params))
-            results = cursor.fetchall()
             cursor.close()
             connection.close()
 
+            # 3) Manually apply pagination to that subset
+            total_movies = len(all_matches)
+            total_pages = max(1, math.ceil(total_movies / items_per_page))
+
+            # clamp page
+            if page < 1:
+                page = 1
+            elif page > total_pages:
+                page = total_pages
+
+            offset = (page - 1) * items_per_page
+            final_slice = all_matches[offset: offset + items_per_page]
+
+            # 4) Return JSON with normal fields
             return jsonify({
                 'mode': 'similar_search',
                 'similar_id': similar_id,
-                'count': len(results),
-                'movies': results
+                'movies': final_slice,
+                'total_movies': total_movies,
+                'current_page': page,
+                'total_pages': total_pages,
+                'columns_per_row': columns_per_row,
+                'items_per_page': items_per_page
             })
-            # -- END SIMILAR MOVIES LOGIC --
+
+        # === NORMAL FILTER FLOW ===
 
         # 2) Normal filtering if no 'similar' parameter
         include_counts = request.args.get('include_counts', 'true').lower() == 'true'
