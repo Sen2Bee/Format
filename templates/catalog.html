@@ -113,7 +113,17 @@
                             <button class="filter-nav-arrow left hidden" aria-label="Scroll Left">
                                 <i class="fas fa-chevron-left" aria-hidden="true"></i>
                             </button>
-
+                            <!-- Clear All Filters Button -->
+                            <button 
+                                type="button" 
+                                id="clear-all-filters-button" 
+                                class="filter-action-button" 
+                                aria-label="Alle Filter zurücksetzen" 
+                                tabindex="0"
+                            >
+                                <i class="fas fa-undo" aria-hidden="true"></i>
+                                <span class="sr-only">Alle Filter zurücksetzen</span>
+                            </button>
                             <!-- Year Filter -->
                             <div class="custom-dropdown" data-dropdown="year-dropdown">
                                 <div class="dropdown-header" data-target="year-dropdown-list" aria-label="Jahre" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
@@ -198,17 +208,7 @@
                                 </div>
                             </div>
 
-                            <!-- Clear All Filters Button -->
-                            <button 
-                                type="button" 
-                                id="clear-all-filters-button" 
-                                class="filter-action-button" 
-                                aria-label="Alle Filter zurücksetzen" 
-                                tabindex="0"
-                            >
-                                <i class="fas fa-undo" aria-hidden="true"></i>
-                                <span class="sr-only">Alle Filter zurücksetzen</span>
-                            </button>
+
 
                             <!-- Right Navigation Arrow -->
                             <button class="filter-nav-arrow right hidden" aria-label="Scroll Right">

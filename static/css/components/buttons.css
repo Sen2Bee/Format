@@ -55,12 +55,13 @@
 .filter-action-button {
     display: flex;
     align-items: center;
-    background-color: var(--background-dark); /* #ffffff */
-    color: var(--text-color); /* #333333 */
+    background-color: var(--button-hover-background); /* #f0f0f0 */
+    color: var(--accent-color); /* #333333 */
+
     padding: 10px 20px;
     margin: 5px;
     border: 1px solid var(--button-border-color); /* #CCCCCC */
-    border-radius: 3px;
+    border-radius: 10px;
     font-size: 1em;
     cursor: pointer;
     transition: background-color var(--transition-duration), box-shadow var(--transition-duration) ease;
@@ -72,8 +73,10 @@
 }
 
 .filter-action-button:hover {
-    background-color: var(--button-hover-background); /* #f0f0f0 */
-    color: var(--button-text-color); /* #333333 */
+    background-color: var(--accent-color); /* #f0f0f0 */
+    border-color: var(--background-dark);
+    color: var(--text-color); /* #333333 */
+    font-size: 1.2em;
     border: 1px solid var(--button-border-color); /* #CCCCCC */
 }
 
